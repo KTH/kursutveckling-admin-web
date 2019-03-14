@@ -1,0 +1,16 @@
+bin
+logs
+project/project
+project/target
+target
+tmp
+.history
+dist
+.classpath
+.cache
+*.iml
+*.ipr
+*.iws
+.idea
+.target
+node_modules

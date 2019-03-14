@@ -1,0 +1,139 @@
+// Less code goes here...!
+
+//@import "kth-style/public/sass/variables/sizes";
+//@import "kth-style/public/sass/variables/colors";
+
+// Bootstrap source
+/*@import "node_modules/bootstrap/scss/functions";
+@import "node_modules/bootstrap/scss/variables";
+@import "node_modules/kth-style/public/sass/bootstrap/variables";
+@import "node_modules/bootstrap/scss/mixins";*/
+
+
+
+.container.articleNavigation{
+    padding: 15px 15px 0 !important;
+   
+}
+
+
+#course-title{
+    border-bottom: 0px;
+    margin: 0px;
+    margin-top: 20px;
+}
+
+
+
+
+/****ICONS*****/
+.icon-schedule{
+    position: relative;
+    top: 4px;
+    height: 20px;
+    widthround: top left / 1.0em auto no-repeat url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23262626' version='1' viewBox='0 -100 900 900'%3e%3cpath d='M800 0q42 0 71 29t29 71v600q0 40-29 70t-71 30H100q-40 0-70-30T0 700V100q0-42 30-71t70-29h46v100h160V0h290v100h160V0zm0 700V300H100v400zM260-100V70h-70v-170zm450 0V70h-70v-170z'/%3e%3c/svg%3e");
+}
+
+.fa, .fas {
+    font-weight: 900;
+    padding-right: 8px;
+}
+/************************************************/
+
+
+
+/* Animation */
+#CourseKeyInformationOneCol, #roundKeyInformation, #coreContent,#syllabusLink{
+    @keyframes fadeOutIn {
+        0% {opacity: 1;}
+        50% {opacity: 0;}
+        100% {opacity: 1;}
+      }
+      
+      .fadeOutIn {
+        animation-name: fadeOutIn;
+        animation-duration: 800ms;
+       }
+
+       .right-column-header{
+        background: #fff;
+        margin: 20px -15px;
+        padding: 20px 15px 10px;
+       }
+
+       .clear-margin-bottom{
+           margin-bottom: 0;
+       }
+}
+
+
+///*************************************///
+.alert-info {
+    color: #000;
+    font-size: 1em;
+    min-height: 3.4rem;
+    border-radius: .15rem;
+    position: relative;
+    padding: 1rem 1rem 1rem 4.4rem;
+    background-color: #fcf8e3;
+    border: 1px solid #faebcc;
+
+    &::before{
+        font-size: 1.4rem;
+        position: absolute;
+        top: 10%;
+        left: .2em;
+        width: 2em;
+        content: url(//www.kth.se/img/kth-style/icons/alert-info.svg);
+    }
+    
+}
+
+///******************** MODAL ****************************///
+.modal {
+    display: block;
+  }
+  /* The actual modal */
+  .ModalFade-leave {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  .ModalFade-leave-active {
+    overflow: hidden;
+    transition: transform 0.5s ease-in, opacity 0.4s ease-in;
+  }
+  .ModalFade-leave-end {
+    transform: translateY(-150%);
+    opacity: 0;
+  }
+  .ModalFade-enter {
+    transform: translateY(-150%);
+    opacity: 0;
+  }
+  .ModalFade-enter-active {
+    transition: transform 0.5s ease-out, opacity 0.4s ease-in;
+  }
+  .ModalFade-enter-end {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  /* The modal background */
+  .ModalBackdropFade-leave {
+    opacity: 0.5;
+  }
+  .ModalBackdropFade-leave-active {
+    overflow: hidden;
+    transition: opacity 0.3s ease-in;
+  }
+  .ModalBackdropFade-leave-end {
+    opacity: 0!important;
+  }
+  .ModalBackdropFade-enter {
+    opacity: 0!important;
+  }
+  .ModalBackdropFade-enter-active {
+    transition: opacity 0.3s ease-in;
+  }
+  .ModalBackdropFade-enter-end {
+    opacity: 0.5;
+  }
