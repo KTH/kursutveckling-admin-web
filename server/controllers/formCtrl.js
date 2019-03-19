@@ -11,8 +11,10 @@ const { StaticRouter } = require('inferno-router')
 const { toJS } = require('mobx')
 const httpResponse = require('kth-node-response')
 const i18n = require('../../i18n')
+const api = require('../api')
 
 // const koppsCourseData = require('../apiCalls/koppsCourseData')
+const kursutvecklingAPI = require('../apiCalls/kursutvecklingAPI')
 
 const browserConfig = require('../configuration').browser
 const serverConfig = require('../configuration').server
@@ -21,7 +23,53 @@ const paths = require('../server').getPaths()
 let { appFactory, doAllAsyncBefore } = require('../../dist/js/server/app.js')
 
 module.exports = {
-  getIndex: getIndex
+  getIndex: getIndex,
+  getRoundAnalysis: co.wrap(_getRoundAnalysis),
+  postRoundAnalysis: co.wrap(_postRoundAnalysis)
+}
+
+function * _postRoundAnalysis (req, res, next) {
+  const roundAnalysisId = req.params.id || 'SF1624HT19_1'
+  const language = req.params.language || 'sv'
+  const sendObject = JSON.parse(req.body.params)
+  console.log('postRoundAnalysis', roundAnalysisId)
+  try {
+    const apiResponse = yield kursutvecklingAPI.setRoundAnalysisData(roundAnalysisId, sendObject, language)
+    console.log('apiResponse', apiResponse)
+
+    if (apiResponse.statusCode !== 200) { // TODO: Handle with alert
+      res.status(apiResponse.statusCode)
+      res.statusCode = apiResponse.statusCode
+      res.send()
+    }
+
+    return httpResponse.json(res, apiResponse.body)
+
+  } catch (err) {
+    log.error('Exception calling from getRoundAnalysis ', { error: err })
+    next(err)
+  }
+
+
+}
+
+function * _getRoundAnalysis (req, res, next) { console.log('getRoundAnalysis', req.params.id)
+  const roundAnalysisId = req.params.id || 'SF1624HT19_1'
+  const language = req.params.language || 'sv'
+  console.log('getRoundAnalysis', roundAnalysisId)
+  try {
+    const apiResponse = yield kursutvecklingAPI.getRoundAnalysisData(roundAnalysisId, language)
+    if (apiResponse.statusCode !== 200) {
+      res.status(apiResponse.statusCode)
+      res.statusCode = apiResponse.statusCode
+      res.send()
+    }
+    return httpResponse.json(res, apiResponse.body)
+
+  } catch (err) {
+    log.error('Exception calling from getRoundAnalysis ', { error: err })
+    next(err)
+  }
 }
 
 /* function * _getCourseEmployees(req, res) { //console.log("TEST")
@@ -108,6 +156,7 @@ async function getIndex (req, res, next) { console.log('TEST getIndex')
 
   let lang = language.getLanguage(res) || 'sv'
   const ldapUser = req.session.authUser ? req.session.authUser.username : 'null'
+  console.log('paths', api, paths, req.params.id)
 
   try {
     // Render inferno app
@@ -119,7 +168,7 @@ async function getIndex (req, res, next) { console.log('TEST getIndex')
 
     renderProps.props.children.props.routerStore.setBrowserConfig(browserConfig, paths, serverConfig.hostUrl)
     renderProps.props.children.props.routerStore.__SSR__setCookieHeader(req.headers.cookie)
-    await renderProps.props.children.props.routerStore.getRoundInformation(req.params.id, lang)
+    await renderProps.props.children.props.routerStore.getRoundAnalysis(req.params.id)
 
     const breadcrumDepartment = await renderProps.props.children.props.routerStore.getBreadcrumbs()
     let breadcrumbs = [

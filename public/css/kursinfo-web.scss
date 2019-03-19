@@ -9,8 +9,9 @@
 @import "node_modules/kth-style/public/sass/bootstrap/variables";
 @import "node_modules/bootstrap/scss/mixins";*/
 
-
-
+.col-temp{
+border-left: 1px dotted #ddd;
+}
 .container.articleNavigation{
     padding: 15px 15px 0 !important;
    

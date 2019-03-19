@@ -194,7 +194,7 @@ server.use(excludeExpression, require('kth-node-web-common/lib/web/crawlerRedire
  * ******* APPLICATION ROUTES *******
  * **********************************
  */
-const { System, AdminForm, AdminPreview } = require('./controllers')
+const { System, Admin, AdminPreview } = require('./controllers')
 const { requireRole } = require('./authentication')
 
 // System routes
@@ -207,10 +207,12 @@ server.use('/', systemRoute.getRouter())
 
 // App routes
 const appRoute = AppRouter()
-appRoute.get('system.index', config.proxyPrefixPath.uri + '/:id', AdminForm.getIndex)
+appRoute.get('system.index', config.proxyPrefixPath.uri + '/:id', Admin.getIndex)
 appRoute.get('system.index', config.proxyPrefixPath.uri + '/preview/:id', /* getServerGatewayLogin('/:courseCode'),*/ AdminPreview.getIndex)
-appRoute.get('system.gateway', config.proxyPrefixPath.uri + '/gateway', getServerGatewayLogin('/'), requireRole('isAdmin'), AdminForm.getIndex)
+appRoute.get('system.gateway', config.proxyPrefixPath.uri + '/gateway', getServerGatewayLogin('/'), requireRole('isAdmin'), Admin.getIndex)
 
+appRoute.get('api.kursutvecklingGetById', '/apicall/getRoundAnalysisById/:id', Admin.getRoundAnalysis)
+appRoute.post('api.kursutvecklingPost', '/apicall/postRoundAnalysisById/:id', Admin.postRoundAnalysis)
 // appRoute.get('api.koppsCourseData', '/api/kursutveckling-admin/getKoppsCourseDataByCourse/:courseCode/:language', Course.getKoppsCourseData)
 // appRoute.get('redis.ugCache', '/reids/kursinfo/ugChache/:key/:type', Course.getCourseEmployees)
 // appRoute.post('redis.ugCache', '/reids/kursinfo/ugChache/:key/:type', Course.getCourseEmployees)

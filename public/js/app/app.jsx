@@ -12,8 +12,8 @@ import { globalRegistry, createUtility } from 'component-registry'
 import { IMobxStore } from './interfaces/utils'
 
 import RouterStore from './stores/RouterStore.jsx'
-import AdminForm from './pages/AdminForm.jsx'
-import AdminPreview from './pages/AdminPreview.jsx'
+import AdminForm from './views/AdminForm.jsx'
+import AdminPreview from './views/AdminPreview.jsx'
 
 function appFactory () {
 

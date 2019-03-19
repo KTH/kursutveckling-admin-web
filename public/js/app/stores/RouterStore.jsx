@@ -62,17 +62,31 @@
 /** ***************************************************************************************************************************************** */
 /*                                                       COLLECTED ROUND INFORMATION                                                        */
 /** ***************************************************************************************************************************************** */
-   @action getRoundInformation (id, lang) {
-
-     this.roundData = {
-       id,
-       lang,
-       comment: {
-         sv: 'tjoho!!!!',
-         en: 'yeehaa!!!'
+   @action getRoundAnalysis (id, lang) { console.log(this.buildApiUrl(this.paths.api.kursutvecklingGetById.uri, { id:id/*, lang: lang*/}), this._getOptions())
+     return axios.get(this.buildApiUrl(this.paths.api.kursutvecklingGetById.uri, { id:id/*, lang: lang*/}), this._getOptions()).then(result => {
+       console.log(result.data)
+       this.roundData = result.data
+     }).catch(err => {
+       if (err.response) {
+         throw new Error(err.message)
        }
-     }
+       throw err
+     })
+   }
 
+   @action postRoundAnalysisData (postObject) {
+     return axios.post(this.buildApiUrl(this.paths.api.kursutvecklingPost.uri,
+                      { id:postObject.id/*, lang: lang*/}),
+                      this._getOptions(JSON.stringify(postObject))
+    ).then(result => {
+      console.log(result.data)
+      return result.data
+    }).catch(err => {
+        if (err.response) {
+          throw new Error(err.message)
+        }
+        throw err
+      })
    }
 
 /** ***************************************************************************************************************************************** */

@@ -7,6 +7,6 @@
 
 module.exports = {
   System: require('./systemCtrl'),
-  AdminForm: require('./formCtrl'),
+  Admin: require('./formCtrl'),
   AdminPreview: require('./previewCtrl')
 }
