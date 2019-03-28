@@ -3,7 +3,7 @@
  import axios from 'axios'
  import { safeGet } from 'safe-utils'
  import { EMPTY, PROGRAMME_URL, MAX_1_MONTH, MAX_2_MONTH, COURSE_IMG_URL } from '../util/constants'
- import i18n from '../../../../i18n'
+ //import i18n from '../../../../i18n'
  const paramRegex = /\/(:[^\/\s]*)/g
 
  function _paramReplace (path, params) {
@@ -22,6 +22,7 @@
  class RouterStore {
 
    @observable roundData = undefined
+   @observable analysisId = ""
 
    buildApiUrl (path, params) {
      let host
@@ -37,7 +38,7 @@
      return [host, newPath].join('')
    }
 
-   _getOptions (params) { console.log('_getOptions', this.cookieHeader)
+   _getOptions (params) { 
 
     // Pass Cookie header on SSR-calls
      let options
@@ -62,9 +63,9 @@
 /** ***************************************************************************************************************************************** */
 /*                                                       COLLECTED ROUND INFORMATION                                                        */
 /** ***************************************************************************************************************************************** */
-   @action getRoundAnalysis (id, lang) { console.log(this.buildApiUrl(this.paths.api.kursutvecklingGetById.uri, { id:id/*, lang: lang*/}), this._getOptions())
+   @action getRoundAnalysis (id, lang='sv') { console.log(this.buildApiUrl(this.paths.api.kursutvecklingGetById.uri, { id:id/*, lang: lang*/}), this._getOptions())
      return axios.get(this.buildApiUrl(this.paths.api.kursutvecklingGetById.uri, { id:id/*, lang: lang*/}), this._getOptions()).then(result => {
-       console.log(result.data)
+       console.log("!!!!getRoundAnalysis",result.data)
        this.roundData = result.data
      }).catch(err => {
        if (err.response) {

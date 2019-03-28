@@ -5,9 +5,6 @@ const log = require('kth-node-log')
 const redis = require('kth-node-redis')
 const language = require('kth-node-web-common/lib/language')
 const { safeGet } = require('safe-utils')
-const { createElement } = require('inferno-create-element')
-const { renderToString } = require('inferno-server')
-const { StaticRouter } = require('inferno-router')
 const { toJS } = require('mobx')
 const httpResponse = require('kth-node-response')
 const i18n = require('../../i18n')
@@ -20,7 +17,9 @@ const browserConfig = require('../configuration').browser
 const serverConfig = require('../configuration').server
 const paths = require('../server').getPaths()
 
-let { appFactory, doAllAsyncBefore } = require('../../dist/js/server/app.js')
+const ReactDOMServer = require('react-dom/server')
+const { StaticRouter } = require('react-router')
+let { /* doAllAsyncBefore, */ staticFactory } = require('../../dist/app.js')
 
 module.exports = {
   getIndex: getIndex,
@@ -44,16 +43,14 @@ function * _postRoundAnalysis (req, res, next) {
     }
 
     return httpResponse.json(res, apiResponse.body)
-
   } catch (err) {
     log.error('Exception calling from getRoundAnalysis ', { error: err })
     next(err)
   }
-
-
 }
 
-function * _getRoundAnalysis (req, res, next) { console.log('getRoundAnalysis', req.params.id)
+function * _getRoundAnalysis (req, res, next) {
+  console.log('getRoundAnalysis', req.params.id)
   const roundAnalysisId = req.params.id || 'SF1624HT19_1'
   const language = req.params.language || 'sv'
   console.log('getRoundAnalysis', roundAnalysisId)
@@ -65,7 +62,6 @@ function * _getRoundAnalysis (req, res, next) { console.log('getRoundAnalysis', 
       res.send()
     }
     return httpResponse.json(res, apiResponse.body)
-
   } catch (err) {
     log.error('Exception calling from getRoundAnalysis ', { error: err })
     next(err)
@@ -144,31 +140,31 @@ function * _getKoppsCourseData(req, res, next) {
     log.error('Exception calling from koppsAPI ', { error: err })
     next(err)
   }
-}*/
+} */
 
-async function getIndex (req, res, next) { console.log('TEST getIndex')
+async function getIndex (req, res, next) {
+  console.log('TEST getIndex')
   if (process.env['NODE_ENV'] === 'development') {
-    delete require.cache[require.resolve('../../dist/js/server/app.js')]
-    const tmp = require('../../dist/js/server/app.js')
-    appFactory = tmp.appFactory
-    doAllAsyncBefore = tmp.doAllAsyncBefore
+    delete require.cache[require.resolve('../../dist/app.js')]
+    const tmp = require('../../dist/app.js')
+    staticFactory = tmp.staticFactory
+  // doAllAsyncBefore = tmp.doAllAsyncBefore
   }
 
   let lang = language.getLanguage(res) || 'sv'
   const ldapUser = req.session.authUser ? req.session.authUser.username : 'null'
-  console.log('paths', api, paths, req.params.id)
 
+  console.log(StaticRouter)
   try {
     // Render inferno app
-    const context = {}
-    const renderProps = createElement(StaticRouter, {
-      location: req.url,
-      context
-    }, appFactory())
 
+    const renderProps = staticFactory()
+    const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(req.params.id, language)
+    renderProps.props.children.props.routerStore.roundData = apiResponse.body
     renderProps.props.children.props.routerStore.setBrowserConfig(browserConfig, paths, serverConfig.hostUrl)
     renderProps.props.children.props.routerStore.__SSR__setCookieHeader(req.headers.cookie)
-    await renderProps.props.children.props.routerStore.getRoundAnalysis(req.params.id)
+    // await renderProps.props.children.props.routerStore.getRoundAnalysis(req.params.id)
+    renderProps.props.children.props.routerStore.analysisId = req.params.id
 
     const breadcrumDepartment = await renderProps.props.children.props.routerStore.getBreadcrumbs()
     let breadcrumbs = [
@@ -176,14 +172,14 @@ async function getIndex (req, res, next) { console.log('TEST getIndex')
     ]
     breadcrumbs.push(breadcrumDepartment)
 
-    await doAllAsyncBefore({
-      pathname: req.originalUrl,
-      query: (req.originalUrl === undefined || req.originalUrl.indexOf('?') === -1) ? undefined : req.originalUrl.substring(req.originalUrl.indexOf('?'), req.originalUrl.length),
-      routerStore: renderProps.props.children.props.routerStore,
-      routes: renderProps.props.children.props.children.props.children.props.children
-    })
+    // await doAllAsyncBefore({
+    // pathname: req.originalUrl,
+    // query: (req.originalUrl === undefined || req.originalUrl.indexOf('?') === -1) ? undefined : req.originalUrl.substring(req.originalUrl.indexOf('?'), req.originalUrl.length),
+    // routerStore: renderProps.props.children.props.routerStore
+    // routes: renderProps.props.children.props.children.props.children.props.children
+    // })
 
-    const html = renderToString(renderProps)
+    const html = ReactDOMServer.renderToString(renderProps)
 
     res.render('admin/index', {
       breadcrumbsPath: breadcrumbs,
