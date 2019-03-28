@@ -1,13 +1,8 @@
 import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
 import { Row, Col, Button, Form, Label, Input, Alert} from 'reactstrap'
-/*import Alert from 'reactstrap/Alert'
-import { Button } from 'reactstrap'
-import Col from 'reactstrap/Col'
-import Row from 'reactstrap/Row'
-import Form from 'reactstrap/Form'*/
 
-//import i18n from '../../../../i18n'
+import i18n from '../../../../i18n/index'
 //import { EMPTY, FORSKARUTB_URL, ADMIN_URL, SYLLABUS_URL } from '../util/constants'
 
 @inject(['routerStore']) @observer
@@ -82,8 +77,9 @@ class AdminForm extends Component {
 
   render () {
     const routerStore = this.props.routerStore
-    const isDisabled = this.state.values.isPublished
-    console.log("routerStore, this.state.values", routerStore)
+    const isDisabled = this.state.values.isPublished === true
+  
+    console.log("routerStore, this.state.values", routerStore, isDisabled)
     if(routerStore.roundData == undefined)
       return <div>waiting...</div>
     else
@@ -127,7 +123,7 @@ class AdminForm extends Component {
         </Row>
         <br />
         <p>--------------------------------------------------------------------------------------------------------------------------</p>
-        <br />
+     
         <Row key='form' id='form-container'>
         {this.state.saved ?
             <Alert>
@@ -136,34 +132,41 @@ class AdminForm extends Component {
           : ''}
           <Form className='admin-form'>
             <Row  className='form-group'>
+            
           <Col sm='5' className='col-temp'>
               <Label>round name</Label>
               <Input id='round' key='round' type='text' value={this.state.values.round} onChange={this.handleInputChange} disabled={isDisabled} />
               <Label>Programmes</Label>
-              <Input id='programmeCodes' key='programmeCodes' type='text' value={this.state.values.programmeCodes} onChange={this.handleInputChange} isabled={isDisabled}/>
+              <Input id='programmeCodes' key='programmeCodes' type='text' value={this.state.values.programmeCodes} onChange={this.handleInputChange} disabled={isDisabled}/>
               <Label>examiners</Label>
-              <Input id='examiners' key='examiners' type='text' value={this.state.values.examiners} onChange={this.handleInputChange} isabled={isDisabled}/>
+              <Input id='examiners' key='examiners' type='text' value={this.state.values.examiners} onChange={this.handleInputChange} disabled={isDisabled}/>
               <Label>responsibles</Label>
-              <Input id='responsibles' key='responsibles' type='text' value={this.state.values.responsibles} onChange={this.handleInputChange} isabled={isDisabled}/>
+              <Input id='responsibles' key='responsibles' type='text' value={this.state.values.responsibles} onChange={this.handleInputChange} disabled={isDisabled}/>
               <Label>examinationRounds</Label>
-              <Input id='examinationRounds' key='examinationRounds' type='text' value={this.state.values.examinationRounds} onChange={this.handleInputChange} isabled={isDisabled}/>
+              <Input id='examinationRounds' key='examinationRounds' type='text' value={this.state.values.examinationRounds} onChange={this.handleInputChange} disabled={isDisabled}/>
+              <Label>registered students</Label>
+              <Input id='registeredStudents' key='registeredStudents' type='text' value={this.state.values.registeredStudents} onChange={this.handleInputChange} disabled={isDisabled}/>
+              <Label>examination grade</Label>
+              <Input id='examinationGrade' key='examinationGrade' type='text' value={this.state.values.examinationGrade} onChange={this.handleInputChange} disabled={isDisabled} />
+
           </Col>
           <Col sm='5' className='col-temp'>
-          <Label>registered students</Label>
-              <Input id='registeredStudents' key='registeredStudents' type='text' value={this.state.values.registeredStudents} onChange={this.handleInputChange} isabled={isDisabled}/>
-              <Label>examination grade</Label>
-              <Input id='examinationGrade' key='examinationGrade' type='text' value={this.state.values.examinationGrade} onChange={this.handleInputChange} isabled={isDisabled} />
-
-              <Label>alteration text</Label>
-              <Input id='alterationText' key='alterationText' type='text' value={this.state.values.alterationText} onChange={this.handleInputChange} />
-              <Label>commentChange</Label>
-              <Input id='commentChange' key='commentChange' type='text' value={this.state.values.commentChange} onChange={this.handleInputChange} />
+         
+              <Label>alteration text (max xxx tecken)</Label>
+              <Input id='alterationText' key='alterationText' type="textarea" value={this.state.values.alterationText} onChange={this.handleInputChange} />
+              <Label>commentChange (max xxx tecken)</Label>
+              <Input id='commentChange' key='commentChange' type="textarea" value={this.state.values.commentChange} onChange={this.handleInputChange} />
               <Label>commentExam</Label>
-              <Input id='commentExam' key='commentExam' type='text' value={this.state.values.commentExam} onChange={this.handleInputChange} isabled={isDisabled} />
+              <Input id='commentExam' key='commentExam' type='textarea' value={this.state.values.commentExam} onChange={this.handleInputChange} disabled={isDisabled} />
               <Button type="submit" id='Save' key='Save' onClick={this.handleSave}>Save</Button>
               </Col>
             </Row>
-            
+            <Label>ID</Label>
+              <Input id='id' key='round' type='id' value={this.state.values.id} onChange={this.handleInputChange} disabled={isDisabled} />
+   
+              <Label>courseCode</Label>
+              <Input id='courseCode' key='courseCode' type='text' value={this.state.values.courseCode} onChange={this.handleInputChange} disabled={isDisabled} />
+    
             </Form>
           </Row>
       </div>
