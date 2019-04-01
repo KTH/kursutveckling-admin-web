@@ -74,14 +74,14 @@ const browserConfig = require('./configuration').browser
 const browserConfigHandler = require('kth-node-configuration').getHandler(browserConfig, getPaths())
 const express = require('express')
 
-//const morgan = require('morgan')
-//server.use(morgan(':method :url :status :res[content-length] --kip_web-- :response-time ms'))
-//const compression = require('compression')
-//server.use(compression({
-  //filter: function () { return true }
-//}))
-//const minify = require('express-minify')
-//server.use(minify())
+// const morgan = require('morgan')
+// server.use(morgan(':method :url :status :res[content-length] --kip_web-- :response-time ms'))
+// const compression = require('compression')
+// server.use(compression({
+// filter: function () { return true }
+// }))
+// const minify = require('express-minify')
+// server.use(minify())
 
 // helper
 function setCustomCacheControl (res, path) {
@@ -208,11 +208,11 @@ server.use('/', systemRoute.getRouter())
 // App routes
 const appRoute = AppRouter()
 appRoute.get('system.index', config.proxyPrefixPath.uri + '/:id', Admin.getIndex)
-appRoute.get('system.index', config.proxyPrefixPath.uri + '/preview/:id', /* getServerGatewayLogin('/:courseCode'),*/ AdminPreview.getIndex)
+appRoute.get('system.index', config.proxyPrefixPath.uri + '/preview/:id', /* getServerGatewayLogin('/:courseCode'), */ AdminPreview.getIndex)
 appRoute.get('system.gateway', config.proxyPrefixPath.uri + '/gateway', getServerGatewayLogin('/'), requireRole('isAdmin'), Admin.getIndex)
 
 appRoute.get('api.kursutvecklingGetById', '/apicall/getRoundAnalysisById/:id', Admin.getRoundAnalysis)
-appRoute.post('api.kursutvecklingPost', '/apicall/postRoundAnalysisById/:id', Admin.postRoundAnalysis)
+appRoute.all('api.kursutvecklingPost', '/apicall/postRoundAnalysisById/:id/:status', Admin.postRoundAnalysis)
 // appRoute.get('api.koppsCourseData', '/api/kursutveckling-admin/getKoppsCourseDataByCourse/:courseCode/:language', Course.getKoppsCourseData)
 // appRoute.get('redis.ugCache', '/reids/kursinfo/ugChache/:key/:type', Course.getCourseEmployees)
 // appRoute.post('redis.ugCache', '/reids/kursinfo/ugChache/:key/:type', Course.getCourseEmployees)
@@ -225,4 +225,3 @@ server.use(System.final)
 
 // Register handlebar helpers
 require('./views/helpers')
-

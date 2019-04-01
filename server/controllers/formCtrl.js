@@ -28,12 +28,18 @@ module.exports = {
 }
 
 function * _postRoundAnalysis (req, res, next) {
-  const roundAnalysisId = req.params.id || 'SF1624HT19_1'
+  const roundAnalysisId = req.params.id
+  const isNewAnalysis = req.params.status
   const language = req.params.language || 'sv'
   const sendObject = JSON.parse(req.body.params)
-  console.log('postRoundAnalysis', roundAnalysisId)
+
   try {
-    const apiResponse = yield kursutvecklingAPI.setRoundAnalysisData(roundAnalysisId, sendObject, language)
+    let apiResponse = {}
+    if (isNewAnalysis === 'true') {
+      apiResponse = yield kursutvecklingAPI.setRoundAnalysisData(roundAnalysisId, sendObject, language)
+    } else {
+      apiResponse = yield kursutvecklingAPI.updateRoundAnalysisData(roundAnalysisId, sendObject, language)
+    }
     console.log('apiResponse', apiResponse)
 
     if (apiResponse.statusCode !== 200) { // TODO: Handle with alert
@@ -44,7 +50,7 @@ function * _postRoundAnalysis (req, res, next) {
 
     return httpResponse.json(res, apiResponse.body)
   } catch (err) {
-    log.error('Exception calling from getRoundAnalysis ', { error: err })
+    log.error('Exception calling from setRoundAnalysis ', { error: err })
     next(err)
   }
 }

@@ -12,9 +12,8 @@ class AdminForm extends Component {
     this.state = {
       saved: false,
       values: this.props.routerStore.roundData,
-      isPublished: this.props.routerStore.roundData.isPublished
-     /* commentEn: this.props.routerStore.roundData.comment_en,
-      commentSv: this.props.routerStore.roundData.comment_sv*/
+      isPublished: this.props.routerStore.roundData.isPublished,
+      isNew: false
     }
     this.openPreview = this.openPreview.bind(this)
     this.handleSave = this.handleSave.bind(this)
@@ -42,7 +41,7 @@ class AdminForm extends Component {
     const postObject = this.state.values
     const thisInstance = this
     console.log('postObject', postObject)
-    return this.props.routerStore.postRoundAnalysisData(postObject)
+    return this.props.routerStore.postRoundAnalysisData(postObject, this.state.isNew)
    .then((data) => {
      thisInstance.setState({
        saved: true
@@ -56,7 +55,7 @@ class AdminForm extends Component {
     postObject.isPublished = true
     const thisInstance = this
     console.log('postObjecteeee', this.state.values.isPublished)
-    return this.props.routerStore.postRoundAnalysisData(postObject)
+    return this.props.routerStore.postRoundAnalysisData(postObject, false)
    .then((data) => {
    
      thisInstance.setState({
@@ -75,6 +74,7 @@ class AdminForm extends Component {
       saved: false
     })
   }
+  
 
   render () {
     const routerStore = this.props.routerStore

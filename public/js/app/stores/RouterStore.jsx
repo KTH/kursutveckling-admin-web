@@ -75,9 +75,9 @@
      })
    }
 
-   @action postRoundAnalysisData (postObject) {
+   @action postRoundAnalysisData (postObject, status) {
      return axios.post(this.buildApiUrl(this.paths.api.kursutvecklingPost.uri,
-                      { id:postObject._id/*, lang: lang*/}),
+                      { id:postObject._id, status: status/*, lang: lang*/}),
                       this._getOptions(JSON.stringify(postObject))
     ).then(result => {
       console.log(result.data)
@@ -89,6 +89,22 @@
         throw err
       })
    }
+
+   @action putRoundAnalysisData (postObject, status) {
+    return axios.post(this.buildApiUrl(this.paths.api.kursutvecklingPost.uri,
+                     { id:postObject._id, status: status/*, lang: lang*/}),
+                     this._getOptions(JSON.stringify(postObject))
+   ).then(result => {
+     console.log(result.data)
+     return result.data
+   }).catch(err => {
+       if (err.response) {
+         throw new Error(err.message)
+       }
+       throw err
+     })
+  }
+
 
 /** ***************************************************************************************************************************************** */
 /*                                            UG REDIS - examiners, teachers and responsibles                                                */
