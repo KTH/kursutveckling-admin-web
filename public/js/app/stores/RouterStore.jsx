@@ -77,7 +77,7 @@
 
    @action postRoundAnalysisData (postObject) {
      return axios.post(this.buildApiUrl(this.paths.api.kursutvecklingPost.uri,
-                      { id:postObject.id/*, lang: lang*/}),
+                      { id:postObject._id/*, lang: lang*/}),
                       this._getOptions(JSON.stringify(postObject))
     ).then(result => {
       console.log(result.data)

@@ -11,13 +11,14 @@ class AdminForm extends Component {
     super(props)
     this.state = {
       saved: false,
-      values: this.props.routerStore.roundData
+      values: this.props.routerStore.roundData,
+      isPublished: this.props.routerStore.roundData.isPublished
      /* commentEn: this.props.routerStore.roundData.comment_en,
       commentSv: this.props.routerStore.roundData.comment_sv*/
     }
     this.openPreview = this.openPreview.bind(this)
     this.handleSave = this.handleSave.bind(this)
-    this.handlePublish = this.handleSave.bind(this)
+    this.handlePublish = this.handlePublish.bind(this)
     this.handleInputChange = this.handleInputChange.bind(this)
   }
 
@@ -44,7 +45,6 @@ class AdminForm extends Component {
     return this.props.routerStore.postRoundAnalysisData(postObject)
    .then((data) => {
      thisInstance.setState({
-       values: data,
        saved: true
      })
    })
@@ -52,15 +52,16 @@ class AdminForm extends Component {
 
   handlePublish (event) {
     event.preventDefault()
-    const postObject = this.state.values
+    let postObject = this.state.values
     postObject.isPublished = true
     const thisInstance = this
-    console.log('postObject', postObject)
+    console.log('postObjecteeee', this.state.values.isPublished)
     return this.props.routerStore.postRoundAnalysisData(postObject)
    .then((data) => {
+   
      thisInstance.setState({
-       values: data,
-       saved: true
+       saved: true,
+       isPublished: true
      })
    })
   }
@@ -77,7 +78,7 @@ class AdminForm extends Component {
 
   render () {
     const routerStore = this.props.routerStore
-    const isDisabled = this.state.values.isPublished === true
+    const isDisabled =  this.state.isPublished === true
   
     console.log("routerStore, this.state.values", routerStore, isDisabled)
     if(routerStore.roundData == undefined)
@@ -89,7 +90,7 @@ class AdminForm extends Component {
         <Row key='preview' id='preview-container'>
           <Col sm='3' className='col-temp'>
             <h4>ID </h4>
-            <p id='id' key='id' >{this.state.values.id}</p>
+            <p id='_id' key='id' >{this.state.values._id}</p>
             <h4>course code </h4>
             <p id='courseCode' key='courseCode'>{this.state.values.courseCode}</p>
             <h4>round name </h4>
@@ -119,7 +120,7 @@ class AdminForm extends Component {
             <h4>commentExam </h4>
             <p id='commentExam' key='commentExam' >{this.state.values.commentExam}</p>
           </Col>
-          <Button id='Save' key='Save' onClick={this.handlePublish}>Publish</Button>
+          <Button id='Publish' key='SaPublishve' onClick={this.handlePublish}>Publish</Button>
         </Row>
         <br />
         <p>--------------------------------------------------------------------------------------------------------------------------</p>
@@ -162,7 +163,7 @@ class AdminForm extends Component {
               </Col>
             </Row>
             <Label>ID</Label>
-              <Input id='id' key='round' type='id' value={this.state.values.id} onChange={this.handleInputChange} disabled={isDisabled} />
+              <Input id='_id' key='round' type='id' value={this.state.values._id} onChange={this.handleInputChange} disabled={isDisabled} />
    
               <Label>courseCode</Label>
               <Input id='courseCode' key='courseCode' type='text' value={this.state.values.courseCode} onChange={this.handleInputChange} disabled={isDisabled} />
