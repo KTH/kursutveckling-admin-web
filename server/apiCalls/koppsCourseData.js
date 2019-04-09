@@ -12,15 +12,13 @@ const koppsApi = new BasicAPI({
   defaultTimeout: config.koppsApi.defaultTimeout
 })
 
-
 module.exports = {
   getKoppsCourseData: getKoppsCourseData
 }
 
-function * getKoppsCourseData (courseCode, lang = 'sv') {
-
-  try{
-    return yield koppsApi.getAsync(`course/${encodeURIComponent(courseCode)}/detailedinformation?l=${lang}`)
+function getKoppsCourseData (courseCode, lang = 'sv') {
+  try {
+    return koppsApi.getAsync(`course/${encodeURIComponent(courseCode)}/detailedinformation?l=${lang}`)
   } catch (err) {
     next(err)
   }

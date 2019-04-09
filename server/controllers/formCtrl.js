@@ -12,6 +12,7 @@ const api = require('../api')
 
 // const koppsCourseData = require('../apiCalls/koppsCourseData')
 const kursutvecklingAPI = require('../apiCalls/kursutvecklingAPI')
+const koppsCourseData = require('../apiCalls/koppsCourseData')
 
 const browserConfig = require('../configuration').browser
 const serverConfig = require('../configuration').server
@@ -24,7 +25,8 @@ let { /* doAllAsyncBefore, */ staticFactory } = require('../../dist/app.js')
 module.exports = {
   getIndex: getIndex,
   getRoundAnalysis: co.wrap(_getRoundAnalysis),
-  postRoundAnalysis: co.wrap(_postRoundAnalysis)
+  postRoundAnalysis: co.wrap(_postRoundAnalysis),
+  getCourseEmployees: co.wrap(_getCourseEmployees)
 }
 
 function * _postRoundAnalysis (req, res, next) {
@@ -74,65 +76,64 @@ function * _getRoundAnalysis (req, res, next) {
   }
 }
 
-/* function * _getCourseEmployees(req, res) { //console.log("TEST")
+function * _getCourseEmployees (req, res) { // console.log("TEST")
   let key = req.params.key
   const type = req.params.type
-   key = key.replace(/_/g,'.')
-   switch(type){
-     //**************************************************************************************************************
-     //**** Retuns two lists with teachers and reponsibles for each course round.
-     //**** The keys are built up with: course code.year+semester.roundId (example: SF1624.20182.1)
-     //**************************************************************************************************************
-     case "multi":
+  key = key.replace(/_/g, '.')
+  switch (type) {
+    //* *************************************************************************************************************
+    //* *** Retuns two lists with teachers and reponsibles for each course round.
+    //* *** The keys are built up with: course code.year+semester.roundId (example: SF1624.20182.1)
+    //* *************************************************************************************************************
+    case 'multi':
       try {
         const roundsKeys = JSON.parse(req.body.params)
-        yield redis( "ugRedis", serverConfig.cache.ugRedis.redis)
-          .then(function(ugClient) {
+        yield redis('ugRedis', serverConfig.cache.ugRedis.redis)
+          .then(function (ugClient) {
             return ugClient.multi()
-            .mget(roundsKeys.teachers)
-            .mget(roundsKeys.responsibles)
-            .execAsync()
+              .mget(roundsKeys.examiner)
+              .mget(roundsKeys.responsibles)
+              .execAsync()
           })
-          .then(function(returnValue) {
-           // console.log("ugRedis - multi -VALUE",returnValue)
+          .then(function (returnValue) {
+            // console.log("ugRedis - multi -VALUE",returnValue)
             return httpResponse.json(res, returnValue)
           })
-          .catch(function(err) {
-            console.log("ugRedis - error:: ", err)
+          .catch(function (err) {
+            console.log('ugRedis - error:: ', err)
           })
       } catch (err) {
         log.error('Exception calling from ugRedis - multi', { error: err })
-          return err
-      }
-    break;
-    //*********************************************************
-    //**** Retuns a list with examiners. Key is course code ***
-    //*********************************************************
-    case "examiners":
-    try {
-      yield redis( "ugRedis", serverConfig.cache.ugRedis.redis)
-        .then(function(ugClient) {
-          return ugClient.getAsync(key+".examiner")
-        })
-        .then(function(returnValue) {
-          return httpResponse.json(res, returnValue)
-        })
-        .catch(function(err) {
-          console.log("ugRedis - examiners error: ", err)
-        })
-    } catch (err) {
-      log.error('Exception calling from ugRedis - examiners ', { error: err })
         return err
       }
-    }
+      break
+    //* ********************************************************
+    //* *** Retuns a list with examiners. Key is course code ***
+    //* ********************************************************
+    case 'examiners':
+      try {
+        yield redis('ugRedis', serverConfig.cache.ugRedis.redis)
+          .then(function (ugClient) {
+            return ugClient.getAsync(key + '.examiner')
+          })
+          .then(function (returnValue) {
+            return httpResponse.json(res, returnValue)
+          })
+          .catch(function (err) {
+            console.log('ugRedis - examiners error: ', err)
+          })
+      } catch (err) {
+        log.error('Exception calling from ugRedis - examiners ', { error: err })
+        return err
+      }
   }
+}
 
-function * _getKoppsCourseData(req, res, next) {
-
+function * _getKoppsCourseData (req, res, next) {
   const courseCode = req.params.courseCode
   const language = req.params.language || 'sv'
 
- try {
+  try {
     const apiResponse = yield koppsCourseData.getKoppsCourseData(courseCode, language)
     if (apiResponse.statusCode !== 200) {
       res.status(apiResponse.statusCode)
@@ -141,12 +142,11 @@ function * _getKoppsCourseData(req, res, next) {
     }
 
     return httpResponse.json(res, apiResponse.body)
-
   } catch (err) {
     log.error('Exception calling from koppsAPI ', { error: err })
     next(err)
   }
-} */
+}
 
 async function getIndex (req, res, next) {
   console.log('TEST getIndex')
@@ -160,14 +160,20 @@ async function getIndex (req, res, next) {
   let lang = language.getLanguage(res) || 'sv'
   const ldapUser = req.session.authUser ? req.session.authUser.username : 'null'
 
-  console.log(StaticRouter)
   try {
-    // Render inferno app
-
     const renderProps = staticFactory()
-    const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(req.params.id, language)
-    renderProps.props.children.props.routerStore.roundData = apiResponse.body
     renderProps.props.children.props.routerStore.setBrowserConfig(browserConfig, paths, serverConfig.hostUrl)
+
+    if (req.params.id.length === 6) {
+      // New analysis
+      const apiResponse = await koppsCourseData.getKoppsCourseData(req.params.id, lang)
+      await renderProps.props.children.props.routerStore.handleCourseData(apiResponse.body, ldapUser, lang)
+    } else {
+      const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(req.params.id, lang)
+      renderProps.props.children.props.routerStore.analysisData = apiResponse.body
+      console.log('apiResponse.body', apiResponse.body)
+    }
+
     renderProps.props.children.props.routerStore.__SSR__setCookieHeader(req.headers.cookie)
     // await renderProps.props.children.props.routerStore.getRoundAnalysis(req.params.id)
     renderProps.props.children.props.routerStore.analysisId = req.params.id

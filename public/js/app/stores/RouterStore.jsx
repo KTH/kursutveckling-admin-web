@@ -2,7 +2,8 @@
  import { observable, action } from 'mobx'
  import axios from 'axios'
  import { safeGet } from 'safe-utils'
- import { EMPTY, PROGRAMME_URL, MAX_1_MONTH, MAX_2_MONTH, COURSE_IMG_URL } from '../util/constants'
+ import { EMPTY, SEMESTER} from '../util/constants'
+//import { createDynamicObservableObject } from 'mobx/lib/internal';
  //import i18n from '../../../../i18n'
  const paramRegex = /\/(:[^\/\s]*)/g
 
@@ -21,8 +22,17 @@
 
  class RouterStore {
 
-   @observable roundData = undefined
+   @observable roundData = {}
    @observable analysisId = ""
+   @observable courseData = {}
+   @observable semesters = []
+   @observable analysisData = undefined
+   redisKeys ={
+    examiner:[],
+    responsibles:[]
+  }
+  language = 1
+
 
    buildApiUrl (path, params) {
      let host
@@ -66,7 +76,8 @@
    @action getRoundAnalysis (id, lang='sv') { console.log(this.buildApiUrl(this.paths.api.kursutvecklingGetById.uri, { id:id/*, lang: lang*/}), this._getOptions())
      return axios.get(this.buildApiUrl(this.paths.api.kursutvecklingGetById.uri, { id:id/*, lang: lang*/}), this._getOptions()).then(result => {
        console.log("!!!!getRoundAnalysis",result.data)
-       this.roundData = result.data
+       this.status= result.data.isPublished ? 'published' : 'saved'
+       this.analysisData = result.data
      }).catch(err => {
        if (err.response) {
          throw new Error(err.message)
@@ -105,37 +116,191 @@
      })
   }
 
+  @action handleCourseData(courseObject, user, language){
+    console.log(courseObject)
+    this.status= 'new'
+    try{
+    safeGet(() => {
+   
+    this.courseData={
+      courseCode: courseObject.course.courseCode,
+      examinationSets: courseObject.examinationSets,
+      gradeScale: courseObject.formattedGradeScales,
+      gradeScaleCode: courseObject.course.gradeScaleCode,
+      syllabusList: courseObject.publicSyllabusVersions
+    }
+    this.courseData.title = {
+      name: courseObject.course.title,
+      credits: courseObject.course.credits
+    }
+    
+    const thisStore = this
+     courseObject.roundInfos.map((round, index) =>{ 
+      if(thisStore.semesters.indexOf(round.round.startTerm.term) < 0)
+       thisStore.semesters.push(round.round.startTerm.term)
+      
+      if(!thisStore.roundData.hasOwnProperty(round.round.startTerm.term))
+       thisStore.roundData[round.round.startTerm.term]=[]
+
+      thisStore.roundData[round.round.startTerm.term].push({
+        roundId: round.round.ladokRoundId,
+        language: round.round.language,
+        shortName: round.round.shortName,
+        startDate: round.round.startDate,
+        targetGroup: this.getTargetGroup(round)
+      })
+    })
+
+  }, 'kopps not responding')
+    console.log(this.courseData, this.roundData)
+}
+catch(err){
+  if (err.response) {
+    throw new Error(err.message)
+  }
+  throw err
+}
+  }
+
+  @action createAnalysisData(semester, rounds){
+    this.state = "pending"
+    const newId = `${this.courseData.courseCode}${semester.toString().match(/.{1,4}/g)[1] === '1' ? 'VT' : 'HT'}${semester.toString().match(/.{1,4}/g)[0]}_${rounds.join('_')}`
+    let newName = `${semester.toString().match(/.{1,4}/g)[1] === '1' ? SEMESTER[this.language]['1'] : SEMESTER[this.language]['2']} ${semester.toString().match(/.{1,4}/g)[0]}`
+    
+    if(rounds.length > 1)
+      newName = this.createAnalysisName(newName, this.roundData[semester], rounds)
+  
+    this.analysisData ={
+      _id: newId,
+      alterationText: " ",
+      changedBy: " ",
+      changedDate: " ",
+      commentChange: " ",
+      commentExam: this.getExmCommentfromCorrectSyllabus(semester, this.courseData.syllabusList),
+      courseCode: this.courseData.courseCode,
+      examinationRounds: this.getExamObject( this.courseData.examinationSets, this.courseData.gradeScale, this.language, semester),
+      examiners: " ",
+      examinationGrade: 0,
+      isPublished: false,
+      pdfAnalysisDate: " ",
+      programmeCodes: this.getAllTargetGroups(rounds, this.roundData[semester]).join(', '),
+      publishedDate: "",
+      registeredStudents: 0,
+      responsibles: " ",
+      round: newName
+    }
+
+    this.getEmployees(this.courseData.courseCode, semester, rounds)
+    this.getCourseEmployeesPost(this.redisKeys, 'multi', this.language).then(returnList=> {
+      console.log('returnList', returnList)
+      this.analysisData.examiners = this.getEmployeesNames(returnList[0]).join(', ')
+      this.analysisData.responsibles = this.getEmployeesNames(returnList[1]).join(', ')
+      this.state = "done"
+      
+     return this.analysisData
+    })
+  }
+
+
+  createAnalysisName(newName, roundList, rounds){
+    let addRounds = []
+    for(let index = 0; index < rounds.length; index ++){
+      addRounds.push(roundList[rounds[index]].shortName.length > 0 ? roundList[rounds[index]].shortName : roundList[rounds[index]].startDate)
+    }
+      return `${newName} ( ${addRounds.join(', ')} )` 
+  }
+
+  getExmCommentfromCorrectSyllabus(semester, syllabusList){
+    let matchingIndex = 0
+    if(syllabusList && syllabusList.length > 0){
+      for( let index = 0; index < syllabusList.length; index ++){
+        if(Number(syllabusList[index].validFromTerm.term) > Number(semester)){
+          matchingIndex ++
+        }
+        else{
+          return syllabusList[matchingIndex].courseSyllabus.examComments ? syllabusList[matchingIndex].courseSyllabus.examComments : ''
+        }
+      }
+    }
+    return 'no comment'
+  } 
+
+  getTargetGroup(round){
+    if(round.usage.length === 0)
+      return []
+    let usageList = []
+    for(let index=0; index < round.usage.length; index ++){
+      if(usageList.indexOf(round.usage[index].programmeCode) < 0)
+      usageList.push(round.usage[index].programmeCode)
+    }
+    return usageList
+  }
+
+  getAllTargetGroups(rounds, roundDataList){
+      let allTargets=[]
+      for(let index = 0; index < rounds.length; index++){
+        allTargets = [...allTargets, ...roundDataList[Number(rounds[index])-1].targetGroup]
+      }
+      return allTargets
+  }
+
+  getExamObject (dataObject, grades, language = 1, semester = '') {console.log(dataObject)
+   
+    var matchingExamSemester = ''
+    Object.keys(dataObject).forEach(function (key) {
+      if (Number(semester) >= Number(key)) {
+        matchingExamSemester = key
+      }
+    })
+    let examString = []
+    if (dataObject[matchingExamSemester] && dataObject[matchingExamSemester].examinationRounds.length > 0) {
+      for (let exam of dataObject[matchingExamSemester].examinationRounds) {
+
+         //* * Adding a decimal if it's missing in credits **/
+        exam.credits = exam.credits !== EMPTY[language] && exam.credits.toString().length === 1 ? exam.credits + '.0' : exam.credits
+
+        examString.push(`${exam.examCode} - ${exam.title},${language === 0 ? exam.credits : exam.credits.toString().replace('.', ',')} ${language === 0 ? ' credits' : ' hp'}, ${language === 0 ? 'Grading scale' : 'Betygskala'}: ${grades[exam.gradeScaleCode]}              
+                         `)
+      }
+    }
+    console.log('!!getExamObject is ok!!', grades)
+    return examString
+  }
+
+  getEmployees(courseCode, semester, rounds){
+    for(let index = 0; index < rounds.length; index++){
+      this.redisKeys.responsibles.push(`${courseCode}.${semester}.${rounds[index]}.courseresponsible`)
+    }
+    this.redisKeys.examiner.push(`${courseCode}.examiner`)
+  }
+
+  getEmployeesNames(employeeList){
+    let list = []
+    let toObject
+    //employeeList = JSON.parse(employeeList)
+    
+    for(let index = 0; index < employeeList.length; index++){
+      if(employeeList[index] !== null){
+        toObject = JSON.parse(employeeList[index])
+        for(let index2 = 0; index2 < toObject.length; index2++){
+          list.push(`${toObject[index2].givenName} ${toObject[index2].lastName}`)
+        }
+      }
+    }
+    return list
+  }
+
+ 
+
 
 /** ***************************************************************************************************************************************** */
 /*                                            UG REDIS - examiners, teachers and responsibles                                                */
 /** ***************************************************************************************************************************************** */
    @action getCourseEmployeesPost (key, type = 'multi', lang = 'sv') {
-
-     if (this.courseData.courseRoundList.length === 0) return ''
-
-     return axios.post(this.buildApiUrl(this.paths.redis.ugCache.uri, { key:key, type:type }), this._getOptions(JSON.stringify(this.keyList))).then(result => {
-       const returnValue = result.data
-       const emptyString = EMPTY[this.activeLanguage]
-       let roundList = this.courseData.roundList
-       let roundId = 0
-       const thisStore = this
-       Object.keys(roundList).forEach(function (key) {
-         let rounds = roundList[key]
-         for (let index = 0; index < rounds.length; index++) {
-           rounds[index].round_teacher = returnValue[0][roundId] !== null ? thisStore.createPersonHtml(JSON.parse(returnValue[0][roundId]), 'teacher') : emptyString
-           rounds[index].round_responsibles = returnValue[1][roundId] !== null ? thisStore.createPersonHtml(JSON.parse(returnValue[1][roundId]), 'responsible') : emptyString
-           roundId++
-         }
-         thisStore.courseData.roundList[key] = rounds
-       })
-      // TODO: DELETE
-       let rounds2 = this.courseData.courseRoundList
-       for (let index = 0; index < returnValue[0].length; index++) {
-         rounds2[index].round_teacher = returnValue[0][index] !== null ? this.createPersonHtml(JSON.parse(returnValue[0][index]), 'teacher') : emptyString
-         rounds2[index].round_responsibles = returnValue[1][index] !== null ? this.createPersonHtml(JSON.parse(returnValue[1][index]), 'responsible') : emptyString
-       }
-
-       this.courseData.courseRoundList = rounds2
+    return axios.post(this.buildApiUrl(this.paths.redis.ugCache.uri, { key:key, type:type }), this._getOptions(JSON.stringify(this.redisKeys))).then(result => {
+       console.log('result.body', result.data)
+       
+      return result.data
      }).catch(err => {
        if (err.response) {
          throw new Error(err.message, err.response.data)
@@ -143,6 +308,8 @@
        throw err
      })
    }
+
+  
 
   /* @action getCourseEmployees (key, type = 'examinator', lang = 0) {
      return axios.get(this.buildApiUrl(this.paths.redis.ugCache.uri, { key:key, type:type })).then(result => {

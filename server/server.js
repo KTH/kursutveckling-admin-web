@@ -213,9 +213,9 @@ appRoute.get('system.gateway', config.proxyPrefixPath.uri + '/gateway', getServe
 
 appRoute.get('api.kursutvecklingGetById', '/apicall/getRoundAnalysisById/:id', Admin.getRoundAnalysis)
 appRoute.all('api.kursutvecklingPost', '/apicall/postRoundAnalysisById/:id/:status', Admin.postRoundAnalysis)
-// appRoute.get('api.koppsCourseData', '/api/kursutveckling-admin/getKoppsCourseDataByCourse/:courseCode/:language', Course.getKoppsCourseData)
-// appRoute.get('redis.ugCache', '/reids/kursinfo/ugChache/:key/:type', Course.getCourseEmployees)
-// appRoute.post('redis.ugCache', '/reids/kursinfo/ugChache/:key/:type', Course.getCourseEmployees)
+appRoute.get('api.koppsCourseData', '/api/kursutveckling-admin/getKoppsCourseDataByCourse/:courseCode/:language', Admin.getRoundAnalysis)
+appRoute.get('redis.ugCache', '/redis/ugChache/:key/:type', Admin.getCourseEmployees)
+appRoute.post('redis.ugCache', '/redis/ugChache/:key/:type', Admin.getCourseEmployees)
 
 server.use('/', appRoute.getRouter())
 
