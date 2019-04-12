@@ -116,44 +116,58 @@
      })
   }
 
+  @action getUsedRounds (courseCode, semester) {
+    return axios.get(this.buildApiUrl(this.paths.api.kursutvecklingGetUsedRounds.uri,
+                     { courseCode: courseCode, semester: semester }),
+                     this._getOptions()
+    )/*.then(result => {
+     console.log(result.data)
+     return result.data
+   })*/.catch(err => {
+       if (err.response) {
+         throw new Error(err.message)
+       }
+       throw err
+     })
+  }
+
+
+
   @action handleCourseData(courseObject, user, language){
     console.log(courseObject)
     this.status= 'new'
     try{
-    safeGet(() => {
-   
-    this.courseData={
-      courseCode: courseObject.course.courseCode,
-      examinationSets: courseObject.examinationSets,
-      gradeScale: courseObject.formattedGradeScales,
-      gradeScaleCode: courseObject.course.gradeScaleCode,
-      syllabusList: courseObject.publicSyllabusVersions
-    }
-    this.courseData.title = {
-      name: courseObject.course.title,
-      credits: courseObject.course.credits
-    }
-    
-    const thisStore = this
-     courseObject.roundInfos.map((round, index) =>{ 
-      if(thisStore.semesters.indexOf(round.round.startTerm.term) < 0)
-       thisStore.semesters.push(round.round.startTerm.term)
+      this.courseData={
+        courseCode: courseObject.course.courseCode,
+        examinationSets: courseObject.examinationSets,
+        gradeScale: courseObject.formattedGradeScales,
+        gradeScaleCode: courseObject.course.gradeScaleCode,
+        syllabusList: courseObject.publicSyllabusVersions
+      }
+      this.courseData.title = {
+        name: courseObject.course.title,
+        credits: courseObject.course.credits
+      }
       
-      if(!thisStore.roundData.hasOwnProperty(round.round.startTerm.term))
-       thisStore.roundData[round.round.startTerm.term]=[]
+      const thisStore = this
+      courseObject.roundInfos.map((round, index) =>{ 
+        if(thisStore.semesters.indexOf(round.round.startTerm.term) < 0)
+        thisStore.semesters.push(round.round.startTerm.term)
+        
+        if(!thisStore.roundData.hasOwnProperty(round.round.startTerm.term))
+        thisStore.roundData[round.round.startTerm.term]=[]
 
-      thisStore.roundData[round.round.startTerm.term].push({
-        roundId: round.round.ladokRoundId,
-        language: round.round.language,
-        shortName: round.round.shortName,
-        startDate: round.round.startDate,
-        targetGroup: this.getTargetGroup(round)
+        thisStore.roundData[round.round.startTerm.term].push({
+          roundId: round.round.ladokRoundId,
+          language: round.round.language,
+          shortName: round.round.shortName,
+          startDate: round.round.startDate,
+          targetGroup: this.getTargetGroup(round)
+        })
       })
-    })
-
-  }, 'kopps not responding')
     console.log(this.courseData, this.roundData)
 }
+
 catch(err){
   if (err.response) {
     throw new Error(err.message)
@@ -164,16 +178,16 @@ catch(err){
 
   @action createAnalysisData(semester, rounds){
     this.state = "pending"
-    const newId = `${this.courseData.courseCode}${semester.toString().match(/.{1,4}/g)[1] === '1' ? 'VT' : 'HT'}${semester.toString().match(/.{1,4}/g)[0]}_${rounds.join('_')}`
+    this.analysisId = `${this.courseData.courseCode}${semester.toString().match(/.{1,4}/g)[1] === '1' ? 'VT' : 'HT'}${semester.toString().match(/.{1,4}/g)[0]}_${rounds.join('_')}`
     let newName = `${semester.toString().match(/.{1,4}/g)[1] === '1' ? SEMESTER[this.language]['1'] : SEMESTER[this.language]['2']} ${semester.toString().match(/.{1,4}/g)[0]}`
     
     if(rounds.length > 1)
       newName = this.createAnalysisName(newName, this.roundData[semester], rounds)
   
     this.analysisData ={
-      _id: newId,
+      _id: this.analysisId,
       alterationText: " ",
-      changedBy: " ",
+      changedBy: "Dummy User",
       changedDate: " ",
       commentChange: " ",
       commentExam: this.getExmCommentfromCorrectSyllabus(semester, this.courseData.syllabusList),
@@ -187,7 +201,9 @@ catch(err){
       publishedDate: "",
       registeredStudents: 0,
       responsibles: " ",
-      round: newName
+      analysisName: newName,
+      semester: semester,
+      roundIdList: rounds.toString()
     }
 
     this.getEmployees(this.courseData.courseCode, semester, rounds)
@@ -205,7 +221,7 @@ catch(err){
   createAnalysisName(newName, roundList, rounds){
     let addRounds = []
     for(let index = 0; index < rounds.length; index ++){
-      addRounds.push(roundList[rounds[index]].shortName.length > 0 ? roundList[rounds[index]].shortName : roundList[rounds[index]].startDate)
+      addRounds.push(roundList[Number(rounds[index])-1].shortName.length > 0 ? roundList[Number(rounds[index])-1].shortName : roundList[Number(rounds[index])-1].startDate)
     }
       return `${newName} ( ${addRounds.join(', ')} )` 
   }
@@ -269,7 +285,7 @@ catch(err){
 
   getEmployees(courseCode, semester, rounds){
     for(let index = 0; index < rounds.length; index++){
-      this.redisKeys.responsibles.push(`${courseCode}.${semester}.${rounds[index]}.courseresponsible`)
+      this.redisKeys.responsibles.push(`${courseCode}.${semester}.${Number(rounds[index])-1}.courseresponsible`)
     }
     this.redisKeys.examiner.push(`${courseCode}.examiner`)
   }
@@ -291,8 +307,10 @@ catch(err){
   }
 
  
-
-
+  @action setCourseCode(CourseCode, title=''){
+    this.courseCode = CourseCode
+    this.title = title.length > 0 ? title : ''
+  }
 /** ***************************************************************************************************************************************** */
 /*                                            UG REDIS - examiners, teachers and responsibles                                                */
 /** ***************************************************************************************************************************************** */
@@ -309,39 +327,6 @@ catch(err){
      })
    }
 
-  
-
-  /* @action getCourseEmployees (key, type = 'examinator', lang = 0) {
-     return axios.get(this.buildApiUrl(this.paths.redis.ugCache.uri, { key:key, type:type })).then(result => {
-       this.courseData.courseInfo.course_examiners = result.data && result.data.length > 0 ? this.createPersonHtml(result.data, 'examiner') : EMPTY[this.activeLanguage]
-     }).catch(err => {
-       if (err.response) {
-         throw new Error(err.message, err.response.data)
-       }
-       throw err
-     })
-   }
-
-   isValidData (dataObject, language = 0) {
-     return !dataObject ? EMPTY[language] : dataObject
-   }*/
-
-   createPersonHtml (personList, type) {
-     let personString = ''
-     personList.forEach(person => {
-       personString += `<p class = "person">
-          <i class="fas fa-user-alt"></i>
-            <a href="/profile/${person.username}/" target="_blank" property="teach:teacher">
-              ${person.givenName} ${person.lastName} 
-            </a> 
-          </p>  `
-          // <i class="far fa-envelope"></i>&nbsp;${person.email}
-      //* * Check if the logged in user is examinator or responsible and can edit course page **/
-       if (this.user === person.username && (type === 'responsible' || type === 'examiner')) // TODO:
-         this.canEdit = true
-     })
-     return personString
-   }
 /** ***********************************************************************************************************************/
 
    @action getLdapUserByUsername (params) {

@@ -93,6 +93,20 @@ border-left: 1px dotted #ddd;
     
 }
 
+.disabled{
+  color: #a29999;
+}
+.disable-span{
+  color: #000;
+  a{
+    padding: 0px 3px;
+    border: 1px solid #006cb7;
+    border-radius: 5px;
+    background-color: #006cb7;
+    color: #fff;
+  }
+}
+
 ///******************** MODAL ****************************///
 .modal {
     display: block;

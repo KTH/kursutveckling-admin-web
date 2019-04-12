@@ -10,7 +10,6 @@ const httpResponse = require('kth-node-response')
 const i18n = require('../../i18n')
 const api = require('../api')
 
-// const koppsCourseData = require('../apiCalls/koppsCourseData')
 const kursutvecklingAPI = require('../apiCalls/kursutvecklingAPI')
 const koppsCourseData = require('../apiCalls/koppsCourseData')
 
@@ -19,14 +18,15 @@ const serverConfig = require('../configuration').server
 const paths = require('../server').getPaths()
 
 const ReactDOMServer = require('react-dom/server')
-const { StaticRouter } = require('react-router')
-let { /* doAllAsyncBefore, */ staticFactory } = require('../../dist/app.js')
+// const { StaticRouter } = require('react-router')
+let { staticFactory } = require('../../dist/app.js')
 
 module.exports = {
   getIndex: getIndex,
   getRoundAnalysis: co.wrap(_getRoundAnalysis),
   postRoundAnalysis: co.wrap(_postRoundAnalysis),
-  getCourseEmployees: co.wrap(_getCourseEmployees)
+  getCourseEmployees: co.wrap(_getCourseEmployees),
+  getUsedRounds: co.wrap(_getUsedRounds)
 }
 
 function * _postRoundAnalysis (req, res, next) {
@@ -76,80 +76,50 @@ function * _getRoundAnalysis (req, res, next) {
   }
 }
 
-function * _getCourseEmployees (req, res) { // console.log("TEST")
-  let key = req.params.key
-  const type = req.params.type
-  key = key.replace(/_/g, '.')
-  switch (type) {
-    //* *************************************************************************************************************
-    //* *** Retuns two lists with teachers and reponsibles for each course round.
-    //* *** The keys are built up with: course code.year+semester.roundId (example: SF1624.20182.1)
-    //* *************************************************************************************************************
-    case 'multi':
-      try {
-        const roundsKeys = JSON.parse(req.body.params)
-        yield redis('ugRedis', serverConfig.cache.ugRedis.redis)
-          .then(function (ugClient) {
-            return ugClient.multi()
-              .mget(roundsKeys.examiner)
-              .mget(roundsKeys.responsibles)
-              .execAsync()
-          })
-          .then(function (returnValue) {
-            // console.log("ugRedis - multi -VALUE",returnValue)
-            return httpResponse.json(res, returnValue)
-          })
-          .catch(function (err) {
-            console.log('ugRedis - error:: ', err)
-          })
-      } catch (err) {
-        log.error('Exception calling from ugRedis - multi', { error: err })
-        return err
-      }
-      break
-    //* ********************************************************
-    //* *** Retuns a list with examiners. Key is course code ***
-    //* ********************************************************
-    case 'examiners':
-      try {
-        yield redis('ugRedis', serverConfig.cache.ugRedis.redis)
-          .then(function (ugClient) {
-            return ugClient.getAsync(key + '.examiner')
-          })
-          .then(function (returnValue) {
-            return httpResponse.json(res, returnValue)
-          })
-          .catch(function (err) {
-            console.log('ugRedis - examiners error: ', err)
-          })
-      } catch (err) {
-        log.error('Exception calling from ugRedis - examiners ', { error: err })
-        return err
-      }
-  }
-}
-
-function * _getKoppsCourseData (req, res, next) {
+function * _getUsedRounds (req, res, next) {
   const courseCode = req.params.courseCode
-  const language = req.params.language || 'sv'
-
+  const semester = req.params.semester
   try {
-    const apiResponse = yield koppsCourseData.getKoppsCourseData(courseCode, language)
+    const apiResponse = yield kursutvecklingAPI.getUsedRounds(courseCode, semester)
+
     if (apiResponse.statusCode !== 200) {
       res.status(apiResponse.statusCode)
       res.statusCode = apiResponse.statusCode
-      res.send(courseCode)
+      res.send()
     }
-
     return httpResponse.json(res, apiResponse.body)
+  } catch (error) {
+    log.error('Exception calling from _getUsedRounds ', { error: error })
+    next(error)
+  }
+}
+
+function * _getCourseEmployees (req, res) {
+  let key = req.params.key
+  key = key.replace(/_/g, '.')
+  try {
+    const roundsKeys = JSON.parse(req.body.params)
+    yield redis('ugRedis', serverConfig.cache.ugRedis.redis)
+      .then(function (ugClient) {
+        return ugClient.multi()
+          .mget(roundsKeys.examiner)
+          .mget(roundsKeys.responsibles)
+          .execAsync()
+      })
+      .then(function (returnValue) {
+        // console.log("ugRedis - multi -VALUE",returnValue)
+        return httpResponse.json(res, returnValue)
+      })
+      .catch(function (err) {
+        console.log('ugRedis - error:: ', err)
+      })
   } catch (err) {
-    log.error('Exception calling from koppsAPI ', { error: err })
-    next(err)
+    log.error('Exception calling from ugRedis - multi', { error: err })
+    return err
   }
 }
 
 async function getIndex (req, res, next) {
-  console.log('TEST getIndex')
   if (process.env['NODE_ENV'] === 'development') {
     delete require.cache[require.resolve('../../dist/app.js')]
     const tmp = require('../../dist/app.js')
@@ -167,6 +137,7 @@ async function getIndex (req, res, next) {
     if (req.params.id.length === 6) {
       // New analysis
       const apiResponse = await koppsCourseData.getKoppsCourseData(req.params.id, lang)
+      renderProps.props.children.props.routerStore.setCourseCode(req.params.id) // TODO: title
       await renderProps.props.children.props.routerStore.handleCourseData(apiResponse.body, ldapUser, lang)
     } else {
       const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(req.params.id, lang)
