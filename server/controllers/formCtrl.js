@@ -26,7 +26,8 @@ module.exports = {
   getRoundAnalysis: co.wrap(_getRoundAnalysis),
   postRoundAnalysis: co.wrap(_postRoundAnalysis),
   getCourseEmployees: co.wrap(_getCourseEmployees),
-  getUsedRounds: co.wrap(_getUsedRounds)
+  getUsedRounds: co.wrap(_getUsedRounds),
+  getKoppsCourseData: co.wrap(_getKoppsCourseData)
 }
 
 function * _postRoundAnalysis (req, res, next) {
@@ -44,11 +45,11 @@ function * _postRoundAnalysis (req, res, next) {
     }
     console.log('apiResponse', apiResponse)
 
-    if (apiResponse.statusCode !== 200) { // TODO: Handle with alert
+    /* if (apiResponse.statusCode !== 200) { // TODO: Handle with alert
       res.status(apiResponse.statusCode)
       res.statusCode = apiResponse.statusCode
       res.send()
-    }
+    } */
 
     return httpResponse.json(res, apiResponse.body)
   } catch (err) {
@@ -64,14 +65,33 @@ function * _getRoundAnalysis (req, res, next) {
   console.log('getRoundAnalysis', roundAnalysisId)
   try {
     const apiResponse = yield kursutvecklingAPI.getRoundAnalysisData(roundAnalysisId, language)
-    if (apiResponse.statusCode !== 200) {
+    /* if (apiResponse.statusCode !== 200) {
       res.status(apiResponse.statusCode)
       res.statusCode = apiResponse.statusCode
       res.send()
-    }
+    } */
     return httpResponse.json(res, apiResponse.body)
   } catch (err) {
     log.error('Exception calling from getRoundAnalysis ', { error: err })
+    next(err)
+  }
+}
+
+function * _getKoppsCourseData (req, res, next) {
+  const courseCode = req.params.courseCode
+  const language = req.params.language || 'sv'
+
+  try {
+    const apiResponse = yield koppsCourseData.getKoppsCourseData(courseCode, language)
+    /* if (apiResponse.statusCode !== 200) {
+      res.status(apiResponse.statusCode)
+      res.statusCode = apiResponse.statusCode
+      res.send(courseCode)
+    } */
+
+    return httpResponse.json(res, apiResponse.body)
+  } catch (err) {
+    log.error('Exception calling from koppsAPI ', { error: err })
     next(err)
   }
 }
@@ -82,11 +102,11 @@ function * _getUsedRounds (req, res, next) {
   try {
     const apiResponse = yield kursutvecklingAPI.getUsedRounds(courseCode, semester)
 
-    if (apiResponse.statusCode !== 200) {
+    /* if (apiResponse.statusCode !== 200) {
       res.status(apiResponse.statusCode)
       res.statusCode = apiResponse.statusCode
       res.send()
-    }
+    } */
     return httpResponse.json(res, apiResponse.body)
   } catch (error) {
     log.error('Exception calling from _getUsedRounds ', { error: error })
@@ -142,6 +162,7 @@ async function getIndex (req, res, next) {
     } else {
       const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(req.params.id, lang)
       renderProps.props.children.props.routerStore.analysisData = apiResponse.body
+      renderProps.props.children.props.routerStore.status = apiResponse.body.isPublished ? 'published' : 'draft'
       console.log('apiResponse.body', apiResponse.body)
     }
 

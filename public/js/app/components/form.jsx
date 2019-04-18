@@ -7,7 +7,6 @@ import 'filepond/dist/filepond.min.css'
 import i18n from '../../../../i18n/index'
 
 //Components
-import YearAndRounds from '../components/YearAndRounds'
 import Title from '../components/Title'
 
 //Helpers 
@@ -15,7 +14,7 @@ import { EMPTY, ADMIN_URL} from '../util/constants'
 const labelIdle = 'Drag & Drop filen här <span class="filepond--label-action"> eller öppna utforskaren </span>'
 
 @inject(['routerStore']) @observer
-class AdminForm extends Component {
+class AnalysisForm extends Component {
   constructor (props) {
     super(props)
     this.state = {
@@ -103,65 +102,11 @@ class AdminForm extends Component {
     //console.log( "this.state", this.state)
     if(routerStore.analysisData === undefined)
       return (
-      <div>
-          <h1>{'KURSUTV.....'}</h1>
-        <Title title={routerStore.courseData.title} language = {routerStore.language} courseCode={routerStore.courseData.courseCode}/>
-      {routerStore.semesters.length === 0
-        ?<Alert>No rounds!</Alert>
-        : <YearAndRounds 
-      editMode={this.editMode}
-      semesterList = {routerStore.semesters}
-      roundList = {routerStore.roundData}
-      />
-      }
-    </div>)
+      <div></div>)
     else
     return (
       <div key='kursutveckling-form-container' className='container' id='kursutveckling-form-container' >
-      <h1>{'KURSUTV.....'}</h1>
-       <Title title={undefined} language = {routerStore.language} courseCode={routerStore.analysisData.courseCode}/>
-        
-       {routerStore.analysisData.length > 0 && routerStore.analysisData.examinationRounds.length === 0 
-        ?<Alert>Fel fel fel !</Alert>
-        :<div>
-        <Row key='preview' id='preview-container'>
-          <Col sm='3' className='col-temp'>
-            <h4>ID </h4>
-            <p id='_id' key='id' >{this.state.values._id}</p>
-            <h4>course code </h4>
-            <p id='courseCode' key='courseCode'>{this.state.values.courseCode}</p>
-            <h4>round name </h4>
-            <p id='analysisName' key='round' >{this.state.values.analysisName}</p>
-          </Col>
-          <Col sm='3' className='col-temp'>
-            <h4>targetGroup </h4>
-            <p id='programmeCodes' key='programmeCodes' >{this.state.values.programmeCodes} </p>
-            <h4>examiners </h4>
-            <p id='examiners' key='examiners' >{this.state.values.examiners}</p>
-            <h4>responsibles </h4>
-            <p id='responsibles' key='responsibles' >{this.state.values.responsibles}</p>
-          </Col>
-          <Col sm='3' className='col-temp' >
-            <h4>examinationRounds </h4>
-            <p id='examinationRounds' key='examinationRounds' >{this.state.values.examinationRounds.toString()}</p>
-            <h4>registered students </h4>
-            <p id='registeredStudents' key='registeredStudents' >{this.state.values.registeredStudents}</p>
-            <h4>examination grade </h4>
-            <p id='examinationGrade' key='examinationGrade' >{this.state.values.examinationGrade} %</p>
-          </Col>
-          <Col sm='3' className='col-temp'>
-            <h4>alteration text </h4>
-            <p id='alterationText' key='alterationText' >{this.state.values.alterationText}</p>
-            <h4>commentChange </h4>
-            <p id='commentChange' key='commentChange' >{this.state.values.commentChange}</p>
-            <h4>commentExam </h4>
-            <p id='commentExam' key='commentExam' dangerouslySetInnerHTML={{__html: this.state.values.commentExam}}/>
-          </Col>
-          <Button id='Publish' key='SaPublishve' onClick={this.handlePublish}>Publish</Button>
-        </Row>
-        <br />
-        <p>--------------------------------------------------------------------------------------------------------------------------</p>
-     
+      
         <Row key='form' id='form-container'>
         {this.state.saved ?
             <Alert>
@@ -220,4 +165,4 @@ class AdminForm extends Component {
   }
 }
 
-export default AdminForm
+export default AdminPage

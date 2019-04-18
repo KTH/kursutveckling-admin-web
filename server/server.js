@@ -215,7 +215,7 @@ appRoute.get('api.kursutvecklingGetById', '/apicall/getRoundAnalysisById/:id', A
 appRoute.all('api.kursutvecklingPost', '/apicall/postRoundAnalysisById/:id/:status', Admin.postRoundAnalysis)
 appRoute.post('api.kursutvecklingPost', '/apicall/postRoundAnalysisById/:id/:status', Admin.postRoundAnalysis)
 appRoute.get('api.kursutvecklingGetUsedRounds', '/apicall/kursutvecklingGetUsedRounds/:courseCode/:semester', Admin.getUsedRounds)
-appRoute.get('api.koppsCourseData', '/api/kursutveckling-admin/getKoppsCourseDataByCourse/:courseCode/:language', Admin.getRoundAnalysis)
+appRoute.get('api.koppsCourseData', '/api/kursutveckling-admin/getKoppsCourseDataByCourse/:courseCode/:language', Admin.getKoppsCourseData)
 appRoute.get('redis.ugCache', '/redis/ugChache/:key/:type', Admin.getCourseEmployees)
 appRoute.post('redis.ugCache', '/redis/ugChache/:key/:type', Admin.getCourseEmployees)
 

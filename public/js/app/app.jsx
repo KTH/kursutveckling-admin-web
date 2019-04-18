@@ -16,7 +16,8 @@ import { IMobxStore } from './interfaces/utils'
 import { StaticRouter } from 'react-router'
 import RouterStore from './stores/RouterStore'
 import AdminForm from './views/AdminForm'
-import  '../../css/kursinfo-web.scss'
+import AdminPage from './views/AdminPage'
+import  '../../css/kursutveckling-admin.scss'
 
 
 
@@ -63,7 +64,7 @@ function appFactory() {
   return (
     <Provider routerStore={routerStore}>
       <Switch>
-        <Route path='/admin/kursutveckling' component={AdminForm} asyncBefore={AdminForm.fetchData} />
+        <Route path='/admin/kursutveckling' component={AdminPage} asyncBefore={AdminPage.fetchData} />
         <Route path='/' component={AdminForm} />
       </Switch>
     </Provider>
