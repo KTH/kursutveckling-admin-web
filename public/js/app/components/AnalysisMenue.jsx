@@ -3,7 +3,7 @@ import { inject, observer } from 'mobx-react'
 import { Alert, Card, Form, Dropdown, FormGroup, Label, Input, Collapse, DropdownToggle, DropdownItem, DropdownMenu, Button } from 'reactstrap'
 
 @inject(['routerStore']) @observer
-class YearAndRounds extends Component {
+class AnalysisMenue extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -309,4 +309,4 @@ class YearAndRounds extends Component {
     }
 }
 
-export default YearAndRounds
+export default AnalysisMenue

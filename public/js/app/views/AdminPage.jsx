@@ -8,8 +8,9 @@ import i18n from '../../../../i18n/index'
 
 //Components
 import Title from '../components/Title'
-import YearAndRounds from '../components/YearAndRounds'
+import AnalysisMenue from '../components/AnalysisMenue'
 import Preview from '../components/Preview'
+import InfoModal from '../components/InfoModal'
 
 //Helpers 
 import { EMPTY, ADMIN_URL } from '../util/constants'
@@ -26,7 +27,8 @@ class AdminPage extends Component {
       progress: this.props.routerStore.status === 'new' ? 'new' : 'preview',
       isPreviewMode: this.props.routerStore.status !== 'new',
       activeSemester: '',
-      changedStatus: false
+      changedStatus: false,
+      modalOpen: false
     }
     this.handlePreview = this.handlePreview.bind(this)
     this.editMode = this.editMode.bind(this)
@@ -35,6 +37,7 @@ class AdminPage extends Component {
     this.handleBack = this.handleBack.bind(this)
     this.handleCancel = this.handleCancel.bind(this)
     this.handleInputChange = this.handleInputChange.bind(this)
+    this.toggleModal = this.toggleModal.bind(this)
   }
 
   handlePreview(event) {
@@ -120,20 +123,31 @@ class AdminPage extends Component {
       })
   }
 
-  handlePublish(event) {
-    event.preventDefault()
+  handlePublish(event, fromModal = false) {
+    if(!fromModal){    
+      event.preventDefault()
+    }
+
     let postObject = this.state.values
     postObject.isPublished = true
     const thisInstance = this
     console.log('postObjecteeee', this.state.values.isPublished)
     return this.props.routerStore.postRoundAnalysisData(postObject, false)
       .then((response) => {
-        console.log(response)
+        console.log('handlePublish', response)
+        alert("back to kursinfo-admin")
         thisInstance.setState({
           saved: true,
-          isPublished: true
+          isPublished: true,
+          modalOpen: false
         })
       })
+  }
+
+  toggleModal(){
+    this.setState({
+      modalOpen: !this.state.modalOpen
+    })
   }
 
   handleInputChange(event) {
@@ -165,7 +179,7 @@ class AdminPage extends Component {
           <Title title={routerStore.courseData.title} language={routerStore.language} courseCode={routerStore.courseData.courseCode} />
           {routerStore.semesters.length === 0
             ? <Alert>No rounds!</Alert>
-            : <YearAndRounds
+            : <AnalysisMenue
               editMode={this.editMode}
               semesterList={routerStore.semesters}
               roundList={routerStore.roundData}
@@ -274,9 +288,10 @@ class AdminPage extends Component {
                   }
                 </Col>
                 <Col sm="3">
-                  <Button color='success' id='publish' key='publish' onClick={this.handlePublish} >
+                  <Button color='success' id='publish' key='publish' onClick={this.toggleModal} >
                     {'Publish'}
                   </Button>
+                  <InfoModal toggle= {this.toggleModal} isOpen = {this.state.modalOpen} id={this.props.routerStore.analysisId} confirmLable={'publish_confirm'} handleConfirm={this.handlePublish} infoText={'publish_warning_text'}/>
                 </Col>
 
               </Row>

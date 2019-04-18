@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+/* import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
 import { Row, Col, Button, Form, Label, Input, Alert} from 'reactstrap'
 import { FilePond } from 'react-filepond'
@@ -7,10 +7,10 @@ import 'filepond/dist/filepond.min.css'
 import i18n from '../../../../i18n/index'
 
 //Components
-import YearAndRounds from '../components/YearAndRounds'
+import  from '../components/YearAndRounds'
 import Title from '../components/Title'
 
-//Helpers 
+//Helpers
 import { EMPTY, ADMIN_URL} from '../util/constants'
 const labelIdle = 'Drag & Drop filen här <span class="filepond--label-action"> eller öppna utforskaren </span>'
 
@@ -35,15 +35,15 @@ class AdminForm extends Component {
     event.preventDefault()
   }
 
-  editMode(year, rounds){ 
+  editMode(year, rounds){
     this.props.routerStore.createAnalysisData(year, rounds)
-   
+
     this.setState({
       isNew: true,
-      values: this.props.routerStore.analysisData 
+      values: this.props.routerStore.analysisData
     })
   }
-  /*componentWillMount(){ 
+  /*componentWillMount(){
     const id = this.props.routerStore.analysisId
     console.log("mount", id)
    this.props.routerStore.getRoundAnalysis(id, 'sv')
@@ -54,7 +54,7 @@ class AdminForm extends Component {
    })
   }*/
 
-  handleSave (event) {
+/* handleSave (event) {
     event.preventDefault()
     const postObject = this.state.values
     const thisInstance = this
@@ -93,12 +93,12 @@ class AdminForm extends Component {
       saved: false
     })
   }
-  
+
 
   render () {
     const routerStore = this.props.routerStore
     const isDisabled =  this.state.isPublished === true
-  
+
     //console.log("routerStore", routerStore)
     //console.log( "this.state", this.state)
     if(routerStore.analysisData === undefined)
@@ -108,7 +108,7 @@ class AdminForm extends Component {
         <Title title={routerStore.courseData.title} language = {routerStore.language} courseCode={routerStore.courseData.courseCode}/>
       {routerStore.semesters.length === 0
         ?<Alert>No rounds!</Alert>
-        : <YearAndRounds 
+        : <YearAndRounds
       editMode={this.editMode}
       semesterList = {routerStore.semesters}
       roundList = {routerStore.roundData}
@@ -120,8 +120,8 @@ class AdminForm extends Component {
       <div key='kursutveckling-form-container' className='container' id='kursutveckling-form-container' >
       <h1>{'KURSUTV.....'}</h1>
        <Title title={undefined} language = {routerStore.language} courseCode={routerStore.analysisData.courseCode}/>
-        
-       {routerStore.analysisData.length > 0 && routerStore.analysisData.examinationRounds.length === 0 
+
+       {routerStore.analysisData.length > 0 && routerStore.analysisData.examinationRounds.length === 0
         ?<Alert>Fel fel fel !</Alert>
         :<div>
         <Row key='preview' id='preview-container'>
@@ -161,7 +161,7 @@ class AdminForm extends Component {
         </Row>
         <br />
         <p>--------------------------------------------------------------------------------------------------------------------------</p>
-     
+
         <Row key='form' id='form-container'>
         {this.state.saved ?
             <Alert>
@@ -170,7 +170,7 @@ class AdminForm extends Component {
           : ''}
           <Form className='admin-form'>
             <Row  className='form-group'>
-            
+
           <Col sm='5' className='col-temp'>
               <Label>round name</Label>
               <Input id='analysisName' key='round' type='text' value={this.state.values.analysisName} onChange={this.handleInputChange} disabled={isDisabled} />
@@ -188,13 +188,13 @@ class AdminForm extends Component {
               <Input id='examinationGrade' key='examinationGrade' type='number'  value={this.state.values.examinationGrade} onChange={this.handleInputChange} disabled={isDisabled}/>
           </Col>
           <Col sm='5' className='col-temp'>
-         
+
               <Label>alteration text (max xxx tecken)</Label>
               <Input id='alterationText' key='alterationText' type="textarea" value={this.state.values.alterationText} onChange={this.handleInputChange} />
               <Label>commentChange (max xxx tecken)</Label>
               <Input id='commentChange' key='commentChange' type="textarea" value={this.state.values.commentChange} onChange={this.handleInputChange} />
               <Label>commentExam</Label>
-              {this.state.values.commentExam.length === 0 
+              {this.state.values.commentExam.length === 0
                 ? <Input id='commentExam' key='commentExam' type='textarea' value={this.state.values.commentExam} onChange={this.handleInputChange} disabled={isDisabled} />
                 :  <p id='commentExam' key='commentExam' dangerouslySetInnerHTML={{__html: this.state.values.commentExam}}/>
               }
@@ -207,10 +207,10 @@ class AdminForm extends Component {
             </Row>
             <Label>ID</Label>
               <Input id='_id' key='round' type='id' value={this.state.values._id} onChange={this.handleInputChange} disabled={isDisabled} />
-   
+
               <Label>courseCode</Label>
               <Input id='courseCode' key='courseCode' type='text' value={this.state.values.courseCode} onChange={this.handleInputChange} disabled={isDisabled} />
-    
+
             </Form>
           </Row>
           </div>
@@ -220,4 +220,4 @@ class AdminForm extends Component {
   }
 }
 
-export default AdminForm
+export default AdminForm */
