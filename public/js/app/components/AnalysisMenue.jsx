@@ -7,6 +7,7 @@ class AnalysisMenue extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            alert: '',
             dropdownOpen: false,
             collapseOpen: this.props.progress === 'back_new',
             semester: this.props.activeSemester && this.props.activeSemester.length > 0 
@@ -63,7 +64,7 @@ class AnalysisMenue extends Component {
     toggleDropdown(event) {
         event.preventDefault()
         this.setState({
-            dropdownOpen: !this.state.dropdownOpen,
+            dropdownOpen: !this.state.dropdownOpen
         })
     }
 
@@ -98,12 +99,12 @@ class AnalysisMenue extends Component {
     //************************ CHECKBOXES AND RADIO BUTTONS **************************** */
 
     handleRoundCheckbox(event) {
-        if (event.target.checked)
+        if ( event.target.checked )
             this.state.rounds.push(event.target.id)
         else
             this.state.rounds.splice(this.state.rounds.indexOf(event.target.id), 1)
 
-        if (this.state.alert === 'selectRounds')
+        if ( this.state.alert.length > 0 )
             this.setState({
                 alert: ''
             })
@@ -112,18 +113,15 @@ class AnalysisMenue extends Component {
     handleSelectedDraft(event) {
         let prevState = this.state
         prevState.selectedRadio.draft = event.target.id
-
+        prevState.alert = ''
         this.setState(prevState)
     }
 
     handleSelectedPublished(event) {
-        console.log(event.target.id)
         let prevState = this.state
         prevState.selectedRadio.published = event.target.id
-
+        prevState.alert = ''
         this.setState(prevState)
-        //this.state.selectedRadio.published = event.target.id
-
     }
     //************************ SUBMIT BUTTONS **************************** */
     goToEditMode(event) {
@@ -178,8 +176,8 @@ class AnalysisMenue extends Component {
                     </DropdownMenu>
                 </Dropdown>
                 <br />
-                {this.state.alert === 'selectRounds'
-                    ? <Alert> {this.state.alert}</Alert>
+                {this.state.alert.length > 0
+                    ? <Alert color='danger'> {this.state.alert}</Alert>
                     : ''
                 }
 
