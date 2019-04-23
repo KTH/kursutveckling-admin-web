@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 class Title extends Component{
     render(){
         return(
-        <div key='course-title'>
+        <div key='course-title' id='course-title'>
             <h2>
             <span>{this.props.courseCode}&nbsp;</span>
             {this.props.title 

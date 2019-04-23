@@ -2,12 +2,15 @@ import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
 import { Alert, Card, Form, Dropdown, FormGroup, Label, Input, Collapse, DropdownToggle, DropdownItem, DropdownMenu, Button } from 'reactstrap'
 
+import i18n from '../../../../i18n/index'
+
 @inject(['routerStore']) @observer
 class AnalysisMenue extends Component {
     constructor(props) {
         super(props)
         this.state = {
             alert: '',
+            firstVisit: this.props.firstVisit,
             dropdownOpen: false,
             collapseOpen: this.props.progress === 'back_new',
             semester: this.props.activeSemester && this.props.activeSemester.length > 0 
@@ -73,7 +76,8 @@ class AnalysisMenue extends Component {
         this.getUsedRounds(event.target.id)
         this.setState({
             semester: event.target.id,
-            collapseOpen: true
+            collapseOpen: true,
+            fistVisit: false
         })
     }
 
@@ -150,11 +154,13 @@ class AnalysisMenue extends Component {
 
 
     render() {
-        console.log("routerStore", this.props.routerStore)
-        console.log("this.state", this.state)
+        const translate = i18n.messages[this.props.routerStore.language].messages
+        console.log("routerStore", this.props)
+        console.log("this.state", this.state, translate)
+       
         return (
             <div id="YearAndRounds">
-                <h4>Select...</h4>
+                <h4>{translate.select_semester}</h4>
                 <Dropdown
                     isOpen={this.state.dropdownOpen}
                     toggle={this.toggleDropdown}
@@ -162,16 +168,22 @@ class AnalysisMenue extends Component {
                 >
                     <DropdownToggle >
                         <span>
-                            {this.props.activeSemester && this.props.activeSemester.length > 0
-                                ? this.props.activeSemester
-                                : 'Select semester'
+                            {this.state.semester && this.state.semester > 0 && !this.state.firstVisit
+                                ? `${translate.course_short_semester[this.state.semester.toString().match(/.{1,4}/g)[1]]} 
+                                    ${this.state.semester.toString().match(/.{1,4}/g)[0]}`
+                                : translate.select_semester
                             }
                         </span>
                         <span className='caretholder' id={'_spanCaret'}></span>
                     </DropdownToggle>
                     <DropdownMenu>
                         {this.props.semesterList && this.props.semesterList.map(semester =>
-                            <DropdownItem id={semester} key={semester} onClick={this.handleSelectedSemester}>{semester}</DropdownItem>
+                            <DropdownItem id={semester} key={semester} onClick={this.handleSelectedSemester}>
+                            {`
+                                ${translate.course_short_semester[semester.toString().match(/.{1,4}/g)[1]]} 
+                                ${semester.toString().match(/.{1,4}/g)[0]}
+                            `}
+                            </DropdownItem>
                         )}
                     </DropdownMenu>
                 </Dropdown>
@@ -185,13 +197,13 @@ class AnalysisMenue extends Component {
                     <Form>
                         {/**** DRAFT ANALYSIS ****/}
                         <FormGroup >
-                            <h3>Created...</h3>
-                            <h4>Draft...</h4>
+                            <h3>{translate.header_added_rounds}</h3>
+                            <h4>{translate.header_draft}</h4>
                             {this.state.draftAnalysis.length > 0
                                 ? this.state.draftAnalysis.length > 1
                                     ? <ul>
                                         {this.state.draftAnalysis.map(analysis =>
-                                            <li key={analysis.analysisId}>
+                                            <li className = 'select-list' key={analysis.analysisId}>
                                                 < Label key={"Label" + analysis.analysisId} for={analysis.analysisId} >
                                                     <Input type="radio"
                                                         id={analysis.analysisId}
@@ -207,7 +219,7 @@ class AnalysisMenue extends Component {
                                         )}
                                     </ul>
                                     : <ul>
-                                        <li>
+                                        <li className = 'select-list'>
                                             <Label key={"Label" + this.state.draftAnalysis[0].analysisId} for={this.state.draftAnalysis[0].analysisId} >
                                                 {this.state.draftAnalysis[0].analysisName}
                                                 {" ( Created by " + this.state.draftAnalysis[0].user + " ) "}
@@ -218,19 +230,19 @@ class AnalysisMenue extends Component {
                             }
                             <div className="button-container text-right" >
                                 <Button color='success' id='draft' key='draft' onClick={this.goTopPreviewMode} disabled={this.state.draftAnalysis.length < 1} >
-                                    {'Button Draft'}
+                                {translate.btn_preview}
                                 </Button>
                             </div>
                         </FormGroup>
 
                         {/**** PUBLISHED ANALYSIS ****/}
                         <FormGroup >
-                            <h4>Published ...</h4>
+                            <h4>{translate.header_published}</h4>
                             {this.state.publishedAnalysis.length > 0
                                 ? this.state.publishedAnalysis.length > 1
                                     ? <ul>
                                         {this.state.publishedAnalysis.map(analysis =>
-                                            <li className="input-list" key={analysis.analysisId}>
+                                            <li className = 'select-list' key={analysis.analysisId}>
                                                 < Label key={"Label" + analysis.analysisId} for={analysis.analysisId} >
                                                     <Input type="radio"
                                                         id={analysis.analysisId}
@@ -246,7 +258,7 @@ class AnalysisMenue extends Component {
                                         )}
                                     </ul>
                                     : <ul>
-                                        <li>
+                                        <li className = 'select-list'>
                                             <Label key={"Label" + this.state.publishedAnalysis[0].analysisId} for={this.state.publishedAnalysis[0].analysisId} >
                                                 {this.state.publishedAnalysis[0].analysisName}
                                                 {" ( Created by " + this.state.publishedAnalysis[0].user + " ) "}
@@ -257,20 +269,21 @@ class AnalysisMenue extends Component {
                             }
                             <div className="button-container text-right" >
                                 <Button color='success' id='published' key='published' onClick={this.goTopPreviewMode} disabled={this.state.publishedAnalysis.length < 1}>
-                                    {'Button Published'}
+                                    {translate.btn_preview}
                                 </Button>
                             </div>
                         </FormGroup>
 
                         {/**** NEW ANALYSIS ****/}
                         <FormGroup >
-                            <h3>New</h3>
+                            <h3>{translate.header_new}</h3>
 
-                            <h4>Select rounds text :</h4>
+                            <h4>{translate.header_select_rounds}</h4>
+                            <ul>
                             {this.props.roundList[this.state.semester].length > this.state.usedRounds.length
                                 ? this.props.roundList[this.state.semester].map(round =>
                                     this.state.usedRounds.indexOf(round.roundId) < 0
-                                        ? <span key={round.roundId}>
+                                        ? <li className = 'select-list' key={round.roundId}>
                                             <Label key={"Label" + round.roundId}
                                                 for={round.roundId}
                                             >
@@ -283,14 +296,15 @@ class AnalysisMenue extends Component {
 
                                             </Label>
                                             <br />
-                                        </span>
+                                        </li>
                                         : ''
                                 )
-                                : <p>{'All rounds used'}</p>
+                                : <li className = 'select-list'>{'All rounds used'}</li>
                             }
+                            </ul>
                             <div className="button-container text-right" >
                                 <Button color='success' id='new' key='new' onClick={this.goToEditMode} disabled ={this.props.roundList[this.state.semester].length === this.state.usedRounds.length}>
-                                    {'Button New'}
+                                    {translate.btn_add_analysis}
                                 </Button>
                             </div>
                         </FormGroup>
@@ -298,7 +312,7 @@ class AnalysisMenue extends Component {
                 </Collapse>
                 <div className="button-container text-center" >
                     <Button color='secondary' id='published' key='published' onClick={this.goTopPreviewMode} >
-                        {'Cancel'}
+                        {translate.btn_cancel}
                     </Button>
                 </div>
 

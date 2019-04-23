@@ -35,6 +35,7 @@ class RouterStore {
   status = ''
   usedRounds = []
   hasChangedStatus = false
+  courseTitle = ''
 
   buildApiUrl(path, params) {
     let host
@@ -75,6 +76,15 @@ class RouterStore {
   /** ***************************************************************************************************************************************** */
   /*                                                       COLLECTED ROUND INFORMATION                                                        */
   /** ***************************************************************************************************************************************** */
+  @action setCourseTitle(title){
+    this.courseTitle = title.length === 0 
+    ? '' 
+    : {
+      name: title.split('_')[0],
+      credits: title.split('_')[1]
+    }
+  }
+ 
   @action getRoundAnalysis(id, lang = 'sv') {
     return axios.get(this.buildApiUrl(this.paths.api.kursutvecklingGetById.uri,
       { id: id/*, lang: lang*/ }),
@@ -177,7 +187,6 @@ class RouterStore {
 
   @action handleCourseData(courseObject, user, language) {
     console.log(courseObject)
-
     try {
       this.courseData = {
         courseCode: courseObject.course.courseCode,
@@ -186,7 +195,7 @@ class RouterStore {
         gradeScaleCode: courseObject.course.gradeScaleCode,
         syllabusList: courseObject.publicSyllabusVersions
       }
-      this.courseData.title = {
+      this.courseTitle = {
         name: courseObject.course.title,
         credits: courseObject.course.credits
       }
@@ -225,7 +234,6 @@ class RouterStore {
       ? SEMESTER[this.language]['1']
       : SEMESTER[this.language]['2']} ${semester.toString().match(/.{1,4}/g)[0]}`
 
-    if (rounds.length > 1)
       newName = this.createAnalysisName(newName, this.roundData[semester], rounds)
 
     this.analysisData = {

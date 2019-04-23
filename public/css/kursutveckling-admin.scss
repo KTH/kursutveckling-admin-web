@@ -16,15 +16,14 @@ border-left: 1px dotted #dee2e6;;
 .admin-form{
   min-width: 100%;
 }
+
 .container.articleNavigation{
     padding: 15px 15px 0 !important;
    
 }
 
 #course-title{
-    border-bottom: 0px;
-    margin: 0px;
-    margin-top: 20px;
+    margin-bottom: 40px;
 }
 
 .select-semester{
@@ -71,6 +70,10 @@ border-left: 1px dotted #dee2e6;;
   padding: 20px 10px;
   min-width: 100%;
   border-bottom: 1px solid #dee2e6;
+}
+
+.select-list{
+  display: block;
 }
 
 

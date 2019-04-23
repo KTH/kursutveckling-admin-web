@@ -21,8 +21,8 @@ class InfoModal extends Component {
       const fadeModal = (this.props.hasOwnProperty('fade') ? this.props.fade : true)
       return (
         <div>
-          <Modal isOpen={this.props.isOpen} toggle={this.props.toggle} className={this.props.className} fade={fadeModal}>
-            <ModalHeader toggle={this.toggle}>Info</ModalHeader>
+          <Modal isOpen = {this.props.isOpen} toggle={this.props.toggle} className={this.props.className} fade={fadeModal}>
+            <ModalHeader toggle={this.props.toggle}>Info</ModalHeader>
             <ModalBody>
               <p>{this.props.infoText}</p>
             </ModalBody>

@@ -149,6 +149,7 @@ async function getIndex (req, res, next) {
 
   let lang = language.getLanguage(res) || 'sv'
   const ldapUser = req.session.authUser ? req.session.authUser.username : 'null'
+  const courseTitle = req.query.title || ''
 
   try {
     const renderProps = staticFactory()
@@ -165,7 +166,7 @@ async function getIndex (req, res, next) {
       renderProps.props.children.props.routerStore.status = apiResponse.body.isPublished ? 'published' : 'draft'
       console.log('apiResponse.body', apiResponse.body)
     }
-
+    renderProps.props.children.props.routerStore.setCourseTitle(courseTitle.length > 0 ? decodeURIComponent(courseTitle) : '')
     renderProps.props.children.props.routerStore.__SSR__setCookieHeader(req.headers.cookie)
     // await renderProps.props.children.props.routerStore.getRoundAnalysis(req.params.id)
     renderProps.props.children.props.routerStore.analysisId = req.params.id

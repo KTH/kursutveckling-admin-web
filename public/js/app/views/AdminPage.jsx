@@ -4,13 +4,12 @@ import { Row, Col, Button, Form, Label, Input, Alert } from 'reactstrap'
 import { FilePond } from 'react-filepond'
 import 'filepond/dist/filepond.min.css'
 
-import i18n from '../../../../i18n/index'
-
 //Components
 import Title from '../components/Title'
 import AnalysisMenue from '../components/AnalysisMenue'
 import Preview from '../components/Preview'
 import InfoModal from '../components/InfoModal'
+import i18n from '../../../../i18n/index'
 
 //Helpers 
 import { EMPTY, ADMIN_URL } from '../util/constants'
@@ -28,7 +27,8 @@ class AdminPage extends Component {
       isPreviewMode: this.props.routerStore.status !== 'new',
       activeSemester: '',
       changedStatus: false,
-      modalOpen: false
+      modalOpen: false,
+      alert: ''
     }
     this.handlePreview = this.handlePreview.bind(this)
     this.editMode = this.editMode.bind(this)
@@ -52,26 +52,30 @@ class AdminPage extends Component {
     const thisAdminPage = this
     const routerStore = this.props.routerStore
     if (this.state.progress === 'edit') {
-      if (routerStore.semesters.length === 0)
+      if (routerStore.semesters.length === 0){
         return routerStore.getCourseInformation(routerStore.analysisData.courseCode, routerStore.user, routerStore.language)
           .then(courseData => {
             thisAdminPage.setState({
               isPreviewMode: false,
               progress: 'back_new',
-              activeSemester: routerStore.analysisData.semester
+              activeSemester: routerStore.analysisData.semester,
+              alert: ''
             })
           })
+      }
       this.setState({
         isPreviewMode: false,
         progress: 'back_new',
-        activeSemester: routerStore.analysisData.semester
+        activeSemester: routerStore.analysisData.semester,
+        alert: ''
       })
       this.props.history.push(this.props.routerStore.browserConfig.proxyPrefixPath.uri + '/' + this.props.routerStore.courseData.courseCode)
     }
     if (this.state.isPreviewMode) {
       this.setState({
         isPreviewMode: false,
-        progress: 'edit'
+        progress: 'edit',
+        alert: ''
       })
     }
   }
@@ -91,7 +95,8 @@ class AdminPage extends Component {
         isPreviewMode: false,
         isPublished: false,
         values: thisAdminPage.props.routerStore.analysisData,
-        activeSemester: semester
+        activeSemester: semester,
+        alert: ''
       })
     }
     else {
@@ -101,7 +106,8 @@ class AdminPage extends Component {
           progress: 'preview',
           isPreviewMode: true,
           isPublished: thisAdminPage.props.routerStore.analysisData.isPublished,
-          values: thisAdminPage.props.routerStore.analysisData
+          values: thisAdminPage.props.routerStore.analysisData,
+          alert: ''
         })
       })
     }
@@ -119,6 +125,7 @@ class AdminPage extends Component {
         thisInstance.setState({
           saved: true,
           progress: false,
+          alert: 'finimangsparat...'
         })
       })
   }
@@ -169,127 +176,125 @@ class AdminPage extends Component {
   render() {
     const routerStore = this.props.routerStore
     const isDisabled = this.state.isPublished === true
+    const translate = i18n.messages[routerStore.language].messages
 
     console.log("routerStore1", routerStore)
-    console.log("this.state1", this.state)
+    console.log("this.state1", this.state, translate)
     if (routerStore.analysisData === undefined || this.state.progress === 'back_new')
       return (
         <div ref={(ref) => this._div = ref}>
-          <h1>{'KURSUTV...'}</h1>
-          <Title title={routerStore.courseData.title} language={routerStore.language} courseCode={routerStore.courseData.courseCode} />
+          <h1>{translate.header_main}</h1>
+          <Title title={routerStore.courseTitle} language={routerStore.language} courseCode={routerStore.courseData.courseCode} />
           {routerStore.semesters.length === 0
-            ? <Alert>No rounds!</Alert>
+            ? <Alert color="friendly">No rounds!</Alert>
             : <AnalysisMenue
-              editMode={this.editMode}
-              semesterList={routerStore.semesters}
-              roundList={routerStore.roundData}
-              progress={this.state.progress}
-              activeSemester={this.state.activeSemester}
+              editMode= { this.editMode }
+              semesterList= { routerStore.semesters }
+              roundList= { routerStore.roundData }
+              progress= { this.state.progress }
+              activeSemester= { this.state.activeSemester } 
+              firstVisit = { routerStore.analysisData === undefined }
             />
           }
         </div>)
     else
       return (
         <div key='kursutveckling-form-container' className='container' id='kursutveckling-form-container' ref={(ref) => this._div = ref} >
-          <h1>{'KURSUTV page...'}</h1>
-          <Title title={undefined} language={routerStore.language} courseCode={routerStore.analysisData.courseCode} />
+          <h1>{translate.header_main}</h1>
+          <Title title={routerStore.courseTitle} language={routerStore.language} courseCode={routerStore.analysisData.courseCode} />
           <h3>{this.state.values.analysisName}</h3>
+
+          {this.state.alert.length > 0 ?
+              <Alert>
+                {this.state.alert}
+            </Alert>
+              : ''}
+
           {this.state.values
             ? <Preview values={this.state.values} />
             : <p>waiting</p>
           }
           <Row key='form' id='form-container'>
-            {this.state.saved ?
-              <Alert>
-                Finimangsparat
-            </Alert>
-              : ''}
             {this.state.values && !this.state.isPreviewMode
               ? <Form className='admin-form'>
                 <Row className='form-group'>
-                  <Col sm='5' className='col-temp'>
-                    <Label>round name</Label>
-                    <Input id='analysisName' key='round' type='text' value={this.state.values.analysisName} onChange={this.handleInputChange} disabled={isDisabled} />
-                    <Label>Programmes</Label>
+                  <Col sm='4' className='col-temp'>
+                    <Label>{translate.header_programs}*</Label>
                     <Input id='programmeCodes' key='programmeCodes' type='text' value={this.state.values.programmeCodes} onChange={this.handleInputChange} disabled={isDisabled} />
-                    <Label>examiners</Label>
+                    <Label>{translate.header_examiners}*</Label>
                     <Input id='examiners' key='examiners' type='text' value={this.state.values.examiners} onChange={this.handleInputChange} disabled={isDisabled} />
-                    <Label>responsibles</Label>
-                    <Input id='responsibles' key='responsibles' type='text' value={this.state.values.responsibles} onChange={this.handleInputChange} disabled={isDisabled} />
-                    <Label>examinationRounds</Label>
+                    <Label>{translate.header_responsibles}*</Label>
+                    <Input id='responsibles' key='responsibles' type='text' value={this.state.values.responsibled} onChange={this.handleInputChange} disabled={isDisabled} />
+                    <Label>{translate.header_examination}*</Label>
                     <Input id='examinationRounds' key='examinationRounds' type="textarea" value={this.state.values.examinationRounds} onChange={this.handleInputChange} disabled={isDisabled} />
-                    <Label>registered students</Label>
+                    <Label>{translate.header_registrated}*</Label>
                     <Input id='registeredStudents' key='registeredStudents' type='text' value={this.state.values.registeredStudents} onChange={this.handleInputChange} disabled={isDisabled} />
-                    <Label>examinationGrade</Label>
+                    <Label>{translate.header_examination_grad}*</Label>
                     <Input id='examinationGrade' key='examinationGrade' type='number' value={this.state.values.examinationGrade} onChange={this.handleInputChange} disabled={isDisabled} />
                   </Col>
-                  <Col sm='5' className='col-temp'>
-
-                    <Label>alteration text (max xxx tecken)</Label>
-                    <Input id='alterationText' key='alterationText' type="textarea" value={this.state.values.alterationText} onChange={this.handleInputChange} />
-                    <Label>commentChange (max xxx tecken)</Label>
-                    <Input id='commentChange' key='commentChange' type="textarea" value={this.state.values.commentChange} onChange={this.handleInputChange} />
-                    <Label>commentExam</Label>
-                    {this.state.values.commentExam && this.state.values.commentExam.length === 0
+                  <Col sm='4' className='col-temp'>
+                    <Label>{translate.header_examination_comment}*</Label>
+                    {routerStore.analysisData.commentExam !== undefined && routerStore.analysisData.commentExam.length === 0
                       ? <Input id='commentExam' key='commentExam' type='textarea' value={this.state.values.commentExam} onChange={this.handleInputChange} disabled={isDisabled} />
                       : <p id='commentExam' key='commentExam' dangerouslySetInnerHTML={{ __html: this.state.values.commentExam }} />
                     }
-                    <Label>upload analysis-pdf</Label>
+                 
+                    <Label>{translate.header_course_changes_comment}</Label>
+                    <Input id='alterationText' key='alterationText' type="textarea" value={this.state.values.alterationText} onChange={this.handleInputChange} />
+                    <Label>{translate.header_analysis_edit_comment}</Label>
+                    <Input id='commentChange' key='commentChange' type="textarea" value={this.state.values.commentChange} onChange={this.handleInputChange} />
+                  </Col>  
+                  <Col sm='3' className='col-temp'>
+                    <Label>{translate.header_upload_file}</Label>
                     <FilePond id="analysis" key="analysis" labelIdle={labelIdle} />
-                    <Label>upload PM-file</Label>
+                    <Label>{translate.header_upload_file_pm}</Label>
                     <FilePond id="pm" key="pm" labelIdle={labelIdle} />
                   </Col>
                 </Row>
                 <Row className="button-container text-center" >
                   <Col sm="4">
                     <Button color='secondary' id='back' key='back' onClick={this.handleBack} >
-                      {'Back'}
+                    {translate.btn_back }
                     </Button>
                   </Col>
                   <Col sm="4">
                     <Button color='secondary' id='cancel' key='cancel' onClick={this.handleCancel} >
-                      {'Cancel'}
+                    {translate.btn_cancel}
                     </Button>
                   </Col>
                   <Col sm="4">
                     <Button color='success' id='preview' key='preview' onClick={this.handlePreview} >
-                      {'Preview'}
+                      {translate.btn_preview}
                     </Button>
                   </Col>
                 </Row>
-
-                {/** <Label>ID</Label>
-                <Input id='_id' key='round' type='id' value={this.state.values._id} onChange={this.handleInputChange} disabled={isDisabled} />
-
-                <Label>courseCode</Label>
-                <Input id='courseCode' key='courseCode' type='text' value={this.state.values.courseCode} onChange={this.handleInputChange} disabled={isDisabled} />
-                */}
               </Form>
               : <p></p>
             }
-            {this.state.isPreviewMode
+            { this.state.isPreviewMode
               ? <Row className="button-container text-center" >
                 <Col sm="3">
                   <Button color='secondary' id='back' key='back' onClick={this.handleBack} >
-                    {'Back'}
+                    {translate.btn_back_edit }
                   </Button>
                 </Col>
                 <Col sm="3">
                   <Button color='secondary' id='cancel' key='cancel' onClick={this.handleCancel} >
-                    {'Cancel'}
+                    {translate.btn_cancel}
+                    <InfoModal toggle= {this.toggleModal} isOpen = {this.state.modalOpen} id={this.props.routerStore.analysisId} confirmLable={'publish_confirm'} handleConfirm={this.handlePublish} infoText={'publish_warning_text'}/>
                   </Button>
                 </Col>
                 <Col sm="3">
                   {this.state.isPublished
                     ? ''
                     : <Button color='success' id='save' key='save' onClick={this.handleSave} >
-                      {'Save'}
+                     {translate.btn_save}
                     </Button>
                   }
                 </Col>
                 <Col sm="3">
                   <Button color='success' id='publish' key='publish' onClick={this.toggleModal} >
-                    {'Publish'}
+                  {translate.btn_publish}
                   </Button>
                   <InfoModal toggle= {this.toggleModal} isOpen = {this.state.modalOpen} id={this.props.routerStore.analysisId} confirmLable={'publish_confirm'} handleConfirm={this.handlePublish} infoText={'publish_warning_text'}/>
                 </Col>
