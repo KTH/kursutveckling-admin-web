@@ -6,10 +6,11 @@ module.exports = {
   getRoundAnalysisData: _getAnalysisData,
   setRoundAnalysisData: _setAnalysisData,
   updateRoundAnalysisData: _putAnalysisData,
+  deleteRoundAnalysisData: _deleteAnalysisData,
   getUsedRounds: _getUsedRounds
 }
 
-function _getAnalysisData (id) {
+async function _getAnalysisData (id) {
   const paths = api.kursutvecklingApi.paths
   // console.log('_getRoundData', paths)
   const client = api.kursutvecklingApi.client
@@ -31,6 +32,14 @@ async function _putAnalysisData (id, sendObject) {
   const client = api.kursutvecklingApi.client
   const uri = client.resolve(paths.putCourseRoundAnalysisDataById.uri, { id: id })
   return client.putAsync({ uri: uri, body: sendObject })
+}
+
+async function _deleteAnalysisData (id) {
+  const paths = api.kursutvecklingApi.paths
+  // console.log('_putRoundData', paths)
+  const client = api.kursutvecklingApi.client
+  const uri = client.resolve(paths.deleteCourseRoundAnalysisDataById.uri, { id: id })
+  return client.delAsync({ uri: uri })
 }
 
 async function _getUsedRounds (courseCode, semester) {

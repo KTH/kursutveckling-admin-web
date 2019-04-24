@@ -25,9 +25,11 @@ module.exports = {
   getIndex: getIndex,
   getRoundAnalysis: co.wrap(_getRoundAnalysis),
   postRoundAnalysis: co.wrap(_postRoundAnalysis),
+  deleteRoundAnalysis: co.wrap(_deleteRoundAnalysis),
   getCourseEmployees: co.wrap(_getCourseEmployees),
   getUsedRounds: co.wrap(_getUsedRounds),
   getKoppsCourseData: co.wrap(_getKoppsCourseData)
+
 }
 
 function * _postRoundAnalysis (req, res, next) {
@@ -60,7 +62,7 @@ function * _postRoundAnalysis (req, res, next) {
 
 function * _getRoundAnalysis (req, res, next) {
   console.log('getRoundAnalysis', req.params.id)
-  const roundAnalysisId = req.params.id || 'SF1624HT19_1'
+  const roundAnalysisId = req.params.id || ''
   const language = req.params.language || 'sv'
   console.log('getRoundAnalysis', roundAnalysisId)
   try {
@@ -75,6 +77,12 @@ function * _getRoundAnalysis (req, res, next) {
     log.error('Exception calling from getRoundAnalysis ', { error: err })
     next(err)
   }
+}
+
+function * _deleteRoundAnalysis (req, res, next) {
+  const roundAnalysisId = req.params.id
+  const apiResponse = yield kursutvecklingAPI.deleteRoundAnalysisData(roundAnalysisId)
+  return httpResponse.json(res, apiResponse)
 }
 
 function * _getKoppsCourseData (req, res, next) {
