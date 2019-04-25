@@ -127,6 +127,7 @@ function * _getCourseEmployees (req, res) {
   key = key.replace(/_/g, '.')
   try {
     const roundsKeys = JSON.parse(req.body.params)
+
     yield redis('ugRedis', serverConfig.cache.ugRedis.redis)
       .then(function (ugClient) {
         return ugClient.multi()
@@ -135,7 +136,7 @@ function * _getCourseEmployees (req, res) {
           .execAsync()
       })
       .then(function (returnValue) {
-        // console.log("ugRedis - multi -VALUE",returnValue)
+        console.log('ugRedis - multi -VALUE', returnValue)
         return httpResponse.json(res, returnValue)
       })
       .catch(function (err) {
@@ -172,9 +173,10 @@ async function getIndex (req, res, next) {
       const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(req.params.id, lang)
       renderProps.props.children.props.routerStore.analysisData = apiResponse.body
       renderProps.props.children.props.routerStore.status = apiResponse.body.isPublished ? 'published' : 'draft'
-      console.log('apiResponse.body', apiResponse.body)
+      renderProps.props.children.props.routerStore.setCourseTitle(courseTitle.length > 0 ? decodeURIComponent(courseTitle) : '')
+      // console.log('apiResponse.body', apiResponse.body)
     }
-    renderProps.props.children.props.routerStore.setCourseTitle(courseTitle.length > 0 ? decodeURIComponent(courseTitle) : '')
+
     renderProps.props.children.props.routerStore.__SSR__setCookieHeader(req.headers.cookie)
     // await renderProps.props.children.props.routerStore.getRoundAnalysis(req.params.id)
     renderProps.props.children.props.routerStore.analysisId = req.params.id

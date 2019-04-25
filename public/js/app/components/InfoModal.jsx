@@ -22,13 +22,13 @@ class InfoModal extends Component {
       return (
         <div>
           <Modal isOpen = {this.props.isOpen} toggle={this.props.toggle} className={this.props.className} fade={fadeModal}>
-            <ModalHeader toggle={this.props.toggle}>Info</ModalHeader>
+            <ModalHeader toggle={this.props.toggle}>{this.props.infoText.header}</ModalHeader>
             <ModalBody>
-              <p>{this.props.infoText}</p>
+              <p dangerouslySetInnerHTML={{ __html:this.props.infoText.body}}/>
             </ModalBody>
             <ModalFooter>
-              <Button color='success' onClick={this.handleConfirm}>Confirm</Button>
-              <Button color='secondary' onClick={this.props.toggle}>Close</Button>
+              <Button id={this.props.type} color='secondary' onClick={this.props.toggle}>{this.props.infoText.btnCancel}</Button>
+              <Button color='secondary' onClick={this.handleConfirm}>{this.props.infoText.btnConfirm}</Button>
             </ModalFooter>
           </Modal>
           </div>

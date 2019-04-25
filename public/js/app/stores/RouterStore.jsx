@@ -36,6 +36,8 @@ class RouterStore {
   usedRounds = []
   hasChangedStatus = false
   courseTitle = ''
+  examCommentEmpty = true
+  errorMessage = ''
 
   buildApiUrl(path, params) {
     let host
@@ -52,7 +54,6 @@ class RouterStore {
   }
 
   _getOptions(params) {
-
     // Pass Cookie header on SSR-calls
     let options
     if (typeof window === 'undefined') {
@@ -186,7 +187,11 @@ class RouterStore {
 
 
   @action handleCourseData(courseObject, user, language) {
-    console.log(courseObject)
+    //console.log('courseObject',courseObject)
+    if(courseObject === undefined){
+      this.errorMessage = 'Whoopsi daisy... kan just nu inte hämta data från kopps'
+      return undefined
+    }
     try {
       this.courseData = {
         courseCode: courseObject.course.courseCode,
@@ -216,7 +221,7 @@ class RouterStore {
           targetGroup: this.getTargetGroup(round)
         })
       })
-      console.log(this.courseData, this.roundData)
+      //console.log(this.courseData, this.roundData)
     }
 
     catch (err) {
@@ -228,39 +233,44 @@ class RouterStore {
   }
 
   @action createAnalysisData(semester, rounds) {
-    this.status = 'new'
-    this.analysisId = `${this.courseData.courseCode}${semester.toString().match(/.{1,4}/g)[1] === '1' ? 'VT' : 'HT'}${semester.toString().match(/.{1,4}/g)[0]}_${rounds.join('_')}`
-    let newName = `${semester.toString().match(/.{1,4}/g)[1] === '1'
-      ? SEMESTER[this.language]['1']
-      : SEMESTER[this.language]['2']} ${semester.toString().match(/.{1,4}/g)[0]}`
+    this.getEmployees(this.courseData.courseCode, semester, rounds)
+
+    return this.getCourseEmployeesPost(this.redisKeys, 'multi', this.language).then(returnList => {
+      this.status = 'new'
+      this.analysisId = `${this.courseData.courseCode}${semester.toString().match(/.{1,4}/g)[1] === '1' ? 'VT' : 'HT'}${semester.toString().match(/.{1,4}/g)[0]}_${rounds.join('_')}`
+      let newName = `${semester.toString().match(/.{1,4}/g)[1] === '1'
+        ? SEMESTER[this.language]['1']
+        : SEMESTER[this.language]['2']} ${semester.toString().match(/.{1,4}/g)[0]}`
 
       newName = this.createAnalysisName(newName, this.roundData[semester], rounds)
+       
+      this.analysisData = {
+        _id: this.analysisId,
+        alterationText: " ",
+        changedBy: "Kristian Semlan Gullefjun",
+        changedDate: " ",
+        commentChange: " ",
+        commentExam: this.getExmCommentfromCorrectSyllabus(semester, this.courseData.syllabusList),
+        courseCode: this.courseData.courseCode,
+        examinationRounds: this.getExamObject(this.courseData.examinationSets, this.courseData.gradeScale, this.language, semester),
+        examiners: " ",
+        examinationGrade: 0,
+        isPublished: false,
+        pdfAnalysisDate: " ",
+        programmeCodes: this.getAllTargetGroups(rounds, this.roundData[semester]).join(', '),
+        publishedDate: "",
+        registeredStudents: 0,
+        responsibles: " ",
+        analysisName: newName,
+        semester: semester,
+        roundIdList: rounds.toString()
+      }
 
-    this.analysisData = {
-      _id: this.analysisId,
-      alterationText: " ",
-      changedBy: "Dummy User",
-      changedDate: " ",
-      commentChange: " ",
-      commentExam: this.getExmCommentfromCorrectSyllabus(semester, this.courseData.syllabusList),
-      courseCode: this.courseData.courseCode,
-      examinationRounds: this.getExamObject(this.courseData.examinationSets, this.courseData.gradeScale, this.language, semester),
-      examiners: " ",
-      examinationGrade: 0,
-      isPublished: false,
-      pdfAnalysisDate: " ",
-      programmeCodes: this.getAllTargetGroups(rounds, this.roundData[semester]).join(', '),
-      publishedDate: "",
-      registeredStudents: 0,
-      responsibles: " ",
-      analysisName: newName,
-      semester: semester,
-      roundIdList: rounds.toString()
-    }
+      this.examCommentEmpty = this.analysisData.commentExam.length === 0
 
-    this.getEmployees(this.courseData.courseCode, semester, rounds)
-    this.getCourseEmployeesPost(this.redisKeys, 'multi', this.language).then(returnList => {
-      console.log('returnList', returnList)
+      this.analysisData.examiners = ''
+      this.analysisData.responsibles = ''
+     
       this.analysisData.examiners = this.getEmployeesNames(returnList[0]).join(', ')
       this.analysisData.responsibles = this.getEmployeesNames(returnList[1]).join(', ')
 
@@ -340,7 +350,7 @@ class RouterStore {
 
   getEmployees(courseCode, semester, rounds) {
     for (let index = 0; index < rounds.length; index++) {
-      this.redisKeys.responsibles.push(`${courseCode}.${semester}.${Number(rounds[index]) - 1}.courseresponsible`)
+      this.redisKeys.responsibles.push(`${courseCode}.${semester}.${Number(rounds[index])}.courseresponsible`)
     }
     this.redisKeys.examiner.push(`${courseCode}.examiner`)
   }
@@ -354,6 +364,7 @@ class RouterStore {
       if (employeeList[index] !== null) {
         toObject = JSON.parse(employeeList[index])
         for (let index2 = 0; index2 < toObject.length; index2++) {
+          if(toObject[index2].givenName)
           list.push(`${toObject[index2].givenName} ${toObject[index2].lastName}`)
         }
       }

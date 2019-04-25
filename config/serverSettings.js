@@ -36,7 +36,7 @@ const ldapOptions = {
   testSearch: true, // TODO: Should this be an ENV setting?
   timeout: typeConversion(getEnv('LDAP_TIMEOUT', null)),
   reconnectTime: typeConversion(getEnv('LDAP_IDLE_RECONNECT_INTERVAL', null)),
-  reconnectOnIdle: (getEnv('LDAP_IDLE_RECONNECT_INTERVAL', null) ? true : false),
+  reconnectOnIdle: (!!getEnv('LDAP_IDLE_RECONNECT_INTERVAL', null)),
   connecttimeout: typeConversion(getEnv('LDAP_CONNECT_TIMEOUT', null)),
   searchtimeout: typeConversion(getEnv('LDAP_SEARCH_TIMEOUT', null))
 }

@@ -44,7 +44,7 @@ class AnalysisForm extends Component {
   }
   /*componentWillMount(){ 
     const id = this.props.routerStore.analysisId
-    console.log("mount", id)
+  
    this.props.routerStore.getRoundAnalysis(id, 'sv')
    .then((data) => { console.log("mount2", data)
      thisInstance.setState({
@@ -58,7 +58,7 @@ class AnalysisForm extends Component {
     const postObject = this.state.values
     const thisInstance = this
     this.props.history.push(this.props.routerStore.browserConfig.proxyPrefixPath.uri +'/'+ this.props.routerStore.analysisId)
-    console.log('postObject', postObject)
+    //console.log('postObject', postObject)
     return this.props.routerStore.postRoundAnalysisData(postObject, this.state.isNew)
    .then((data) => {
      thisInstance.setState({
@@ -73,10 +73,10 @@ class AnalysisForm extends Component {
     let postObject = this.state.values
     postObject.isPublished = true
     const thisInstance = this
-    console.log('postObjecteeee', this.state.values.isPublished)
+    //console.log('postObjecteeee', this.state.values.isPublished)
     return this.props.routerStore.postRoundAnalysisData(postObject, false)
    .then((response) => {
-     console.log(response)
+     //console.log(response)
      thisInstance.setState({
        saved: true,
        isPublished: true

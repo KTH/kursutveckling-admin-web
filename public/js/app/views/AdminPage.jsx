@@ -13,7 +13,7 @@ import i18n from '../../../../i18n/index'
 
 //Helpers 
 import { EMPTY, ADMIN_URL } from '../util/constants'
-const labelIdle = 'Drag & Drop filen här <span class="filepond--label-action"> eller öppna utforskaren </span>'
+
 
 @inject(['routerStore']) @observer
 class AdminPage extends Component {
@@ -27,8 +27,13 @@ class AdminPage extends Component {
       isPreviewMode: this.props.routerStore.status !== 'new',
       activeSemester: '',
       changedStatus: false,
-      modalOpen: false,
-      alert: ''
+      modalOpen:{
+        publish: false,
+       cancel: false
+      },
+      alert: '',
+      analysisFile: '',
+      pmFile:''
     }
     this.handlePreview = this.handlePreview.bind(this)
     this.editMode = this.editMode.bind(this)
@@ -82,14 +87,14 @@ class AdminPage extends Component {
 
   handleCancel(event) {
     event.preventDefault()
-    alert('back to admin with status')
+    alert('THIS IS WILL TAKE YOU BACK TO KURSINFO ADMIN IN THE FUTURE...')
   }
 
   editMode(semester, rounds, analysisId, status) {
     const thisAdminPage = this
 
     if (status === 'new') {
-      this.props.routerStore.createAnalysisData(semester, rounds)
+      return this.props.routerStore.createAnalysisData(semester, rounds).then( data => {
       thisAdminPage.setState({
         progress: "edit",
         isPreviewMode: false,
@@ -98,6 +103,7 @@ class AdminPage extends Component {
         activeSemester: semester,
         alert: ''
       })
+    })
     }
     else {
       this.props.history.push(this.props.routerStore.browserConfig.proxyPrefixPath.uri + '/' + analysisId)
@@ -122,6 +128,7 @@ class AdminPage extends Component {
     return this.props.routerStore.postRoundAnalysisData(postObject, this.props.routerStore.status === 'new')
       .then((data) => {
         console.log('postObject', data)
+        alert('THIS IS WILL TAKE YOU BACK TO KURSINFO ADMIN IN THE FUTURE... ')
         thisInstance.setState({
           saved: true,
           progress: false,
@@ -139,10 +146,10 @@ class AdminPage extends Component {
     postObject.isPublished = true
     const thisInstance = this
     console.log('postObjecteeee', this.state.values.isPublished)
-    return this.props.routerStore.postRoundAnalysisData(postObject, false)
+    return this.props.routerStore.postRoundAnalysisData(postObject, this.props.routerStore.status === 'new' )
       .then((response) => {
         console.log('handlePublish', response)
-        alert("back to kursinfo-admin")
+        alert("THIS IS WILL TAKE YOU BACK TO KURSINFO ADMIN IN THE FUTURE... ")
         thisInstance.setState({
           saved: true,
           isPublished: true,
@@ -151,9 +158,12 @@ class AdminPage extends Component {
       })
   }
 
-  toggleModal(){
+  toggleModal(event){
+    console.log("modal", event.target.id)
+    let modalOpen = this.state.modalOpen
+    modalOpen[event.target.id] = !modalOpen[event.target.id]
     this.setState({
-      modalOpen: !this.state.modalOpen
+      modalOpen: modalOpen
     })
   }
 
@@ -167,9 +177,8 @@ class AdminPage extends Component {
   }
 
   componentDidUpdate() {
-  console.log('componentDidMount')
-  window.scrollTo(0, 0)
-    this._div.scrollTop = 0
+    window.scrollTo(0, 0)
+    //this._div.scrollTop = 0
   }
 
 
@@ -177,6 +186,7 @@ class AdminPage extends Component {
     const routerStore = this.props.routerStore
     const isDisabled = this.state.isPublished === true
     const translate = i18n.messages[routerStore.language].messages
+    const labelIdle =  translate.add_file 
 
     console.log("routerStore1", routerStore)
     console.log("this.state1", this.state, translate)
@@ -184,19 +194,25 @@ class AdminPage extends Component {
       return (
         <div ref={(ref) => this._div = ref}>
           <h1>{translate.header_main}</h1>
-          <Title title={routerStore.courseTitle} language={routerStore.language} courseCode={routerStore.courseData.courseCode} />
-          {routerStore.semesters.length === 0
-            ? <Alert color="friendly">No rounds!</Alert>
-            : <AnalysisMenue
-              editMode= { this.editMode }
-              semesterList= { routerStore.semesters }
-              roundList= { routerStore.roundData }
-              progress= { this.state.progress }
-              activeSemester= { this.state.activeSemester } 
-              firstVisit = { routerStore.analysisData === undefined }
-            />
+          { routerStore.errorMessage.length === 0
+            ? <div>
+              <Title title={routerStore.courseTitle} language={routerStore.language} courseCode={routerStore.courseData.courseCode} />
+              {routerStore.semesters.length === 0
+                ? <Alert color="friendly">No rounds!</Alert>
+                : <AnalysisMenue
+                  editMode= { this.editMode }
+                  semesterList= { routerStore.semesters }
+                  roundList= { routerStore.roundData }
+                  progress= { this.state.progress }
+                  activeSemester= { this.state.activeSemester } 
+                  firstVisit = { routerStore.analysisData === undefined }
+                />
+              }
+            </div>
+            : <Alert color="friendly"> { routerStore.errorMessage }</Alert>
           }
-        </div>)
+        </div>
+      )
     else
       return (
         <div key='kursutveckling-form-container' className='container' id='kursutveckling-form-container' ref={(ref) => this._div = ref} >
@@ -214,9 +230,11 @@ class AdminPage extends Component {
             ? <Preview values={this.state.values} />
             : <p>waiting</p>
           }
-          <Row key='form' id='form-container'>
+          <div key='form' id='form-container'>
             {this.state.values && !this.state.isPreviewMode
               ? <Form className='admin-form'>
+              <h2>{translate.edit_content}</h2>
+              <p>{translate.asterix_text}</p>
                 <Row className='form-group'>
                   <Col sm='4' className='col-temp'>
                     <Label>{translate.header_programs}*</Label>
@@ -229,14 +247,14 @@ class AdminPage extends Component {
                     <Input id='examinationRounds' key='examinationRounds' type="textarea" value={this.state.values.examinationRounds} onChange={this.handleInputChange} disabled={isDisabled} />
                     <Label>{translate.header_registrated}*</Label>
                     <Input id='registeredStudents' key='registeredStudents' type='text' value={this.state.values.registeredStudents} onChange={this.handleInputChange} disabled={isDisabled} />
-                    <Label>{translate.header_examination_grad}*</Label>
+                    <Label>{translate.header_examination_grade}*</Label>
                     <Input id='examinationGrade' key='examinationGrade' type='number' value={this.state.values.examinationGrade} onChange={this.handleInputChange} disabled={isDisabled} />
                   </Col>
                   <Col sm='4' className='col-temp'>
                     <Label>{translate.header_examination_comment}*</Label>
-                    {routerStore.analysisData.commentExam !== undefined && routerStore.analysisData.commentExam.length === 0
+                    {routerStore.examCommentEmpty || ( this.state.values.commentExam && this.state.values.commentExam.indexOf('</') ) < 0
                       ? <Input id='commentExam' key='commentExam' type='textarea' value={this.state.values.commentExam} onChange={this.handleInputChange} disabled={isDisabled} />
-                      : <p id='commentExam' key='commentExam' dangerouslySetInnerHTML={{ __html: this.state.values.commentExam }} />
+                      : <span id='commentExam' key='commentExam' dangerouslySetInnerHTML={{ __html: this.state.values.commentExam }} />
                     }
                  
                     <Label>{translate.header_course_changes_comment}</Label>
@@ -246,9 +264,31 @@ class AdminPage extends Component {
                   </Col>  
                   <Col sm='3' className='col-temp'>
                     <Label>{translate.header_upload_file}</Label>
-                    <FilePond id="analysis" key="analysis" labelIdle={labelIdle} />
+                    <FilePond id="analysis" key="analysis" 
+                      labelIdle={labelIdle} 
+                      ref={ref => (this.pond = ref)}
+                      files={this.state.analysisFile}
+                      allowMultiple={true}
+                      maxFiles={1}
+                      onupdatefiles={fileItems => {
+                        this.setState({
+                          analysisFile: fileItems.map(fileItem => fileItem.file)
+                        })
+                      }}
+                   />
                     <Label>{translate.header_upload_file_pm}</Label>
-                    <FilePond id="pm" key="pm" labelIdle={labelIdle} />
+                    <FilePond id="pm" key="pm" labelIdle={labelIdle}
+                      labelIdle={labelIdle} 
+                      ref={ref => (this.pond = ref)}
+                      files={this.state.pmFile}
+                      allowMultiple={true}
+                      maxFiles={1}
+                      onupdatefiles={fileItems => {
+                        this.setState({
+                          pmFile: fileItems.map(fileItem => fileItem.file)
+                        }) 
+                      }}
+                    />
                   </Col>
                 </Row>
                 <Row className="button-container text-center" >
@@ -258,7 +298,7 @@ class AdminPage extends Component {
                     </Button>
                   </Col>
                   <Col sm="4">
-                    <Button color='secondary' id='cancel' key='cancel' onClick={this.handleCancel} >
+                    <Button color='secondary' id='cancel' key='cancel' onClick={this.toggleModal} >
                     {translate.btn_cancel}
                     </Button>
                   </Col>
@@ -278,31 +318,33 @@ class AdminPage extends Component {
                     {translate.btn_back_edit }
                   </Button>
                 </Col>
-                <Col sm="3">
-                  <Button color='secondary' id='cancel' key='cancel' onClick={this.handleCancel} >
+                <Col sm="4">
+                  <Button color='secondary' id='cancel' key='cancel' onClick={this.toggleModal} >
                     {translate.btn_cancel}
-                    <InfoModal toggle= {this.toggleModal} isOpen = {this.state.modalOpen} id={this.props.routerStore.analysisId} confirmLable={'publish_confirm'} handleConfirm={this.handlePublish} infoText={'publish_warning_text'}/>
                   </Button>
                 </Col>
-                <Col sm="3">
+                <Col sm="2">
                   {this.state.isPublished
                     ? ''
                     : <Button color='success' id='save' key='save' onClick={this.handleSave} >
-                     {translate.btn_save}
+                      {translate.btn_save}
                     </Button>
                   }
                 </Col>
-                <Col sm="3">
+                <Col sm="2">
                   <Button color='success' id='publish' key='publish' onClick={this.toggleModal} >
-                  {translate.btn_publish}
+                    {translate.btn_publish}
                   </Button>
-                  <InfoModal toggle= {this.toggleModal} isOpen = {this.state.modalOpen} id={this.props.routerStore.analysisId} confirmLable={'publish_confirm'} handleConfirm={this.handlePublish} infoText={'publish_warning_text'}/>
+                 
                 </Col>
-
+                <InfoModal type = 'publish' toggle= {this.toggleModal} isOpen = {this.state.modalOpen.publish} id={this.props.routerStore.analysisId} handleConfirm={this.handlePublish} infoText={translate.info_publish}/>
+                <InfoModal type = 'cancel' toggle= {this.toggleModal} isOpen = {this.state.modalOpen.cancel} id={this.props.routerStore.analysisId} handleConfirm={this.handleCancel} infoText={translate.info_cancel}/>
               </Row>
               : ''
             }
-          </Row>
+          </div>
+          <InfoModal type = 'publish' toggle= {this.toggleModal} isOpen = {this.state.modalOpen.publish} id={this.props.routerStore.analysisId} handleConfirm={this.handlePublish} infoText={translate.info_publish}/>
+                <InfoModal type = 'cancel' toggle= {this.toggleModal} isOpen = {this.state.modalOpen.cancel} id={this.props.routerStore.analysisId} handleConfirm={this.handleCancel} infoText={translate.info_cancel}/>
         </div>
       )
   }

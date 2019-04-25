@@ -9,7 +9,7 @@ const koppsApi = new BasicAPI({
   https: config.koppsApi.https,
   json: true,
   // Kopps is a public API and needs no API-key
-  defaultTimeout: 4000 // config.koppsApi.defaultTimeout
+  defaultTimeout: 10000 // config.koppsApi.defaultTimeout
 })
 
 module.exports = {

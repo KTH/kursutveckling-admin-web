@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
-import { Row, Col, Button, Form, Label, Input, Alert} from 'reactstrap'
+import { Alert, Collapse, Table} from 'reactstrap'
 
 
 
@@ -30,7 +30,7 @@ class Preview extends Component {
     const postObject = this.state.values
     const thisInstance = this
     this.props.history.push(this.props.routerStore.browserConfig.proxyPrefixPath.uri +'/'+ this.props.routerStore.analysisId)
-    console.log('postObject', postObject)
+    //console.log('postObject', postObject)
     return this.props.routerStore.postRoundAnalysisData(postObject, this.state.isNew)
    .then((data) => {
      thisInstance.setState({
@@ -45,10 +45,10 @@ class Preview extends Component {
     let postObject = this.state.values
     postObject.isPublished = true
     const thisInstance = this
-    console.log('postObjecteeee', this.state.values.isPublished)
+    //console.log('postObjecteeee', this.state.values.isPublished)
     return this.props.routerStore.postRoundAnalysisData(postObject, false)
    .then((response) => {
-     console.log(response)
+    // console.log(response)
      thisInstance.setState({
        saved: true,
        isPublished: true
@@ -62,11 +62,17 @@ class Preview extends Component {
     })
   }
 
+  componentWillMount(){
+   // console.log(this.props.values)
+    this.setState({
+      values: this.props.values
+    })
+  }
+
   render () {
     const routerStore = this.props.routerStore
-    const values = this.state.values
-    //console.log("routerStore", routerStore)
-    //console.log( "preview props", this.props)
+    const translate = i18n.messages[routerStore.language].messages
+    
     if(routerStore.analysisData === undefined)
       return (<div></div>)
     else
@@ -74,48 +80,121 @@ class Preview extends Component {
         <div key='kursutveckling-andmin-preview' className='container' id='preview-container' >
           {routerStore.analysisData.examinationRounds && routerStore.analysisData.examinationRounds.length === 0 
           ?<Alert>Fel fel fel !</Alert>
-          :<div>
-          <Row key='preview' id='preview-container'>
-            <Col sm='3' className='col-temp'>
-              <h4>ID </h4>
-              <p id='_id' key='id' >{values._id}</p>
-              <h4>course code </h4>
-              <p id='courseCode' key='courseCode'>{values.courseCode}</p>
-              <h4>round name </h4>
-              <p id='analysisName' key='round' >{values.analysisName}</p>
-            </Col>
-            <Col sm='3' className='col-temp'>
-              <h4>targetGroup </h4>
-              <p id='programmeCodes' key='programmeCodes' >{values.programmeCodes} </p>
-              <h4>examiners </h4>
-              <p id='examiners' key='examiners' >{values.examiners}</p>
-              <h4>responsibles </h4>
-              <p id='responsibles' key='responsibles' >{values.responsibles}</p>
-            </Col>
-            <Col sm='3' className='col-temp' >
-              <h4>examinationRounds </h4>
-              <p id='examinationRounds' key='examinationRounds' >{values.examinationRounds.toString()}</p>
-              <h4>registered students </h4>
-              <p id='registeredStudents' key='registeredStudents' >{values.registeredStudents}</p>
-              <h4>examination grade </h4>
-              <p id='examinationGrade' key='examinationGrade' >{values.examinationGrade} %</p>
-            </Col>
-            <Col sm='3' className='col-temp'>
-              <h4>alteration text </h4>
-              <p id='alterationText' key='alterationText' >{values.alterationText}</p>
-              <h4>commentChange </h4>
-              <p id='commentChange' key='commentChange' >{values.commentChange}</p>
-              <h4>commentExam </h4>
-              <p id='commentExam' key='commentExam' dangerouslySetInnerHTML={{__html: values.commentExam}}/>
-            </Col>
-          </Row>
-          <br />
-        <p>--------------------------------------------------------------------------------------------------------------------------</p>
-     </div>    
-          }
+          : <div className='tables-list col'>
+            <TableForCourse courseRound="HT 2018" togglerId="toggler1" analysisObject={this.props.values} translate={translate}/>
+          </div>
+        }
      </div>   
     )
   }
 }
 
 export default Preview
+
+const GrayTextBlock = ({header, text}) => {
+  return (
+    <span>
+      <h4>{header}</h4>
+      <Table responsive>
+        <tbody>
+          <tr>
+            <td colSpan="6" dangerouslySetInnerHTML={{__html: text}}>                    
+            </td>
+          </tr>
+        </tbody>
+      </Table>  
+    </span>
+  )
+}
+
+class ProgramCollapse extends Component {
+  constructor(props) {
+    super(props)
+    this.toggleHeader = this.toggleHeader.bind(this)
+    this.state = {collapseProgram: false}
+  }
+  toggleHeader() {
+    this.setState(state => ({collapseProgram: !state.collapseProgram}))
+  }
+  render () {
+    const label = this.props.label
+    return (
+        <div className='card collapsible white' >
+          <span className='card-header white' role='tab'  tabIndex='0' onClick={this.toggleHeader}>
+              <a className='collapse-header white' id={'programHeading' + label} data-toggle='collapse' href={'#collapsePrograms' + label} aria-controls={'collapsePrograms' + label}> 
+              {this.state.collapseProgram ? '- ' : '+ '}
+              {this.props.header}
+              </a>
+          </span>
+          <Collapse color='white' isOpen={this.state.collapseProgram} toggler={'#programHeading' + label}>
+            <div className='card-body  col'>
+              <span className='textBlock' dangerouslySetInnerHTML={{__html: this.props.text}}/>
+            </div>
+          </Collapse>
+        </div>
+    )
+  }
+}
+
+
+class TableForCourse extends Component {
+  constructor(props) {
+    super(props)
+  }
+
+  render () {    
+    const values = this.props.analysisObject
+    const translate = this.props.translate
+    //console.log('values', values)
+    return(
+      <div className='card collapsible blue'>
+        <span className='table-title card-header'  role="tab" tabIndex='0' >
+            <a id={this.props.togglerId}  aria-expanded={true}>{values.analysisName}</a> 
+        </span>
+        {/*  */}
+        <Collapse isOpen={true} >
+          <ProgramCollapse header={translate.header_programs} text={values.programmeCodes} label={this.props.togglerId}/>
+          <span className="right-links" >
+            <a href='https://app-r.referens.sys.kth.se/student/kurser/kurs/kursplan/SF1626_20182.pdf?lang=sv' target='_blank' >{translate.link_syllabus}</a> 
+            <a href='https://kth.box.com/s/i9xu34n5conqdoj7re81bmcto20wavib' target='_blank' >{translate.link_pm}: 2019-05-20</a> 
+            <a href='https://kth.box.com/s/4vzvj5kqomb9qa1nd4qadvoxa0dozyib' target='_blank' >{translate.link_analysis}: 2019-05-25</a>
+          </span>
+          <Table responsive>
+            <thead>
+                <tr>
+                    <th>{translate.header_employees}</th>
+                    <th>{translate.header_registrated}</th>
+                    <th>{translate.header_examination}</th>
+                     <th>{translate.header_examination_comment}</th>
+                    <th alt='; i % av aktiva (totalt) vid första ex-tillfället'>{translate.header_examination_grade}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td> 
+                        <p><b>{translate.header_examiners}: </b></p>                  
+                        <p>{values.examiners}</p>
+                        <p><b>{translate.header_responsibles}: </b></p>                  
+                        <p>{values.responsibles}</p>
+                    </td>
+                    <td>{values.registeredStudents}</td>
+                    <td>
+                        <p> {values.examinationRounds} </p>
+                      
+                    </td>
+                    <td> 
+                        <p dangerouslySetInnerHTML={{__html: values.commentExam }}/>
+                    </td>
+                    <td>
+                        <p>{values.examinationGrade} %</p>
+                    </td>
+                </tr>
+            </tbody>
+          </Table> 
+          <GrayTextBlock header={translate.header_course_changes_comment} text={values.alterationText}/>
+          <GrayTextBlock header={translate.header_analysis_edit_comment}  text={values.commentChange}/>
+          <p className="underlined">{translate.last_change_date} {values.changedDate}</p>
+        </Collapse>
+      </div>          
+    )}
+}

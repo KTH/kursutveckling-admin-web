@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
-import { Alert, Card, Form, Dropdown, FormGroup, Label, Input, Collapse, DropdownToggle, DropdownItem, DropdownMenu, Button } from 'reactstrap'
+import { Alert, Form, Dropdown, FormGroup, Label, Input, Collapse, DropdownToggle, DropdownItem, DropdownMenu, Button } from 'reactstrap'
 
 import i18n from '../../../../i18n/index'
 
@@ -40,7 +40,8 @@ class AnalysisMenue extends Component {
         this.handleRoundCheckbox = this.handleRoundCheckbox.bind(this)
         this.handleSelectedDraft = this.handleSelectedDraft.bind(this)
         this.handleSelectedPublished = this.handleSelectedPublished.bind(this)
-        this.goTopPreviewMode = this.goTopPreviewMode.bind(this)
+        this.goToPreviewMode = this.goToPreviewMode.bind(this)
+        this.handleCancel = this.handleCancel.bind(this)
 
 
     }
@@ -77,7 +78,7 @@ class AnalysisMenue extends Component {
         this.setState({
             semester: event.target.id,
             collapseOpen: true,
-            fistVisit: false
+            firstVisit: false
         })
     }
 
@@ -86,7 +87,6 @@ class AnalysisMenue extends Component {
         const routerStore = this.props.routerStore
         return this.props.routerStore.getUsedRounds(this.props.routerStore.courseData.courseCode, semester)
             .then(result => {
-                console.log("used rounds", routerStore.usedRounds)
                 thisInstance.setState({
                     semester: semester,
                     usedRounds: routerStore.usedRounds.usedRounds,
@@ -127,6 +127,8 @@ class AnalysisMenue extends Component {
         prevState.alert = ''
         this.setState(prevState)
     }
+
+
     //************************ SUBMIT BUTTONS **************************** */
     goToEditMode(event) {
         event.preventDefault()
@@ -134,21 +136,24 @@ class AnalysisMenue extends Component {
             this.props.editMode(this.state.semester, this.state.rounds, null, 'new')
         else
             this.setState({
-                alert: 'selectRounds'
+                alert: i18n.messages[this.props.routerStore.language].messages.alert_no_rounds_selected
             })
     }
 
-    goTopPreviewMode(event) {
+    goToPreviewMode(event) {
         event.preventDefault()
-        console.log(event.target.id)
-        const selected = event.target.id
-        if (this.state.selectedRadio[selected].length > 0)
-            this.props.editMode(this.state.semester, this.state.rounds, this.state.selectedRadio[selected], event.target.id)
+        if (this.state.selectedRadio[event.target.id].length > 0)
+            this.props.editMode(this.state.semester, this.state.rounds, this.state.selectedRadio[event.target.id], event.target.id)
         else
             this.setState({
-                alert: selected
+                alert: i18n.messages[this.props.routerStore.language].messages.alert_no_rounds_selected
             })
     }
+
+    handleCancel(event) {
+        event.preventDefault()
+        alert('THIS IS WILL TAKE YOU BACK TO KURSINFO ADMIN IN THE FUTURE')
+      }
 
 
 
@@ -160,7 +165,8 @@ class AnalysisMenue extends Component {
        
         return (
             <div id="YearAndRounds">
-                <h4>{translate.select_semester}</h4>
+                <h4>{translate.header_select_semester}</h4>
+                {/**** Select semester for a course *****/}
                 <Dropdown
                     isOpen={this.state.dropdownOpen}
                     toggle={this.toggleDropdown}
@@ -175,18 +181,18 @@ class AnalysisMenue extends Component {
                             }
                         </span>
                         <span className='caretholder' id={'_spanCaret'}></span>
-                    </DropdownToggle>
-                    <DropdownMenu>
-                        {this.props.semesterList && this.props.semesterList.map(semester =>
-                            <DropdownItem id={semester} key={semester} onClick={this.handleSelectedSemester}>
-                            {`
-                                ${translate.course_short_semester[semester.toString().match(/.{1,4}/g)[1]]} 
-                                ${semester.toString().match(/.{1,4}/g)[0]}
-                            `}
-                            </DropdownItem>
-                        )}
-                    </DropdownMenu>
-                </Dropdown>
+                            </DropdownToggle>
+                                <DropdownMenu>
+                                    {this.props.semesterList && this.props.semesterList.map(semester =>
+                                        <DropdownItem id={semester} key={semester} onClick={this.handleSelectedSemester}>
+                                            {`
+                                            ${translate.course_short_semester[semester.toString().match(/.{1,4}/g)[1]]} 
+                                            ${semester.toString().match(/.{1,4}/g)[0]}
+                                            `}
+                                        </DropdownItem>
+                                )}
+                            </DropdownMenu>
+                        </Dropdown>
                 <br />
                 {this.state.alert.length > 0
                     ? <Alert color='danger'> {this.state.alert}</Alert>
@@ -212,7 +218,7 @@ class AnalysisMenue extends Component {
                                                         checked={this.state.selectedRadio.draft === analysis.analysisId}
                                                     />
                                                     {analysis.analysisName}
-                                                    {" ( Created by " + analysis.user + " ) "}
+                                                    {" ( Created by: " + analysis.user + " ) "}
                                                 </Label>
                                                 <br />
                                             </li>
@@ -222,14 +228,14 @@ class AnalysisMenue extends Component {
                                         <li className = 'select-list'>
                                             <Label key={"Label" + this.state.draftAnalysis[0].analysisId} for={this.state.draftAnalysis[0].analysisId} >
                                                 {this.state.draftAnalysis[0].analysisName}
-                                                {" ( Created by " + this.state.draftAnalysis[0].user + " ) "}
+                                                {" ( Created by: " + this.state.draftAnalysis[0].user + " ) "}
                                             </Label>
                                         </li>
                                     </ul>
-                                : <p>{'no drafts ...'}</p>
+                                : <p>{translate.draft_empty}</p>
                             }
                             <div className="button-container text-right" >
-                                <Button color='success' id='draft' key='draft' onClick={this.goTopPreviewMode} disabled={this.state.draftAnalysis.length < 1} >
+                                <Button color='success' id='draft' key='draft' onClick={this.goToPreviewMode} disabled={this.state.draftAnalysis.length < 1} >
                                 {translate.btn_preview}
                                 </Button>
                             </div>
@@ -251,7 +257,7 @@ class AnalysisMenue extends Component {
                                                         checked={this.state.selectedRadio.published === analysis.analysisId}
                                                     />
                                                     {analysis.analysisName}
-                                                    {" ( Created by " + analysis.user + " ) "}
+                                                    {" ( Created by: " + analysis.user + " ) "}
                                                 </Label>
                                                 <br />
                                             </li>
@@ -261,14 +267,14 @@ class AnalysisMenue extends Component {
                                         <li className = 'select-list'>
                                             <Label key={"Label" + this.state.publishedAnalysis[0].analysisId} for={this.state.publishedAnalysis[0].analysisId} >
                                                 {this.state.publishedAnalysis[0].analysisName}
-                                                {" ( Created by " + this.state.publishedAnalysis[0].user + " ) "}
+                                                {" ( Created by: " + this.state.publishedAnalysis[0].user + " ) "}
                                             </Label>
                                         </li>
                                     </ul>
-                                : <p>{'no published ...'}</p>
+                                : <p>{translate.published_empty}</p>
                             }
                             <div className="button-container text-right" >
-                                <Button color='success' id='published' key='published' onClick={this.goTopPreviewMode} disabled={this.state.publishedAnalysis.length < 1}>
+                                <Button color='success' id='published' key='published' onClick={this.goToPreviewMode} disabled={this.state.publishedAnalysis.length < 1}>
                                     {translate.btn_preview}
                                 </Button>
                             </div>
@@ -279,29 +285,31 @@ class AnalysisMenue extends Component {
                             <h3>{translate.header_new}</h3>
 
                             <h4>{translate.header_select_rounds}</h4>
-                            <ul>
+                           
                             {this.props.roundList[this.state.semester].length > this.state.usedRounds.length
-                                ? this.props.roundList[this.state.semester].map(round =>
-                                    this.state.usedRounds.indexOf(round.roundId) < 0
-                                        ? <li className = 'select-list' key={round.roundId}>
-                                            <Label key={"Label" + round.roundId}
-                                                for={round.roundId}
-                                            >
-                                                <Input type="checkbox"
-                                                    id={round.roundId}
-                                                    key={"checkbox" + round.roundId}
-                                                    onClick={this.handleRoundCheckbox}
-                                                />
-                                                {round.shortName ? round.shortName : round.startDate} {(round.language)}
+                                ?  <ul> 
+                                    {this.props.roundList[this.state.semester].map(round =>
+                                        this.state.usedRounds.indexOf(round.roundId) < 0
+                                            ? <li className = 'select-list' key={round.roundId}>
+                                                <Label key={"Label" + round.roundId}
+                                                    for={round.roundId}
+                                                >
+                                                    <Input type="checkbox"
+                                                        id={round.roundId}
+                                                        key={"checkbox" + round.roundId}
+                                                        onClick={this.handleRoundCheckbox}
+                                                    />
+                                                    {round.shortName ? round.shortName : round.startDate} {(round.language)}
 
-                                            </Label>
-                                            <br />
-                                        </li>
-                                        : ''
-                                )
-                                : <li className = 'select-list'>{'All rounds used'}</li>
+                                                </Label>
+                                                <br />
+                                            </li>
+                                            : ''
+                                    )}
+                                </ul>
+                                : <p>{translate.new_empty}</p>
                             }
-                            </ul>
+                            
                             <div className="button-container text-right" >
                                 <Button color='success' id='new' key='new' onClick={this.goToEditMode} disabled ={this.props.roundList[this.state.semester].length === this.state.usedRounds.length}>
                                     {translate.btn_add_analysis}
@@ -311,7 +319,7 @@ class AnalysisMenue extends Component {
                     </Form>
                 </Collapse>
                 <div className="button-container text-center" >
-                    <Button color='secondary' id='published' key='published' onClick={this.goTopPreviewMode} >
+                    <Button color='secondary' id='cancel' key='cancel' onClick={this.handleCancel} >
                         {translate.btn_cancel}
                     </Button>
                 </div>

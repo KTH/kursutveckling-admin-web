@@ -10,12 +10,15 @@
 @import "node_modules/bootstrap/scss/mixins";*/
 
 .col-temp{
-border-left: 1px dotted #dee2e6;;
+border-left: 1px dotted #fff;
 }
 
 .admin-form{
   min-width: 100%;
+  padding-left: 40px;
 }
+
+
 
 .container.articleNavigation{
     padding: 15px 15px 0 !important;
@@ -74,6 +77,38 @@ border-left: 1px dotted #dee2e6;;
 
 .select-list{
   display: block;
+}
+
+.right-links {
+  float: right;
+  text-align: right;
+  margin: 1em;
+  a {
+      margin-left: 2em;
+  }
+}
+p.underlined {
+  border-bottom: 1px solid #000;
+}
+
+
+.table-title {
+    display: flex;
+    justify-content: space-between;
+}
+
+.tables-list {
+    margin: 2em 0;
+    & > * {
+        margin-top: 1.5em;
+    }
+}
+
+.white{
+  background-color: #fff !important;
+  &> a{
+    color: #000 !important;
+  }
 }
 
 
