@@ -147,6 +147,21 @@ class RouterStore {
     })
   }
 
+  @action deleteRoundAnalysis(id, lang = 'sv') {
+    return axios.delete(this.buildApiUrl(this.paths.api.kursutvecklingDelete.uri,
+      { id: id }),
+      this._getOptions()
+    ).then(result => {
+      console.log("!!!!DELETE...", result.data)
+      return result.data
+    }).catch(err => {
+      if (err.response) {
+        throw new Error(err.message)
+      }
+      throw err
+    })
+  }
+
   @action getCourseInformation(courseCode, ldapUsername, lang = 'sv') {
     return axios.get(this.buildApiUrl(this.paths.api.koppsCourseData.uri,
       { courseCode: courseCode, language: lang }),
@@ -183,7 +198,6 @@ class RouterStore {
       throw err
     })
   }
-
 
 
   @action handleCourseData(courseObject, user, language) {

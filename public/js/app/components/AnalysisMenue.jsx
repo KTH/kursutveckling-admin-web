@@ -2,6 +2,9 @@ import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
 import { Alert, Form, Dropdown, FormGroup, Label, Input, Collapse, DropdownToggle, DropdownItem, DropdownMenu, Button } from 'reactstrap'
 
+//Custom components
+import InfoModal from './InfoModal'
+
 import i18n from '../../../../i18n/index'
 
 @inject(['routerStore']) @observer
@@ -13,6 +16,9 @@ class AnalysisMenue extends Component {
             firstVisit: this.props.firstVisit,
             dropdownOpen: false,
             collapseOpen: this.props.progress === 'back_new',
+            modalOpen: {
+                delete: false
+            },
             semester: this.props.activeSemester && this.props.activeSemester.length > 0 
                         ? this.props.activeSemester 
                         : this.props.semesterList[0],
@@ -42,7 +48,9 @@ class AnalysisMenue extends Component {
         this.handleSelectedPublished = this.handleSelectedPublished.bind(this)
         this.goToPreviewMode = this.goToPreviewMode.bind(this)
         this.handleCancel = this.handleCancel.bind(this)
-
+        this.handleDelete = this.handleDelete.bind(this)
+        this.toggleModal = this.toggleModal.bind(this)
+        
 
     }
 
@@ -155,6 +163,41 @@ class AnalysisMenue extends Component {
         alert('THIS IS WILL TAKE YOU BACK TO KURSINFO ADMIN IN THE FUTURE')
       }
 
+    handleDelete ( id, fromModal = false ){
+        if( !fromModal ){
+            if (this.state.selectedRadio.draft.length > 0){
+                let modalOpen = this.state.modalOpen
+                modalOpen.delete = ! modalOpen.delete === true
+                this.setState({
+                    modalOpen: modalOpen
+                })
+            }
+            else{
+                this.setState({
+                    alert: i18n.messages[this.props.routerStore.language].messages.alert_no_rounds_selected
+                })
+            }
+        }
+        else{
+            this.props.routerStore.deleteRoundAnalysis(id).then(result =>{
+                console.log("#################GONE", result)
+                this.getUsedRounds(this.state.semester)
+                let modalOpen = this.state.modalOpen
+                modalOpen.delete = ! modalOpen.delete === true
+                this.setState({
+                    modalOpen: modalOpen
+                })
+            })
+        }
+    }
+
+    toggleModal(event){
+        let modalOpen = this.state.modalOpen
+        modalOpen[event.target.id] = !modalOpen[event.target.id]
+        this.setState({
+          modalOpen: modalOpen
+        })
+      }
 
 
 
@@ -235,7 +278,7 @@ class AnalysisMenue extends Component {
                                 : <p>{translate.draft_empty}</p>
                             }
                             <div className="button-container text-right" >
-                                <Button color='danger' id='draft' key='draft' onClick={this.goToPreviewMode} disabled={this.state.draftAnalysis.length < 1} >
+                                <Button color='danger' id='delete' key='delete' onClick={this.handleDelete} disabled={this.state.draftAnalysis.length < 1} >
                                     {translate.btn_delete}
                                 </Button>
                                 <Button color='success' id='draft' key='draft' onClick={this.goToPreviewMode} disabled={this.state.draftAnalysis.length < 1} >
@@ -329,7 +372,7 @@ class AnalysisMenue extends Component {
                         {translate.btn_cancel}
                     </Button>
                 </div>
-
+                <InfoModal type = 'delete' toggle= {this.toggleModal} isOpen = {this.state.modalOpen.delete} id={this.state.selectedRadio.draft} handleConfirm={this.handleDelete} infoText={translate.info_delete}/>
             </div>
         )
     }

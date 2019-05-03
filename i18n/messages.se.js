@@ -56,6 +56,7 @@ module.exports = {
     info_only_preview: 'Endast granskning då du inte är Kursansvarig eller Examinator',
     info_can_edit: 'Du kan även redigera, då du har rollen Examinator eller Kursansvarig)',
 
+
     btn_preview: 'Granska',
     btn_add_analysis: ' Redigera',
     btn_cancel: 'Avbryt',
@@ -119,6 +120,15 @@ module.exports = {
             Vill du fortsätta att avbryta?`,
       btnCancel: 'Nej, gå tillbaka',
       btnConfirm: 'Ja, fortsätt avbryta'
+    },
+    info_delete: {
+      header: 'Att tänka på innan du XXX!',
+      body: `XXXXXX. 
+      <br/>  
+      <br/> 
+            Vill du fortsätta att radera?`,
+      btnCancel: 'Nej, gå tillbaka',
+      btnConfirm: 'Ja, fortsätt radera'
     }
   }
 }
