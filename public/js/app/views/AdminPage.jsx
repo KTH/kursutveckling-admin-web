@@ -218,7 +218,11 @@ class AdminPage extends Component {
         <div key='kursutveckling-form-container' className='container' id='kursutveckling-form-container' ref={(ref) => this._div = ref} >
           <h1>{translate.header_main}</h1>
           <Title title={routerStore.courseTitle} language={routerStore.language} courseCode={routerStore.analysisData.courseCode} />
-          <h3>{this.state.values.analysisName}</h3>
+          <Row>
+            <Col sm="12" lg="12">
+              <h2>{this.state.values.analysisName}</h2>
+            </Col>
+          </Row>
 
           {this.state.alert.length > 0 ?
               <Alert>
@@ -226,18 +230,19 @@ class AdminPage extends Component {
             </Alert>
               : ''}
 
-          {this.state.values
+          {this.state.values && this.state.isPreviewMode
             ? <Preview values={this.state.values} />
-            : <p>waiting</p>
+            : ""
           }
-          <div key='form' id='form-container'>
+          <Row key='form' id='form-container' >
+          <Col sm="12" lg="12">
             {this.state.values && !this.state.isPreviewMode
               ? <Form className='admin-form'>
               <h2>{translate.edit_content}</h2>
               <p>{translate.asterix_text}</p>
                 <Row className='form-group'>
                   <Col sm='4' className='col-temp'>
-                    <Label>{translate.header_programs}*</Label>
+                 {/**   <Label>{translate.header_programs}*</Label>
                     <Input id='programmeCodes' key='programmeCodes' type='text' value={this.state.values.programmeCodes} onChange={this.handleInputChange} disabled={isDisabled} />
                     <Label>{translate.header_examiners}*</Label>
                     <Input id='examiners' key='examiners' type='text' value={this.state.values.examiners} onChange={this.handleInputChange} disabled={isDisabled} />
@@ -245,18 +250,18 @@ class AdminPage extends Component {
                     <Input id='responsibles' key='responsibles' type='text' value={this.state.values.responsibled} onChange={this.handleInputChange} disabled={isDisabled} />
                     <Label>{translate.header_examination}*</Label>
                     <Input id='examinationRounds' key='examinationRounds' type="textarea" value={this.state.values.examinationRounds} onChange={this.handleInputChange} disabled={isDisabled} />
-                    <Label>{translate.header_registrated}*</Label>
+                   */}  <Label>{translate.header_registrated}*</Label>
                     <Input id='registeredStudents' key='registeredStudents' type='text' value={this.state.values.registeredStudents} onChange={this.handleInputChange} disabled={isDisabled} />
                     <Label>{translate.header_examination_grade}*</Label>
                     <Input id='examinationGrade' key='examinationGrade' type='number' value={this.state.values.examinationGrade} onChange={this.handleInputChange} disabled={isDisabled} />
                   </Col>
                   <Col sm='4' className='col-temp'>
-                    <Label>{translate.header_examination_comment}*</Label>
+                {/*    <Label>{translate.header_examination_comment}*</Label>
                     {routerStore.examCommentEmpty || ( this.state.values.commentExam && this.state.values.commentExam.indexOf('</') ) < 0
                       ? <Input id='commentExam' key='commentExam' type='textarea' value={this.state.values.commentExam} onChange={this.handleInputChange} disabled={isDisabled} />
                       : <span id='commentExam' key='commentExam' dangerouslySetInnerHTML={{ __html: this.state.values.commentExam }} />
                     }
-                 
+                 */} 
                     <Label>{translate.header_course_changes_comment}</Label>
                     <Input id='alterationText' key='alterationText' type="textarea" value={this.state.values.alterationText} onChange={this.handleInputChange} />
                     <Label>{translate.header_analysis_edit_comment}</Label>
@@ -294,7 +299,7 @@ class AdminPage extends Component {
                 <Row className="button-container text-center" >
                   <Col sm="4">
                     <Button color='secondary' id='back' key='back' onClick={this.handleBack} >
-                    {translate.btn_back }
+                     <div className="iconContainer arrow-back"/> {translate.btn_back }
                     </Button>
                   </Col>
                   <Col sm="4">
@@ -313,9 +318,9 @@ class AdminPage extends Component {
             }
             { this.state.isPreviewMode
               ? <Row className="button-container text-center" >
-                <Col sm="3">
+                <Col sm="4">
                   <Button color='secondary' id='back' key='back' onClick={this.handleBack} >
-                    {translate.btn_back_edit }
+                   <div className="iconContainer arrow-back"/>  {translate.btn_back_edit }
                   </Button>
                 </Col>
                 <Col sm="4">
@@ -342,9 +347,10 @@ class AdminPage extends Component {
               </Row>
               : ''
             }
-          </div>
+            </Col>
+          </Row>
           <InfoModal type = 'publish' toggle= {this.toggleModal} isOpen = {this.state.modalOpen.publish} id={this.props.routerStore.analysisId} handleConfirm={this.handlePublish} infoText={translate.info_publish}/>
-                <InfoModal type = 'cancel' toggle= {this.toggleModal} isOpen = {this.state.modalOpen.cancel} id={this.props.routerStore.analysisId} handleConfirm={this.handleCancel} infoText={translate.info_cancel}/>
+          <InfoModal type = 'cancel' toggle= {this.toggleModal} isOpen = {this.state.modalOpen.cancel} id={this.props.routerStore.analysisId} handleConfirm={this.handleCancel} infoText={translate.info_cancel}/>
         </div>
       )
   }

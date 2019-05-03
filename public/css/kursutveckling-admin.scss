@@ -15,7 +15,6 @@ border-left: 1px dotted #fff;
 
 .admin-form{
   min-width: 100%;
-  padding-left: 40px;
 }
 
 
@@ -114,11 +113,52 @@ p.underlined {
 
 
 /****ICONS*****/
+.iconContainer{
+  display: inline-block;
+  position: relative;
+  width: 30px;
+  height: 30px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  margin: auto;
+}
+
+
 .icon-schedule{
     position: relative;
     top: 4px;
     height: 20px;
-    widthround: top left / 1.0em auto no-repeat url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23262626' version='1' viewBox='0 -100 900 900'%3e%3cpath d='M800 0q42 0 71 29t29 71v600q0 40-29 70t-71 30H100q-40 0-70-30T0 700V100q0-42 30-71t70-29h46v100h160V0h290v100h160V0zm0 700V300H100v400zM260-100V70h-70v-170zm450 0V70h-70v-170z'/%3e%3c/svg%3e");
+    width:20px;
+    background: top left / 1.0em auto no-repeat url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23262626' version='1' viewBox='0 -100 900 900'%3e%3cpath d='M800 0q42 0 71 29t29 71v600q0 40-29 70t-71 30H100q-40 0-70-30T0 700V100q0-42 30-71t70-29h46v100h160V0h290v100h160V0zm0 700V300H100v400zM260-100V70h-70v-170zm450 0V70h-70v-170z'/%3e%3c/svg%3e");
+}
+
+.arrow-back{
+  background-image: url("https://app.kth.se/style/kth-style/img/kth-style/icons/pill-back.svg");
+  top: 4px;
+  float: left;
+  margin-right: 4px;
+  width: 25px;
+  height: 25px;
+}
+
+.arrow-forward{
+  background-image: url("https://app.kth.se/style/kth-style/img/kth-style/icons/pill-back.svg");
+  transform: rotate(180deg);
+  top: 4px;
+  float: right;
+  margin-left: -3px;
+  width: 25px;
+  height: 25px;
+}
+
+.icon-back-arrow{
+  position: relative;
+  top: 1px;
+  transform: rotate(180deg);
+  display: inline-block;
+  height: 20px;
+  width: 30px;
+  background: top left / 1.0em auto no-repeat url('https://app.kth.se/style/kth-style/img/kth-style/icons/back-link.svg');
 }
 
 .fa, .fas {
@@ -127,68 +167,6 @@ p.underlined {
 }
 /************************************************/
 
-
-
-/* Animation */
-#CourseKeyInformationOneCol, #roundKeyInformation, #coreContent,#syllabusLink{
-    @keyframes fadeOutIn {
-        0% {opacity: 1;}
-        50% {opacity: 0;}
-        100% {opacity: 1;}
-      }
-      
-      .fadeOutIn {
-        animation-name: fadeOutIn;
-        animation-duration: 800ms;
-       }
-
-       .right-column-header{
-        background: #fff;
-        margin: 20px -15px;
-        padding: 20px 15px 10px;
-       }
-
-       .clear-margin-bottom{
-           margin-bottom: 0;
-       }
-}
-
-
-///*************************************///
-.alert-info {
-    color: #000;
-    font-size: 1em;
-    min-height: 3.4rem;
-    border-radius: .15rem;
-    position: relative;
-    padding: 1rem 1rem 1rem 4.4rem;
-    background-color: #fcf8e3;
-    border: 1px solid #faebcc;
-
-    &::before{
-        font-size: 1.4rem;
-        position: absolute;
-        top: 10%;
-        left: .2em;
-        width: 2em;
-        content: url(//www.kth.se/img/kth-style/icons/alert-info.svg);
-    }
-    
-}
-
-.disabled{
-  color: #a29999;
-}
-.disable-span{
-  color: #000;
-  a{
-    padding: 0px 3px;
-    border: 1px solid #006cb7;
-    border-radius: 5px;
-    background-color: #006cb7;
-    color: #fff;
-  }
-}
 
 ///******************** MODAL ****************************///
 .modal {

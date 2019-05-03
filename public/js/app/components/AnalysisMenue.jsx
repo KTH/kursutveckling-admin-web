@@ -235,8 +235,12 @@ class AnalysisMenue extends Component {
                                 : <p>{translate.draft_empty}</p>
                             }
                             <div className="button-container text-right" >
+                                <Button color='danger' id='draft' key='draft' onClick={this.goToPreviewMode} disabled={this.state.draftAnalysis.length < 1} >
+                                    {translate.btn_delete}
+                                </Button>
                                 <Button color='success' id='draft' key='draft' onClick={this.goToPreviewMode} disabled={this.state.draftAnalysis.length < 1} >
-                                {translate.btn_preview}
+                                    <div className="iconContainer arrow-forward" />
+                                    {translate.btn_preview}
                                 </Button>
                             </div>
                         </FormGroup>
@@ -275,7 +279,8 @@ class AnalysisMenue extends Component {
                             }
                             <div className="button-container text-right" >
                                 <Button color='success' id='published' key='published' onClick={this.goToPreviewMode} disabled={this.state.publishedAnalysis.length < 1}>
-                                    {translate.btn_preview}
+                                    <div className="iconContainer arrow-forward" /> {
+                                    translate.btn_preview}
                                 </Button>
                             </div>
                         </FormGroup>
@@ -312,6 +317,7 @@ class AnalysisMenue extends Component {
                             
                             <div className="button-container text-right" >
                                 <Button color='success' id='new' key='new' onClick={this.goToEditMode} disabled ={this.props.roundList[this.state.semester].length === this.state.usedRounds.length}>
+                                    <div className="iconContainer arrow-forward" />  
                                     {translate.btn_add_analysis}
                                 </Button>
                             </div>

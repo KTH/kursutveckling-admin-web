@@ -63,6 +63,7 @@ module.exports = {
     btn_publish: 'Publicera',
     btn_back: 'Välj kursomgång',
     btn_back_edit: 'Tillbaka till redigering',
+    btn_delete: 'Radera',
 
     add_file: 'Dra och droppa filen här <span class="filepond--label-action"> eller klicka för att välja fil </span>',
 

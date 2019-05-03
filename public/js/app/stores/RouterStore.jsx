@@ -358,7 +358,6 @@ class RouterStore {
   getEmployeesNames(employeeList) {
     let list = []
     let toObject
-    //employeeList = JSON.parse(employeeList)
 
     for (let index = 0; index < employeeList.length; index++) {
       if (employeeList[index] !== null) {
