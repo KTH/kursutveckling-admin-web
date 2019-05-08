@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
 import { Row, Col, Button, Form, Label, Input, Alert } from 'reactstrap'
 import { FilePond } from 'react-filepond'
-// import 'filepond/dist/filepond.min.css'
+import 'filepond/dist/filepond.min.css'
 
 //Components
 import Title from '../components/Title'

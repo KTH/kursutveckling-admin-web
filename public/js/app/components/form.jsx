@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
 import { Row, Col, Button, Form, Label, Input, Alert} from 'reactstrap'
 import { FilePond } from 'react-filepond'
-// import 'filepond/dist/filepond.min.css'
+import 'filepond/dist/filepond.min.css'
 
 import i18n from '../../../../i18n/index'
 
