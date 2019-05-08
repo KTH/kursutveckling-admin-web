@@ -108,7 +108,7 @@ p.underlined {
 
 .whiteBg{
   background-color: #fff !important;
-  &> a{
+  & > a{
     color: #000 !important;
   }
 }
