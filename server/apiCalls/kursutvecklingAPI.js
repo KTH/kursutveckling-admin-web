@@ -36,7 +36,6 @@ async function _putAnalysisData (id, sendObject) {
 
 async function _deleteAnalysisData (id) {
   const paths = api.kursutvecklingApi.paths
-  console.log('_deleteAnalysisData', paths)
   const client = api.kursutvecklingApi.client
   const uri = client.resolve(paths.deleteCourseRoundAnalysisDataById.uri, { id: id })
   return client.delAsync({ uri: uri })

@@ -381,7 +381,7 @@ class RouterStore {
 
     for (let index = 0; index < employeeList.length; index++) {
       if (employeeList[index] !== null) {
-        toObject = JSON.parse(employeeList[index])
+        toObject = JSON.parse(employeeList[index]) 
         for (let index2 = 0; index2 < toObject.length; index2++) {
           if(toObject[index2].givenName)
           list.push(`${toObject[index2].givenName} ${toObject[index2].lastName}`)

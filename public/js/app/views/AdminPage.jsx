@@ -247,7 +247,7 @@ class AdminPage extends Component {
                     <Label>{translate.header_examiners}*</Label>
                     <Input id='examiners' key='examiners' type='text' value={this.state.values.examiners} onChange={this.handleInputChange} disabled={isDisabled} />
                     <Label>{translate.header_responsibles}*</Label>
-                    <Input id='responsibles' key='responsibles' type='text' value={this.state.values.responsibled} onChange={this.handleInputChange} disabled={isDisabled} />
+                    <Input id='responsibles' key='responsibles' type='text' value={this.state.values.responsibles} onChange={this.handleInputChange} disabled={isDisabled} />
                     <Label>{translate.header_examination}*</Label>
                     <Input id='examinationRounds' key='examinationRounds' type="textarea" value={this.state.values.examinationRounds} onChange={this.handleInputChange} disabled={isDisabled} />
                     <Label>{translate.header_registrated}*</Label>
