@@ -238,8 +238,9 @@ class AdminPage extends Component {
           <Col sm="12" lg="12">
             {this.state.values && !this.state.isPreviewMode
               ? <Form className='admin-form'>
-              <h2>{translate.edit_content}</h2>
-              <p>{translate.asterix_text}</p>
+              <h3>{translate.edit_content}</h3>
+              <p>{translate.asterix_text}<br/>
+              {translate.asterix_text_2}</p>
                 <Row className='form-group'>
                   <Col sm='4' className='col-temp'>
                     <Label>{translate.header_programs}*</Label>
@@ -323,12 +324,12 @@ class AdminPage extends Component {
                    <div className="iconContainer arrow-back"/>  {translate.btn_back_edit }
                   </Button>
                 </Col>
-                <Col sm="4">
+                <Col sm="3">
                   <Button color='secondary' id='cancel' key='cancel' onClick={this.toggleModal} >
                     {translate.btn_cancel}
                   </Button>
                 </Col>
-                <Col sm="2">
+                <Col sm="3">
                   {this.state.isPublished
                     ? ''
                     : <Button color='success' id='save' key='save' onClick={this.handleSave} >

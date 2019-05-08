@@ -28,6 +28,10 @@ border-left: 1px dotted #fff;
     margin-bottom: 40px;
 }
 
+#analysisMenuContainer{
+  padding-top: 30px;
+}
+
 .select-semester{
   width: 100%;
   max-width: 370px;
@@ -71,7 +75,7 @@ border-left: 1px dotted #fff;
 .button-container{
   padding: 20px 10px;
   min-width: 100%;
-  border-bottom: 1px solid #dee2e6;
+  /*border-bottom: 1px solid #dee2e6;*/
   .btn {
     margin-left: 5px;
   }

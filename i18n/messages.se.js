@@ -38,29 +38,37 @@ module.exports = {
     page_student: 'STUDENT PÅ KTH',
     page_course_programme: 'KURS- OCH PROGRAMKATALOGEN',
 
-    course_short_semester: {
-      1: 'VT ',
-      2: 'HT '
-    },
-    header_main: 'Granska och redigera kursutveckling',
-    header_select_semester: 'Välj/ lägg till kursomgång',
-    header_add_round: 'Välj/ lägg till kursomgång',
+    header_main: 'Administrera kursutveckling',
+    header_select_semester: 'Välj termin',
+    header_add_round: 'Välj termin',
     header_draft: 'Sparade utkast',
     header_added_rounds: 'Välj en tidigare tillagd kursomgång',
     header_published: 'Publicerade',
     header_new: 'Eller lägg till en ny kursomgång',
     header_select_rounds: 'Ej påbörjade kurstillfällen (välj en eller flera):',
+    header_analysis_menu: 'Välj/ lägg till kursomgång (steg 1 av 3)',
+
+    intro_analysis_menu_1: 'Välj kursomgång nedan för vilken du vill administrera kursutveckling för.',
+
+    intro_analysis_menu_2: `Det kan vara en tidigare tillagd kursomgång i form av ett utkast som du vill granska och kanske publicera eller en redan publicerad
+     kursomgång som du vill redigera. Du kan även lägga till kursutveckling för en ny kursomgång, välj då vilka kurstillfällen som kursomgången 
+     består av. Utkast hittar du på denna sida och publicerad kursutveckling hittar du på sidan `,
+    intro_link: 'Kursens utveckling och historik.',
     select_semester: 'Välj termin',
-    edit_content: 'Redigera innehåll',
+    edit_content: 'Redigera innehåll (steg 1 av 3) ',
+
+    course_short_semester: {
+      1: 'VT ',
+      2: 'HT '
+    },
 
     info_only_preview: 'Endast granskning då du inte är Kursansvarig eller Examinator',
     info_can_edit: 'Du kan även redigera, då du har rollen Examinator eller Kursansvarig)',
 
-
     btn_preview: 'Granska',
     btn_add_analysis: ' Redigera',
     btn_cancel: 'Avbryt',
-    btn_save: 'Spara utkats',
+    btn_save: 'Spara utkast',
     btn_publish: 'Publicera',
     btn_back: 'Välj kursomgång',
     btn_back_edit: 'Tillbaka till redigering',
@@ -69,6 +77,7 @@ module.exports = {
     add_file: 'Dra och droppa filen här <span class="filepond--label-action"> eller klicka för att välja fil </span>',
 
     asterix_text: '* Kommer inte att kunna ändras efter publicering',
+    asterix_text_2: '** Går ej att redigera inlagd information från Kopps',
 
     header_programs: 'Obligatorisk inom program',
     header_rounds: 'Kurstillfällen som ingår',

@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
-import { Alert, Form, Dropdown, FormGroup, Label, Input, Collapse, DropdownToggle, DropdownItem, DropdownMenu, Button } from 'reactstrap'
+import { Alert, Form, Dropdown, FormGroup, Label, 
+        Input, Collapse, DropdownToggle, DropdownItem, 
+        DropdownMenu, Button, Row, Col } from 'reactstrap'
 
 //Custom components
 import InfoModal from './InfoModal'
@@ -208,8 +210,12 @@ class AnalysisMenue extends Component {
        
         return (
             <div id="YearAndRounds">
-                <h4>{translate.header_select_semester}</h4>
-                {/**** Select semester for a course *****/}
+                <h2>{translate.header_analysis_menu}</h2>
+                <p>{translate.intro_analysis_menu_1} </p>
+                <p>{translate.intro_analysis_menu_2} <a href={this.props.routerStore.courseCode}>{translate.intro_link}</a></p>
+                 {/**** Select semester for a course *****/}
+                <h3>{translate.header_select_semester}</h3>
+               
                 <Dropdown
                     isOpen={this.state.dropdownOpen}
                     toggle={this.toggleDropdown}
@@ -243,7 +249,10 @@ class AnalysisMenue extends Component {
                 }
 
                 <Collapse isOpen={this.state.collapseOpen}>
-                    <Form>
+                <Row id='analysisMenuContainer'>
+           
+                    <Form> 
+                        <Col md='5' className='float-md-left'>
                         {/**** DRAFT ANALYSIS ****/}
                         <FormGroup >
                             <h3>{translate.header_added_rounds}</h3>
@@ -327,7 +336,8 @@ class AnalysisMenue extends Component {
                                 </Button>
                             </div>
                         </FormGroup>
-
+                        </Col>
+                        <Col md='5' className='float-md-right'>
                         {/**** NEW ANALYSIS ****/}
                         <FormGroup >
                             <h3>{translate.header_new}</h3>
@@ -365,7 +375,10 @@ class AnalysisMenue extends Component {
                                 </Button>
                             </div>
                         </FormGroup>
+                        </Col>
                     </Form>
+                   
+                    </Row>
                 </Collapse>
                 <div className="button-container text-center" >
                     <Button color='secondary' id='cancel' key='cancel' onClick={this.handleCancel} >
