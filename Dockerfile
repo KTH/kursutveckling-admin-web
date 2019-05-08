@@ -21,6 +21,7 @@ COPY ["config", "config"]
 COPY ["public", "public"]
 COPY ["i18n", "i18n"]
 COPY [".babelrc", ".babelrc"]
+COPY [".eslintrc", ".eslintrc"]
 COPY ["webpack.config.js", "webpack.config.js"]
 COPY ["package.json", "package.json"]
 RUN npm run docker
