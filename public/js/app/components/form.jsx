@@ -159,10 +159,9 @@ class AnalysisForm extends Component {
             </Form>
           </Row>
           </div>
-       }
-      </div>
-    )
-  }
+  )
 }
+}
+
 
 export default AdminPage
