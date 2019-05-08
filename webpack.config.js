@@ -3,7 +3,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
 module.exports = {
   entry:
-    [ '@babel/polyfill', './public/js/app/app.jsx', './public/css/kursinfo-web.scss' ],
+    [ '@babel/polyfill', './public/js/app/app.jsx', './public/css/kursutveckling-admin.scss' ],
   target: 'node',
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -26,7 +26,7 @@ module.exports = {
     ]
   },
   plugins: [
-    new ExtractTextPlugin('css/kursinfo-web.css')
+    new ExtractTextPlugin('css/kursutveckling-admin.css')
   ],
   resolve: {
     extensions: ['.js', '.jsx']
