@@ -119,14 +119,14 @@ class ProgramCollapse extends Component {
   render () {
     const label = this.props.label
     return (
-        <div className='card collapsible white' >
-          <span className='card-header white' role='tab'  tabIndex='0' onClick={this.toggleHeader}>
-              <a className='collapse-header white' id={'programHeading' + label} data-toggle='collapse' href={'#collapsePrograms' + label} aria-controls={'collapsePrograms' + label}> 
+        <div className='card collapsible whiteBg' >
+          <span className='card-header whiteBg' role='tab'  tabIndex='0' onClick={this.toggleHeader}>
+              <a className='collapse-header whiteBg' id={'programHeading' + label} data-toggle='collapse' href={'#collapsePrograms' + label} aria-controls={'collapsePrograms' + label}> 
               {this.state.collapseProgram ? '- ' : '+ '}
               {this.props.header}
               </a>
           </span>
-          <Collapse color='white' isOpen={this.state.collapseProgram} toggler={'#programHeading' + label}>
+          <Collapse color='whiteBg' isOpen={this.state.collapseProgram} toggler={'#programHeading' + label}>
             <div className='card-body  col'>
               <span className='textBlock' dangerouslySetInnerHTML={{__html: this.props.text}}/>
             </div>
