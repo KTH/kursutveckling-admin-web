@@ -248,7 +248,7 @@ class RouterStore {
 
   @action createAnalysisData(semester, rounds) {
     this.getEmployees(this.courseData.courseCode, semester, rounds)
-
+  
     return this.getCourseEmployeesPost(this.redisKeys, 'multi', this.language).then(returnList => {
       this.status = 'new'
       this.analysisId = `${this.courseData.courseCode}${semester.toString().match(/.{1,4}/g)[1] === '1' ? 'VT' : 'HT'}${semester.toString().match(/.{1,4}/g)[0]}_${rounds.join('_')}`
@@ -293,13 +293,15 @@ class RouterStore {
   }
 
 
-  createAnalysisName(newName, roundList, rounds) {
+  createAnalysisName(newName, roundList, selectedRounds) {
     let addRounds = []
-    for (let index = 0; index < rounds.length; index++) {
-      addRounds.push(roundList[Number(rounds[index]) - 1].shortName && roundList[Number(rounds[index]) - 1].shortName.length > 0
-        ? roundList[Number(rounds[index]) - 1].shortName
-        : roundList[Number(rounds[index]) - 1].startDate
-      )
+    for (let index = 0; index < roundList.length; index++) {
+      if(selectedRounds.indexOf(roundList[index].roundId) >= 0){
+        addRounds.push(roundList[index].shortName && roundList[index].shortName.length > 0
+          ? roundList[index].shortName
+          : roundList[index].startDate
+        )
+      }
     }
     return `${newName} ( ${addRounds.join(', ')} )`
   }
@@ -330,10 +332,12 @@ class RouterStore {
     return usageList
   }
 
-  getAllTargetGroups(rounds, roundDataList) {
+  getAllTargetGroups(selectedRounds, roundList) {
     let allTargets = []
-    for (let index = 0; index < rounds.length; index++) {
-      allTargets = [...allTargets, ...roundDataList[Number(rounds[index]) - 1].targetGroup]
+    for (let index = 0; index < roundList.length; index++) {
+      if(selectedRounds.indexOf(roundList[index].roundId) >= 0){
+        allTargets = [...allTargets, ...roundList[index].targetGroup ]
+      }
     }
     return allTargets
   }
@@ -363,6 +367,8 @@ class RouterStore {
   }
 
   getEmployees(courseCode, semester, rounds) {
+    this.redisKeys.examiner = []
+    this.redisKeys.responsibles = []
     for (let index = 0; index < rounds.length; index++) {
       this.redisKeys.responsibles.push(`${courseCode}.${semester}.${Number(rounds[index])}.courseresponsible`)
     }

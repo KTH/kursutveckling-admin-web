@@ -204,7 +204,7 @@ class AnalysisMenue extends Component {
     render() {
         const translate = i18n.messages[this.props.routerStore.language].messages
         console.log("routerStore", this.props)
-        console.log("this.state", this.state, translate)
+        console.log("this.state", this.state)
        
         return (
             <div id="YearAndRounds">
