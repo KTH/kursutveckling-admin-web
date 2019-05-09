@@ -78,9 +78,11 @@ class Preview extends Component {
     else
       return (
         <div key='kursutveckling-andmin-preview' className='container' id='preview-container' >
+           <h2>{translate.header_preview_content}</h2>
           {routerStore.analysisData.examinationRounds && routerStore.analysisData.examinationRounds.length === 0 
           ?<Alert>Fel fel fel !</Alert>
           : <div className='tables-list col'>
+             
             <TableForCourse courseRound="HT 2018" togglerId="toggler1" analysisObject={this.props.values} translate={translate}/>
           </div>
         }

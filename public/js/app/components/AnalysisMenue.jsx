@@ -56,6 +56,25 @@ class AnalysisMenue extends Component {
 
     }
 
+    componentDidMount() {
+        console.log('this.super.state', super.state)
+        this._isMounted = true;
+        window.onpopstate = ()=> {
+          if(this._isMounted) {
+            console.log('this.super.state', this.super)
+           /* const { hash } = location;
+            if( this.state.value!==0)
+              this.setState({value: 0})
+            if(hash.indexOf('users')>-1 && this.state.value!==1)
+              this.setState({value: 1})
+            if(hash.indexOf('data')>-1 && this.state.value!==2)
+              this.setState({value: 2})*/
+          }
+        }
+      }
+
+
+
     componentWillMount() {
         const routerStore = this.props.routerStore
         if (routerStore.usedRounds.length === 0 || routerStore.hasChangedStatus)

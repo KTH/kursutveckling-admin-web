@@ -181,6 +181,10 @@ class AdminPage extends Component {
     //this._div.scrollTop = 0
   }
 
+  componentDidMount() {
+    console.log('componentDidMount .state', this.state)
+  }
+
 
   render() {
     const routerStore = this.props.routerStore
@@ -189,7 +193,7 @@ class AdminPage extends Component {
     const labelIdle =  translate.add_file 
 
     console.log("routerStore1", routerStore)
-    console.log("this.state1", this.state, translate)
+    console.log("this.state1", this.state)
     if (routerStore.analysisData === undefined || this.state.progress === 'back_new')
       return (
         <div ref={(ref) => this._div = ref}>
@@ -220,7 +224,7 @@ class AdminPage extends Component {
           <Title title={routerStore.courseTitle} language={routerStore.language} courseCode={routerStore.analysisData.courseCode} />
           <Row>
             <Col sm="12" lg="12">
-              <h2>{this.state.values.analysisName}</h2>
+            
             </Col>
           </Row>
 
@@ -236,9 +240,11 @@ class AdminPage extends Component {
           }
           <Row key='form' id='form-container' >
           <Col sm="12" lg="12">
+            
             {this.state.values && !this.state.isPreviewMode
               ? <Form className='admin-form'>
-              <h3>{translate.edit_content}</h3>
+              <h2>{translate.header_edit_content}</h2>
+              <h3>{this.state.values.analysisName}</h3>
               <p>{translate.asterix_text}<br/>
               {translate.asterix_text_2}</p>
                 <Row className='form-group'>
@@ -310,7 +316,7 @@ class AdminPage extends Component {
                   </Col>
                   <Col sm="4">
                     <Button color='success' id='preview' key='preview' onClick={this.handlePreview} >
-                      {translate.btn_preview}
+                    <div className="iconContainer arrow-forward"/>  {translate.btn_preview}
                     </Button>
                   </Col>
                 </Row>

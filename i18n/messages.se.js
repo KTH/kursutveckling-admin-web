@@ -46,7 +46,9 @@ module.exports = {
     header_published: 'Publicerade',
     header_new: 'Eller lägg till en ny kursomgång',
     header_select_rounds: 'Ej påbörjade kurstillfällen (välj en eller flera):',
-    header_analysis_menu: 'Välj/ lägg till kursomgång (steg 1 av 3)',
+    header_edit_content: 'Redigera innehåll (steg 1 av 3) ',
+    header_analysis_menu: 'Välj/ lägg till kursomgång (steg 2 av 3)',
+    header_preview_content: 'Granska (steg 3 av 3)',
 
     intro_analysis_menu_1: 'Välj kursomgång nedan för vilken du vill administrera kursutveckling för.',
 
@@ -55,7 +57,6 @@ module.exports = {
      består av. Utkast hittar du på denna sida och publicerad kursutveckling hittar du på sidan `,
     intro_link: 'Kursens utveckling och historik.',
     select_semester: 'Välj termin',
-    edit_content: 'Redigera innehåll (steg 1 av 3) ',
 
     course_short_semester: {
       1: 'VT ',
