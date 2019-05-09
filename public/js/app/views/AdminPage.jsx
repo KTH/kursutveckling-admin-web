@@ -128,7 +128,7 @@ class AdminPage extends Component {
     return this.props.routerStore.postRoundAnalysisData(postObject, this.props.routerStore.status === 'new')
       .then((data) => {
         console.log('postObject', data)
-        window.location=`${ADMIN_URL}${thisInstance.props.routerStore.courseCode}?serv=kutv&event=save`
+        window.location=`${ADMIN_URL}${thisInstance.props.routerStore.analysisData.courseCode}?serv=kutv&event=save`
         thisInstance.setState({
           saved: true,
           progress: false,

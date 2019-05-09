@@ -17,13 +17,12 @@ async function getIndex (req, res, next) {
 
   try {
     // const client = api.kursplanApi.client
-   // const paths = api.kursplanApi.paths
+    // const paths = api.kursplanApi.paths
 
     // const resp = await client.getAsync(client.resolve(paths.getSyllabusByCourseCode.uri, { courseCode: courseCode, semester: semester, language:lang }), { useCache: true })
 
   } catch (err) {
-    log.error('Error in formCtrl/getIndex', { error: err })
+    log.error('Error in sdminCtrl/getIndex', { error: err })
     next(err)
   }
 }
-
