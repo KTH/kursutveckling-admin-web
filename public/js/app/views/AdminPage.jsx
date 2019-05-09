@@ -87,7 +87,7 @@ class AdminPage extends Component {
 
   handleCancel(event) {
     //event.preventDefault()
-    window.location=`${ADMIN_URL}${thisInstance.props.routerStore.courseCode}?serv=kutv&event=cancel`
+    window.location=`${ADMIN_URL}${this.props.routerStore.courseCode}?serv=kutv&event=cancel`
   }
 
   editMode(semester, rounds, analysisId, status) {
