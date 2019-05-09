@@ -86,7 +86,7 @@ class AdminPage extends Component {
   }
 
   handleCancel(event) {
-    event.preventDefault()
+    //event.preventDefault()
     window.location=`${ADMIN_URL}${thisInstance.props.routerStore.courseCode}?serv=kutv&event=cancel`
   }
 
