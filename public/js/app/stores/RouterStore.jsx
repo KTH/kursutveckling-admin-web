@@ -94,6 +94,7 @@ class RouterStore {
     ).then(result => {
       console.log("!!!!getRoundAnalysis", result.data)
       this.status = result.data.isPublished ? 'published' : 'draft'
+      this.courseCode = result.data.courseCode
       return this.analysisData = result.data
     }).catch(err => {
       if (err.response) {
