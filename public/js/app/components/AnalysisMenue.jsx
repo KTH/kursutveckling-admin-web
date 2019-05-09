@@ -8,6 +8,7 @@ import { Alert, Form, Dropdown, FormGroup, Label,
 import InfoModal from './InfoModal'
 
 import i18n from '../../../../i18n/index'
+import { EMPTY, ADMIN_URL } from '../util/constants'
 
 @inject(['routerStore']) @observer
 class AnalysisMenue extends Component {
@@ -181,7 +182,7 @@ class AnalysisMenue extends Component {
 
     handleCancel(event) {
         event.preventDefault()
-        alert('THIS IS WILL TAKE YOU BACK TO KURSINFO ADMIN IN THE FUTURE')
+        window.location =`${ADMIN_URL}${this.props.routerStore.courseCode}?serv=kutv&event=cancel`
       }
 
     handleDelete ( id, fromModal = false ){
@@ -201,7 +202,7 @@ class AnalysisMenue extends Component {
         }
         else{
             this.props.routerStore.deleteRoundAnalysis(id).then(result =>{
-                console.log("#################GONE", result)
+                window.location=`${ADMIN_URL}${this.props.routerStore.courseCode}?serv=kutv&event=delete`
                 this.getUsedRounds(this.state.semester)
                 let modalOpen = this.state.modalOpen
                 modalOpen.delete = ! modalOpen.delete === true

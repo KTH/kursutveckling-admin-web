@@ -36,6 +36,7 @@ class RouterStore {
   usedRounds = []
   hasChangedStatus = false
   courseTitle = ''
+  courseCode = ''
   examCommentEmpty = true
   errorMessage = ''
 
@@ -163,6 +164,7 @@ class RouterStore {
   }
 
   @action getCourseInformation(courseCode, ldapUsername, lang = 'sv') {
+    this.courseCode = courseCode
     return axios.get(this.buildApiUrl(this.paths.api.koppsCourseData.uri,
       { courseCode: courseCode, language: lang }),
       this._getOptions()
@@ -182,6 +184,7 @@ class RouterStore {
   }
 
   @action getUsedRounds(courseCode, semester) {
+    this.courseCode = courseCode
     return axios.get(this.buildApiUrl(this.paths.api.kursutvecklingGetUsedRounds.uri,
       { courseCode: courseCode, semester: semester }),
       this._getOptions()

@@ -9,11 +9,11 @@ import Title from '../components/Title'
 import AnalysisMenue from '../components/AnalysisMenue'
 import Preview from '../components/Preview'
 import InfoModal from '../components/InfoModal'
-import i18n from '../../../../i18n/index'
+
 
 //Helpers 
 import { EMPTY, ADMIN_URL } from '../util/constants'
-
+import i18n from '../../../../i18n/index'
 
 @inject(['routerStore']) @observer
 class AdminPage extends Component {
@@ -87,7 +87,7 @@ class AdminPage extends Component {
 
   handleCancel(event) {
     event.preventDefault()
-    alert('THIS IS WILL TAKE YOU BACK TO KURSINFO ADMIN IN THE FUTURE...')
+    window.location=`${ADMIN_URL}${thisInstance.props.routerStore.courseCode}?serv=kutv&event=cancel`
   }
 
   editMode(semester, rounds, analysisId, status) {
@@ -128,7 +128,7 @@ class AdminPage extends Component {
     return this.props.routerStore.postRoundAnalysisData(postObject, this.props.routerStore.status === 'new')
       .then((data) => {
         console.log('postObject', data)
-        alert('THIS IS WILL TAKE YOU BACK TO KURSINFO ADMIN IN THE FUTURE... ')
+        window.location=`${ADMIN_URL}${thisInstance.props.routerStore.courseCode}?serv=kutv&event=save`
         thisInstance.setState({
           saved: true,
           progress: false,
@@ -149,7 +149,7 @@ class AdminPage extends Component {
     return this.props.routerStore.postRoundAnalysisData(postObject, this.props.routerStore.status === 'new' )
       .then((response) => {
         console.log('handlePublish', response)
-        alert("THIS IS WILL TAKE YOU BACK TO KURSINFO ADMIN IN THE FUTURE... ")
+       window.location=`${ADMIN_URL}${response.courseCode}?serv=kutv&event=pub`
         thisInstance.setState({
           saved: true,
           isPublished: true,
@@ -179,11 +179,12 @@ class AdminPage extends Component {
   componentDidUpdate() {
     window.scrollTo(0, 0)
     //this._div.scrollTop = 0
+    window.onpopstate  = (e) => {
+      console.log('adminP onpopstate', this.state)
+     }
   }
 
-  componentDidMount() {
-    console.log('componentDidMount .state', this.state)
-  }
+  
 
 
   render() {
