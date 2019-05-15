@@ -190,6 +190,11 @@ server.use(excludeExpression, require('kth-node-web-common/lib/web/crawlerRedire
   hostUrl: config.hostUrl
 }))
 
+const fileUpload = require('express-fileupload')
+server.use(fileUpload())
+server.use(bodyParser.json({ limit: '50mb' }))
+server.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
+
 /* **********************************
  * ******* APPLICATION ROUTES *******
  * **********************************
@@ -208,7 +213,7 @@ server.use('/', systemRoute.getRouter())
 // App routes
 const appRoute = AppRouter()
 appRoute.get('system.index', config.proxyPrefixPath.uri + '/:id', Admin.getIndex)
-appRoute.get('system.index', config.proxyPrefixPath.uri + '/preview/:id', /* getServerGatewayLogin('/:courseCode'), */ AdminPreview.getIndex)
+appRoute.get('system.index', config.proxyPrefixPath.uri + '/preview/:fileName', /* getServerGatewayLogin('/:courseCode'), */ AdminPreview.getIndex)
 appRoute.get('system.gateway', config.proxyPrefixPath.uri + '/gateway', getServerGatewayLogin('/'), requireRole('isAdmin'), Admin.getIndex)
 
 appRoute.get('api.kursutvecklingGetById', config.proxyPrefixPath.uri + '/apicall/getRoundAnalysisById/:id', Admin.getRoundAnalysis)
@@ -219,6 +224,7 @@ appRoute.get('api.kursutvecklingGetUsedRounds', config.proxyPrefixPath.uri + '/a
 appRoute.get('api.koppsCourseData', config.proxyPrefixPath.uri + '/api/kursutveckling-admin/getKoppsCourseDataByCourse/:courseCode/:language', Admin.getKoppsCourseData)
 appRoute.get('redis.ugCache', config.proxyPrefixPath.uri + '/redis/ugChache/:key/:type', Admin.getCourseEmployees)
 appRoute.post('redis.ugCache', config.proxyPrefixPath.uri + '/redis/ugChache/:key/:type', Admin.getCourseEmployees)
+appRoute.post('storage.saveFile', config.proxyPrefixPath.uri + '/storage/saveFile/:id/:type', Admin.saveFileToStorage)
 
 server.use('/', appRoute.getRouter())
 

@@ -54,7 +54,7 @@ class RouterStore {
     return [host, newPath].join('')
   }
 
-  _getOptions(params) {
+  _getOptions(params) { 
     // Pass Cookie header on SSR-calls
     let options
     if (typeof window === 'undefined') {
@@ -104,7 +104,7 @@ class RouterStore {
     })
   }
 
-  @action postRoundAnalysisData(postObject, status) {
+  @action postRoundAnalysisData(postObject, status) { 
     return axios.post(this.buildApiUrl(this.paths.api.kursutvecklingPost.uri,
       { id: postObject._id, status: status/*, lang: lang*/ }),
       this._getOptions(JSON.stringify(postObject))

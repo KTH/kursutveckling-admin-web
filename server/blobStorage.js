@@ -1,0 +1,92 @@
+const {
+  Aborter,
+  BlockBlobURL,
+  ContainerURL,
+  ServiceURL,
+  SharedKeyCredential,
+  StorageURL,
+  uploadFileToBlockBlob
+} = require('@azure/storage-blob')
+
+const fs = require('fs')
+const path = require('path')
+const serverConfig = require('./configuration').server
+
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
+
+module.exports = {
+  runBlobStorage: runBlobStorage
+}
+
+const STORAGE_ACCOUNT_NAME = serverConfig.fileStorage.kursutvecklingStorage.account
+const ACCOUNT_ACCESS_KEY = serverConfig.fileStorage.kursutvecklingStorage.accountKey[0]
+
+const ONE_MEGABYTE = 1024 * 1024
+const FOUR_MEGABYTES = 4 * ONE_MEGABYTE
+const ONE_MINUTE = 60 * 1000
+
+async function runBlobStorage (fileName, fileContent, file, toDo = 'upload') {
+  console.log('file:', file)
+  const containerName = 'kursutveckling-blob-container'
+  const blobName = fileName
+  const content = fileContent
+  // const conten2 = await base64_encode(file)
+
+  const credentials = new SharedKeyCredential(STORAGE_ACCOUNT_NAME, ACCOUNT_ACCESS_KEY)
+  const pipeline = StorageURL.newPipeline(credentials)
+  const serviceURL = new ServiceURL(`https://${STORAGE_ACCOUNT_NAME}.blob.core.windows.net`, pipeline)
+
+  const containerURL = ContainerURL.fromServiceURL(serviceURL, containerName)
+  const blockBlobURL = BlockBlobURL.fromContainerURL(containerURL, blobName)
+
+  const aborter = Aborter.timeout(30 * ONE_MINUTE)
+
+  console.log('Containers:', file)
+  await showContainerNames(aborter, serviceURL)
+
+  /* if (toDo === 'download') {
+    const snapshotResponse = await blockBlobURL.createSnapshot(Aborter.none)
+    const snapshotURL = blockBlobURL.withSnapshot(snapshotResponse.snapshot)
+    const downloadResponse = await snapshotURL.download(aborter, 0)
+    console.log(`Downloaded blob content: "${downloadResponse}"`, downloadResponse)
+    downloadResponse.contentType = 'application/pdf'
+    return downloadResponse
+  } */
+
+  const resp = await blockBlobURL.upload(aborter, content, content.length)
+  console.log(`Blob "${blobName}" is uploaded`, resp)
+
+  await blockBlobURL.setHTTPHeaders(aborter, { blobContentType: 'application/pdf' })
+
+  /* console.log(`Blobs in "${containerName}" container:`)
+  await showBlobNames(aborter, containerURL) */
+}
+
+//* *********************************************************************** */
+async function showContainerNames (aborter, serviceURL) {
+  let response
+  let marker
+
+  do {
+    response = await serviceURL.listContainersSegment(aborter, marker)
+    marker = response.marker
+    for (let container of response.containerItems) {
+      console.log(` - ${container.name}`)
+    }
+  } while (marker)
+}
+
+async function showBlobNames (aborter, containerURL) {
+  let response
+  let marker
+
+  do {
+    response = await containerURL.listBlobFlatSegment(aborter)
+    marker = response.marker
+    for (let blob of response.segment.blobItems) {
+      console.log(` - ${blob.name}`)
+    }
+  } while (marker)
+}

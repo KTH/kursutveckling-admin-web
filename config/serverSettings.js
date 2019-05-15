@@ -24,7 +24,8 @@ const devRedisUG = devDefaults('team-studam-ref-redis-193.redis.cache.windows.ne
 const devLdap = undefined // Do not enter LDAP_URI or LDAP_PASSWORD here, use env_vars
 const devSsoBaseURL = devDefaults('https://login-r.referens.sys.kth.se')
 const devLdapBase = devDefaults('OU=UG,DC=ref,DC=ug,DC=kth,DC=se')
-const devAnalysisFileStorageURL = devDefaults('https://kursinfostoragestage.blob.core.windows.net/kursutveckling-blob-container')
+const devStorageAccountName = devDefaults('kursinfostoragestage')
+const devStorageKey = devDefaults('ybZZ0R0y1/AFPj9o6kAEiPuCgmYSaD9AgbPccC4c9b1dj7J2+NXcMzXUowfLQULB3qsDBX0abpS9oi/p+mskyw==')
 
 // END DEFAULT SETTINGS
 
@@ -125,9 +126,8 @@ module.exports = {
 
   fileStorage: {
     kursutvecklingStorage: {
-      url: getEnv('STORAGE_KURSUTVECKLING_URL', devAnalysisFileStorageURL),
-      account: '',
-      accountKey: ''
+      account: getEnv('STORAGE_ACCOUNT_NAME', devStorageAccountName),
+      accountKey: [getEnv('ACCOUNT_ACCESS_KEY', devStorageKey), getEnv('ACCOUNT_ACCESS_KEY,', devStorageKey)]
     }
   }
 

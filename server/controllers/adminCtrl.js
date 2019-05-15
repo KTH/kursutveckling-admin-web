@@ -8,7 +8,9 @@ const { safeGet } = require('safe-utils')
 const { toJS } = require('mobx')
 const httpResponse = require('kth-node-response')
 const i18n = require('../../i18n')
+
 const api = require('../api')
+const { runBlobStorage } = require('../blobStorage')
 
 const kursutvecklingAPI = require('../apiCalls/kursutvecklingAPI')
 const koppsCourseData = require('../apiCalls/koppsCourseData')
@@ -28,8 +30,15 @@ module.exports = {
   deleteRoundAnalysis: co.wrap(_deleteRoundAnalysis),
   getCourseEmployees: co.wrap(_getCourseEmployees),
   getUsedRounds: co.wrap(_getUsedRounds),
-  getKoppsCourseData: co.wrap(_getKoppsCourseData)
+  getKoppsCourseData: co.wrap(_getKoppsCourseData),
+  saveFileToStorage: co.wrap(_saveFileToStorage)
+}
 
+function * _saveFileToStorage (req, res, next) {
+  console.log('_saveFileToStorage', req.body, req.files.filepond)
+  // const blobService = storage.createBlobService()
+  runBlobStorage(req.files.filepond.name, req.files.filepond.data, req.files.filepond)
+  return httpResponse.json(res, req.files.filepond.name)
 }
 
 function * _postRoundAnalysis (req, res, next) {
@@ -45,7 +54,6 @@ function * _postRoundAnalysis (req, res, next) {
     } else {
       apiResponse = yield kursutvecklingAPI.updateRoundAnalysisData(roundAnalysisId, sendObject, language)
     }
-    console.log('apiResponse', apiResponse)
 
     /* if (apiResponse.statusCode !== 200) { // TODO: Handle with alert
       res.status(apiResponse.statusCode)

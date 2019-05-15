@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
 import { Row, Col, Button, Form, Label, Input, Alert } from 'reactstrap'
-import { FilePond } from 'react-filepond'
+import { FilePond, setOptions } from 'react-filepond'
 import 'filepond/dist/filepond.min.css'
 
 //Components
@@ -14,6 +14,7 @@ import InfoModal from '../components/InfoModal'
 //Helpers 
 import { EMPTY, ADMIN_URL } from '../util/constants'
 import i18n from '../../../../i18n/index'
+import images1 from '../../img/*.svg '//require('../../../img/stegvis_1_sv.svg')
 
 @inject(['routerStore']) @observer
 class AdminPage extends Component {
@@ -32,7 +33,7 @@ class AdminPage extends Component {
        cancel: false
       },
       alert: '',
-      analysisFile: '',
+      analysisFile: this.props.routerStore.analysisData.analysisFileName,
       pmFile:''
     }
     this.handlePreview = this.handlePreview.bind(this)
@@ -43,6 +44,11 @@ class AdminPage extends Component {
     this.handleCancel = this.handleCancel.bind(this)
     this.handleInputChange = this.handleInputChange.bind(this)
     this.toggleModal = this.toggleModal.bind(this)
+   // this.sendFile = this.sendFile.bind(this)
+  }
+
+  handleInit() {
+    console.log('FilePond instance has initialised', this.pond)
   }
 
   handlePreview(event) {
@@ -124,11 +130,13 @@ class AdminPage extends Component {
     const postObject = this.state.values
     const thisInstance = this
     this.props.history.push(this.props.routerStore.browserConfig.proxyPrefixPath.uri + '/' + this.props.routerStore.analysisId)
-
+    if(this.state.analysisFile !== postObject.analysisFileName){
+      postObject.analysisFileName = this.state.analysisFile
+    }
     return this.props.routerStore.postRoundAnalysisData(postObject, this.props.routerStore.status === 'new')
       .then((data) => {
         console.log('postObject', data)
-        window.location=`${ADMIN_URL}${thisInstance.props.routerStore.analysisData.courseCode}?serv=kutv&event=save`
+       // window.location=`${ADMIN_URL}${thisInstance.props.routerStore.analysisData.courseCode}?serv=kutv&event=save`
         thisInstance.setState({
           saved: true,
           progress: false,
@@ -194,7 +202,7 @@ class AdminPage extends Component {
     const labelIdle =  translate.add_file 
 
     console.log("routerStore1", routerStore)
-    console.log("this.state1", this.state)
+    console.log("this.state1", this.state, images1)
     if (routerStore.analysisData === undefined || this.state.progress === 'back_new')
       return (
         <div ref={(ref) => this._div = ref}>
@@ -223,6 +231,7 @@ class AdminPage extends Component {
         <div key='kursutveckling-form-container' className='container' id='kursutveckling-form-container' ref={(ref) => this._div = ref} >
           <h1>{translate.header_main}</h1>
           <Title title={routerStore.courseTitle} language={routerStore.language} courseCode={routerStore.analysisData.courseCode} />
+       
           <Row>
             <Col sm="12" lg="12">
             
@@ -236,7 +245,10 @@ class AdminPage extends Component {
               : ''}
 
           {this.state.values && this.state.isPreviewMode
-            ? <Preview values={this.state.values} />
+            ? <Preview 
+              values={ this.state.values } 
+              analysisFile= { this.state.analysisFile }
+            />
             : ""
           }
           <Row key='form' id='form-container' >
@@ -279,18 +291,24 @@ class AdminPage extends Component {
                     <Label>{translate.header_upload_file}</Label>
                     <FilePond id="analysis" key="analysis" 
                       labelIdle={labelIdle} 
-                      ref={ref => (this.pond = ref)}
-                      files={this.state.analysisFile}
-                      allowMultiple={true}
-                      maxFiles={1}
+                      id = 'analysisUpload'
+                      ref = {ref => (this.pond = ref)}
+                      files = {this.state.analysisFile}
+                      allowMultiple = {true}
+                      maxFiles = {1}
+                      oninit={() => this.handleInit() }
+                      type='local'
+                      server= {`${this.props.routerStore.browserConfig.hostUrl}${this.props.routerStore.paths.storage.saveFile.uri.split(':')[0]}${this.props.routerStore.analysisId}/analysis`}
                       onupdatefiles={fileItems => {
+                        console.log(fileItems[0])
                         this.setState({
-                          analysisFile: fileItems.map(fileItem => fileItem.file)
-                        })
+                          analysisFile: fileItems[0].file.name
+                        }) 
                       }}
-                   />
+                      >
+                      </FilePond>
                     <Label>{translate.header_upload_file_pm}</Label>
-                    <FilePond id="pm" key="pm" labelIdle={labelIdle}
+                    {/*<FilePond id="pm" key="pm" labelIdle={labelIdle}
                       labelIdle={labelIdle} 
                       ref={ref => (this.pond = ref)}
                       files={this.state.pmFile}
@@ -301,10 +319,10 @@ class AdminPage extends Component {
                           pmFile: fileItems.map(fileItem => fileItem.file)
                         }) 
                       }}
-                    />
+                    />*/}
                   </Col>
                 </Row>
-                <Row className="button-container text-center" >
+                <Row className="button-container text-center" >             
                   <Col sm="4">
                     <Button color='secondary' id='back' key='back' onClick={this.handleBack} >
                      <div className="iconContainer arrow-back"/> {translate.btn_back }
@@ -363,5 +381,7 @@ class AdminPage extends Component {
       )
   }
 }
+
+
 
 export default AdminPage

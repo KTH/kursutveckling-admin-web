@@ -24,9 +24,11 @@
     "start-dev": "cross-env NODE_ENV=development rm -rf ./dist && npm run pack && npm run babel && cross-env NODE_ENV=development concurrently --kill-others \"nodemon --ignore dist/ app.js\" \"webpack --watch\""
   },
   "dependencies": {
+    "@azure/storage-blob": "^10.0.0-preview",
     "@babel/plugin-transform-modules-commonjs": "^7.4.0",
     "@babel/plugin-transform-runtime": "^7.4.0",
     "@babel/plugin-transform-spread": "^7.2.2",
+    "@types/dotenv": "^4.0.3",
     "applicationinsights": "^1.2.0",
     "axios": "^0.18.0",
     "azure-storage": "^2.10.3",
@@ -39,6 +41,7 @@
     "cookie-parser": "^1.4.3",
     "dotenv": "^6.1.0",
     "express": "^4.16.4",
+    "express-fileupload": "^1.1.4",
     "express-handlebars": "^3.0.0",
     "filepond": "^4.3.5",
     "jquery": "^3.3.1",
