@@ -20,7 +20,7 @@ if (process.env.NODE_ENV !== 'production') {
 module.exports = {
   runBlobStorage: runBlobStorage
 }
-
+log.info('runBlobStorage:', serverConfig)
 const STORAGE_ACCOUNT_NAME = serverConfig.fileStorage.kursutvecklingStorage.account
 const ACCOUNT_ACCESS_KEY = serverConfig.fileStorage.kursutvecklingStorage.accountKey[0]
 
@@ -29,7 +29,6 @@ const FOUR_MEGABYTES = 4 * ONE_MEGABYTE
 const ONE_MINUTE = 60 * 1000
 
 async function runBlobStorage (fileName, fileContent, file, toDo = 'upload') {
-  log.info('runBlobStorage:', serverConfig)
   const containerName = 'kursutveckling-blob-container'
   const blobName = fileName
   const content = fileContent
