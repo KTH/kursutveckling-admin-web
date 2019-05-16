@@ -53,7 +53,7 @@ async function runBlobStorage (fileName, fileContent, file, toDo = 'upload') {
     downloadResponse.contentType = 'application/pdf'
     return downloadResponse
   } */
-  console.log('Blobbiblobb:...')
+  console.log('Blobbiblobb2')
   const resp = await blockBlobURL.upload(aborter, content, content.length)
   console.log(`Blob "${blobName}" is uploaded`, resp)
 
