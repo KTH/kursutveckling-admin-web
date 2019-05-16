@@ -261,33 +261,7 @@ class AdminPage extends Component {
               <p>{translate.asterix_text}<br/>
               {translate.asterix_text_2}</p>
                 <Row className='form-group'>
-                  <Col sm='4' className='col-temp'>
-                    <Label>{translate.header_programs}*</Label>
-                    <Input id='programmeCodes' key='programmeCodes' type='text' value={this.state.values.programmeCodes} onChange={this.handleInputChange} disabled={isDisabled} />
-                    <Label>{translate.header_examiners}*</Label>
-                    <Input id='examiners' key='examiners' type='text' value={this.state.values.examiners} onChange={this.handleInputChange} disabled={isDisabled} />
-                    <Label>{translate.header_responsibles}*</Label>
-                    <Input id='responsibles' key='responsibles' type='text' value={this.state.values.responsibles} onChange={this.handleInputChange} disabled={isDisabled} />
-                    <Label>{translate.header_examination}*</Label>
-                    <Input id='examinationRounds' key='examinationRounds' type="textarea" value={this.state.values.examinationRounds} onChange={this.handleInputChange} disabled={isDisabled} />
-                    <Label>{translate.header_registrated}*</Label>
-                    <Input id='registeredStudents' key='registeredStudents' type='text' value={this.state.values.registeredStudents} onChange={this.handleInputChange} disabled={isDisabled} />
-                    <Label>{translate.header_examination_grade}*</Label>
-                    <Input id='examinationGrade' key='examinationGrade' type='number' value={this.state.values.examinationGrade} onChange={this.handleInputChange} disabled={isDisabled} />
-                  </Col>
-                  <Col sm='4' className='col-temp'>
-                   <Label>{translate.header_examination_comment}*</Label>
-                    {routerStore.examCommentEmpty || ( this.state.values.commentExam && this.state.values.commentExam.indexOf('</') ) < 0
-                      ? <Input id='commentExam' key='commentExam' type='textarea' value={this.state.values.commentExam} onChange={this.handleInputChange} disabled={isDisabled} />
-                      : <span id='commentExam' key='commentExam' dangerouslySetInnerHTML={{ __html: this.state.values.commentExam }} />
-                    }
-                 
-                    <Label>{translate.header_course_changes_comment}</Label>
-                    <Input id='alterationText' key='alterationText' type="textarea" value={this.state.values.alterationText} onChange={this.handleInputChange} />
-                    <Label>{translate.header_analysis_edit_comment}</Label>
-                    <Input id='commentChange' key='commentChange' type="textarea" value={this.state.values.commentChange} onChange={this.handleInputChange} />
-                  </Col>  
-                  <Col sm='3' className='col-temp'>
+                <Col sm='3' className='col-temp'>
                     <Label>{translate.header_upload_file}</Label>
                     <FilePond id="analysis" key="analysis" 
                       labelIdle={labelIdle} 
@@ -322,6 +296,33 @@ class AdminPage extends Component {
                       }}
                     />*/}
                   </Col>
+                  <Col sm='4' className='col-temp'>
+                    <Label>{translate.header_programs}*</Label>
+                    <Input id='programmeCodes' key='programmeCodes' type='text' value={this.state.values.programmeCodes} onChange={this.handleInputChange} disabled={isDisabled} />
+                    <Label>{translate.header_examiners}*</Label>
+                    <Input id='examiners' key='examiners' type='text' value={this.state.values.examiners} onChange={this.handleInputChange} disabled={isDisabled} />
+                    <Label>{translate.header_responsibles}*</Label>
+                    <Input id='responsibles' key='responsibles' type='text' value={this.state.values.responsibles} onChange={this.handleInputChange} disabled={isDisabled} />
+                    <Label>{translate.header_examination}*</Label>
+                    <Input id='examinationRounds' key='examinationRounds' type="textarea" value={this.state.values.examinationRounds} onChange={this.handleInputChange} disabled={isDisabled} />
+                    <Label>{translate.header_registrated}*</Label>
+                    <Input id='registeredStudents' key='registeredStudents' type='text' value={this.state.values.registeredStudents} onChange={this.handleInputChange} disabled={isDisabled} />
+                    <Label>{translate.header_examination_grade}*</Label>
+                    <Input id='examinationGrade' key='examinationGrade' type='number' value={this.state.values.examinationGrade} onChange={this.handleInputChange} disabled={isDisabled} />
+                  </Col>
+                  <Col sm='4' className='col-temp'>
+                   <Label>{translate.header_examination_comment}*</Label>
+                    {routerStore.examCommentEmpty || ( this.state.values.commentExam && this.state.values.commentExam.indexOf('</') ) < 0
+                      ? <Input id='commentExam' key='commentExam' type='textarea' value={this.state.values.commentExam} onChange={this.handleInputChange} disabled={isDisabled} />
+                      : <span id='commentExam' key='commentExam' dangerouslySetInnerHTML={{ __html: this.state.values.commentExam }} />
+                    }
+                 
+                    <Label>{translate.header_course_changes_comment}</Label>
+                    <Input id='alterationText' key='alterationText' type="textarea" value={this.state.values.alterationText} onChange={this.handleInputChange} />
+                    <Label>{translate.header_analysis_edit_comment}</Label>
+                    <Input id='commentChange' key='commentChange' type="textarea" value={this.state.values.commentChange} onChange={this.handleInputChange} />
+                  </Col>  
+                 
                 </Row>
                 <Row className="button-container text-center" >             
                   <Col sm="4">

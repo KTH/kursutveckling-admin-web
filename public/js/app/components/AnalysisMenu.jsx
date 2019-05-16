@@ -230,8 +230,8 @@ class AnalysisMenu extends Component {
        
         return (
             <div id="YearAndRounds">
-                 {/**** <h2>{translate.header_analysis_menu}</h2>
-                <p>{translate.intro_analysis_menu_1} </p>
+                 <h2>{translate.header_analysis_menu}</h2>
+               {/****  <p>{translate.intro_analysis_menu_1} </p>
                 <p>{translate.intro_analysis_menu_2} <a href={this.props.routerStore.courseCode}>{translate.intro_link}</a></p>
                  Select semester for a course *****/}
                 
@@ -270,7 +270,7 @@ class AnalysisMenu extends Component {
                 }
 
                 <Collapse isOpen={this.state.collapseOpen}>
-                <Row id='analysisMenuContainer'>
+                <Row id='analysisMenuContainer' className='border-bottom'>
            
                     <Form> 
                         <Col md='5' className='float-md-right'>

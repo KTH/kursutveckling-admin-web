@@ -28,7 +28,7 @@ const FOUR_MEGABYTES = 4 * ONE_MEGABYTE
 const ONE_MINUTE = 60 * 1000
 
 async function runBlobStorage (fileName, fileContent, file, toDo = 'upload') {
-  console.log('file:', file)
+  console.log('runBlobStorage:', file)
   const containerName = 'kursutveckling-blob-container'
   const blobName = fileName
   const content = fileContent
