@@ -33,7 +33,7 @@ class AdminPage extends Component {
        cancel: false
       },
       alert: '',
-      analysisFile: this.props.routerStore.analysisData.analysisFileName,
+      analysisFile: this.props.routerStore.analysisData ? this.props.routerStore.analysisData.analysisFileName : '',
       pmFile:''
     }
     this.handlePreview = this.handlePreview.bind(this)
