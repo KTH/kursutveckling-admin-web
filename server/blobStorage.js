@@ -20,9 +20,9 @@ if (process.env.NODE_ENV !== 'production') {
 module.exports = {
   runBlobStorage: runBlobStorage
 }
-log.info('runBlobStorage:', serverConfig)
+console.log('runBlobStorage:', serverConfig)
 const STORAGE_ACCOUNT_NAME = serverConfig.fileStorage.kursutvecklingStorage.account
-const ACCOUNT_ACCESS_KEY = serverConfig.fileStorage.kursutvecklingStorage.accountKey[0]
+const ACCOUNT_ACCESS_KEY = serverConfig.fileStorage.kursutvecklingStorage.accountKey
 
 const ONE_MEGABYTE = 1024 * 1024
 const FOUR_MEGABYTES = 4 * ONE_MEGABYTE
@@ -32,7 +32,7 @@ async function runBlobStorage (fileName, fileContent, file, toDo = 'upload') {
   const containerName = 'kursutveckling-blob-container'
   const blobName = fileName
   const content = fileContent
-  console.log('Blobbiblobb', STORAGE_ACCOUNT_NAME, ACCOUNT_ACCESS_KEY)
+  console.log('Blobbiblobb:', STORAGE_ACCOUNT_NAME, ACCOUNT_ACCESS_KEY)
   const credentials = new SharedKeyCredential(STORAGE_ACCOUNT_NAME, ACCOUNT_ACCESS_KEY)
   const pipeline = StorageURL.newPipeline(credentials)
   const serviceURL = new ServiceURL(`https://${STORAGE_ACCOUNT_NAME}.blob.core.windows.net`, pipeline)

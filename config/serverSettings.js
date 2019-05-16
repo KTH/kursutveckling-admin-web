@@ -127,7 +127,7 @@ module.exports = {
   fileStorage: {
     kursutvecklingStorage: {
       account: getEnv('STORAGE_ACCOUNT_NAME', devStorageAccountName),
-      accountKey: [getEnv('ACCOUNT_ACCESS_KEY', devStorageKey), getEnv('ACCOUNT_ACCESS_KEY,', devStorageKey)]
+      accountKey: getEnv('ACCOUNT_ACCESS_KEY', devStorageKey)//, getEnv('ACCOUNT_ACCESS_KEY', devStorageKey)]
     }
   }
 
