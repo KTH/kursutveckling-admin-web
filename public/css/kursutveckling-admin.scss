@@ -35,6 +35,8 @@ border-left: 1px dotted #fff;
 
 #analysisMenuContainer{
   padding-top: 30px;
+  border-top: 1px solid #ddd;
+  margin-top: 20px;
 }
 
 .select-semester{
@@ -75,6 +77,12 @@ border-left: 1px dotted #fff;
   .dropdown-menu {
     min-width: 100%;
   }
+}
+
+.border-bottom{
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 30px;
+  padding-bottom: 10px;
 }
 
 .button-container{

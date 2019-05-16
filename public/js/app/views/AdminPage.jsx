@@ -6,7 +6,7 @@ import 'filepond/dist/filepond.min.css'
 
 //Components
 import Title from '../components/Title'
-import AnalysisMenue from '../components/AnalysisMenue'
+import AnalysisMenu from '../components/AnalysisMenu'
 import Preview from '../components/Preview'
 import InfoModal from '../components/InfoModal'
 
@@ -212,7 +212,7 @@ class AdminPage extends Component {
               <Title title={routerStore.courseTitle} language={routerStore.language} courseCode={routerStore.courseData.courseCode} />
               {routerStore.semesters.length === 0
                 ? <Alert color="friendly">No rounds!</Alert>
-                : <AnalysisMenue
+                : <AnalysisMenu
                   editMode= { this.editMode }
                   semesterList= { routerStore.semesters }
                   roundList= { routerStore.roundData }

@@ -11,7 +11,7 @@ import i18n from '../../../../i18n/index'
 import { EMPTY, ADMIN_URL } from '../util/constants'
 
 @inject(['routerStore']) @observer
-class AnalysisMenue extends Component {
+class AnalysisMenu extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -230,17 +230,18 @@ class AnalysisMenue extends Component {
        
         return (
             <div id="YearAndRounds">
-                <h2>{translate.header_analysis_menu}</h2>
+                 {/**** <h2>{translate.header_analysis_menu}</h2>
                 <p>{translate.intro_analysis_menu_1} </p>
                 <p>{translate.intro_analysis_menu_2} <a href={this.props.routerStore.courseCode}>{translate.intro_link}</a></p>
-                 {/**** Select semester for a course *****/}
-                <h3>{translate.header_select_semester}</h3>
+                 Select semester for a course *****/}
+                
                
                 <Dropdown
                     isOpen={this.state.dropdownOpen}
                     toggle={this.toggleDropdown}
                     className='select-semester'
                 >
+                <h3>{translate.header_select_semester}</h3>
                     <DropdownToggle >
                         <span>
                             {this.state.semester && this.state.semester > 0 && !this.state.firstVisit
@@ -272,11 +273,10 @@ class AnalysisMenue extends Component {
                 <Row id='analysisMenuContainer'>
            
                     <Form> 
-                        <Col md='5' className='float-md-left'>
+                        <Col md='5' className='float-md-right'>
                         {/**** DRAFT ANALYSIS ****/}
-                        <FormGroup >
-                            <h3>{translate.header_added_rounds}</h3>
-                            <h4>{translate.header_draft}</h4>
+                        <FormGroup className='border-bottom'>
+                            <h3>{translate.header_draft}</h3>
                             {this.state.draftAnalysis.length > 0
                                 ? this.state.draftAnalysis.length > 1
                                     ? <ul>
@@ -290,7 +290,7 @@ class AnalysisMenue extends Component {
                                                         checked={this.state.selectedRadio.draft === analysis.analysisId}
                                                     />
                                                     {analysis.analysisName}
-                                                    {" ( Created by: " + analysis.user + " ) "}
+                                                    {/*" ( Created by: " + analysis.user + " ) "*/}
                                                 </Label>
                                                 <br />
                                             </li>
@@ -300,26 +300,29 @@ class AnalysisMenue extends Component {
                                         <li className = 'select-list'>
                                             <Label key={"Label" + this.state.draftAnalysis[0].analysisId} for={this.state.draftAnalysis[0].analysisId} >
                                                 {this.state.draftAnalysis[0].analysisName}
-                                                {" ( Created by: " + this.state.draftAnalysis[0].user + " ) "}
+                                                {/*" ( Created by: " + this.state.draftAnalysis[0].user + " ) "*/}
                                             </Label>
                                         </li>
                                     </ul>
                                 : <p>{translate.draft_empty}</p>
                             }
-                            <div className="button-container text-right" >
-                                <Button color='danger' id='delete' key='delete' onClick={this.handleDelete} disabled={this.state.draftAnalysis.length < 1} >
-                                    {translate.btn_delete}
-                                </Button>
-                                <Button color='success' id='draft' key='draft' onClick={this.goToPreviewMode} disabled={this.state.draftAnalysis.length < 1} >
-                                    <div className="iconContainer arrow-forward" />
-                                    {translate.btn_preview}
-                                </Button>
-                            </div>
+                            {this.state.draftAnalysis.length > 0
+                                ?<div className="button-container text-right" >
+                                    <Button color='danger' id='delete' key='delete' onClick={this.handleDelete} disabled={this.state.draftAnalysis.length < 1} >
+                                        {translate.btn_delete}
+                                    </Button>
+                                    <Button color='success' id='draft' key='draft' onClick={this.goToPreviewMode} disabled={this.state.draftAnalysis.length < 1} >
+                                        <div className="iconContainer arrow-forward" />
+                                        {translate.btn_preview}
+                                    </Button>
+                                </div>
+                                : ''
+                            }
                         </FormGroup>
 
                         {/**** PUBLISHED ANALYSIS ****/}
                         <FormGroup >
-                            <h4>{translate.header_published}</h4>
+                            <h3>{translate.header_published}</h3>
                             {this.state.publishedAnalysis.length > 0
                                 ? this.state.publishedAnalysis.length > 1
                                     ? <ul>
@@ -333,7 +336,7 @@ class AnalysisMenue extends Component {
                                                         checked={this.state.selectedRadio.published === analysis.analysisId}
                                                     />
                                                     {analysis.analysisName}
-                                                    {" ( Created by: " + analysis.user + " ) "}
+                                                    {/*" ( Created by: " + analysis.user + " ) "*/}
                                                 </Label>
                                                 <br />
                                             </li>
@@ -343,57 +346,61 @@ class AnalysisMenue extends Component {
                                         <li className = 'select-list'>
                                             <Label key={"Label" + this.state.publishedAnalysis[0].analysisId} for={this.state.publishedAnalysis[0].analysisId} >
                                                 {this.state.publishedAnalysis[0].analysisName}
-                                                {" ( Created by: " + this.state.publishedAnalysis[0].user + " ) "}
+                                                {/*" ( Created by: " + this.state.publishedAnalysis[0].user + " ) "*/}
                                             </Label>
                                         </li>
                                     </ul>
                                 : <p>{translate.published_empty}</p>
                             }
-                            <div className="button-container text-right" >
-                                <Button color='success' id='published' key='published' onClick={this.goToPreviewMode} disabled={this.state.publishedAnalysis.length < 1}>
-                                    <div className="iconContainer arrow-forward" /> {
-                                    translate.btn_preview}
-                                </Button>
-                            </div>
+                            {this.state.publishedAnalysis.length > 0
+                            ? <div className="button-container text-right" >
+                                    <Button color='success' id='published' key='published' onClick={this.goToPreviewMode} disabled={this.state.publishedAnalysis.length < 1}>
+                                        <div className="iconContainer arrow-forward" /> {
+                                        translate.btn_preview}
+                                    </Button>
+                                </div>
+                                : ''
+                            }
                         </FormGroup>
                         </Col>
-                        <Col md='5' className='float-md-right'>
+                        <Col md='5' className='float-md-left'>
                         {/**** NEW ANALYSIS ****/}
                         <FormGroup >
-                            <h3>{translate.header_new}</h3>
-
-                            <h4>{translate.header_select_rounds}</h4>
-                           
+                            <h3>{translate.header_select_rounds}</h3>
+                           <p>{translate.intro_new}</p>
                             {this.props.roundList[this.state.semester].length > this.state.usedRounds.length
-                                ?  <ul> 
-                                    {this.props.roundList[this.state.semester].map(round =>
-                                        this.state.usedRounds.indexOf(round.roundId) < 0
-                                            ? <li className = 'select-list' key={round.roundId}>
-                                                <Label key={"Label" + round.roundId}
-                                                    for={round.roundId}
-                                                >
-                                                    <Input type="checkbox"
-                                                        id={round.roundId}
-                                                        key={"checkbox" + round.roundId}
-                                                        onClick={this.handleRoundCheckbox}
-                                                    />
-                                                    {round.shortName ? round.shortName : round.startDate} {(round.language)}
+                                ?  <div>
+                                        <ul> 
+                                        {this.props.roundList[this.state.semester].map(round =>
+                                            this.state.usedRounds.indexOf(round.roundId) < 0
+                                                ? <li className = 'select-list' key={round.roundId}>
+                                                    <Label key={"Label" + round.roundId}
+                                                        for={round.roundId}
+                                                    >
+                                                        <Input type="checkbox"
+                                                            id={round.roundId}
+                                                            key={"checkbox" + round.roundId}
+                                                            onClick={this.handleRoundCheckbox}
+                                                        />
+                                                        {round.shortName ? round.shortName : round.startDate} {(round.language)}
 
-                                                </Label>
-                                                <br />
-                                            </li>
-                                            : ''
-                                    )}
-                                </ul>
+                                                    </Label>
+                                                    <br />
+                                                </li>
+                                                : ''
+                                        )}
+                                    </ul>
+                                    <div className="button-container text-right" >
+                                        <Button color='success' id='new' key='new' onClick={this.goToEditMode} disabled ={this.props.roundList[this.state.semester].length === this.state.usedRounds.length}>
+                                            <div className="iconContainer arrow-forward" />  
+                                            {translate.btn_add_analysis}
+                                        </Button>
+                                    </div>
+                                </div>
                                 : <p>{translate.new_empty}</p>
                             }
                             
-                            <div className="button-container text-right" >
-                                <Button color='success' id='new' key='new' onClick={this.goToEditMode} disabled ={this.props.roundList[this.state.semester].length === this.state.usedRounds.length}>
-                                    <div className="iconContainer arrow-forward" />  
-                                    {translate.btn_add_analysis}
-                                </Button>
-                            </div>
+                           
                         </FormGroup>
                         </Col>
                     </Form>
@@ -411,4 +418,4 @@ class AnalysisMenue extends Component {
     }
 }
 
-export default AnalysisMenue
+export default AnalysisMenu

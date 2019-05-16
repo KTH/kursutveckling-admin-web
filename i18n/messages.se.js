@@ -38,16 +38,16 @@ module.exports = {
     page_student: 'STUDENT PÅ KTH',
     page_course_programme: 'KURS- OCH PROGRAMKATALOGEN',
 
-    header_main: 'Administrera kursutveckling',
-    header_select_semester: 'Välj termin',
-    header_add_round: 'Välj termin',
-    header_draft: 'Sparade utkast',
+    header_main: 'Administrera kursanalys med kursdata',
+    header_select_semester: 'Välj först termin',
+    header_add_round: 'Välj först termin',
+    header_draft: 'Välj bland sparade utkast',
     header_added_rounds: 'Välj en tidigare tillagd kursomgång',
-    header_published: 'Publicerade',
-    header_new: 'Eller lägg till en ny kursomgång',
-    header_select_rounds: 'Ej påbörjade kurstillfällen (välj en eller flera):',
+    header_published: 'Välj bland publicerade',
+    header_new: 'Lägg till ny',
+    header_select_rounds: 'Lägg till ny',
     header_edit_content: 'Redigera innehåll (steg 2 av 3) ',
-    header_analysis_menu: 'Välj/ lägg till kursomgång (steg 1 av 3)',
+    header_analysis_menu: 'Välj kursomgång för kursanalys (steg 1 av 3)',
     header_preview_content: 'Granska (steg 3 av 3)',
 
     intro_analysis_menu_1: 'Välj kursomgång nedan för vilken du vill administrera kursutveckling för.',
@@ -57,6 +57,8 @@ module.exports = {
      består av. Utkast hittar du på denna sida och publicerad kursutveckling hittar du på sidan `,
     intro_link: 'Kursens utveckling och historik.',
     select_semester: 'Välj termin',
+
+    intro_new: 'Följande kurstillfällen saknar publicerad kursanalys/ kursdata. Markera en eller flera som ingår i kursomgången: ',
 
     course_short_semester: {
       1: 'VT ',
@@ -72,7 +74,7 @@ module.exports = {
     btn_save: 'Spara utkast',
     btn_publish: 'Publicera',
     btn_back: 'Välj kursomgång',
-    btn_back_edit: 'Tillbaka till redigering',
+    btn_back_edit: 'Till redigering',
     btn_delete: 'Radera',
 
     add_file: 'Dra och droppa filen här <span class="filepond--label-action"> eller klicka för att välja fil </span>',

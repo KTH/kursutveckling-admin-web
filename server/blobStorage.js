@@ -32,8 +32,7 @@ async function runBlobStorage (fileName, fileContent, file, toDo = 'upload') {
   const containerName = 'kursutveckling-blob-container'
   const blobName = fileName
   const content = fileContent
-  // const conten2 = await base64_encode(file)
-
+  console.log('Blobbiblobb', STORAGE_ACCOUNT_NAME, ACCOUNT_ACCESS_KEY)
   const credentials = new SharedKeyCredential(STORAGE_ACCOUNT_NAME, ACCOUNT_ACCESS_KEY)
   const pipeline = StorageURL.newPipeline(credentials)
   const serviceURL = new ServiceURL(`https://${STORAGE_ACCOUNT_NAME}.blob.core.windows.net`, pipeline)
@@ -54,11 +53,11 @@ async function runBlobStorage (fileName, fileContent, file, toDo = 'upload') {
     downloadResponse.contentType = 'application/pdf'
     return downloadResponse
   } */
-
+  console.log('Blobbiblobb:')
   const resp = await blockBlobURL.upload(aborter, content, content.length)
   console.log(`Blob "${blobName}" is uploaded`, resp)
 
-  await blockBlobURL.setHTTPHeaders(aborter, { blobContentType: 'application/pdf' })
+  await blockBlobURL.setHTTPHeaders(aborter, { blobContentType: file.mimetype })
 
   /* console.log(`Blobs in "${containerName}" container:`)
   await showBlobNames(aborter, containerURL) */
