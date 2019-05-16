@@ -36,6 +36,7 @@ module.exports = {
 
 function * _saveFileToStorage (req, res, next) {
   console.log('_saveFileToStorage', req.body, req.files.filepond)
+  log.info('Exception calling from setRoundAnalysis ', { error: err })
   // const blobService = storage.createBlobService()
   runBlobStorage(req.files.filepond.name, req.files.filepond.data, req.files.filepond)
   return httpResponse.json(res, req.files.filepond.name)

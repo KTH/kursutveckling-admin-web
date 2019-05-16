@@ -11,6 +11,7 @@ const {
 const fs = require('fs')
 const path = require('path')
 const serverConfig = require('./configuration').server
+const log = require('kth-node-log')
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
@@ -28,7 +29,7 @@ const FOUR_MEGABYTES = 4 * ONE_MEGABYTE
 const ONE_MINUTE = 60 * 1000
 
 async function runBlobStorage (fileName, fileContent, file, toDo = 'upload') {
-  console.log('runBlobStorage:', file)
+  log.info('runBlobStorage:', serverConfig)
   const containerName = 'kursutveckling-blob-container'
   const blobName = fileName
   const content = fileContent
@@ -53,7 +54,7 @@ async function runBlobStorage (fileName, fileContent, file, toDo = 'upload') {
     downloadResponse.contentType = 'application/pdf'
     return downloadResponse
   } */
-  console.log('Blobbiblobb:')
+  console.log('Blobbiblobb:...')
   const resp = await blockBlobURL.upload(aborter, content, content.length)
   console.log(`Blob "${blobName}" is uploaded`, resp)
 
