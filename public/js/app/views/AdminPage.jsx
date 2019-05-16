@@ -300,10 +300,11 @@ class AdminPage extends Component {
                       type='local'
                       server= {`${this.props.routerStore.browserConfig.hostUrl}${this.props.routerStore.paths.storage.saveFile.uri.split(':')[0]}${this.props.routerStore.analysisId}/analysis`}
                       onupdatefiles={fileItems => {
-                        console.log(fileItems[0])
-                        this.setState({
-                          analysisFile: fileItems[0].file.name
-                        }) 
+                        console.log('fileItems', fileItems)
+                        if(fileItems && fileItems.length > 0)
+                          this.setState({
+                            analysisFile: fileItems[0].file.name
+                          }) 
                       }}
                       >
                       </FilePond>
