@@ -44,11 +44,15 @@ class AdminPage extends Component {
     this.handleCancel = this.handleCancel.bind(this)
     this.handleInputChange = this.handleInputChange.bind(this)
     this.toggleModal = this.toggleModal.bind(this)
-   // this.sendFile = this.sendFile.bind(this)
+    this.processfile = this.processfile.bind(this)
   }
 
   handleInit() {
     console.log('FilePond instance has initialised', this.pond)
+  }
+
+  processfile(arg){
+    console.log('processfile', arg)
   }
 
   handlePreview(event) {
@@ -264,6 +268,7 @@ class AdminPage extends Component {
                 <Col sm='3' className='col-temp'>
                     <Label>{translate.header_upload_file}</Label>
                     <FilePond id="analysis" key="analysis" 
+                    onprocessfile = {this.processfile}
                       labelIdle={labelIdle} 
                       id = 'analysisUpload'
                       ref = {ref => (this.pond = ref)}
@@ -272,12 +277,13 @@ class AdminPage extends Component {
                       maxFiles = {1}
                       oninit={() => this.handleInit() }
                       type='local'
-                      server= {`${this.props.routerStore.browserConfig.hostUrl}${this.props.routerStore.paths.storage.saveFile.uri.split(':')[0]}${this.props.routerStore.analysisId}/analysis`}
+                      server= {`${this.props.routerStore.browserConfig.hostUrl}${this.props.routerStore.paths.storage.saveFile.uri.split(':')[0]}${this.props.routerStore.analysisId}/analysis/${this.state.isPublished}`}
                       onupdatefiles={fileItems => {
                         console.log('fileItems', fileItems)
                         if(fileItems && fileItems.length > 0)
+                        this.processfile(fileItems)
                           this.setState({
-                            analysisFile: fileItems[0].file.name
+                            analysisFile: this.props.routerStore.analysisId+'.'+fileItems[0].fileExtension
                           }) 
                       }}
                       >

@@ -224,7 +224,7 @@ appRoute.get('api.kursutvecklingGetUsedRounds', config.proxyPrefixPath.uri + '/a
 appRoute.get('api.koppsCourseData', config.proxyPrefixPath.uri + '/api/kursutveckling-admin/getKoppsCourseDataByCourse/:courseCode/:language', Admin.getKoppsCourseData)
 appRoute.get('redis.ugCache', config.proxyPrefixPath.uri + '/redis/ugChache/:key/:type', Admin.getCourseEmployees)
 appRoute.post('redis.ugCache', config.proxyPrefixPath.uri + '/redis/ugChache/:key/:type', Admin.getCourseEmployees)
-appRoute.post('storage.saveFile', config.proxyPrefixPath.uri + '/storage/saveFile/:id/:type', Admin.saveFileToStorage)
+appRoute.post('storage.saveFile', config.proxyPrefixPath.uri + '/storage/saveFile/:id/:type/:published', Admin.saveFileToStorage)
 
 server.use('/', appRoute.getRouter())
 
