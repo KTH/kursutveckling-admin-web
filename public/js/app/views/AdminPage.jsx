@@ -133,6 +133,7 @@ class AdminPage extends Component {
           isPreviewMode: true,
           isPublished: thisAdminPage.props.routerStore.analysisData.isPublished,
           values: thisAdminPage.props.routerStore.analysisData,
+          analysisFile: thisAdminPage.props.routerStore.analysisData ? thisAdminPage.props.routerStore.analysisData.analysisFileName : '',
           alert: ''
         })
       })
@@ -166,6 +167,7 @@ class AdminPage extends Component {
 
     let postObject = this.state.values
     postObject.isPublished = true
+    postObject.analysisFileName = this.state.analysisFile
     const thisInstance = this
     console.log('postObjecteeee', this.state.values.isPublished)
     return this.props.routerStore.postRoundAnalysisData(postObject, this.props.routerStore.status === 'new' )
@@ -297,7 +299,7 @@ class AdminPage extends Component {
                         'courseCode':this.props.routerStore.courseCode
                       }
                       }*/
-                      server= {this.state.hasNewUploadedFile ? `${this.props.routerStore.browserConfig.hostUrl}${this.props.routerStore.paths.storage.saveFile.uri.split(':')[0]}${this.props.routerStore.analysisId}/analysis/${this.state.isPublished}`: null}
+                      server= {this.state.hasNewUploadedFile ? `${this.props.routerStore.browserConfig.hostUrl}${this.props.routerStore.paths.storage.saveFile.uri.split(':')[0]}${this.props.routerStore.analysisData._id}/analysis/${this.state.isPublished}`: null}
                       onupdatefiles={fileItems => {
                         console.log('fileItems', fileItems)
                         if(fileItems && fileItems.length > 0)

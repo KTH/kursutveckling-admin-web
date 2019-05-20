@@ -48,8 +48,9 @@ async function runBlobStorage (file, id, type, saveCopyOfFile) {
   if (fileType !== 'text/html') {
     const resp = await blockBlobURL.upload(aborter, content, content.length)
     log.info(`Blob "${blobName}" is uploaded`, resp)
+    await blockBlobURL.setHTTPHeaders(aborter, { blobContentType: fileType })
   }
-  await blockBlobURL.setHTTPHeaders(aborter, { blobContentType: fileType })
+
 
   /* console.log(`Blobs in "${containerName}" container:`)
   await showBlobNames(aborter, containerURL) */
