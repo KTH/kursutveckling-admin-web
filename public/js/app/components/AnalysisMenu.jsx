@@ -58,20 +58,20 @@ class AnalysisMenu extends Component {
     }
 
     componentDidMount() {
-        console.log('this.super.state', super.state)
-        this._isMounted = true;
+
+       /*  this._isMounted = true;
         window.onpopstate = ()=> {
           if(this._isMounted) {
             console.log('this.super.state', this.super)
-           /* const { hash } = location;
+           const { hash } = location;
             if( this.state.value!==0)
               this.setState({value: 0})
             if(hash.indexOf('users')>-1 && this.state.value!==1)
               this.setState({value: 1})
             if(hash.indexOf('data')>-1 && this.state.value!==2)
               this.setState({value: 2})*/
-          }
-        }
+         // }
+       // }
       }
 
 
@@ -172,6 +172,7 @@ class AnalysisMenu extends Component {
 
     goToPreviewMode(event) {
         event.preventDefault()
+        console.log(event.target)
         if (this.state.selectedRadio[event.target.id].length > 0)
             this.props.editMode(this.state.semester, this.state.rounds, this.state.selectedRadio[event.target.id], event.target.id)
         else
@@ -312,7 +313,7 @@ class AnalysisMenu extends Component {
                                         {translate.btn_delete}
                                     </Button>
                                     <Button color='success' id='draft' key='draft' onClick={this.goToPreviewMode} disabled={this.state.draftAnalysis.length < 1} >
-                                        <div className="iconContainer arrow-forward" />
+                                        <div className="iconContainer arrow-forward" id='draft'/>
                                         {translate.btn_preview}
                                     </Button>
                                 </div>
@@ -355,7 +356,7 @@ class AnalysisMenu extends Component {
                             {this.state.publishedAnalysis.length > 0
                             ? <div className="button-container text-right" >
                                     <Button color='success' id='published' key='published' onClick={this.goToPreviewMode} disabled={this.state.publishedAnalysis.length < 1}>
-                                        <div className="iconContainer arrow-forward" /> {
+                                        <div className="iconContainer arrow-forward"  id='published' /> {
                                         translate.btn_preview}
                                     </Button>
                                 </div>
@@ -392,7 +393,7 @@ class AnalysisMenu extends Component {
                                     </ul>
                                     <div className="button-container text-right" >
                                         <Button color='success' id='new' key='new' onClick={this.goToEditMode} disabled ={this.props.roundList[this.state.semester].length === this.state.usedRounds.length}>
-                                            <div className="iconContainer arrow-forward" />  
+                                            <div className="iconContainer arrow-forward" id='new' />  
                                             {translate.btn_add_analysis}
                                         </Button>
                                     </div>

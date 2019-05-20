@@ -95,7 +95,7 @@ class AdminPage extends Component {
       })
       this.props.history.push(this.props.routerStore.browserConfig.proxyPrefixPath.uri + '/' + this.props.routerStore.courseData.courseCode)
     }
-    if (this.state.isPreviewMode) {
+    if (this.state.isPreviewMode) { console.log('Back...')
       this.setState({
         isPreviewMode: false,
         progress: 'edit',
