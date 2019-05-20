@@ -1,8 +1,12 @@
 import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
 import { Row, Col, Button, Form, Label, Input, Alert } from 'reactstrap'
-import { FilePond, setOptions } from 'react-filepond'
+import { FilePond, registerPlugin } from 'react-filepond'
 import 'filepond/dist/filepond.min.css'
+import FilePondPluginFileMetadata from 'filepond-plugin-file-metadata';
+
+// Register the plugin
+registerPlugin(FilePondPluginFileMetadata);
 
 //Components
 import Title from '../components/Title'
@@ -34,7 +38,8 @@ class AdminPage extends Component {
       },
       alert: '',
       analysisFile: this.props.routerStore.analysisData ? this.props.routerStore.analysisData.analysisFileName : '',
-      pmFile:''
+      pmFile:'',
+      hasNewUploadedFile: true
     }
     this.handlePreview = this.handlePreview.bind(this)
     this.editMode = this.editMode.bind(this)
@@ -49,10 +54,13 @@ class AdminPage extends Component {
 
   handleInit() {
     console.log('FilePond instance has initialised', this.pond)
+    //this.pond.setState({status:5})
+    //this.pond.allowFilesSync =false
   }
 
   processfile(arg){
-    console.log('processfile', arg)
+   arg ? console.log('processfile', arg) : null
+   return false
   }
 
   handlePreview(event) {
@@ -74,6 +82,7 @@ class AdminPage extends Component {
               isPreviewMode: false,
               progress: 'back_new',
               activeSemester: routerStore.analysisData.semester,
+              analysisFile:'',
               alert: ''
             })
           })
@@ -111,6 +120,7 @@ class AdminPage extends Component {
         isPublished: false,
         values: thisAdminPage.props.routerStore.analysisData,
         activeSemester: semester,
+        analysisFile: thisAdminPage.props.routerStore.analysisData ? thisAdminPage.props.routerStore.analysisData.analysisFileName : '',
         alert: ''
       })
     })
@@ -269,20 +279,31 @@ class AdminPage extends Component {
                     <Label>{translate.header_upload_file}</Label>
                     <FilePond id="analysis" key="analysis" 
                     onprocessfile = {this.processfile}
+                    //instantUpload ={false}
                       labelIdle={labelIdle} 
                       id = 'analysisUpload'
                       ref = {ref => (this.pond = ref)}
                       files = {this.state.analysisFile}
-                      allowMultiple = {true}
+                      //abortLoad ={this.state.analysisFile.length > 0}
+                      allowMultiple = {false}
                       maxFiles = {1}
                       oninit={() => this.handleInit() }
                       type='local'
-                      server= {`${this.props.routerStore.browserConfig.hostUrl}${this.props.routerStore.paths.storage.saveFile.uri.split(':')[0]}${this.props.routerStore.analysisId}/analysis/${this.state.isPublished}`}
+                      //onprocessfile={this.processfile('tjohooo')}
+                     /* fileMetadataObject ={ {
+                        'type': 'analysis',
+                        'name':this.props.routerStore.analysisId,
+                        'status':this.props.routerStore.isPublished ?'published' : 'draft',
+                        'courseCode':this.props.routerStore.courseCode
+                      }
+                      }*/
+                      server= {this.state.hasNewUploadedFile ? `${this.props.routerStore.browserConfig.hostUrl}${this.props.routerStore.paths.storage.saveFile.uri.split(':')[0]}${this.props.routerStore.analysisId}/analysis/${this.state.isPublished}`: null}
                       onupdatefiles={fileItems => {
                         console.log('fileItems', fileItems)
                         if(fileItems && fileItems.length > 0)
-                        this.processfile(fileItems)
+                        //fileItems[0].abortProcessing()
                           this.setState({
+                            hasNewUploadedFile: true,
                             analysisFile: this.props.routerStore.analysisId+'.'+fileItems[0].fileExtension
                           }) 
                       }}
