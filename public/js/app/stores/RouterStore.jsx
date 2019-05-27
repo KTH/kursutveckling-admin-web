@@ -95,6 +95,7 @@ class RouterStore {
       console.log("!!!!getRoundAnalysis", result.data)
       this.status = result.data.isPublished ? 'published' : 'draft'
       this.courseCode = result.data.courseCode
+      this.analysisId = result._id
       return this.analysisData = result.data
     }).catch(err => {
       if (err.response) {
@@ -265,6 +266,7 @@ class RouterStore {
       this.analysisData = {
         _id: this.analysisId,
         alterationText: " ",
+        analysisFileName: "",
         changedBy: "Kristian Semlan Gullefjun",
         changedDate: " ",
         commentChange: " ",
