@@ -51,9 +51,8 @@ async function runBlobStorage (file, id, type, saveCopyOfFile) {
     await blockBlobURL.setHTTPHeaders(aborter, { blobContentType: fileType })
   }
 
-
-  /* console.log(`Blobs in "${containerName}" container:`)
-  await showBlobNames(aborter, containerURL) */
+  /* console.log(`Blobs in "${containerName}" container:`) */
+  await showBlobNames(aborter, containerURL, blobName)
 }
 
 //* *********************************************************************** */
@@ -70,7 +69,7 @@ async function showContainerNames (aborter, serviceURL) {
   } while (marker)
 }
 
-async function showBlobNames (aborter, containerURL) {
+async function showBlobNames (aborter, containerURL, fileName) {
   let response
   let marker
 
@@ -78,7 +77,9 @@ async function showBlobNames (aborter, containerURL) {
     response = await containerURL.listBlobFlatSegment(aborter)
     marker = response.marker
     for (let blob of response.segment.blobItems) {
-      console.log(` - ${blob.name}`)
+      if (blob.name === fileName) {
+        console.log(` - ${blob.name}`)
+      }
     }
   } while (marker)
 }

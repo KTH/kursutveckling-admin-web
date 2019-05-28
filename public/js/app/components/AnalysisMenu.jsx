@@ -222,13 +222,13 @@ class AnalysisMenu extends Component {
         })
       }
 
-
-
-    render() {
+      
+      
+      render() {
         const translate = i18n.messages[this.props.routerStore.language].messages
         console.log("routerStore", this.props)
         console.log("this.state", this.state)
-       
+
         return (
             <div id="YearAndRounds">
                  <h2>{translate.header_analysis_menu}</h2>

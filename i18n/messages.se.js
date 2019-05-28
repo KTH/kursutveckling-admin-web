@@ -38,6 +38,12 @@ module.exports = {
     page_student: 'STUDENT PÅ KTH',
     page_course_programme: 'KURS- OCH PROGRAMKATALOGEN',
 
+    progressImage: {
+      first: 'stegvis_1_sv',
+      edit: 'stegvis_2_sv',
+      preview: 'stegvis_3_sv'
+    },
+
     header_main: 'Administrera kursanalys med kursdata',
     header_select_semester: 'Välj först termin',
     header_add_round: 'Välj först termin',

@@ -18,7 +18,7 @@ import InfoModal from '../components/InfoModal'
 //Helpers 
 import { EMPTY, ADMIN_URL } from '../util/constants'
 import i18n from '../../../../i18n/index'
-import images1 from '../../img/*.svg '//require('../../../img/stegvis_1_sv.svg')
+import images from '../../../img/*.svg'
 
 @inject(['routerStore']) @observer
 class AdminPage extends Component {
@@ -38,6 +38,7 @@ class AdminPage extends Component {
       },
       alert: '',
       analysisFile: this.props.routerStore.analysisData ? this.props.routerStore.analysisData.analysisFileName : '',
+      analysisFileItem:[],
       pmFile:'',
       hasNewUploadedFile: true
     }
@@ -56,6 +57,9 @@ class AdminPage extends Component {
     console.log('FilePond instance has initialised', this.pond)
     //this.pond.setState({status:5})
     //this.pond.allowFilesSync =false
+    let pondis = this.pond.getFiles()
+    pondis[0].allowFilesSync=false
+    console.log('wwwww',pondis)
   }
 
   processfile(arg){
@@ -169,7 +173,7 @@ class AdminPage extends Component {
     postObject.isPublished = true
     postObject.analysisFileName = this.state.analysisFile
     const thisInstance = this
-    console.log('postObjecteeee', this.state.values.isPublished)
+    //console.log('postObjecteeee', this.state.values.isPublished)
     return this.props.routerStore.postRoundAnalysisData(postObject, this.props.routerStore.status === 'new' )
       .then((response) => {
         console.log('handlePublish', response)
@@ -218,7 +222,8 @@ class AdminPage extends Component {
     const labelIdle =  translate.add_file 
 
     console.log("routerStore1", routerStore)
-    console.log("this.state1", this.state, images1)
+    console.log("this.state1", this.state)
+   
     if (routerStore.analysisData === undefined || this.state.progress === 'back_new')
       return (
         <div ref={(ref) => this._div = ref}>
@@ -226,6 +231,7 @@ class AdminPage extends Component {
           { routerStore.errorMessage.length === 0
             ? <div>
               <Title title={routerStore.courseTitle} language={routerStore.language} courseCode={routerStore.courseData.courseCode} />
+              <img src={routerStore.browserConfig.proxyPrefixPath.uri + '/static/'+ images[translate.progressImage['first']]} className='progressImage' />
               {routerStore.semesters.length === 0
                 ? <Alert color="friendly">No rounds!</Alert>
                 : <AnalysisMenu
@@ -247,7 +253,7 @@ class AdminPage extends Component {
         <div key='kursutveckling-form-container' className='container' id='kursutveckling-form-container' ref={(ref) => this._div = ref} >
           <h1>{translate.header_main}</h1>
           <Title title={routerStore.courseTitle} language={routerStore.language} courseCode={routerStore.analysisData.courseCode} />
-       
+          <img src={routerStore.browserConfig.proxyPrefixPath.uri + '/static/'+ images[translate.progressImage[this.state.progress]]} className='progressImage' />
           <Row>
             <Col sm="12" lg="12">
             
@@ -306,7 +312,8 @@ class AdminPage extends Component {
                         //fileItems[0].abortProcessing()
                           this.setState({
                             hasNewUploadedFile: true,
-                            analysisFile: this.props.routerStore.analysisId+'.'+fileItems[0].fileExtension
+                            analysisFile: this.props.routerStore.analysisId+'.'+fileItems[0].fileExtension,
+                            analysisFileItem: fileItems[0]
                           }) 
                       }}
                       >

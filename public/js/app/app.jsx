@@ -18,6 +18,7 @@ import RouterStore from './stores/RouterStore'
 //import AdminForm from './views/AdminForm'
 import AdminPage from './views/AdminPage'
 import  '../../css/kursutveckling-admin.scss'
+import { log } from 'util';
 
 
 
