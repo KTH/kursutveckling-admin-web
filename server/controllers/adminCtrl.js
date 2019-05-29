@@ -70,10 +70,9 @@ function * _postRoundAnalysis (req, res, next) {
 }
 
 function * _getRoundAnalysis (req, res, next) {
-  console.log('getRoundAnalysis', req.params.id)
   const roundAnalysisId = req.params.id || ''
   const language = req.params.language || 'sv'
-  console.log('getRoundAnalysis', roundAnalysisId)
+  // console.log('getRoundAnalysis', roundAnalysisId)
   try {
     const apiResponse = yield kursutvecklingAPI.getRoundAnalysisData(roundAnalysisId, language)
     /* if (apiResponse.statusCode !== 200) {

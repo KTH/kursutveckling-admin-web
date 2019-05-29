@@ -312,7 +312,7 @@ class AdminPage extends Component {
                         //fileItems[0].abortProcessing()
                           this.setState({
                             hasNewUploadedFile: true,
-                            analysisFile: this.props.routerStore.analysisId+'.'+fileItems[0].fileExtension,
+                            analysisFile: this.props.routerStore.analysisData._id+'.'+fileItems[0].fileExtension,
                             analysisFileItem: fileItems[0]
                           }) 
                       }}
