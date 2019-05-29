@@ -28,8 +28,8 @@ class AdminPage extends Component {
       saved: false,
       values: this.props.routerStore.analysisData,
       isPublished: this.props.routerStore.status === 'published',
-      progress: this.props.routerStore.status === 'new' ? 'new' : 'preview',
-      isPreviewMode: this.props.routerStore.status !== 'new',
+      progress: this.props.routerStore.status === 'new' ? 'new' : 'edit',
+      isPreviewMode: this.props.routerStore.status === 'preview',
       activeSemester: '',
       changedStatus: false,
       modalOpen:{
@@ -133,7 +133,7 @@ class AdminPage extends Component {
       this.props.history.push(this.props.routerStore.browserConfig.proxyPrefixPath.uri + '/' + analysisId)
       return thisAdminPage.props.routerStore.getRoundAnalysis(analysisId).then(analysis => {
         thisAdminPage.setState({
-          progress: 'preview',
+          progress: 'edit',
           isPreviewMode: true,
           isPublished: thisAdminPage.props.routerStore.analysisData.isPublished,
           values: thisAdminPage.props.routerStore.analysisData,
@@ -241,6 +241,7 @@ class AdminPage extends Component {
                   progress= { this.state.progress }
                   activeSemester= { this.state.activeSemester } 
                   firstVisit = { routerStore.analysisData === undefined }
+                  status = { routerStore.status }
                 />
               }
             </div>

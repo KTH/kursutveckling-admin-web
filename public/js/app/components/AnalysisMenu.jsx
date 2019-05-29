@@ -226,9 +226,10 @@ class AnalysisMenu extends Component {
       
       render() {
         const translate = i18n.messages[this.props.routerStore.language].messages
-        console.log("routerStore", this.props)
-        console.log("this.state", this.state)
+        const { status, semesterList, roundList } = this.props
 
+        console.log("routerStore", this.props, status)
+        console.log("this.state", this.state)
         return (
             <div id="YearAndRounds">
                  <h2>{translate.header_analysis_menu}</h2>
@@ -254,7 +255,7 @@ class AnalysisMenu extends Component {
                         <span className='caretholder' id={'_spanCaret'}></span>
                             </DropdownToggle>
                                 <DropdownMenu>
-                                    {this.props.semesterList && this.props.semesterList.map(semester =>
+                                    {semesterList && semesterList.map(semester =>
                                         <DropdownItem id={semester} key={semester} onClick={this.handleSelectedSemester}>
                                             {`
                                             ${translate.course_short_semester[semester.toString().match(/.{1,4}/g)[1]]} 
@@ -274,55 +275,94 @@ class AnalysisMenu extends Component {
                 <Row id='analysisMenuContainer' className='border-bottom'>
            
                     <Form> 
-                        <Col md='5' className='float-md-right'>
                         {/**** DRAFT ANALYSIS ****/}
-                        <FormGroup className='border-bottom'>
-                            <h3>{translate.header_draft}</h3>
-                            {this.state.draftAnalysis.length > 0
-                                ? this.state.draftAnalysis.length > 1
-                                    ? <ul>
-                                        {this.state.draftAnalysis.map(analysis =>
-                                            <li className = 'select-list' key={analysis.analysisId}>
-                                                < Label key={"Label" + analysis.analysisId} for={analysis.analysisId} >
-                                                    <Input type="radio"
-                                                        id={analysis.analysisId}
-                                                        key={analysis.analysisId}
-                                                        onChange={this.handleSelectedDraft}
-                                                        checked={this.state.selectedRadio.draft === analysis.analysisId}
-                                                    />
-                                                    {analysis.analysisName}
-                                                    {/*" ( Created by: " + analysis.user + " ) "*/}
+                        {status === 'new' 
+                        ? <span>
+                            <FormGroup className='border-bottom'>
+                                <h3>{translate.header_draft}</h3>
+                                {this.state.draftAnalysis.length > 0
+                                    ? this.state.draftAnalysis.length > 1
+                                        ? <ul>
+                                            {this.state.draftAnalysis.map(analysis =>
+                                                <li className = 'select-list' key={analysis.analysisId}>
+                                                    < Label key={"Label" + analysis.analysisId} for={analysis.analysisId} >
+                                                        <Input type="radio"
+                                                            id={analysis.analysisId}
+                                                            key={analysis.analysisId}
+                                                            onChange={this.handleSelectedDraft}
+                                                            checked={this.state.selectedRadio.draft === analysis.analysisId}
+                                                        />
+                                                        {analysis.analysisName}
+                                                        {/*" ( Created by: " + analysis.user + " ) "*/}
+                                                    </Label>
+                                                    <br />
+                                                </li>
+                                            )}
+                                        </ul>
+                                        : <ul>
+                                            <li className = 'select-list'>
+                                                <Label key={"Label" + this.state.draftAnalysis[0].analysisId} for={this.state.draftAnalysis[0].analysisId} >
+                                                    {this.state.draftAnalysis[0].analysisName}
+                                                    {/*" ( Created by: " + this.state.draftAnalysis[0].user + " ) "*/}
                                                 </Label>
-                                                <br />
                                             </li>
-                                        )}
-                                    </ul>
-                                    : <ul>
-                                        <li className = 'select-list'>
-                                            <Label key={"Label" + this.state.draftAnalysis[0].analysisId} for={this.state.draftAnalysis[0].analysisId} >
-                                                {this.state.draftAnalysis[0].analysisName}
-                                                {/*" ( Created by: " + this.state.draftAnalysis[0].user + " ) "*/}
-                                            </Label>
-                                        </li>
-                                    </ul>
-                                : <p>{translate.draft_empty}</p>
-                            }
-                            {this.state.draftAnalysis.length > 0
-                                ?<div className="button-container text-right" >
-                                    <Button color='danger' id='delete' key='delete' onClick={this.handleDelete} disabled={this.state.draftAnalysis.length < 1} >
-                                        {translate.btn_delete}
-                                    </Button>
-                                    <Button color='success' id='draft' key='draft' onClick={this.goToPreviewMode} disabled={this.state.draftAnalysis.length < 1} >
-                                        <div className="iconContainer arrow-forward" id='draft'/>
-                                        {translate.btn_preview}
-                                    </Button>
-                                </div>
-                                : ''
-                            }
-                        </FormGroup>
+                                        </ul>
+                                    : <p>{translate.draft_empty}</p>
+                                }
+                                {this.state.draftAnalysis.length > 0
+                                    ?<div className="button-container text-right" >
+                                        <Button color='danger' id='delete' key='delete' onClick={this.handleDelete} disabled={this.state.draftAnalysis.length < 1} >
+                                            {translate.btn_delete}
+                                        </Button>
+                                        <Button color='success' id='draft' key='draft' onClick={this.goToPreviewMode} disabled={this.state.draftAnalysis.length < 1} >
+                                            <div className="iconContainer arrow-forward" id='draft'/>
+                                            {translate.btn_preview}
+                                        </Button>
+                                    </div>
+                                    : ''
+                                }
+                            </FormGroup>
+                            {/**** NEW ANALYSIS ****/}
+                            <FormGroup >
+                                <h3>{translate.header_select_rounds}</h3>
+                            <p>{translate.intro_new}</p>
+                                {roundList[this.state.semester].length > this.state.usedRounds.length
+                                    ?  <div>
+                                            <ul> 
+                                            {roundList[this.state.semester].map(round =>
+                                                this.state.usedRounds.indexOf(round.roundId) < 0
+                                                    ? <li className = 'select-list' key={round.roundId}>
+                                                        <Label key={"Label" + round.roundId}
+                                                            for={round.roundId}
+                                                        >
+                                                            <Input type="checkbox"
+                                                                id={round.roundId}
+                                                                key={"checkbox" + round.roundId}
+                                                                onClick={this.handleRoundCheckbox}
+                                                            />
+                                                            {round.shortName ? round.shortName : round.startDate} {(round.language)}
 
-                        {/**** PUBLISHED ANALYSIS ****/}
-                        <FormGroup >
+                                                        </Label>
+                                                        <br />
+                                                    </li>
+                                                    : ''
+                                            )}
+                                        </ul>
+                                        <div className="button-container text-right" >
+                                            <Button color='success' id='new' key='new' onClick={this.goToEditMode} disabled ={roundList[this.state.semester].length === this.state.usedRounds.length}>
+                                                <div className="iconContainer arrow-forward" id='new' />  
+                                                {translate.btn_add_analysis}
+                                            </Button>
+                                        </div>
+                                    </div>
+                                    : <p>{translate.new_empty}</p>
+                                }
+                            </FormGroup>
+                        </span>
+
+                       
+                       : <FormGroup >
+                            {/**** PUBLISHED ANALYSIS ****/}
                             <h3>{translate.header_published}</h3>
                             {this.state.publishedAnalysis.length > 0
                                 ? this.state.publishedAnalysis.length > 1
@@ -363,47 +403,7 @@ class AnalysisMenu extends Component {
                                 : ''
                             }
                         </FormGroup>
-                        </Col>
-                        <Col md='5' className='float-md-left'>
-                        {/**** NEW ANALYSIS ****/}
-                        <FormGroup >
-                            <h3>{translate.header_select_rounds}</h3>
-                           <p>{translate.intro_new}</p>
-                            {this.props.roundList[this.state.semester].length > this.state.usedRounds.length
-                                ?  <div>
-                                        <ul> 
-                                        {this.props.roundList[this.state.semester].map(round =>
-                                            this.state.usedRounds.indexOf(round.roundId) < 0
-                                                ? <li className = 'select-list' key={round.roundId}>
-                                                    <Label key={"Label" + round.roundId}
-                                                        for={round.roundId}
-                                                    >
-                                                        <Input type="checkbox"
-                                                            id={round.roundId}
-                                                            key={"checkbox" + round.roundId}
-                                                            onClick={this.handleRoundCheckbox}
-                                                        />
-                                                        {round.shortName ? round.shortName : round.startDate} {(round.language)}
-
-                                                    </Label>
-                                                    <br />
-                                                </li>
-                                                : ''
-                                        )}
-                                    </ul>
-                                    <div className="button-container text-right" >
-                                        <Button color='success' id='new' key='new' onClick={this.goToEditMode} disabled ={this.props.roundList[this.state.semester].length === this.state.usedRounds.length}>
-                                            <div className="iconContainer arrow-forward" id='new' />  
-                                            {translate.btn_add_analysis}
-                                        </Button>
-                                    </div>
-                                </div>
-                                : <p>{translate.new_empty}</p>
-                            }
-                            
-                           
-                        </FormGroup>
-                        </Col>
+                        }
                     </Form>
                    
                     </Row>

@@ -167,20 +167,22 @@ async function getIndex (req, res, next) {
   let lang = language.getLanguage(res) || 'sv'
   const ldapUser = req.session.authUser ? req.session.authUser.username : 'null'
   const courseTitle = req.query.title || ''
+  const status = req.query.status
 
   try {
     const renderProps = staticFactory()
     renderProps.props.children.props.routerStore.setBrowserConfig(browserConfig, paths, serverConfig.hostUrl)
 
-    if (req.params.id.length === 6) {
-      // New analysis
+    if (req.params.id.length <= 7) {
+      // Just course code -> analysis menue depending on status
       const apiResponse = await koppsCourseData.getKoppsCourseData(req.params.id, lang)
       renderProps.props.children.props.routerStore.setCourseCode(req.params.id) // TODO: title
+      renderProps.props.children.props.routerStore.status = status === 'p' ? 'published' : 'new'
       await renderProps.props.children.props.routerStore.handleCourseData(apiResponse.body, ldapUser, lang)
     } else {
       const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(req.params.id, lang)
       renderProps.props.children.props.routerStore.analysisData = apiResponse.body
-      renderProps.props.children.props.routerStore.status = apiResponse.body.isPublished ? 'published' : 'draft'
+      renderProps.props.children.props.routerStore.status = status === 'p' ? 'published' : 'preview'
       renderProps.props.children.props.routerStore.setCourseTitle(courseTitle.length > 0 ? decodeURIComponent(courseTitle) : '')
       // console.log('apiResponse.body', apiResponse.body)
     }
