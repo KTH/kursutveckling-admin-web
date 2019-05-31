@@ -22,25 +22,16 @@ class AnalysisMenu extends Component {
             modalOpen: {
                 delete: false
             },
-            semester: this.props.activeSemester && this.props.activeSemester.length > 0 
-                        ? this.props.activeSemester 
-                        : this.props.semesterList[0],
+            semester: this.props.activeSemester && this.props.activeSemester.length > 0  ? this.props.activeSemester   : this.props.semesterList[0],
             rounds: [],
-            usedRounds: this.props.routerStore.usedRounds.usedRounds 
-                            ? this.props.routerStore.usedRounds.usedRounds 
-                            : [],
-            draftAnalysis: this.props.routerStore.usedRounds.draftAnalysis 
-                            ? this.props.routerStore.usedRounds.draftAnalysis 
-                            : [],
+            usedRounds: this.props.routerStore.usedRounds.usedRounds ? this.props.routerStore.usedRounds.usedRounds  : [],
+            draftAnalysis: this.props.routerStore.usedRounds.draftAnalysis ? this.props.routerStore.usedRounds.draftAnalysis : [],
             publishedAnalysis: this.props.routerStore.usedRounds.publishedAnalysis ? this.props.routerStore.usedRounds.publishedAnalysis : [],
             selectedRadio: {
-                draft: this.props.routerStore.usedRounds.draftAnalysis && this.props.routerStore.usedRounds.draftAnalysis.length === 1 
-                        ? this.props.routerStore.usedRounds.draftAnalysis[0].analysisId 
-                        : '',
-                published: this.props.routerStore.usedRounds.publishedAnalysis && this.props.routerStore.usedRounds.publishedAnalysis.length === 1 
-                            ? this.props.routerStore.usedRounds.publishedAnalysis[0].analysisId 
-                            : '',
-            }
+                draft: '',
+                published:'',
+            },
+            lastSelected: ''
         }
 
         this.toggleDropdown = this.toggleDropdown.bind(this)
@@ -49,9 +40,7 @@ class AnalysisMenu extends Component {
         this.handleRoundCheckbox = this.handleRoundCheckbox.bind(this)
         this.handleSelectedDraft = this.handleSelectedDraft.bind(this)
         this.handleSelectedPublished = this.handleSelectedPublished.bind(this)
-        this.goToPreviewMode = this.goToPreviewMode.bind(this)
         this.handleCancel = this.handleCancel.bind(this)
-        this.handleDelete = this.handleDelete.bind(this)
         this.toggleModal = this.toggleModal.bind(this)
         
 
@@ -87,10 +76,6 @@ class AnalysisMenu extends Component {
                     usedRounds: routerStore.usedRounds.usedRounds,
                     draftAnalysis: routerStore.usedRounds.draftAnalysis,
                     publishedAnalysis: routerStore.usedRounds.publishedAnalysis,
-                    selectedRadio: {
-                        draft: routerStore.usedRounds.draftAnalysis.length === 1 ? routerStore.usedRounds.draftAnalysis[0].analysisId : '',
-                        published: routerStore.usedRounds.publishedAnalysis.length === 1 ? routerStore.usedRounds.publishedAnalysis[0].analysisId : '',
-                    },
                     alert: ''
                 })
     }
@@ -122,10 +107,6 @@ class AnalysisMenu extends Component {
                     usedRounds: routerStore.usedRounds.usedRounds,
                     draftAnalysis: routerStore.usedRounds.draftAnalysis,
                     publishedAnalysis: routerStore.usedRounds.publishedAnalysis,
-                    selectedRadio: {
-                        draft: routerStore.usedRounds.draftAnalysis.length === 1 ? routerStore.usedRounds.draftAnalysis[0].analysisId : '',
-                        published: routerStore.usedRounds.publishedAnalysis.length === 1 ? routerStore.usedRounds.publishedAnalysis[0].analysisId : '',
-                    },
                     alert: ''
                 })
             })
@@ -133,20 +114,29 @@ class AnalysisMenu extends Component {
     //************************ CHECKBOXES AND RADIO BUTTONS **************************** */
 
     handleRoundCheckbox(event) {
-        if ( event.target.checked )
-            this.state.rounds.push(event.target.id)
-        else
-            this.state.rounds.splice(this.state.rounds.indexOf(event.target.id), 1)
+        let prevState = this.state
 
         if ( this.state.alert.length > 0 )
-            this.setState({
-                alert: ''
-            })
+            prevState.alert = ''
+
+        if ( event.target.checked ){
+            prevState.selectedRadio.draft = null
+            prevState.rounds.push(event.target.id)
+            prevState.lastSelected = 'new'
+            this.setState(prevState)
+        }
+        else{
+            prevState.rounds.splice(this.state.rounds.indexOf(event.target.id), 1)
+            this.setState(prevState)
+        }
+        
     }
 
     handleSelectedDraft(event) {
         let prevState = this.state
+        prevState.rounds =[]
         prevState.selectedRadio.draft = event.target.id
+        prevState.lastSelected = 'draft'
         prevState.alert = ''
         this.setState(prevState)
     }
@@ -154,6 +144,7 @@ class AnalysisMenu extends Component {
     handleSelectedPublished(event) {
         let prevState = this.state
         prevState.selectedRadio.published = event.target.id
+        prevState.lastSelected = 'published'
         prevState.alert = ''
         this.setState(prevState)
     }
@@ -162,15 +153,18 @@ class AnalysisMenu extends Component {
     //************************ SUBMIT BUTTONS **************************** */
     goToEditMode(event) {
         event.preventDefault()
-        if (this.state.rounds.length > 0)
-            this.props.editMode(this.state.semester, this.state.rounds, null, 'new')
+        if (this.state.rounds.length > 0 || this.state.selectedRadio.published.length > 0 || this.state.selectedRadio.draft.length > 0 )
+            if(this.state.lastSelected === 'new')
+                this.props.editMode(this.state.semester, this.state.rounds, null, this.state.lastSelected)
+            else
+                this.props.editMode(this.state.semester, null, this.state.selectedRadio[this.state.lastSelected],  this.state.lastSelected)
         else
             this.setState({
                 alert: i18n.messages[this.props.routerStore.language].messages.alert_no_rounds_selected
             })
     }
 
-    goToPreviewMode(event) {
+   /* goToPreviewMode(event) {
         event.preventDefault()
         console.log(event.target)
         if (this.state.selectedRadio[event.target.id].length > 0)
@@ -179,7 +173,7 @@ class AnalysisMenu extends Component {
             this.setState({
                 alert: i18n.messages[this.props.routerStore.language].messages.alert_no_rounds_selected
             })
-    }
+    }*/
 
     handleCancel(event) {
         event.preventDefault()
@@ -236,8 +230,6 @@ class AnalysisMenu extends Component {
                {/****  <p>{translate.intro_analysis_menu_1} </p>
                 <p>{translate.intro_analysis_menu_2} <a href={this.props.routerStore.courseCode}>{translate.intro_link}</a></p>
                  Select semester for a course *****/}
-                
-               
                 <Dropdown
                     isOpen={this.state.dropdownOpen}
                     toggle={this.toggleDropdown}
@@ -273,22 +265,22 @@ class AnalysisMenu extends Component {
 
                 <Collapse isOpen={this.state.collapseOpen}>
                 <Row id='analysisMenuContainer' className='border-bottom'>
-           
                     <Form> 
                         {/**** DRAFT ANALYSIS ****/}
-                        {status === 'new' 
+                        {status === 'new' || status === 'draft'
                         ? <span>
                             <FormGroup className='border-bottom'>
-                                <h3>{translate.header_draft}</h3>
                                 {this.state.draftAnalysis.length > 0
-                                    ? this.state.draftAnalysis.length > 1
-                                        ? <ul>
+                                        ?<span>
+                                             <h3>{translate.header_draft}</h3>
+                                            <ul>
                                             {this.state.draftAnalysis.map(analysis =>
                                                 <li className = 'select-list' key={analysis.analysisId}>
                                                     < Label key={"Label" + analysis.analysisId} for={analysis.analysisId} >
                                                         <Input type="radio"
                                                             id={analysis.analysisId}
                                                             key={analysis.analysisId}
+                                                            value={analysis.analysisId}
                                                             onChange={this.handleSelectedDraft}
                                                             checked={this.state.selectedRadio.draft === analysis.analysisId}
                                                         />
@@ -299,33 +291,15 @@ class AnalysisMenu extends Component {
                                                 </li>
                                             )}
                                         </ul>
-                                        : <ul>
-                                            <li className = 'select-list'>
-                                                <Label key={"Label" + this.state.draftAnalysis[0].analysisId} for={this.state.draftAnalysis[0].analysisId} >
-                                                    {this.state.draftAnalysis[0].analysisName}
-                                                    {/*" ( Created by: " + this.state.draftAnalysis[0].user + " ) "*/}
-                                                </Label>
-                                            </li>
-                                        </ul>
-                                    : <p>{translate.draft_empty}</p>
-                                }
-                                {this.state.draftAnalysis.length > 0
-                                    ?<div className="button-container text-right" >
-                                        <Button color='danger' id='delete' key='delete' onClick={this.handleDelete} disabled={this.state.draftAnalysis.length < 1} >
-                                            {translate.btn_delete}
-                                        </Button>
-                                        <Button color='success' id='draft' key='draft' onClick={this.goToPreviewMode} disabled={this.state.draftAnalysis.length < 1} >
-                                            <div className="iconContainer arrow-forward" id='draft'/>
-                                            {translate.btn_preview}
-                                        </Button>
-                                    </div>
+                                     </span> 
                                     : ''
                                 }
                             </FormGroup>
-                            {/**** NEW ANALYSIS ****/}
+                           
                             <FormGroup >
+                            {/**** NEW ANALYSIS ****/}
                                 <h3>{translate.header_select_rounds}</h3>
-                            <p>{translate.intro_new}</p>
+                                <p>{translate.intro_new}</p>
                                 {roundList[this.state.semester].length > this.state.usedRounds.length
                                     ?  <div>
                                             <ul> 
@@ -338,7 +312,9 @@ class AnalysisMenu extends Component {
                                                             <Input type="checkbox"
                                                                 id={round.roundId}
                                                                 key={"checkbox" + round.roundId}
-                                                                onClick={this.handleRoundCheckbox}
+                                                                onChange={this.handleRoundCheckbox}
+                                                                checked = {this.state.rounds.indexOf(round.roundId)>-1}
+                                                                name={round.roundId}
                                                             />
                                                             {round.shortName ? round.shortName : round.startDate} {(round.language)}
 
@@ -348,24 +324,16 @@ class AnalysisMenu extends Component {
                                                     : ''
                                             )}
                                         </ul>
-                                        <div className="button-container text-right" >
-                                            <Button color='success' id='new' key='new' onClick={this.goToEditMode} disabled ={roundList[this.state.semester].length === this.state.usedRounds.length}>
-                                                <div className="iconContainer arrow-forward" id='new' />  
-                                                {translate.btn_add_analysis}
-                                            </Button>
-                                        </div>
                                     </div>
                                     : <p>{translate.new_empty}</p>
                                 }
                             </FormGroup>
                         </span>
-
-                       
                        : <FormGroup >
                             {/**** PUBLISHED ANALYSIS ****/}
                             <h3>{translate.header_published}</h3>
                             {this.state.publishedAnalysis.length > 0
-                                ? this.state.publishedAnalysis.length > 1
+                               ? this.state.publishedAnalysis.length > 1
                                     ? <ul>
                                         {this.state.publishedAnalysis.map(analysis =>
                                             <li className = 'select-list' key={analysis.analysisId}>
@@ -373,6 +341,7 @@ class AnalysisMenu extends Component {
                                                     <Input type="radio"
                                                         id={analysis.analysisId}
                                                         key={analysis.analysisId}
+                                                        value={analysis.analysisId}
                                                         onChange={this.handleSelectedPublished}
                                                         checked={this.state.selectedRadio.published === analysis.analysisId}
                                                     />
@@ -393,24 +362,18 @@ class AnalysisMenu extends Component {
                                     </ul>
                                 : <p>{translate.published_empty}</p>
                             }
-                            {this.state.publishedAnalysis.length > 0
-                            ? <div className="button-container text-right" >
-                                    <Button color='success' id='published' key='published' onClick={this.goToPreviewMode} disabled={this.state.publishedAnalysis.length < 1}>
-                                        <div className="iconContainer arrow-forward"  id='published' /> {
-                                        translate.btn_preview}
-                                    </Button>
-                                </div>
-                                : ''
-                            }
                         </FormGroup>
                         }
                     </Form>
-                   
-                    </Row>
+                </Row>
                 </Collapse>
                 <div className="button-container text-center" >
                     <Button color='secondary' id='cancel' key='cancel' onClick={this.handleCancel} >
                         {translate.btn_cancel}
+                    </Button>
+                    <Button color='success' id='new' key='new' onClick={this.goToEditMode} disabled ={this.state.firstVisit}>
+                        <div className="iconContainer arrow-forward" id='new' />  
+                            {translate.btn_add_analysis}
                     </Button>
                 </div>
                 <InfoModal type = 'delete' toggle= {this.toggleModal} isOpen = {this.state.modalOpen.delete} id={this.state.selectedRadio.draft} handleConfirm={this.handleDelete} infoText={translate.info_delete}/>

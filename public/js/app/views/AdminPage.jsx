@@ -70,7 +70,8 @@ class AdminPage extends Component {
   handlePreview(event) {
     event.preventDefault()
     this.setState({
-      isPreviewMode: true
+      isPreviewMode: true,
+      progress: 'preview'
     })
   }
 
@@ -134,7 +135,7 @@ class AdminPage extends Component {
       return thisAdminPage.props.routerStore.getRoundAnalysis(analysisId).then(analysis => {
         thisAdminPage.setState({
           progress: 'edit',
-          isPreviewMode: true,
+          isPreviewMode: false,
           isPublished: thisAdminPage.props.routerStore.analysisData.isPublished,
           values: thisAdminPage.props.routerStore.analysisData,
           analysisFile: thisAdminPage.props.routerStore.analysisData ? thisAdminPage.props.routerStore.analysisData.analysisFileName : '',
