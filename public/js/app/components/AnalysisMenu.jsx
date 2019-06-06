@@ -44,8 +44,6 @@ class AnalysisMenu extends Component {
         this.handleSelectedPublished = this.handleSelectedPublished.bind(this)
         this.handleCancel = this.handleCancel.bind(this)
         this.toggleModal = this.toggleModal.bind(this)
-        
-
     }
 
     componentDidMount() {
@@ -64,8 +62,6 @@ class AnalysisMenu extends Component {
          // }
        // }
       }
-
-
 
     componentWillMount() {
         const routerStore = this.props.routerStore
@@ -161,6 +157,7 @@ class AnalysisMenu extends Component {
 
 
     //************************ SUBMIT BUTTONS **************************** */
+
     goToEditMode(event) {
         event.preventDefault()
         if (this.state.rounds.length > 0 || this.state.selectedRadio.published.length > 0 || this.state.selectedRadio.draft.length > 0 )
@@ -226,9 +223,7 @@ class AnalysisMenu extends Component {
         })
       }
 
-      
-      
-      render() {
+    render() {
         const translate = i18n.messages[this.props.routerStore.language].messages
         const { status, semesterList, roundList } = this.props
 
@@ -240,6 +235,9 @@ class AnalysisMenu extends Component {
                {/****  <p>{translate.intro_analysis_menu_1} </p>
                 <p>{translate.intro_analysis_menu_2} <a href={this.props.routerStore.courseCode}>{translate.intro_link}</a></p>
                  Select semester for a course *****/}
+                {/************************************************************************************* */}
+                {/*                               SEMESTER DROPDOWN                          */}
+                {/************************************************************************************* */}
                 <Dropdown
                     isOpen={this.state.dropdownOpen}
                     toggle={this.toggleDropdown}
@@ -274,13 +272,16 @@ class AnalysisMenu extends Component {
                 }
 
                 <Collapse isOpen={this.state.collapseOpen}>
-                <Row id='analysisMenuContainer' className='border-bottom'>
+                <Row id='analysisMenuContainer'>
                     <Form> 
                     <h3>{translate.header_draft}</h3>
-                        {/**** DRAFT ANALYSIS ****/}
+
                         {status === 'new' || status === 'draft'
                         ? <span>
                             <FormGroup>
+                            {/************************************************************************************* */}
+                            {/*                              DRAFT ANALYSIS                                          */}
+                            {/************************************************************************************* */}
                                 {this.state.draftAnalysis.length > 0
                                         ?<span>
                                             <ul>
@@ -307,13 +308,14 @@ class AnalysisMenu extends Component {
                             </FormGroup>
                            
                             <FormGroup >
-                            {/**** NEW ANALYSIS ****/}
-                               
+                            {/************************************************************************************* */}
+                            {/*                               NEW ANALYSIS                                          */}
+                            {/************************************************************************************* */}
                                 {roundList[this.state.semester].length > this.state.usedRounds.length
                                     ?  <div>
-                                         {/* <h3>{translate.header_select_rounds}</h3>*/}
-                                         <p>{translate.intro_new}</p>
-                                            <ul> 
+                                        {/* <h3>{translate.header_select_rounds}</h3>*/}
+                                        <p>{translate.intro_new}</p>
+                                        <ul> 
                                             {roundList[this.state.semester].map(round =>
                                                 this.state.usedRounds.indexOf(round.roundId) < 0
                                                     ? <li className = 'select-list' key={round.roundId}>
@@ -337,7 +339,7 @@ class AnalysisMenu extends Component {
                                                         </Label>
                                                         <br />
                                                     </li>
-                                                    : ''
+                                                : ''
                                             )}
                                         </ul>
                                     </div>
@@ -346,10 +348,13 @@ class AnalysisMenu extends Component {
                             </FormGroup>
                         </span>
                        : <FormGroup >
-                            {/**** PUBLISHED ANALYSIS ****/}
+                        {/************************************************************************************* */}
+                        {/*                               PUBLISHED ANALYSIS                                    */}
+                        {/************************************************************************************* */}
                             {this.state.publishedAnalysis.length > 0
-                                    ? <ul>
-                                        {this.state.publishedAnalysis.map(analysis =>
+                                ? <ul>
+                                    {
+                                        this.state.publishedAnalysis.map(analysis =>
                                             <li className = 'select-list' key={analysis.analysisId}>
                                                 < Label key={"Label" + analysis.analysisId} for={analysis.analysisId} >
                                                     <Input type="radio"
@@ -366,7 +371,6 @@ class AnalysisMenu extends Component {
                                             </li>
                                         )}
                                     </ul>
-                                    
                                 : <p>{translate.published_empty}</p>
                             }
                         </FormGroup>
@@ -374,6 +378,9 @@ class AnalysisMenu extends Component {
                     </Form>
                 </Row>
                 </Collapse>
+                {/************************************************************************************* */}
+                {/*                               BUTTONS ANALYSIS                                          */}
+                {/************************************************************************************* */}
                 <Row className="button-container text-center">
                     <Col sm="6" lg="4">
                        {/**  <Button color='secondary' id='cancel' key='cancel' onClick={this.handleCancel} >
@@ -386,15 +393,15 @@ class AnalysisMenu extends Component {
                         </Button>
                     </Col>
                     <Col sm="6" lg="4">
-                    {!this.state.firstVisit && this.showEditButton()
-                    ? <Button color='success' id='new' key='new' onClick={this.goToEditMode} disabled ={this.state.firstVisit}>
-                        <div className="iconContainer arrow-forward" id='new' />  
-                            {translate.btn_add_analysis}
-                    </Button>
-                    : ''
-                
-                    }
-                </Col>
+                        {
+                            !this.state.firstVisit && this.showEditButton()
+                                ? <Button color='success' id='new' key='new' onClick={this.goToEditMode} disabled ={this.state.firstVisit}>
+                                    <div className="iconContainer arrow-forward" id='new' />  
+                                    {translate.btn_add_analysis}
+                            </Button>
+                            : ''
+                        }
+                    </Col>
                 </Row>
                 <InfoModal type = 'delete' toggle= {this.toggleModal} isOpen = {this.state.modalOpen.delete} id={this.state.selectedRadio.draft} handleConfirm={this.handleDelete} infoText={translate.info_delete}/>
             </div>
