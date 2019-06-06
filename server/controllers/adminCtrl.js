@@ -182,7 +182,7 @@ async function getIndex (req, res, next) {
     } else {
       const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(req.params.id, lang)
       renderProps.props.children.props.routerStore.analysisData = apiResponse.body
-      renderProps.props.children.props.routerStore.status = status === 'p' ? 'published' : 'preview'
+      renderProps.props.children.props.routerStore.status = status === 'p' ? 'published' : 'draft'
       renderProps.props.children.props.routerStore.setCourseTitle(courseTitle.length > 0 ? decodeURIComponent(courseTitle) : '')
       // console.log('apiResponse.body', apiResponse.body)
     }

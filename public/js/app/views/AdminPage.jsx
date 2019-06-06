@@ -100,7 +100,7 @@ class AdminPage extends Component {
       })
       this.props.history.push(this.props.routerStore.browserConfig.proxyPrefixPath.uri + '/' + this.props.routerStore.courseData.courseCode)
     }
-    if (this.state.isPreviewMode) { console.log('Back...')
+    if (this.state.isPreviewMode) { 
       this.setState({
         isPreviewMode: false,
         progress: 'edit',
@@ -149,19 +149,24 @@ class AdminPage extends Component {
     event.preventDefault()
     const postObject = this.state.values
     const thisInstance = this
-    this.props.history.push(this.props.routerStore.browserConfig.proxyPrefixPath.uri + '/' + this.props.routerStore.analysisId)
+    const saveAndStay = event.target.id === 'save_continue'
     if(this.state.analysisFile !== postObject.analysisFileName){
       postObject.analysisFileName = this.state.analysisFile
     }
     return this.props.routerStore.postRoundAnalysisData(postObject, this.props.routerStore.status === 'new')
       .then((data) => {
         console.log('postObject', data)
-       // window.location=`${ADMIN_URL}${thisInstance.props.routerStore.analysisData.courseCode}?serv=kutv&event=save`
-        thisInstance.setState({
-          saved: true,
-          progress: false,
-          alert: 'finimangsparat...'
-        })
+        if(!saveAndStay){
+         // window.location=`${ADMIN_URL}${thisInstance.props.routerStore.analysisData.courseCode}?serv=kutv&event=save&id=${this.props.routerStore.analysisId}`
+        }
+        else{
+          thisInstance.setState({
+            saved: true,
+            progress: false,
+            alert: 'finimangsparat...'
+          })
+          thisInstance.props.history.push(thisInstance.props.routerStore.browserConfig.proxyPrefixPath.uri + '/' + thisInstance.analysisId)
+        }  
       })
   }
 
@@ -206,7 +211,7 @@ class AdminPage extends Component {
   }
 
   componentDidUpdate() {
-    window.scrollTo(0, 0)
+   // window.scrollTo(0, 0)
     //this._div.scrollTop = 0
     window.onpopstate  = (e) => {
       console.log('adminP onpopstate', this.state)
@@ -256,12 +261,7 @@ class AdminPage extends Component {
           <h1>{translate.header_main}</h1>
           <Title title={routerStore.courseTitle} language={routerStore.language} courseCode={routerStore.analysisData.courseCode} />
           <img src={routerStore.browserConfig.proxyPrefixPath.uri + '/static/'+ images[translate.progressImage[this.state.progress]]} className='progressImage' />
-          <Row>
-            <Col sm="12" lg="12">
-            
-            </Col>
-          </Row>
-
+         
           {this.state.alert.length > 0 ?
               <Alert>
                 {this.state.alert}
@@ -281,7 +281,7 @@ class AdminPage extends Component {
             {this.state.values && !this.state.isPreviewMode
               ? <Form className='admin-form'>
               <h2>{translate.header_edit_content}</h2>
-              <h3>{this.state.values.analysisName}</h3>
+              {/*<h3>{this.state.values.analysisName}</h3>*/}
               <p>{translate.asterix_text}<br/>
               {translate.asterix_text_2}</p>
                 <Row className='form-group'>
@@ -335,31 +335,24 @@ class AdminPage extends Component {
                     />*/}
                   </Col>
                   <Col sm='4' className='col-temp'>
-                    <Label>{translate.header_programs}*</Label>
-                    <Input id='programmeCodes' key='programmeCodes' type='text' value={this.state.values.programmeCodes} onChange={this.handleInputChange} disabled={isDisabled} />
-                    <Label>{translate.header_examiners}*</Label>
-                    <Input id='examiners' key='examiners' type='text' value={this.state.values.examiners} onChange={this.handleInputChange} disabled={isDisabled} />
-                    <Label>{translate.header_responsibles}*</Label>
-                    <Input id='responsibles' key='responsibles' type='text' value={this.state.values.responsibles} onChange={this.handleInputChange} disabled={isDisabled} />
-                    <Label>{translate.header_examination}*</Label>
-                    <Input id='examinationRounds' key='examinationRounds' type="textarea" value={this.state.values.examinationRounds} onChange={this.handleInputChange} disabled={isDisabled} />
+                    <Label>{translate.header_course_changes_comment}</Label>
+                    <Input style={{ height: 300 }} id='alterationText' key='alterationText' type="textarea" value={this.state.values.alterationText} onChange={this.handleInputChange} />
+                  </Col>  
+                  <Col sm='4' className='col-temp'>
                     <Label>{translate.header_registrated}*</Label>
                     <Input id='registeredStudents' key='registeredStudents' type='text' value={this.state.values.registeredStudents} onChange={this.handleInputChange} disabled={isDisabled} />
                     <Label>{translate.header_examination_grade}*</Label>
                     <Input id='examinationGrade' key='examinationGrade' type='number' value={this.state.values.examinationGrade} onChange={this.handleInputChange} disabled={isDisabled} />
-                  </Col>
-                  <Col sm='4' className='col-temp'>
-                   <Label>{translate.header_examination_comment}*</Label>
-                    {routerStore.examCommentEmpty || ( this.state.values.commentExam && this.state.values.commentExam.indexOf('</') ) < 0
-                      ? <Input id='commentExam' key='commentExam' type='textarea' value={this.state.values.commentExam} onChange={this.handleInputChange} disabled={isDisabled} />
-                      : <span id='commentExam' key='commentExam' dangerouslySetInnerHTML={{ __html: this.state.values.commentExam }} />
-                    }
-                 
-                    <Label>{translate.header_course_changes_comment}</Label>
-                    <Input id='alterationText' key='alterationText' type="textarea" value={this.state.values.alterationText} onChange={this.handleInputChange} />
+                    <Label>{translate.header_examiners}*</Label>
+                    <Input id='examiners' key='examiners' type='text' value={this.state.values.examiners} onChange={this.handleInputChange} disabled={isDisabled} />
+                    <Label>{translate.header_responsibles}*</Label>
+                    <Input id='responsibles' key='responsibles' type='text' value={this.state.values.responsibles} onChange={this.handleInputChange} disabled={isDisabled} />
+          
                     <Label>{translate.header_analysis_edit_comment}</Label>
                     <Input id='commentChange' key='commentChange' type="textarea" value={this.state.values.commentChange} onChange={this.handleInputChange} />
-                  </Col>  
+                 
+                  </Col>
+                 
                  
                 </Row>
                 <Row className="button-container text-center" >             
@@ -368,12 +361,20 @@ class AdminPage extends Component {
                      <div className="iconContainer arrow-back"/> {translate.btn_back }
                     </Button>
                   </Col>
-                  <Col sm="4">
+                  <Col sm="3">
                     <Button color='secondary' id='cancel' key='cancel' onClick={this.toggleModal} >
                     {translate.btn_cancel}
                     </Button>
                   </Col>
-                  <Col sm="4">
+                  <Col sm="3">
+                  {this.state.isPublished
+                    ? ''
+                    : <Button color='success' id='save_continue' key='save_continue' onClick={this.handleSave} >
+                      {translate.btn_save}
+                    </Button>
+                  }
+                </Col>
+                  <Col sm="2">
                     <Button color='success' id='preview' key='preview' onClick={this.handlePreview} >
                     <div className="iconContainer arrow-forward"/>  {translate.btn_preview}
                     </Button>
@@ -398,7 +399,7 @@ class AdminPage extends Component {
                   {this.state.isPublished
                     ? ''
                     : <Button color='success' id='save' key='save' onClick={this.handleSave} >
-                      {translate.btn_save}
+                      {translate.btn_save} 
                     </Button>
                   }
                 </Col>

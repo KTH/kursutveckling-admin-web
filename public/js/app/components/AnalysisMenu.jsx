@@ -9,6 +9,7 @@ import InfoModal from './InfoModal'
 
 import i18n from '../../../../i18n/index'
 import { EMPTY, ADMIN_URL } from '../util/constants'
+import { getDateFormat } from '../util/helpers'
 
 @inject(['routerStore']) @observer
 class AnalysisMenu extends Component {
@@ -17,6 +18,7 @@ class AnalysisMenu extends Component {
         this.state = {
             alert: '',
             firstVisit: this.props.firstVisit,
+            showEditBtn: false,
             dropdownOpen: false,
             collapseOpen: this.props.progress === 'back_new',
             modalOpen: {
@@ -110,6 +112,14 @@ class AnalysisMenu extends Component {
                     alert: ''
                 })
             })
+    }
+
+    showEditButton(){
+        return(
+            this.props.routerStore.status === 'published'
+                ? this.state.publishedAnalysis.length > 0
+                : this.state.draftAnalysis.length > 0 || this.props.roundList[this.state.semester].length > this.state.usedRounds.length
+        )
     }
     //************************ CHECKBOXES AND RADIO BUTTONS **************************** */
 
@@ -266,13 +276,13 @@ class AnalysisMenu extends Component {
                 <Collapse isOpen={this.state.collapseOpen}>
                 <Row id='analysisMenuContainer' className='border-bottom'>
                     <Form> 
+                    <h3>{translate.header_draft}</h3>
                         {/**** DRAFT ANALYSIS ****/}
                         {status === 'new' || status === 'draft'
                         ? <span>
-                            <FormGroup className='border-bottom'>
+                            <FormGroup>
                                 {this.state.draftAnalysis.length > 0
                                         ?<span>
-                                             <h3>{translate.header_draft}</h3>
                                             <ul>
                                             {this.state.draftAnalysis.map(analysis =>
                                                 <li className = 'select-list' key={analysis.analysisId}>
@@ -298,10 +308,11 @@ class AnalysisMenu extends Component {
                            
                             <FormGroup >
                             {/**** NEW ANALYSIS ****/}
-                                <h3>{translate.header_select_rounds}</h3>
-                                <p>{translate.intro_new}</p>
+                               
                                 {roundList[this.state.semester].length > this.state.usedRounds.length
                                     ?  <div>
+                                         {/* <h3>{translate.header_select_rounds}</h3>*/}
+                                         <p>{translate.intro_new}</p>
                                             <ul> 
                                             {roundList[this.state.semester].map(round =>
                                                 this.state.usedRounds.indexOf(round.roundId) < 0
@@ -313,10 +324,15 @@ class AnalysisMenu extends Component {
                                                                 id={round.roundId}
                                                                 key={"checkbox" + round.roundId}
                                                                 onChange={this.handleRoundCheckbox}
-                                                                checked = {this.state.rounds.indexOf(round.roundId)>-1}
+                                                                checked = {this.state.rounds.indexOf(round.roundId) > -1 }
                                                                 name={round.roundId}
                                                             />
-                                                            {round.shortName ? round.shortName : round.startDate} {(round.language)}
+                                                            {round.shortName 
+                                                                ? round.shortName + ' '
+                                                                : `${translate.course_short_semester[this.state.semester.toString().match(/.{1,4}/g)[1]]} 
+                                                                   ${this.state.semester.toString().match(/.{1,4}/g)[0]}_${round.roundId} `
+                                                            } 
+                                                             ( {getDateFormat(round.startDate)}, {round.language} )
 
                                                         </Label>
                                                         <br />
@@ -325,15 +341,13 @@ class AnalysisMenu extends Component {
                                             )}
                                         </ul>
                                     </div>
-                                    : <p>{translate.new_empty}</p>
+                                    : ''
                                 }
                             </FormGroup>
                         </span>
                        : <FormGroup >
                             {/**** PUBLISHED ANALYSIS ****/}
-                            <h3>{translate.header_published}</h3>
                             {this.state.publishedAnalysis.length > 0
-                               ? this.state.publishedAnalysis.length > 1
                                     ? <ul>
                                         {this.state.publishedAnalysis.map(analysis =>
                                             <li className = 'select-list' key={analysis.analysisId}>
@@ -352,14 +366,7 @@ class AnalysisMenu extends Component {
                                             </li>
                                         )}
                                     </ul>
-                                    : <ul>
-                                        <li className = 'select-list'>
-                                            <Label key={"Label" + this.state.publishedAnalysis[0].analysisId} for={this.state.publishedAnalysis[0].analysisId} >
-                                                {this.state.publishedAnalysis[0].analysisName}
-                                                {/*" ( Created by: " + this.state.publishedAnalysis[0].user + " ) "*/}
-                                            </Label>
-                                        </li>
-                                    </ul>
+                                    
                                 : <p>{translate.published_empty}</p>
                             }
                         </FormGroup>
@@ -367,15 +374,28 @@ class AnalysisMenu extends Component {
                     </Form>
                 </Row>
                 </Collapse>
-                <div className="button-container text-center" >
-                    <Button color='secondary' id='cancel' key='cancel' onClick={this.handleCancel} >
-                        {translate.btn_cancel}
-                    </Button>
-                    <Button color='success' id='new' key='new' onClick={this.goToEditMode} disabled ={this.state.firstVisit}>
+                <Row className="button-container text-center">
+                    <Col sm="6" lg="4">
+                       {/**  <Button color='secondary' id='cancel' key='cancel' onClick={this.handleCancel} >
+                            {translate.btn_cancel}
+                        </Button>*/}
+                    </Col>
+                    <Col sm="6" lg="4">
+                        <Button color='secondary' id='cancel' key='cancel' onClick={this.handleCancel} >
+                            {translate.btn_cancel}
+                        </Button>
+                    </Col>
+                    <Col sm="6" lg="4">
+                    {!this.state.firstVisit && this.showEditButton()
+                    ? <Button color='success' id='new' key='new' onClick={this.goToEditMode} disabled ={this.state.firstVisit}>
                         <div className="iconContainer arrow-forward" id='new' />  
                             {translate.btn_add_analysis}
                     </Button>
-                </div>
+                    : ''
+                
+                    }
+                </Col>
+                </Row>
                 <InfoModal type = 'delete' toggle= {this.toggleModal} isOpen = {this.state.modalOpen.delete} id={this.state.selectedRadio.draft} handleConfirm={this.handleDelete} infoText={translate.info_delete}/>
             </div>
         )
@@ -383,3 +403,4 @@ class AnalysisMenu extends Component {
 }
 
 export default AnalysisMenu
+
