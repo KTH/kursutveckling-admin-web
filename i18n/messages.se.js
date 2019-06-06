@@ -47,7 +47,7 @@ module.exports = {
     header_main: 'Administrera kursanalys med kursdata',
     header_select_semester: 'Välj först termin',
     header_add_round: 'Välj först termin',
-    header_draft: 'Välj bland sparade utkast',
+    header_draft: 'Välj kursomgång',
     header_added_rounds: 'Välj en tidigare tillagd kursomgång',
     header_published: 'Välj bland publicerade',
     header_new: 'Lägg till ny',

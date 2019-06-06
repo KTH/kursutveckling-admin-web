@@ -80,6 +80,7 @@ class AdminPage extends Component {
     const thisAdminPage = this
     const routerStore = this.props.routerStore
     if (this.state.progress === 'edit') {
+      this.props.history.push(this.props.routerStore.browserConfig.proxyPrefixPath.uri + '/' + this.props.routerStore.courseData.courseCode)
       if (routerStore.semesters.length === 0){
         return routerStore.getCourseInformation(routerStore.analysisData.courseCode, routerStore.user, routerStore.language)
           .then(courseData => {
@@ -98,7 +99,6 @@ class AdminPage extends Component {
         activeSemester: routerStore.analysisData.semester,
         alert: ''
       })
-      this.props.history.push(this.props.routerStore.browserConfig.proxyPrefixPath.uri + '/' + this.props.routerStore.courseData.courseCode)
     }
     if (this.state.isPreviewMode) { 
       this.setState({
