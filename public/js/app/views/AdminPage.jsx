@@ -16,7 +16,7 @@ import InfoModal from '../components/InfoModal'
 
 
 //Helpers 
-import { EMPTY, ADMIN_URL } from '../util/constants'
+import { EMPTY, ADMIN_URL, KURSUTVECKLING_URL } from '../util/constants'
 import i18n from '../../../../i18n/index'
 import images from '../../../img/*.svg'
 
@@ -58,7 +58,7 @@ class AdminPage extends Component {
     //this.pond.setState({status:5})
     //this.pond.allowFilesSync =false
     let pondis = this.pond.getFiles()
-    pondis[0].allowFilesSync=false
+    //pondis[0].allowFilesSync=false
     console.log('wwwww',pondis)
   }
 
@@ -71,7 +71,8 @@ class AdminPage extends Component {
     event.preventDefault()
     this.setState({
       isPreviewMode: true,
-      progress: 'preview'
+      progress: 'preview',
+      alert: ''
     })
   }
 
@@ -157,7 +158,7 @@ class AdminPage extends Component {
       .then((data) => {
         console.log('postObject', data)
         if(this.state.isPreviewMode){
-         // window.location=`${ADMIN_URL}${thisInstance.props.routerStore.analysisData.courseCode}?serv=kutv&event=save&id=${this.props.routerStore.analysisId}`
+          window.location=`/${ADMIN_URL}${thisInstance.props.routerStore.analysisData.courseCode}?serv=kutv&event=save&id=${this.props.routerStore.analysisId}`// term=, name=
         }
         else{
           thisInstance.setState({
@@ -248,7 +249,7 @@ class AdminPage extends Component {
               {/*                               PAGE1: ANALYSIS MENU                             */}
               {/************************************************************************************* */}
               {routerStore.semesters.length === 0
-                ? <Alert color="friendly">No rounds!</Alert>
+                ?<Alert color='info' style={{marginBottom:60}}> {translate.alert_no_rounds} </Alert>
                 : <AnalysisMenu
                   editMode= { this.editMode }
                   semesterList= { routerStore.semesters }
@@ -260,7 +261,7 @@ class AdminPage extends Component {
                 />
               }
             </div>
-            : <Alert color="friendly"> { routerStore.errorMessage }</Alert>
+            :<Alert color='info'> { routerStore.errorMessage }</Alert>
           }
         </div>
       )
@@ -375,8 +376,7 @@ class AdminPage extends Component {
                       : ''
                       }
                     </Col>
-                    
-                </Row> 
+                  </Row> 
               </Form>
               : ''
             }
@@ -384,20 +384,24 @@ class AdminPage extends Component {
             {/*                                BUTTONS FOR BOTH PAGES                               */}
             {/************************************************************************************* */}
             <Row className="button-container text-center" >             
-                  <Col sm="4" style={{'text-align': 'left'}}>
-                    <Button color='secondary' id='back' key='back' onClick={this.handleBack} >
-                      <div className="iconContainer arrow-back"/> 
-                      { this.state.isPreviewMode ? translate.btn_back_edit : translate.btn_back }
-                    </Button>
+                  <Col sm="4" style={{textAlign: 'left'}}>
+                    {
+                      routerStore.status === 'preview'
+                      ? ''
+                      : <Button color='secondary' id='back' key='back' onClick={this.handleBack} >
+                          <div className="iconContainer arrow-back"/> 
+                          { this.state.isPreviewMode ? translate.btn_back_edit : translate.btn_back }
+                        </Button>
+                    }
                   </Col>
-                  <Col sm="3" style={{'text-align': 'right'}} >
+                  <Col sm="3" style={{textAlign: 'right'}} >
                     <Button color='secondary' id='cancel' key='cancel' onClick={this.toggleModal} >
                       {translate.btn_cancel}
                     </Button>
                   </Col>
                   <Col sm="3">
                   {
-                    this.state.isPublished
+                    this.state.isPublished || routerStore.status === 'preview'
                     ? ''
                     : <Button color='success' id='save' key='save' onClick={this.handleSave} >
                       {translate.btn_save}
@@ -405,14 +409,18 @@ class AdminPage extends Component {
                   }
                 </Col>
                   <Col sm="2">
-                    {
-                      this.state.isPreviewMode
+                  {routerStore.status === 'preview'
+                    ? ''
+                    : <span>
+                     { this.state.isPreviewMode
                       ? <Button color='success' id='publish' key='publish' onClick={this.toggleModal} >
                         {translate.btn_publish}
                       </Button>
                       :<Button color='success' id='preview' key='preview' onClick={this.handlePreview} >
                         <div className="iconContainer arrow-forward"/>  {translate.btn_preview}
                       </Button>
+                     }
+                      </span>
                     }
                   </Col>
                 </Row>

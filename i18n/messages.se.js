@@ -21,19 +21,10 @@ module.exports = {
      */
     service_name: 'kurs ',
 
-    example_message_key: 'Här är en svensk översättning på en label',
-
-    button_label_example: 'Klicka här för att skicka data till servern!',
-
-    field_text_example: 'Data att skicka till API',
-
-    field_label_get_example: 'Min datamodell(Svar från api anrop GET): ',
-    field_label_post_example: 'Min datamodell(Svar från api anrop POST): ',
-
     lang_block_id: '1.272446',
-    locale_text: 'Kursinformation på svenska',
+    locale_text: 'Administrera kursutveckling på svenska',
 
-    site_name: 'Kursinformation',
+    site_name: 'Kursutveckling Admin',
     host_name: 'KTH',
     page_student: 'STUDENT PÅ KTH',
     page_course_programme: 'KURS- OCH PROGRAMKATALOGEN',
@@ -112,6 +103,7 @@ module.exports = {
     new_empty: 'Det finns inga ej påbörjade kurstillfällen för vald termin',
 
     alert_no_rounds_selected: 'Du måste välja en kursomgång/ kurstillfälle nedan, innan du klickar på knapp "Granska" eller "Redigera".',
+    alert_no_rounds: 'Den här kursen har inga kursomgångar',
 
     info_publish: {
       header: 'Att tänka på innan du publicerar!',

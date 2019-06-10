@@ -1,7 +1,5 @@
 'use strict'
-/* if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
-  require('react-devtools')
-}*/
+import '@babel/polyfill'
 
 import React from 'react'
 import  ReactDOM from 'react-dom'

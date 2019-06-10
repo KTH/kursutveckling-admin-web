@@ -9,7 +9,7 @@ import i18n from '../../../../i18n/index'
 //Components
 
 //Helpers 
-import { EMPTY, ADMIN_URL} from '../util/constants'
+import { EMPTY, ADMIN_URL, SYLLABUS_URL} from '../util/constants'
 
 @inject(['routerStore']) @observer
 class Preview extends Component {
@@ -163,7 +163,7 @@ class TableForCourse extends Component {
         <Collapse isOpen={true} >
           <ProgramCollapse header={translate.header_programs} text={values.programmeCodes} label={this.props.togglerId}/>
           <span className="right-links" >
-            <a key='syllabusLink' id='syllabusLink' href='https://app-r.referens.sys.kth.se/student/kurser/kurs/kursplan/SF1626_20182.pdf?lang=sv' target='_blank' >{translate.link_syllabus}</a> 
+            <a key='syllabusLink' id='syllabusLink' href={`/${SYLLABUS_URL}${values.courseCode}-${values.semester}.pdf?lang=${'sv'}`} target='_blank' >{translate.link_syllabus}</a> 
             <a key='pmLink' id='pmLink' href='https://kth.box.com/s/i9xu34n5conqdoj7re81bmcto20wavib' target='_blank' >{translate.link_pm}: 2019-05-20</a> 
             <a key='analysisLink'  id='analysisLink' href={this.props.routerStore.browserConfig.storageUri + this.props.linksFileNames.analysis} target='_blank' >{translate.link_analysis}: 2019-05-25</a>
           </span>

@@ -87,11 +87,17 @@ class AnalysisMenu extends Component {
 
     handleSelectedSemester(event) {
         event.preventDefault()
+        let radios = this.state.selectedRadio
+        radios.published = ''
+        radios.draft = ''
         this.getUsedRounds(event.target.id)
         this.setState({
             semester: event.target.id,
             collapseOpen: true,
-            firstVisit: false
+            firstVisit: false,
+            rounds:[],
+            lastSelected:'',
+            selectedRadio: radios
         })
     }
 
