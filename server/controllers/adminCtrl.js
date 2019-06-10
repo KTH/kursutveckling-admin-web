@@ -181,6 +181,7 @@ async function getIndex (req, res, next) {
       await renderProps.props.children.props.routerStore.handleCourseData(apiResponse.body, ldapUser, lang)
     } else {
       const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(req.params.id, lang)
+
       renderProps.props.children.props.routerStore.analysisData = apiResponse.body
       renderProps.props.children.props.routerStore.setCourseCode(apiResponse.body.courseCode)
       switch (status) {
@@ -194,7 +195,9 @@ async function getIndex (req, res, next) {
       }
       // renderProps.props.children.props.routerStore.status = status === 'p' ? 'published' : 'draft'
       renderProps.props.children.props.routerStore.setCourseTitle(courseTitle.length > 0 ? decodeURIComponent(courseTitle) : '')
-      // console.log('apiResponse.body', apiResponse.body)
+      if (apiResponse.body.message) {
+        renderProps.props.children.props.routerStore.errorMessage = 'Not found'
+      }
     }
 
     renderProps.props.children.props.routerStore.__SSR__setCookieHeader(req.headers.cookie)

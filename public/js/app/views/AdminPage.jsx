@@ -267,11 +267,16 @@ class AdminPage extends Component {
       )
     else
       return (
+        
         <div key='kursutveckling-form-container' className='container' id='kursutveckling-form-container' ref={(ref) => this._div = ref} >
         {/************************************************************************************* */}
         {/*                     PAGE 2: EDIT AND  PAGE 3: PREVIEW                               */}
         {/************************************************************************************* */}
-         
+         {
+           routerStore.errorMessage.length > 0
+            ?<Alert color='info'>{routerStore.errorMessage}</Alert>
+            :''
+         }
           <Title 
             title={routerStore.courseTitle} 
             language={routerStore.language} 
