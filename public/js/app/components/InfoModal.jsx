@@ -18,24 +18,38 @@ class InfoModal extends Component {
     this.props.handleConfirm(this.props.id, true)
   }
 
+
   render () {
-      const fadeModal = (this.props.hasOwnProperty('fade') ? this.props.fade : true)
+    const { fade, isOpen, toggle, className, type, infoText, id } = this.props
+    const fadeModal = (this.props.hasOwnProperty('fade') ? fade : true)
+
       return (
         <div>
-          <Modal isOpen = {this.props.isOpen} toggle={this.props.toggle} className={this.props.className} fade={fadeModal}>
-            <ModalHeader toggle={this.props.toggle}>{this.props.infoText.header}</ModalHeader>
+          {
+            type === 'info'
+            ? <Button id={type} type="button"  onClick={toggle} className='btn-info-modal btn btn-secondary info-inline'/>
+            : ''
+          }
+          <Modal isOpen = {isOpen} toggle={toggle} className={className} fade={fadeModal}>
+            <ModalHeader toggle={toggle}>{infoText.header}</ModalHeader>
             <ModalBody>
-              <p dangerouslySetInnerHTML={{ __html:this.props.infoText.body}}/>
+              <p dangerouslySetInnerHTML={{ __html:infoText.body}}/>
              {/* <CopyText textToCopy={'tjohoooooooooooooo'} />*/}
             </ModalBody>
             <ModalFooter>
-              <Button id={this.props.type} color='secondary' onClick={this.props.toggle}>{this.props.infoText.btnCancel}</Button>
-              <Button color='secondary' onClick={this.handleConfirm}>{this.props.infoText.btnConfirm}</Button>
+              <Button id={type} color='secondary' onClick={toggle}>{infoText.btnCancel}</Button>
+              {
+                infoText.btnConfirm
+                ?<Button color='secondary' onClick={this.handleConfirm}>{infoText.btnConfirm}</Button>
+                : ''
+              }
             </ModalFooter>
           </Modal>
           </div>
       )
     }
   }
+
+  
 
 export default InfoModal

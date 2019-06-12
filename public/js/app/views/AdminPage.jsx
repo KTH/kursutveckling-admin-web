@@ -81,9 +81,9 @@ class AdminPage extends Component {
     const thisAdminPage = this
     const routerStore = this.props.routerStore
     if (this.state.progress === 'edit') {
-      this.props.history.push(this.props.routerStore.browserConfig.proxyPrefixPath.uri + '/' + this.props.routerStore.courseData.courseCode)
+      this.props.history.push(routerStore.browserConfig.proxyPrefixPath.uri + '/' + routerStore.courseCode)
       if (routerStore.semesters.length === 0){
-        return routerStore.getCourseInformation(routerStore.analysisData.courseCode, routerStore.user, routerStore.language)
+        return routerStore.getCourseInformation(routerStore.courseCode, routerStore.user, routerStore.language)
           .then(courseData => {
             thisAdminPage.setState({
               isPreviewMode: false,
@@ -241,7 +241,7 @@ class AdminPage extends Component {
                 language={routerStore.language} 
                 courseCode={routerStore.courseData.courseCode} 
                 image = {routerStore.browserConfig.proxyPrefixPath.uri + '/static/'+ images[translate.progressImage['first']]}
-                status = {routerStore.status}
+                header = {routerStore.status === 'published' ? translate.header_main_published : translate.header_main_new}
                 />
              
          
@@ -282,7 +282,7 @@ class AdminPage extends Component {
             language={routerStore.language} 
             courseCode={routerStore.courseData.courseCode} 
             image = {routerStore.browserConfig.proxyPrefixPath.uri + '/static/'+ images[translate.progressImage[this.state.progress]]}
-            status = {routerStore.status}
+            header = {routerStore.status === 'published' ? translate.header_main_published : translate.header_main_new}
           />
           {this.state.alert.length > 0 ?
               <Alert>

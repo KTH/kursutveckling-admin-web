@@ -199,7 +199,7 @@ async function getIndex (req, res, next) {
         renderProps.props.children.props.routerStore.errorMessage = 'Not found'
       }
     }
-
+    console.log('session!!!!!!', req.session)
     renderProps.props.children.props.routerStore.__SSR__setCookieHeader(req.headers.cookie)
     // await renderProps.props.children.props.routerStore.getRoundAnalysis(req.params.id)
     renderProps.props.children.props.routerStore.analysisId = req.params.id

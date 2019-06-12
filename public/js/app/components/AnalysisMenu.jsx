@@ -6,6 +6,7 @@ import { Alert, Form, Dropdown, FormGroup, Label,
 
 //Custom components
 import InfoModal from './InfoModal'
+import InfoButton from './InfoButton'
 
 import i18n from '../../../../i18n/index'
 import { EMPTY, ADMIN_URL } from '../util/constants'
@@ -22,7 +23,8 @@ class AnalysisMenu extends Component {
             dropdownOpen: false,
             collapseOpen: this.props.progress === 'back_new',
             modalOpen: {
-                delete: false
+                delete: false,
+                info: false
             },
             semester: this.props.activeSemester && this.props.activeSemester.length > 0  ? this.props.activeSemester   : this.props.semesterList[0],
             rounds: [],
@@ -232,15 +234,15 @@ class AnalysisMenu extends Component {
     render() {
         const translate = i18n.messages[this.props.routerStore.language].messages
         const { status, semesterList, roundList } = this.props
+        const showAllEmptyNew = status !== 'published' && this.state.draftAnalysis.length === 0 && roundList[this.state.semester].length === this.state.usedRounds.length
+        const showAllEmptyPublished = status === 'published' && this.state.publishedAnalysis.length === 0 
 
-        console.log("routerStore", this.props, status)
+        console.log("routerStore", this.props, showAllEmptyPublished, showAllEmptyNew)
         console.log("this.state", this.state)
         return (
             <div id="YearAndRounds">
-                 <h2>{translate.header_analysis_menu}</h2>
-               {/****  <p>{translate.intro_analysis_menu_1} </p>
-                <p>{translate.intro_analysis_menu_2} <a href={this.props.routerStore.courseCode}>{translate.intro_link}</a></p>
-                 Select semester for a course *****/}
+                 <p>{translate.intro_analysis_menu}</p>
+           
                 {/************************************************************************************* */}
                 {/*                               SEMESTER DROPDOWN                          */}
                 {/************************************************************************************* */}
@@ -249,7 +251,11 @@ class AnalysisMenu extends Component {
                     toggle={this.toggleDropdown}
                     className='select-semester'
                 >
-                <h3>{translate.header_select_semester}</h3>
+                    <div className='inline-flex'>
+                        <h3 > {translate.header_select_semester} </h3> 
+                        <InfoButton id = 'info_select_semester' textObj = {translate.info_select_semester}/>
+                    </div>
+                    
                     <DropdownToggle >
                         <span>
                             {this.state.semester && this.state.semester > 0 && !this.state.firstVisit
@@ -279,10 +285,20 @@ class AnalysisMenu extends Component {
 
                 <Collapse isOpen={this.state.collapseOpen}>
                 <Row id='analysisMenuContainer'>
-                    <Form> 
-                    <h3>{translate.header_draft}</h3>
-
-                        {status === 'new' || status === 'draft'
+                    {
+                      showAllEmptyNew || showAllEmptyPublished
+                      ?  
+                      <Alert color='info'>
+                          <p>{showAllEmptyNew ? 'new empty' :'published empty'}</p>
+                      </Alert>
+                    :<Form> 
+                         <div className='inline-flex'>
+                             <h3>{translate.header_analysis_menu}</h3>
+                            <InfoButton id = 'info_choose_course_offering' textObj = {translate.info_choose_course_offering}/>
+                            <InfoModal type = 'info' toggle= {this.toggleModal}  isOpen = {this.state.modalOpen.info} id='choose_course_offering' infoText={translate.info_choose_course_offering}/>
+                        </div>
+                   
+                        {status === 'new' || status === 'draft' 
                         ? <span>
                             <FormGroup>
                             {/************************************************************************************* */}
@@ -290,6 +306,7 @@ class AnalysisMenu extends Component {
                             {/************************************************************************************* */}
                                 {this.state.draftAnalysis.length > 0
                                         ?<span>
+                                            <p>{translate.intro_draft}</p>
                                             <ul>
                                             {this.state.draftAnalysis.map(analysis =>
                                                 <li className = 'select-list' key={analysis.analysisId}>
@@ -358,7 +375,10 @@ class AnalysisMenu extends Component {
                         {/*                               PUBLISHED ANALYSIS                                    */}
                         {/************************************************************************************* */}
                             {this.state.publishedAnalysis.length > 0
-                                ? <ul>
+                                ?  <div>
+                                {/* <h3>{translate.header_select_rounds}</h3>*/}
+                                <p>{translate.intro_published}</p><ul>
+                                    
                                     {
                                         this.state.publishedAnalysis.map(analysis =>
                                             <li className = 'select-list' key={analysis.analysisId}>
@@ -377,15 +397,17 @@ class AnalysisMenu extends Component {
                                             </li>
                                         )}
                                     </ul>
+                                    </div>
                                 : <p>{translate.published_empty}</p>
                             }
                         </FormGroup>
                         }
                     </Form>
+                    }
                 </Row>
                 </Collapse>
                 {/************************************************************************************* */}
-                {/*                               BUTTONS ANALYSIS                                          */}
+                {/*                               BUTTONS ANALYSIS MENU                                         */}
                 {/************************************************************************************* */}
                 <Row className="button-container text-center">
                     <Col sm="6" lg="4">

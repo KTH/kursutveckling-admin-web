@@ -2,10 +2,10 @@ import React, { Component } from 'react'
 
 class Title extends Component{
     render(){
-        const { courseCode, status, title, language, image} = this.props
+        const { courseCode, header, title, language, image} = this.props
         return(
         <div key='course-title' id='course-title'>
-             <h1>{status === 'published' ? 'Published stuff' : 'New / Draft stuff'}</h1>
+             <h1>{header}</h1>
             <h4>
             <span>{courseCode}&nbsp;</span>
             { title 
