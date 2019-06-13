@@ -24,7 +24,7 @@ function _webUsesSSL(url) {
 class RouterStore {
 
   roundData = {}
-  analysisId = ""
+  analysisId = ''
   courseData = {}
   semesters = []
   analysisData = undefined
@@ -266,22 +266,23 @@ class RouterStore {
        
       this.analysisData = {
         _id: this.analysisId,
-        alterationText: " ",
-        analysisFileName: "",
+        alterationText: '',
+        analysisFileName: '',
         changedBy: "Kristian Semlan Gullefjun",
-        changedDate: " ",
-        commentChange: " ",
+        changedDate: '',
+        commentChange: '',
         commentExam: this.getExmCommentfromCorrectSyllabus(semester, this.courseData.syllabusList),
         courseCode: this.courseData.courseCode,
         examinationRounds: this.getExamObject(this.courseData.examinationSets, this.courseData.gradeScale, this.language, semester),
-        examiners: " ",
+        examiners: '',
         examinationGrade: 0,
         isPublished: false,
-        pdfAnalysisDate: " ",
+        pdfAnalysisDate: '',
+        pdfPMDate: '',
         programmeCodes: this.getAllTargetGroups(rounds, this.roundData[semester]).join(', '),
-        publishedDate: "",
+        publishedDate: '',
         registeredStudents: 0,
-        responsibles: " ",
+        responsibles: '',
         analysisName: newName,
         semester: semester,
         roundIdList: rounds.toString(),
