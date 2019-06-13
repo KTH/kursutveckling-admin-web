@@ -187,7 +187,12 @@ class TableForCourse extends Component {
                     </td>
                     <td>{values.registeredStudents}</td>
                     <td>
-                        <p> {values.examinationRounds} </p>
+                        <p> {
+                          values.examinationRounds.map( exam => {
+                            let string = exam.split(';')
+                            return (`${string[0]} - ${string[1]}, ${string[2]} ${string[3]}, ${string[4]}: ${string[5]} `)  
+                          })
+                        }</p>
                       
                     </td>
                     <td> 

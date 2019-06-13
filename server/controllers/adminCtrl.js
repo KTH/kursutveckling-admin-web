@@ -169,9 +169,12 @@ async function getIndex (req, res, next) {
   const courseTitle = req.query.title || ''
   const status = req.query.status
 
+  console.log(lang)
+
   try {
     const renderProps = staticFactory()
     renderProps.props.children.props.routerStore.setBrowserConfig(browserConfig, paths, serverConfig.hostUrl)
+    renderProps.props.children.props.routerStore.setLanguage(lang)
 
     if (req.params.id.length <= 7) {
       // Just course code -> analysis menue depending on status

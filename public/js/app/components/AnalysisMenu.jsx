@@ -232,12 +232,13 @@ class AnalysisMenu extends Component {
       }
 
     render() {
-        const translate = i18n.messages[this.props.routerStore.language].messages
-        const { status, semesterList, roundList } = this.props
+        
+        const { status, semesterList, roundList, routerStore } = this.props
+        const translate = i18n.messages[routerStore.language].messages
         const showAllEmptyNew = status !== 'published' && this.state.draftAnalysis.length === 0 && roundList[this.state.semester].length === this.state.usedRounds.length
         const showAllEmptyPublished = status === 'published' && this.state.publishedAnalysis.length === 0 
 
-        console.log("routerStore", this.props, showAllEmptyPublished, showAllEmptyNew)
+        console.log("routerStore", this.props, i18n.messages)
         console.log("this.state", this.state)
         return (
             <div id="YearAndRounds">
@@ -252,7 +253,7 @@ class AnalysisMenu extends Component {
                     className='select-semester'
                 >
                     <div className='inline-flex'>
-                        <h3 > {translate.header_select_semester} </h3> 
+                        <h3 > {translate.select_semester} </h3> 
                         <InfoButton id = 'info_select_semester' textObj = {translate.info_select_semester}/>
                     </div>
                     
@@ -355,9 +356,9 @@ class AnalysisMenu extends Component {
                                                             {round.shortName 
                                                                 ? round.shortName + ' '
                                                                 : `${translate.course_short_semester[this.state.semester.toString().match(/.{1,4}/g)[1]]} 
-                                                                   ${this.state.semester.toString().match(/.{1,4}/g)[0]}_${round.roundId} `
+                                                                   ${this.state.semester.toString().match(/.{1,4}/g)[0]}-${round.roundId} `
                                                             } 
-                                                             ( {getDateFormat(round.startDate)}, {round.language} )
+                                                             ( {translate.label_start_date} {getDateFormat(round.startDate, round.language)}, {round.language} )
 
                                                         </Label>
                                                         <br />

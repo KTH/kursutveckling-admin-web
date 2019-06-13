@@ -46,14 +46,15 @@ module.exports = {
     header_select_semester: 'Välj termin',
     select_semester: 'Välj termin',
     header_analysis_menu: 'Välj kursomgång',
+    label_start_date: 'Startdatum',
     /* **** INTRO TEXT FOR ANALYSIS MENUE, EDIT, PREVIEW */
-    intro_analysis_menu: 'Välj kursomgång för kursanalys med kursdata (steg 1 av 3). Kursdata för kursen kommer att hämtas från Ladok och Kopps för den termin och kursomgång som du väljer nedan. Kursdata kommer, tillsammans med den kursanalys som du laddar upp i nästa steg, visas i en tabell under motsvarande år på sidan Kursens utveckling och historik',
+    intro_analysis_menu: 'Börja med att välja termin och kursomgång för den kursanalys som ska publiceras (steg 1 av 3). I nästa steg (2 av 3) kommer kursdata för kursen att hämtas automatiskt från Ladok och Kopps för den termin och kursomgång som valts,det finns sedan möjlighet att redigera viss kursdata samt ladda upp kursanalysen. I sista steget (3 av 3) ges möjlighet att först granska och sedan publicera tabellen med kursanalys och all kursdata på sidan Kursens utveckling och historik.',
     intro_edit: 'Redigera, ladda upp kuranalys med kursdata (steg 2 av 3)',
     intro_preview: 'In this step (3 of 3) a preview of the course analysis with course data is presented as it will be published on the page Course development and history. It is possible to go back to make adjustments, to save a draft or publish the information.',
 
     /* **** INTRO SELECT NEW, DRAFT, PUBLISHED */
     intro_new: 'Följande kurstillfällen saknar publicerad kursanalys/ kursdata. Markera en eller flera som ingår i kursomgången: ',
-    intro_draft: 'Följande kursomgångar har ett sparat utkast. Välj kursomgång för att arbeta vidare med utkastet: ',
+    intro_draft: 'Följande kursomgångar har sparade utkast som ännuej publicerats: ',
     intro_published: 'Följande kursomgångar har publicerad kursanalys med kursdata. Välj den kursomgång nedan som du vill du vill ändra och sedan publicera om: ',
 
     /* **** EMPTY TEXT FOR NEW, DRAFT, PUBLISHED */
@@ -63,7 +64,7 @@ module.exports = {
 
     /** ************ BUTTONS ****************** */
     btn_preview: 'Granska',
-    btn_add_analysis: ' Redigera',
+    btn_add_analysis: ' Redigera, ladda upp',
     btn_cancel: 'Avbryt',
     btn_save: 'Spara utkast',
     btn_publish: 'Publicera',
@@ -81,11 +82,11 @@ module.exports = {
     header_examiners: 'Examinator ',
     header_employees: 'Kursansvarig, Examinator ',
     header_responsibles: 'Kursansvarig',
-    header_registrated: 'Antal reg. Studenter',
+    header_registrated: 'Antal förstagångsregistrerade studenter',
     header_examination: 'Form av examination',
     header_examination_comment: 'Kommentar till examination',
     header_examination_grade: 'Examinationsgrad',
-    header_course_changes_comment: 'Förändringar som införts i årets kurs',
+    header_course_changes_comment: 'Förändringar som har införts till den här kursomgången',
     header_analysis_edit_comment: 'Kommentar till ändringar',
     header_upload_file: 'Ladda upp analys',
     header_upload_file_pm: 'Ladda upp PM',
@@ -97,6 +98,7 @@ module.exports = {
 
     alert_no_rounds_selected: 'Du måste välja en kursomgång/ kurstillfälle nedan, innan du klickar på knapp "Redigera, ladda upp".',
     alert_no_rounds: 'Den här kursen har inga kursomgångar',
+    alert_no_published: 'Det finns ingen publicerad kursanalys och kursdata denna termin',
 
     /** ************ MODALS ************** */
     info_publish: {
@@ -133,54 +135,59 @@ module.exports = {
     /** **** INFO BUTTONS ***** */
     info_select_semester: {
       header: 'Info',
-      body: 'Choose what term the course offering started. If the course offering stretched over several terms then choose the first term.',
+      body: 'Välj vilken termin kursomgångenstartade. Om kursomgångensträcker sig över flera termer välj första terminen.',
       btnCancel: 'Close'
     },
     info_choose_course_offering: {
       header: 'Info',
-      body: 'Choose all the administrative course instances that was included in the course offering. Students are admitted to an administrative course instance. Degree program students and non-programme students are admitted to different administrative course instances but may be educated in the same course offering. A course offering is thereby the practical realisation of the course with a common start date, common pace, common timetable etc. for all students. Several administrative course instances are grouped to one course offering.',
-      btnCancel: 'Close'
-    },
-
-    info_registrated: {
-      header: 'Info',
-      body: 'Number of registered students are defined as the number of first registration students on all the administrative course instances that are included in the course offering. Admitted students that have not been registered shall not be counted. Neither shall registered students that have been re-registered from a previous administrative course instance counted. Number of registered students is calculated based on information fetched from Ladok.',
+      body: 'Välj alla kurstillfällen som ingick i kursomgången. Studenter är antagna till ett kurstillfälle Programstudenter, betalande studenter och fristående studenter antas till olika kurstill fällen men kan utbildas i samma kursomgång. Kurstillfällen ska alltså grupperas ihop till en kursomgång.Kursomgången är ett praktiskt genomförande av en kurs. Kursomgången har en gemensam starttidpunkt, gemensam kurstakt och normalt gemensam undervisning för en studentgrupp. Schemat läggs per kursomgång,kurs-PM utformas per kursomgång och kursanalys genomförs per kursomgång.',
       btnCancel: 'Close'
     },
 
     info_examination_grade: {
       header: 'Info',
-      body: 'Graduation rate is defined as the number of passed first registration students on the whole course divided by the number of registered student (as defined above) after the first ordinary examination after the end date of the course offering. Graduation rate is not calculated for each examination session in the course examination set. Neither is it recalculated after each following re-examination. Graduation rate is calculated based on information fetched from Ladok.',
+      body: 'Examinationsgrad är antal förstagångsregistrerade studenter som godkänts på hela kursomgången efter första examinationstillfället efter kursomgångensslut dividerat med antal förstagångsregistrerade på kursomgången. Examinationsgrad redovisas inte för respektive delmoment i examinationen. Examinationsgrad beräknas inte heller om efter efterföljande omtentor.',
       btnCancel: 'Close'
     },
 
     info_examiners: {
       header: 'Info',
-      body: 'The examiners of the course at the time for the course offering. Examiners are administrated in Kopps.',
+      body: 'Examinator för kurs och vid gällande kursomgång. Examinatorer administreras i Kopps.',
       btnCancel: 'Close'
+    },
+
+    info_responsibles: {
+      header: 'Info',
+      body: 'Samtligakursansvariga för de kurstillfällen som ingår i kursomgången. Kursansvariga administreras i Kopps.',
+      btn_close: 'Close'
     },
 
     info_edit_comments: {
       header: 'Info',
-      body: 'It is possible to upload new versions of course analysis and course memos and rewrite changes to this course offering. Comment the purpose of the new versions in this field.',
+      body: 'Då det är möjligt att ladda upp nya versioner av kursanalys och kursdata är det viktigt att ange vilka förändringar som är gjorda och syftet med ändringarna.',
       btnCancel: 'Close'
     },
 
     info_upload_course_analysis: {
       header: 'Info',
-      body: 'Upload the latest version of the course analysis for the course offering.',
+      body: 'Ladda upp den senaste versionen av kursanalysen förkursomgången.',
       btnCancel: 'Close'
     },
 
     info_upload_course_memo: {
       header: 'Info',
-      body: 'Upload the latest version of the course memo for the course offering.',
+      body: 'Ladda upp den senaste versionen av kurs-PM för kursomgången.',
       btnCancel: 'Close'
     },
 
     info_course_changes_comment: {
       header: 'Info',
-      body: 'Summarize the changes made to the course before this particular course offering.',
+      body: 'Summera förändringar som har införts till den här kursomgången',
+      btnCancel: 'Close'
+    },
+    info_registrated: {
+      header: 'Info',
+      body: 'Antal förstagångsregistrerade på de kurstillfällen som ingår i kursomgången.Studenter som antagits men som inte registrerats ska inte räknas in. Inte heller registrerade studenter som omregistrerats från ett annat kurstillfälle påsamma kurs ska räknas in.',
       btnCancel: 'Close'
     }
   }

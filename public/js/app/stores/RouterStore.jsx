@@ -3,7 +3,7 @@ import { observable, action } from 'mobx'
 import axios from 'axios'
 import { safeGet } from 'safe-utils'
 import { EMPTY, SEMESTER } from '../util/constants'
-import { getDateFormat } from '../util/helpers'
+import { getDateFormat, getLanguageToUse } from '../util/helpers'
 //import { createDynamicObservableObject } from 'mobx/lib/internal';
 //import i18n from '../../../../i18n'
 const paramRegex = /\/(:[^\/\s]*)/g
@@ -287,7 +287,10 @@ class RouterStore {
         roundIdList: rounds.toString()
       }
 
-      this.examCommentEmpty = this.analysisData.commentExam.length === 0
+      //this.examinationRoundsFormatted= this.formatExamObject(this.analysisData.examinationRounds)
+
+
+      //this.examCommentEmpty = this.analysisData.commentExam.length === 0
 
       this.analysisData.examiners = ''
       this.analysisData.responsibles = ''
@@ -302,12 +305,13 @@ class RouterStore {
 
   createAnalysisName(newName, roundList, selectedRounds) {
     let addRounds = []
-    let tempName =''
+    let tempName = ''
+    let language = getLanguageToUse(roundList, 'English' )
     for (let index = 0; index < roundList.length; index++) {
       tempName = ` ${roundList[index].shortName && roundList[index].shortName.length > 0
-      ? roundList[index].shortName
-      : newName + '_' + roundList[index].roundId} 
-      ( ${getDateFormat(roundList[index].startDate, roundList[index].language)}, ${roundList[index].language} ) `
+        ? roundList[index].shortName
+        : newName + '-' + roundList[index].roundId} 
+      ( ${language === 'English' ? 'Start date ' : 'Startdatum'} ${getDateFormat(roundList[index].startDate, language)}, ${language} ) `
 
       if(selectedRounds.indexOf(roundList[index].roundId) >= 0){
         addRounds.push(tempName)
@@ -353,9 +357,8 @@ class RouterStore {
   }
 
   getExamObject(dataObject, grades, language = 1, semester = '') {
-    console.log(dataObject)
-
     var matchingExamSemester = ''
+
     Object.keys(dataObject).forEach(function (key) {
       if (Number(semester) >= Number(key)) {
         matchingExamSemester = key
@@ -368,13 +371,15 @@ class RouterStore {
         //* * Adding a decimal if it's missing in credits **/
         exam.credits = exam.credits !== EMPTY[language] && exam.credits.toString().length === 1 ? exam.credits + '.0' : exam.credits
 
-        examString.push(`${exam.examCode} - ${exam.title},${language === 0 ? exam.credits : exam.credits.toString().replace('.', ',')} ${language === 0 ? ' credits' : ' hp'}, ${language === 0 ? 'Grading scale' : 'Betygsskala'}: ${grades[exam.gradeScaleCode]}              
+        examString.push(`${exam.examCode};${exam.title};${language === 0 ? exam.credits : exam.credits.toString().replace('.', ',')};${language === 0 ? 'credits' : 'hp'};${language === 0 ? 'Grading scale' : 'Betygsskala'};${grades[exam.gradeScaleCode]}              
                          `)
       }
     }
-    console.log('!!getExamObject is ok!!', grades)
+    console.log('!!getExamObject !!!! is ok!!', examString)
     return examString
   }
+
+
 
   getEmployees(courseCode, semester, rounds) {
     this.redisKeys.examiner = []
@@ -405,6 +410,10 @@ class RouterStore {
   @action setCourseCode(CourseCode, title = '') {
     this.courseCode = CourseCode
     this.title = title.length > 0 ? title : ''
+  }
+
+  setLanguage(lang = 'sv'){
+    this.language = lang === 'en' ? 0 : 1
   }
   /** ***************************************************************************************************************************************** */
   /*                                            UG REDIS - examiners, teachers and responsibles                                                */

@@ -39,35 +39,39 @@ module.exports = {
       2: 'Autumn '
     },
 
-    header_main_new: 'Publish new course analysis with course data',
-    header_main_published: 'Change published course analysis with course data',
+    header_main_new: 'Publish new course analysis and course data',
+    header_main_published: 'Change published course analysis and course data',
 
+    /** * PAGE 1 */
     header_choose_course_offering: 'Choose course offering',
 
-    select_semester: 'Choose term',
+    select_semester: 'Choose semester',
+    header_analysis_menu: 'Choose course offering',
+    label_start_date: 'Start date',
 
     //* **** INTRO TEXT FOR ANALYSIS MENUE, EDIT, PREVIEW */
-    intro_analysis_menu: 'Choose a term and a course offering for the course analysis to be published (step 1 of 3). In the next step (2 of 3), course data will be fetched automatically for the selected term and course offering. It is there possible to edit some of the course data and upload a course analysis document. Preview the table with the course data and course analysis that are about to be published in the last step (3 of 3). The course data with the course analysis will then be published on the page Course development and history.',
+    intro_analysis_menu: 'Choose a semesterand a course offering for the course analysis to be published (step 1 of 3). In the next step (2 of 3), course data will be fetched automatically forthe selected semesterand course offering. It is there possible to edit some of the course data and upload a course analysis document. Preview the table with the coursedata and course analysis that are about to be published in the last step (3 of 3). Thecourse data with the course analysis will then be published on the page Course development and history.',
     intro_edit: 'In this step (2 of 3) course analysis and course memo are uploaded, changes to the chosen course offering is summarized and some of the course data are reviewed and adjusted if not correct.',
     intro_preview: 'In this step (3 of 3) a preview of the course analysis with course data is presented as it will be published on the page Course development and history. It is possible to go back to make adjustments, to save a draft or publish the information.',
 
     //* **** INTRO SELECT NEW, DRAFT, PUBLISHED */
-    intro_new: 'Följande kurstillfällen saknar publicerad kursanalys/ kursdata. Markera en eller flera som ingår i kursomgången: ',
+    intro_new: 'The following administrative course instances have no course analysis andcourse data published. Select the instances which makes the course offering that the course analysis was made for. ',
     intro_draft: 'The following course offerings have saved drafts that are not yet published.',
-    intro_published: 'The following course offerings have published course analysis. Choose the course offering to edit and to publish a new version.',
+    intro_published: 'The following course offerings have published course analysis. Choose the course offering to edit and to publish a new version.The following course offerings have published course analysisand course data.Choose the course offering to edit and re-publish.',
 
     /* **** EMPTY TEXT FOR NEW, DRAFT, PUBLISHED */
-    new_empty: 'Det finns inga ej påbörjade kurstillfällen för vald termin',
+    new_empty: 'There are no administrative course instances to choosethis semester.Check if the administrative course instance have a published course analysis and course data.',
     draft_empty: 'Det finns inga sparade utkast för vald termin',
-    published_empty: 'Det finns ingen publicerad kursutveckling för vald termin',
+    published_empty: 'There are no published course analysis and course data this semester.',
 
     /** ************ BUTTONS ****************** */
     btn_preview: 'Preview ',
-    btn_back_edit: ' Edit, upload',
+    btn_add_analysis: 'Edit, upload',
     btn_cancel: 'Cancel',
-    btn_save: ' Save draft',
+    btn_save: 'Save draft',
     btn_publish: 'Publish',
     btn_back: 'Choose course offering',
+    btn_back_edit: 'Edit, upload',
     btn_delete: 'Delete',
     btn_save_and_cancel: 'Save draft and cancel',
 
@@ -106,11 +110,11 @@ module.exports = {
     link_analysis: 'Course anlaysis ', /** Followed by [dd/mm/yyyy] */
 
     draft_empty: 'Det finns inga sparade utkast för vald termin',
-    published_empty: 'There are no published course analysis with course data this term.',
+    published_empty: 'There are no published course analysis and course data this semester.',
     new_empty: 'Det finns inga ej påbörjade kurstillfällen för vald termin',
 
-    alert_no_rounds_selected: 'Du måste välja en kursomgång/ kurstillfälle nedan, innan du klickar på knapp "Granska" eller "Redigera".',
-    alert_no_rounds: 'Den här kursen har inga kursomgångar',
+    alert_no_rounds_selected: 'EN - Du måste välja en kursomgång/ kurstillfälle nedan, innan du klickar på knapp "Granska" eller "Redigera".',
+    alert_no_rounds: 'EN -Den här kursen har inga kursomgångar',
 
     /** ************ MODALS ************** */
 
@@ -130,10 +134,16 @@ module.exports = {
       btnCancel: 'No, go back',
       btnConfirm: 'Yes, publish'
     },
+    info_cancel: {
+      header: 'To be aware of before cancelling!',
+      body: 'Unsaved changes will be lost if you cancel the publishing of course analysis <br/>  <br/> Do you want to cancel?',
+      btnCancel: 'No, go back',
+      btnConfirm: 'Yes, delete'
+    },
 
     info_delete: {
       header: 'Are you sure you want to delete the draft?',
-      info_delete_body_row_1: 'You have chosen: ~Term: ~Course offering: ~<br/><br/>Do you want to delete the draft?',
+      info_delete_body_row_1: 'You have chosen: ~Semester: ~Course offering: ~<br/><br/>Do you want to delete the draft?',
       btnCancel: 'No, go back',
       btnConfirm: 'Yes, delete'
     },
@@ -141,7 +151,7 @@ module.exports = {
     /** **** INFO BUTTONS ***** */
     info_select_semester: {
       header: 'Info',
-      body: 'Choose what term the course offering started. If the course offering stretched over several terms then choose the first term.',
+      body: 'Choose what semesterthe course offering started. If the course offering stretched over several semesters then choose the first semester.',
       btnCancel: 'Close'
     },
     info_choose_course_offering: {
@@ -168,6 +178,12 @@ module.exports = {
       btnCancel: 'Close'
     },
 
+    info_responsibles: {
+      header: 'Info',
+      body: 'All the course responsibles for the all the administrative course instances that are included in the course offering. Course responsibles are administrated in Kopps.',
+      btn_close: 'Close'
+    },
+
     info_edit_comments: {
       header: 'Info',
       body: 'It is possible to upload new versions of course analysis and course memos and rewrite changes to this course offering. Comment the purpose of the new versions in this field.',
@@ -189,6 +205,11 @@ module.exports = {
     info_course_changes_comment: {
       header: 'Info',
       body: 'Summarize the changes made to the course before this particular course offering.',
+      btnCancel: 'Close'
+    },
+    info_registrated: {
+      header: 'Info',
+      body: 'Number of first registrationstudents are defined as the number of first registration students on all the administrative course instances that are included in the course offering. Admitted students that have not been registered shall not be counted. Neither shall registered students that have been re-registered from a previous administrative course instance counted. Number of registered students is calculated based on information fetched from Ladok.',
       btnCancel: 'Close'
     }
   }
