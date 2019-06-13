@@ -75,7 +75,7 @@ module.exports = {
     btn_back: 'Välj kursomgång',
     btn_back_edit: 'Till redigering',
     btn_delete: 'Radera',
-    btn_save_and_cancel: 'Save draft and cancel',
+    btn_save_and_cancel: 'Spara och avbryt',
 
     /** ************ PAGE 2 FORM ************** */
     add_file: 'Dra och droppa filen här <span class="filepond--label-action"> eller klicka för att välja fil </span>',
