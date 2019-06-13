@@ -62,7 +62,7 @@ class AdminPage extends Component {
     //this.pond.allowFilesSync =false
     let pondis = this.pond.getFiles()
     //pondis[0].allowFilesSync=false
-    console.log('wwwww',pondis)
+    console.log('wwwww',this)
   }
 
   processfile(arg){
@@ -348,7 +348,7 @@ class AdminPage extends Component {
                         maxFiles = {1}
                         oninit={() => this.handleInit() }
                         type='local'
-                        //onprocessfile={this.processfile('tjohooo')}
+                        onprocessfile={this.processfile('tjohooo')}
                       /* fileMetadataObject ={ {
                           'type': 'analysis',
                           'name':this.props.routerStore.analysisId,
@@ -356,15 +356,16 @@ class AdminPage extends Component {
                           'courseCode':this.props.routerStore.courseCode
                         }
                         }*/
-                        server= {this.state.hasNewUploadedFile ? `${this.props.routerStore.browserConfig.hostUrl}${this.props.routerStore.paths.storage.saveFile.uri.split(':')[0]}${this.props.routerStore.analysisData._id}/analysis/${this.state.isPublished}`: null}
+                        server= { `${this.props.routerStore.browserConfig.hostUrl}${this.props.routerStore.paths.storage.saveFile.uri.split(':')[0]}${this.props.routerStore.analysisData._id}/analysis/${this.state.isPublished}`}
                         onupdatefiles={fileItems => {
                           console.log('fileItems', fileItems)
                           if(fileItems && fileItems.length > 0)
                           //fileItems[0].abortProcessing()
+                          this.state.values['pdfAnalysisDate'] =  getTodayDate()
                             this.setState({
                               hasNewUploadedFileAnalysis: fileItems.fileExtension !== 'text/html',
                               analysisFile: this.props.routerStore.analysisData._id+'.'+fileItems[0].fileExtension,
-                              analysisFileItem: fileItems[0]
+                              analysisFileItem: fileItems[0],
                             }) 
                         }}
                         >

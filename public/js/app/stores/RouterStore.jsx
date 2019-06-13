@@ -289,11 +289,6 @@ class RouterStore {
         ugKeys: [...this.redisKeys.examiner, ...this.redisKeys.responsibles]
       }
 
-      //this.examinationRoundsFormatted= this.formatExamObject(this.analysisData.examinationRounds)
-
-
-      //this.examCommentEmpty = this.analysisData.commentExam.length === 0
-
       this.analysisData.examiners = ''
       this.analysisData.responsibles = ''
      
