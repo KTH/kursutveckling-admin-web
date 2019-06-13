@@ -187,6 +187,10 @@ class AdminPage extends Component {
       event.preventDefault()
     }
 
+    const { routerStore } = this.props
+    const thisInstance = this
+    let postObject = this.state.values
+
     if(this.state.analysisFile !== postObject.analysisFileName){
       postObject.analysisFileName = this.state.analysisFile
     }
@@ -195,9 +199,6 @@ class AdminPage extends Component {
       postObject.pdfAnalysisDate = getTodayDate()
     }
 
-    const { routerStore } = this.props
-    const thisInstance = this
-    let postObject = this.state.values
    
     postObject.analysisFileName = this.state.analysisFile
     if(postObject.publishedDate.length === 0)
