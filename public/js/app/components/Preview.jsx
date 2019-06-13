@@ -5,6 +5,7 @@ import { Alert, Collapse, Table} from 'reactstrap'
 
 
 import i18n from '../../../../i18n/index'
+import { getDateFormat } from '../util/helpers'
 
 //Components
 
@@ -30,7 +31,7 @@ class Preview extends Component {
     const postObject = this.state.values
     const thisInstance = this
     this.props.history.push(this.props.routerStore.browserConfig.proxyPrefixPath.uri +'/'+ this.props.routerStore.analysisId)
-    //console.log('postObject', postObject)
+    console.log('Preeeeeeview', postObject)
     return this.props.routerStore.postRoundAnalysisData(postObject, this.state.isNew)
    .then((data) => {
      thisInstance.setState({
@@ -152,20 +153,20 @@ class TableForCourse extends Component {
 
   render () {    
     const values = this.props.analysisObject
-    const translate = this.props.translate
+    const { translate, routerStore, togglerId, linksFileNames } = this.props
     //console.log('values', values)
     return(
       <div className='card collapsible blue'>
         <span className='table-title card-header'  role="tab" tabIndex='0' >
-            <a id={this.props.togglerId}  aria-expanded={true}>{values.analysisName}</a> 
+            <a id={togglerId}  aria-expanded={true}>{values.analysisName}</a> 
         </span>
         {/*  */}
         <Collapse isOpen={true} >
-          <ProgramCollapse header={translate.header_programs} text={values.programmeCodes} label={this.props.togglerId}/>
+          <ProgramCollapse header={translate.header_programs} text={values.programmeCodes} label={togglerId}/>
           <span className="right-links" >
-            <a key='syllabusLink' id='syllabusLink' href={`/${SYLLABUS_URL}${values.courseCode}-${values.semester}.pdf?lang=${'sv'}`} target='_blank' >{translate.link_syllabus}</a> 
+           <a>{translate.link_syllabus}</a>
             <a key='pmLink' id='pmLink' href='https://kth.box.com/s/i9xu34n5conqdoj7re81bmcto20wavib' target='_blank' >{translate.link_pm}: 2019-05-20</a> 
-            <a key='analysisLink'  id='analysisLink' href={this.props.routerStore.browserConfig.storageUri + this.props.linksFileNames.analysis} target='_blank' >{translate.link_analysis}: 2019-05-25</a>
+            <a key='analysisLink'  id='analysisLink' href={routerStore.browserConfig.storageUri + linksFileNames.analysis} target='_blank' >{translate.link_analysis}: {getDateFormat(values.pdfAnalysisDate, routerStore.language )}</a>
           </span>
           <Table responsive>
             <thead>

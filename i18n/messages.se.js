@@ -40,8 +40,12 @@ module.exports = {
       2: 'HT '
     },
 
-    header_main_new: 'Publicera ny kursanalys med kursdata',
-    header_main_published: 'Ändra publicerad kursanalys med kursdata',
+    header_main: {
+      new: 'Publicera ny kursanalys med kursdata',
+      draft: 'Publicera ny kursanalys med kursdata',
+      published: 'Ändra publicerad kursanalys med kursdata',
+      preview: 'preview'
+    },
 
     header_select_semester: 'Välj termin',
     select_semester: 'Välj termin',

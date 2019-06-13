@@ -141,7 +141,7 @@ class RouterStore {
         this.hasChangedStatus = true
 
       this.status = apiResponse.data.isPublished ? 'published' : 'draft'
-
+      this.analysisId = apiResponse.data._id
       return apiResponse.data
     }).catch(err => {
       if (err.response) {
@@ -284,7 +284,8 @@ class RouterStore {
         responsibles: " ",
         analysisName: newName,
         semester: semester,
-        roundIdList: rounds.toString()
+        roundIdList: rounds.toString(),
+        ugKeys: [...this.redisKeys.examiner, ...this.redisKeys.responsibles]
       }
 
       //this.examinationRoundsFormatted= this.formatExamObject(this.analysisData.examinationRounds)

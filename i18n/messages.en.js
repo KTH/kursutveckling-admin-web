@@ -39,8 +39,12 @@ module.exports = {
       2: 'Autumn '
     },
 
-    header_main_new: 'Publish new course analysis and course data',
-    header_main_published: 'Change published course analysis and course data',
+    header_main: {
+      new: 'Publish new course analysis and course data',
+      draft: 'Publish new course analysis and course data',
+      published: 'Change published course analysis and course data',
+      preview: 'preview'
+    },
 
     /** * PAGE 1 */
     header_choose_course_offering: 'Choose course offering',

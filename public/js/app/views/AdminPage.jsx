@@ -17,6 +17,7 @@ import InfoModal from '../components/InfoModal'
 
 //Helpers 
 import { EMPTY, ADMIN_URL, KURSUTVECKLING_URL } from '../util/constants'
+import { getTodayDate , getDateFormat } from '../util/helpers'
 import i18n from '../../../../i18n/index'
 import images from '../../../img/*.svg'
 
@@ -34,13 +35,15 @@ class AdminPage extends Component {
       changedStatus: false,
       modalOpen:{
         publish: false,
-       cancel: false
+        cancel: false
       },
       alert: '',
       analysisFile: this.props.routerStore.analysisData ? this.props.routerStore.analysisData.analysisFileName : '',
       analysisFileItem:[],
       pmFile:'',
-      hasNewUploadedFile: true
+      pmFileItem:[],
+      hasNewUploadedFilePM: false,
+      hasNewUploadedFileAnalysis: false
     }
     this.handlePreview = this.handlePreview.bind(this)
     this.editMode = this.editMode.bind(this)
@@ -150,23 +153,31 @@ class AdminPage extends Component {
     event.preventDefault()
     const postObject = this.state.values
     const thisInstance = this
-    const saveAndStay = event.target.id === 'save_continue'
+    const { routerStore } = this.props
+  
     if(this.state.analysisFile !== postObject.analysisFileName){
       postObject.analysisFileName = this.state.analysisFile
     }
-    return this.props.routerStore.postRoundAnalysisData(postObject, this.props.routerStore.status === 'new')
+
+    if( this.state.hasNewUploadedFileAnalysis ){
+      postObject.pdfAnalysisDate = getTodayDate()
+    }
+
+    return routerStore.postRoundAnalysisData(postObject, postObject.changedDate.length === 0 )
       .then((data) => {
         console.log('postObject', data)
         if(this.state.isPreviewMode){
-          window.location=`/${ADMIN_URL}${thisInstance.props.routerStore.analysisData.courseCode}?serv=kutv&event=save&id=${this.props.routerStore.analysisId}`// term=, name=
+          window.location= encodeURI(`${routerStore.browserConfig.hostUrl}${ADMIN_URL}${routerStore.analysisData.courseCode}?serv=kutv&event=save&id=${routerStore.analysisId}&term=${routerStore.analysisData.semester}&name=${routerStore.analysisData.analysisName}`)// term=, name=
         }
         else{
           thisInstance.setState({
             saved: true,
             progress: 'edit',
-            alert: 'finimangsparat...'
+            alert: 'finimangsparat...',
+            hasNewUploadedFileAnalysis: false,
+            hasNewUploadedFilePM: false
           })
-          thisInstance.props.history.push(thisInstance.props.routerStore.browserConfig.proxyPrefixPath.uri + '/' + thisInstance.analysisId)
+          thisInstance.props.history.push(thisInstance.props.routerStore.browserConfig.proxyPrefixPath.uri + '/' + thisInstance.props.routerStore.analysisId)
         }  
       })
   }
@@ -176,15 +187,28 @@ class AdminPage extends Component {
       event.preventDefault()
     }
 
-    let postObject = this.state.values
-    postObject.isPublished = true
-    postObject.analysisFileName = this.state.analysisFile
+    if(this.state.analysisFile !== postObject.analysisFileName){
+      postObject.analysisFileName = this.state.analysisFile
+    }
+
+    if( this.state.hasNewUploadedFileAnalysis ){
+      postObject.pdfAnalysisDate = getTodayDate()
+    }
+
+    const { routerStore } = this.props
     const thisInstance = this
+    let postObject = this.state.values
+   
+    postObject.analysisFileName = this.state.analysisFile
+    if(postObject.publishedDate.length === 0)
+       postObject.publishedDate = getTodayDate()
+    postObject.isPublished = true
+
     //console.log('postObjecteeee', this.state.values.isPublished)
     return this.props.routerStore.postRoundAnalysisData(postObject, this.props.routerStore.status === 'new' )
       .then((response) => {
         console.log('handlePublish', response)
-       window.location=`${ADMIN_URL}${response.courseCode}?serv=kutv&event=pub`
+        window.location= encodeURI(`${routerStore.browserConfig.hostUrl}${ADMIN_URL}${routerStore.analysisData.courseCode}?serv=kutv&event=pub&id=${routerStore.analysisId}&term=${routerStore.analysisData.semester}&name=${routerStore.analysisData.analysisName}`)
         thisInstance.setState({
           saved: true,
           isPublished: true,
@@ -223,7 +247,7 @@ class AdminPage extends Component {
 
 
   render() {
-    const routerStore = this.props.routerStore
+    const { routerStore } = this.props
     const isDisabled = this.state.isPublished === true
     const translate = i18n.messages[routerStore.language].messages
     const labelIdle =  translate.add_file 
@@ -241,7 +265,7 @@ class AdminPage extends Component {
                 language={routerStore.language} 
                 courseCode={routerStore.courseData.courseCode} 
                 image = {routerStore.browserConfig.proxyPrefixPath.uri + '/static/'+ images[translate.progressImage['first']]}
-                header = {routerStore.status === 'published' ? translate.header_main_published : translate.header_main_new}
+                header = {translate.header_main[routerStore.status]}
                 />
              
          
@@ -282,7 +306,7 @@ class AdminPage extends Component {
             language={routerStore.language} 
             courseCode={routerStore.courseData.courseCode} 
             image = {routerStore.browserConfig.proxyPrefixPath.uri + '/static/'+ images[translate.progressImage[this.state.progress]]}
-            header = {routerStore.status === 'published' ? translate.header_main_published : translate.header_main_new}
+            header = {translate.header_main[routerStore.status]}
           />
           {this.state.alert.length > 0 ?
               <Alert>
@@ -308,8 +332,7 @@ class AdminPage extends Component {
               ? <Form className='admin-form'>
                 <h2>{translate.header_edit_content}</h2>
                 {/*<h3>{this.state.values.analysisName}</h3>*/}
-                <p>{translate.asterix_text}<br/>
-                {translate.asterix_text_2}</p>
+                <p>{translate.asterix_text}</p>
                 <Row className='form-group'>
                   <Col sm='3' className='col-temp'>
                       <Label>{translate.header_upload_file}</Label>
@@ -339,7 +362,7 @@ class AdminPage extends Component {
                           if(fileItems && fileItems.length > 0)
                           //fileItems[0].abortProcessing()
                             this.setState({
-                              hasNewUploadedFile: true,
+                              hasNewUploadedFileAnalysis: fileItems.fileExtension !== 'text/html',
                               analysisFile: this.props.routerStore.analysisData._id+'.'+fileItems[0].fileExtension,
                               analysisFileItem: fileItems[0]
                             }) 
@@ -409,7 +432,7 @@ class AdminPage extends Component {
                     this.state.isPublished || routerStore.status === 'preview'
                     ? ''
                     : <Button color='success' id='save' key='save' onClick={this.handleSave} >
-                      {translate.btn_save}
+                      {this.state.isPreviewMode ? translate.btn_save_and_cancel : translate.btn_save}
                     </Button>
                   }
                 </Col>
