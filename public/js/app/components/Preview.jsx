@@ -2,15 +2,9 @@ import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
 import { Alert, Collapse, Table} from 'reactstrap'
 
-
-
-import i18n from '../../../../i18n/index'
-import { getDateFormat } from '../util/helpers'
-
-//Components
-
 //Helpers 
-import { EMPTY, ADMIN_URL, SYLLABUS_URL} from '../util/constants'
+import i18n from '../../../../i18n/index'
+import { getDateFormat, formatDate } from '../util/helpers'
 
 @inject(['routerStore']) @observer
 class Preview extends Component {
@@ -21,50 +15,9 @@ class Preview extends Component {
       isNew: this.props.routerStore.roundAnalysis === 'new',
       values: this.props.values
     }
-   
-    this.handleSave = this.handleSave.bind(this)
-    this.handlePublish = this.handlePublish.bind(this)
-  }
-  
-  handleSave (event) {
-    event.preventDefault()
-    const postObject = this.state.values
-    const thisInstance = this
-    this.props.history.push(this.props.routerStore.browserConfig.proxyPrefixPath.uri +'/'+ this.props.routerStore.analysisId)
-    console.log('Preeeeeeview', postObject)
-    return this.props.routerStore.postRoundAnalysisData(postObject, this.state.isNew)
-   .then((data) => {
-     thisInstance.setState({
-       saved: true,
-       isNew: false
-     })
-   })
-  }
-
-  handlePublish (event) {
-    event.preventDefault()
-    let postObject = this.state.values
-    postObject.isPublished = true
-    const thisInstance = this
-    //console.log('postObjecteeee', this.state.values.isPublished)
-    return this.props.routerStore.postRoundAnalysisData(postObject, false)
-   .then((response) => {
-    // console.log(response)
-     thisInstance.setState({
-       saved: true,
-       isPublished: true
-     })
-   })
-  }
-
-  componentWillReceiveProps(newProps){
-    this.setState({
-        values: newProps.values
-    })
   }
 
   componentWillMount(){
-   // console.log(this.props.values)
     this.setState({
       values: this.props.values
     })
@@ -207,7 +160,7 @@ class TableForCourse extends Component {
           </Table> 
           <GrayTextBlock header={translate.header_course_changes_comment} text={values.alterationText}/>
           <GrayTextBlock header={translate.header_analysis_edit_comment}  text={values.commentChange}/>
-          <p className="underlined">{translate.last_change_date} {values.changedDate}</p>
+          <p className="underlined">{translate.last_change_date} {values.changedDate.length > 0 ? formatDate(values.changedDate, routerStore.language ) : ''}</p>
         </Collapse>
       </div>          
     )}

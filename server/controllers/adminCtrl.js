@@ -179,7 +179,7 @@ async function getIndex (req, res, next) {
     renderProps.props.children.props.routerStore.setService(service)
 
     if (req.params.id.length <= 7) {
-      // Just course code -> analysis menue depending on status
+      // Just course code -> analysis menu depending on status
       const apiResponse = await koppsCourseData.getKoppsCourseData(req.params.id, lang)
       renderProps.props.children.props.routerStore.setCourseCode(req.params.id) // TODO: title
       renderProps.props.children.props.routerStore.status = status === 'p' ? 'published' : 'new'

@@ -7,8 +7,8 @@ export const getDateFormat = (date, language) => {
   return `${splitDate[2]}/${splitDate[1]}/${splitDate[0]}`
 }
 
-export const getTodayDate = () => {
-  let today = new Date()
+export const getTodayDate = (date = '') => {
+  let today = date.length > 0 ? new Date(date) : new Date()
   let dd = String(today.getDate()).padStart(2, '0')
   let mm = String(today.getMonth() + 1).padStart(2, '0') // January is 0!
   let yyyy = today.getFullYear()
@@ -31,5 +31,6 @@ export const getLanguageToUse = (list, defaultLanguage) => {
 }
 
 export const formatDate = (date, lang) => {
-  let Newdate = new Date()
+  let thisDate = getTodayDate(date)
+  return getDateFormat(thisDate, lang)
 }
