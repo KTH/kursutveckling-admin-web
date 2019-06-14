@@ -34,3 +34,25 @@ export const formatDate = (date, lang) => {
   let thisDate = getTodayDate(date)
   return getDateFormat(thisDate, lang)
 }
+
+export const noAccessToRoundsList = (memberOf, rounds, courseCode, semester) => {
+  let roundIds = []
+  if (memberOf.toString().indexOf(courseCode + '.examiner') > 0) { return roundIds }
+  roundIds = rounds.filter(round => {
+    if (memberOf.toString().indexOf(`${courseCode}.${semester}.${round.roundId}.courseresponsible`) < 0) { return round.roundId }
+  })
+  return roundIds
+}
+
+export const getAccess = (memberOf, round, courseCode) => {
+  if (memberOf.toString().indexOf(courseCode.toUpperCase() + '.examiner') > -1) {
+    return true
+  }
+  console.log(`${courseCode.toUpperCase()}.${round.round.startTerm.term}.${round.round.ladokRoundId}.courseresponsible`, round)
+
+  if (memberOf.toString().indexOf(`${courseCode.toUpperCase()}.${round.round.startTerm.term}.${round.round.ladokRoundId}.courseresponsible`) > -1) {
+    return true
+  }
+
+  return false
+}

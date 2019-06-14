@@ -117,7 +117,7 @@ function * _getUsedRounds (req, res, next) {
   const semester = req.params.semester
   try {
     const apiResponse = yield kursutvecklingAPI.getUsedRounds(courseCode, semester)
-
+    console.log('_getUsedRounds', req.session, apiResponse.body)
     /* if (apiResponse.statusCode !== 200) {
       res.status(apiResponse.statusCode)
       res.statusCode = apiResponse.statusCode
@@ -166,11 +166,11 @@ async function getIndex (req, res, next) {
 
   let lang = language.getLanguage(res) || 'sv'
   const ldapUser = req.session.authUser ? req.session.authUser.username : 'null'
-  const courseTitle = req.query.title || ''
-  const status = req.query.status
+  const courseTitle = req.query.title || ''
+  let status = req.query.status
   const service = req.query.serv
 
-  console.log(lang)
+  console.log('!!!!!!', req)
 
   try {
     const renderProps = staticFactory()
@@ -183,12 +183,14 @@ async function getIndex (req, res, next) {
       const apiResponse = await koppsCourseData.getKoppsCourseData(req.params.id, lang)
       renderProps.props.children.props.routerStore.setCourseCode(req.params.id) // TODO: title
       renderProps.props.children.props.routerStore.status = status === 'p' ? 'published' : 'new'
+      renderProps.props.children.props.routerStore.getMemberOf(req.session.authUser.memberOf, req.params.id)
       await renderProps.props.children.props.routerStore.handleCourseData(apiResponse.body, ldapUser, lang)
     } else {
       const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(req.params.id, lang)
 
       renderProps.props.children.props.routerStore.analysisData = apiResponse.body
       renderProps.props.children.props.routerStore.setCourseCode(apiResponse.body.courseCode)
+      status = req.params.preview && req.params.preview === 'preview' ? 'preview' : status
       switch (status) {
         case 'p' : renderProps.props.children.props.routerStore.status = 'published'
           break
@@ -204,7 +206,7 @@ async function getIndex (req, res, next) {
         renderProps.props.children.props.routerStore.errorMessage = 'Not found'
       }
     }
-    console.log('session!!!!!!', req.session)
+    console.log('session!!!!!!', req)
     renderProps.props.children.props.routerStore.__SSR__setCookieHeader(req.headers.cookie)
     // await renderProps.props.children.props.routerStore.getRoundAnalysis(req.params.id)
     renderProps.props.children.props.routerStore.analysisId = req.params.id

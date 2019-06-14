@@ -35,7 +35,7 @@ createUtility({
 function staticFactory () {
   return (
     <StaticRouter >
-      {appFactory()}
+      { appFactory() }
     </StaticRouter>
   )
 }
@@ -64,7 +64,7 @@ function appFactory() {
     <Provider routerStore={routerStore}>
       <Switch>
         <Route path='/admin/kursutveckling' component={AdminPage} asyncBefore={AdminPage.fetchData} />
-        <Route path='/' component={AdminPage} />
+        <Route path='/admin/kursutveckling/preview' component={AdminPage} />
       </Switch>
     </Provider>
 

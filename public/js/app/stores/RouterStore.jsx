@@ -3,7 +3,7 @@ import { observable, action } from 'mobx'
 import axios from 'axios'
 import { safeGet } from 'safe-utils'
 import { EMPTY, SEMESTER } from '../util/constants'
-import { getDateFormat, getLanguageToUse } from '../util/helpers'
+import { getDateFormat, getLanguageToUse, getAccess } from '../util/helpers'
 //import { createDynamicObservableObject } from 'mobx/lib/internal';
 //import i18n from '../../../../i18n'
 const paramRegex = /\/(:[^\/\s]*)/g
@@ -41,6 +41,7 @@ class RouterStore {
   examCommentEmpty = true
   errorMessage = ''
   service = ''
+  member = []
 
   buildApiUrl(path, params) {
     let host
@@ -94,7 +95,7 @@ class RouterStore {
       { id: id/*, lang: lang*/ }),
       this._getOptions()
     ).then(result => {
-      console.log("!!!!getRoundAnalysis", result.data)
+      //console.log("!!!!getRoundAnalysis", result.data)
       this.status = result.data.isPublished ? 'published' : 'draft'
       this.courseCode = result.data.courseCode
       this.analysisId = result._id
@@ -134,7 +135,7 @@ class RouterStore {
       { id: postObject._id, status: status/*, lang: lang*/ }),
       this._getOptions(JSON.stringify(postObject))
     ).then(apiResponse => {
-      console.log('putRoundAnalysisData', apiResponse)
+      //console.log('putRoundAnalysisData', apiResponse)
       if (apiResponse.statusCode >= 400) {
         return "ERROR-" + apiResponse.statusCode
       }
@@ -231,15 +232,17 @@ class RouterStore {
         if (thisStore.semesters.indexOf(round.round.startTerm.term) < 0)
           thisStore.semesters.push(round.round.startTerm.term)
 
-        if (!thisStore.roundData.hasOwnProperty(round.round.startTerm.term))
+        if (!thisStore.roundData.hasOwnProperty(round.round.startTerm.term)){
           thisStore.roundData[round.round.startTerm.term] = []
-
+          //noAccessToRoundsList(round round.round.startTerm.term)
+        }
         thisStore.roundData[round.round.startTerm.term].push({
           roundId: round.round.ladokRoundId,
           language: round.round.language,
           shortName: round.round.shortName,
           startDate: round.round.firstTuitionDate,
-          targetGroup: this.getTargetGroup(round)
+          targetGroup: this.getTargetGroup(round),
+          hasAccess: getAccess(this.member, round, courseObject.course.courseCode)
         })
       })
       //console.log(this.courseData, this.roundData)
@@ -373,7 +376,7 @@ class RouterStore {
                          `)
       }
     }
-    console.log('!!getExamObject !!!! is ok!!', examString)
+    //console.log('!!getExamObject !!!! is ok!!', examString)
     return examString
   }
 
@@ -402,6 +405,10 @@ class RouterStore {
       }
     }
     return list
+  }
+
+  getMemberOf(memberOf){
+    this.member = memberOf.filter((member) => member.indexOf(this.courseCode))
   }
 
 
