@@ -9,7 +9,7 @@ import InfoModal from './InfoModal'
 import InfoButton from './InfoButton'
 
 import i18n from '../../../../i18n/index'
-import { EMPTY, ADMIN_URL } from '../util/constants'
+import { EMPTY, SERVICE_URL } from '../util/constants'
 import { getDateFormat } from '../util/helpers'
 
 @inject(['routerStore']) @observer
