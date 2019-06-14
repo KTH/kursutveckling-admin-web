@@ -16,7 +16,7 @@ import InfoModal from '../components/InfoModal'
 
 
 //Helpers 
-import { EMPTY, ADMIN_URL, KURSUTVECKLING_URL } from '../util/constants'
+import { EMPTY, SERVICE_URL } from '../util/constants'
 import { getTodayDate , getDateFormat } from '../util/helpers'
 import i18n from '../../../../i18n/index'
 import images from '../../../img/*.svg'
@@ -115,7 +115,7 @@ class AdminPage extends Component {
 
   handleCancel(event) {
     //event.preventDefault()
-    window.location=`${ADMIN_URL}${this.props.routerStore.analysisData.courseCode}?serv=kutv&event=cancel`
+    window.location=`${SERVICE_URL[this.props.routerStore.service]}${this.props.routerStore.analysisData.courseCode}?serv=kutv&event=cancel`
   }
 
   editMode(semester, rounds, analysisId, status) {
@@ -167,7 +167,7 @@ class AdminPage extends Component {
       .then((data) => {
         console.log('postObject', data)
         if(this.state.isPreviewMode){
-          window.location= encodeURI(`${routerStore.browserConfig.hostUrl}${ADMIN_URL}${routerStore.analysisData.courseCode}?serv=kutv&event=save&id=${routerStore.analysisId}&term=${routerStore.analysisData.semester}&name=${routerStore.analysisData.analysisName}`)// term=, name=
+          window.location= encodeURI(`${routerStore.browserConfig.hostUrl}${SERVICE_URL[routerStore.service]}${routerStore.analysisData.courseCode}?serv=kutv&event=save&id=${routerStore.analysisId}&term=${routerStore.analysisData.semester}&name=${routerStore.analysisData.analysisName}`)// term=, name=
         }
         else{
           thisInstance.setState({
@@ -209,7 +209,7 @@ class AdminPage extends Component {
     return this.props.routerStore.postRoundAnalysisData(postObject, this.props.routerStore.status === 'new' )
       .then((response) => {
         console.log('handlePublish', response)
-        window.location= encodeURI(`${routerStore.browserConfig.hostUrl}${ADMIN_URL}${routerStore.analysisData.courseCode}?serv=kutv&event=pub&id=${routerStore.analysisId}&term=${routerStore.analysisData.semester}&name=${routerStore.analysisData.analysisName}`)
+        window.location= encodeURI(`${routerStore.browserConfig.hostUrl}${SERVICE_URL[routerStore.service]}${routerStore.analysisData.courseCode}?serv=kutv&event=pub&id=${routerStore.analysisId}&term=${routerStore.analysisData.semester}&name=${routerStore.analysisData.analysisName}`)
         thisInstance.setState({
           saved: true,
           isPublished: true,

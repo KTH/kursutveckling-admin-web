@@ -40,6 +40,7 @@ class RouterStore {
   courseCode = ''
   examCommentEmpty = true
   errorMessage = ''
+  service = ''
 
   buildApiUrl(path, params) {
     let host
@@ -411,6 +412,10 @@ class RouterStore {
 
   setLanguage(lang = 'sv'){
     this.language = lang === 'en' ? 0 : 1
+  }
+
+  setService(service = 'admin'){
+    this.service = service
   }
   /** ***************************************************************************************************************************************** */
   /*                                            UG REDIS - examiners, teachers and responsibles                                                */

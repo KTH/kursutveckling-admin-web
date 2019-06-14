@@ -192,7 +192,7 @@ class AnalysisMenu extends Component {
 
     handleCancel(event) {
         event.preventDefault()
-        window.location =`${ADMIN_URL}${this.props.routerStore.courseCode}?serv=kutv&event=cancel`
+        window.location=`${SERVICE_URL[this.props.routerStore.service]}${this.props.routerStore.analysisData.courseCode}?serv=kutv&event=cancel`
       }
 
     handleDelete ( id, fromModal = false ){

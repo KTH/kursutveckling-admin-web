@@ -168,13 +168,15 @@ async function getIndex (req, res, next) {
   const ldapUser = req.session.authUser ? req.session.authUser.username : 'null'
   const courseTitle = req.query.title || ''
   const status = req.query.status
+  const service = req.query.serv
 
   console.log(lang)
 
   try {
     const renderProps = staticFactory()
-    renderProps.props.children.props.routerStore.setBrowserConfig(browserConfig, paths, serverConfig.hostUrl)
+    renderProps.props.children.props.routerStore.setBrowserConfig(browserConfig, paths, serverConfig.hostUrl, service)
     renderProps.props.children.props.routerStore.setLanguage(lang)
+    renderProps.props.children.props.routerStore.setService(service)
 
     if (req.params.id.length <= 7) {
       // Just course code -> analysis menue depending on status
