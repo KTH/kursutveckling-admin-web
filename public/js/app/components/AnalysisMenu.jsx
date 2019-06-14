@@ -212,7 +212,7 @@ class AnalysisMenu extends Component {
         }
         else{
             this.props.routerStore.deleteRoundAnalysis(id).then(result =>{
-                window.location=`${ADMIN_URL}${this.props.routerStore.courseCode}?serv=kutv&event=delete`
+                window.location=`${SERVICE_URL[this.props.routerStore.service]}${this.props.routerStore.courseCode}?serv=kutv&event=delete`
                 this.getUsedRounds(this.state.semester)
                 let modalOpen = this.state.modalOpen
                 modalOpen.delete = ! modalOpen.delete === true
