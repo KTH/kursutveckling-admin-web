@@ -107,7 +107,27 @@ function _hasCourseResponsibleGroup (courseCode, courseInitials, ldapUser, role)
       }
     }
   }
-  return true // OOOOBS!! CHANGE BACK TO FALSE
+  return false // OOOOBS!! CHANGE BACK TO FALSE
+}
+
+function _hasCourseTeacherGroup (courseCode, courseInitials, ldapUser, rounds, role) {
+  // 'edu.courses.SF.SF1624.20192.1.courseresponsible'
+  if (rounds.length === 0) { return false }
+  const groups = ldapUser.memberOf
+  const startWith = `edu.courses.${courseInitials}.${courseCode}.` // TODO: What to do with years 20192. ?
+  const endString = '.' + role
+  let endWith = ''
+  if (groups && groups.length > 0) {
+    for (let round = 0; round < rounds.length; round++) {
+      endWith = rounds[round] + endString
+      for (var i = 0; i < groups.length; i++) {
+        if (groups[ i ].indexOf(startWith) >= 0 && groups[ i ].indexOf(endWith) >= 0) {
+          return true
+        }
+      }
+    }
+  }
+  return false
 }
 
 module.exports.requireRole = function () { // TODO:Different roles for selling text and course development
@@ -116,14 +136,21 @@ module.exports.requireRole = function () { // TODO:Different roles for selling t
   return async function _hasCourseAcceptedRoles (req, res, next) {
     const ldapUser = req.session.authUser || {}
     const id = req.params.id
-    let splitId = id.split('_')
-    const courseCode = splitId[0].length > 12 ? id.slice(0, 6).toUpperCase() : id.slice(0, 5).toUpperCase()
+    let courseCode = ''
+    let rounds = []
+    if (id.length > 7) {
+      let splitId = ''
+      courseCode = splitId[0].length > 12 ? id.slice(0, 7).toUpperCase() : id.slice(0, 6).toUpperCase()
+      rounds = splitId[1]
+    } else {
+      courseCode = id.toUpperCase()
+    }
     const courseInitials = courseCode.slice(0, 2).toUpperCase()
     // TODO: Add date for courseresponsible
     const userCourseRoles = {
       isExaminator: hasGroup(`edu.courses.${courseInitials}.${courseCode}.examiner`, ldapUser),
       isCourseResponsible: _hasCourseResponsibleGroup(courseCode, courseInitials, ldapUser, 'courseresponsible'),
-      isCourseTeacher: _hasCourseResponsibleGroup(courseCode, courseInitials, ldapUser, 'teachers'),
+      isCourseTeacher: _hasCourseTeacherGroup(courseCode, courseInitials, ldapUser, rounds, 'teachers'),
       isSuperUser: ldapUser.isSuperUser
     }
 
@@ -131,9 +158,15 @@ module.exports.requireRole = function () { // TODO:Different roles for selling t
     const hasAuthorizedRole = roles.reduce((prev, curr) => prev || userCourseRoles[curr], false)
 
     if (!hasAuthorizedRole) {
-      const error = new Error('Du har inte behörighet att redigera Kursinformationssidan eftersom du inte är inlagd i KOPPS som examinator eller kursansvarig för kursen. \
+      let errorText = ''
+      if (req.params.preview) {
+        errorText = 'not a teacher'
+      } else {
+        errorText = 'Du har inte behörighet att redigera Kursinformationssidan eftersom du inte är inlagd i KOPPS som examinator eller kursansvarig för kursen. \
         Se förteckning över KOPPS-administratörer som kan hjälpa dig att lägga in dig på rätt roll för din kurs. \
-        https://intra.kth.se/utbildning/utbildningsadministr/kopps/koppsanvandare-1.33459')
+        https://intra.kth.se/utbildning/utbildningsadministr/kopps/koppsanvandare-1.33459'
+      }
+      const error = new Error(errorText)
       error.status = 403
       return next(error)
     }

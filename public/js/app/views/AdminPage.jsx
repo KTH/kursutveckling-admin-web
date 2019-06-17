@@ -118,6 +118,7 @@ class AdminPage extends Component {
     window.location=`${SERVICE_URL[this.props.routerStore.service]}${this.props.routerStore.analysisData.courseCode}?serv=kutv&event=cancel`
   }
 
+
   editMode(semester, rounds, analysisId, status) {
     const thisAdminPage = this
 
@@ -425,9 +426,13 @@ class AdminPage extends Component {
                     }
                   </Col>
                   <Col sm="3" style={{textAlign: 'right'}} >
-                    <Button color='secondary' id='cancel' key='cancel' onClick={this.toggleModal} >
-                      {translate.btn_cancel}
-                    </Button>
+                    {
+                      routerStore.status !== 'preview'
+                      ? <Button color='secondary' id='cancel' key='cancel' onClick={this.toggleModal} >
+                        {translate.btn_cancel}
+                      </Button>
+                      : ''
+                    }
                   </Col>
                   <Col sm="3">
                   {
