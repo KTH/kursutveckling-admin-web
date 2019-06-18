@@ -216,6 +216,8 @@ class RouterStore {
     for(let draft=0; draft < analysis.draftAnalysis.length; draft ++){
       for(let key = 0; key < analysis.draftAnalysis[draft].ugKeys.length; key ++){
         analysis.draftAnalysis[draft].hasAccess = memberString.indexOf(analysis.draftAnalysis[draft].ugKeys[key]) >= 0
+        if(analysis.draftAnalysis[draft].hasAccess === true)
+          break
         console.log(memberString.indexOf(key), memberString,key  )
       }
     }
@@ -223,6 +225,8 @@ class RouterStore {
     for(let publ=0; publ < analysis.publishedAnalysis.length; publ ++){
       for( let key = 0; key < analysis.publishedAnalysis[publ].ugKeys.length; key ++){
         analysis.publishedAnalysis[publ].hasAccess = memberString.indexOf(analysis.publishedAnalysis[publ].ugKeys[key]) >= 0
+        if(analysis.publishedAnalysis[publ].hasAccess === true)
+          break
       }
     }
     return analysis
