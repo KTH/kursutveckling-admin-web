@@ -320,7 +320,7 @@ class AnalysisMenu extends Component {
                                                             checked={this.state.selectedRadio.draft === analysis.analysisId}
                                                             disabled ={!analysis.hasAccess}
                                                         />
-                                                        {analysis.analysisName}  - <span className='no-access'>{analysis.hasAccess ? '' : translate.not_authorized_publish_new }</span>
+                                                        {analysis.analysisName}  <span className='no-access'>  - {analysis.hasAccess ? '' : translate.not_authorized_publish_new }</span>
                                                         {/*" ( Created by: " + analysis.user + " ) "*/}
                                                     </Label>
                                                     <br />
@@ -353,6 +353,7 @@ class AnalysisMenu extends Component {
                                                                 onChange={this.handleRoundCheckbox}
                                                                 checked = {this.state.rounds.indexOf(round.roundId) > -1 }
                                                                 name={round.roundId}
+                                                                disabled = {!round.hasAccess}
                                                             />
                                                             {round.shortName 
                                                                 ? round.shortName + ' '
@@ -360,7 +361,7 @@ class AnalysisMenu extends Component {
                                                                    ${this.state.semester.toString().match(/.{1,4}/g)[0]}-${round.roundId} `
                                                             } 
                                                              ( {translate.label_start_date} {getDateFormat(round.startDate, round.language)}, {round.language} )
-                                                             {round.hasAccess ? '' : translate.not_authorized_course_offering}
+                                                             <span className='no-access'> -  {round.hasAccess ? '' : translate.not_authorized_course_offering}</span>
 
                                                         </Label>
                                                         <br />
@@ -392,9 +393,9 @@ class AnalysisMenu extends Component {
                                                         value={analysis.analysisId}
                                                         onChange={this.handleSelectedPublished}
                                                         checked={this.state.selectedRadio.published === analysis.analysisId}
-                                                        isDisabled = {!analysis.hasAccess}
+                                                        disabled = {!analysis.hasAccess}
                                                     />
-                                                    {analysis.analysisName} - {analysis.hasAccess ? '' : translate.not_authorized_publish_new }
+                                                   {analysis.analysisName} <span className='no-access'> - {analysis.hasAccess ? '' : translate.not_authorized_publish_new }</span>
                                                     {/*" ( Created by: " + analysis.user + " ) "*/}
                                                 </Label>
                                                 <br />
