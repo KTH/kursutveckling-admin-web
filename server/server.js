@@ -212,7 +212,7 @@ server.use('/', systemRoute.getRouter())
 
 // App routes
 const appRoute = AppRouter()
-appRoute.get('system.index', config.proxyPrefixPath.uri + '/:id', /*serverLogin, requireRole('isCourseResponsible', 'isExaminator' /* ,'isSuperUser' ), */ Admin.getIndex)
+appRoute.get('system.index', config.proxyPrefixPath.uri + '/:id', serverLogin, requireRole('isCourseResponsible', 'isExaminator' /* ,'isSuperUser' */), Admin.getIndex)
 appRoute.get('system.index', config.proxyPrefixPath.uri + '/:preview/:id', serverLogin, requireRole('isCourseResponsible', 'isExaminator', /* 'isSuperUser', */'isCourseTeacher'), Admin.getIndex)
 appRoute.get('system.gateway', config.proxyPrefixPath.uri + '/gateway', getServerGatewayLogin('/'), requireRole('isAdmin'), Admin.getIndex)
 
@@ -224,7 +224,7 @@ appRoute.get('api.kursutvecklingGetUsedRounds', config.proxyPrefixPath.uri + '/a
 appRoute.get('api.koppsCourseData', config.proxyPrefixPath.uri + '/api/kursutveckling-admin/getKoppsCourseDataByCourse/:courseCode/:language', Admin.getKoppsCourseData)
 appRoute.get('redis.ugCache', config.proxyPrefixPath.uri + '/redis/ugChache/:key/:type', Admin.getCourseEmployees)
 appRoute.post('redis.ugCache', config.proxyPrefixPath.uri + '/redis/ugChache/:key/:type', Admin.getCourseEmployees)
-appRoute.post('storage.saveFile', config.proxyPrefixPath.uri + '/storage/saveFile/:id/:type/:published', Admin.saveFileToStorage)
+appRoute.post('storage.saveFile', config.proxyPrefixPath.uri + '/storage/saveFile/:analysisid/:type/:published', Admin.saveFileToStorage)
 
 server.use('/', appRoute.getRouter())
 

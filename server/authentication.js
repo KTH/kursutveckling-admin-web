@@ -95,24 +95,41 @@ module.exports.redirectAuthenticatedUserHandler = require('kth-node-passport-cas
   Usage:
   requireRole('isAdmin', 'isEditor')
 */
-function _hasCourseResponsibleGroup (courseCode, courseInitials, ldapUser, role) {
+function _hasCourseResponsibleGroup (courseCode, courseInitials, ldapUser, rounds, role) {
   // 'edu.courses.SF.SF1624.20192.1.courseresponsible'
   const groups = ldapUser.memberOf
   const startWith = `edu.courses.${courseInitials}.${courseCode}.` // TODO: What to do with years 20192. ?
-  const endWith = '.' + role
-  if (groups && groups.length > 0) {
-    for (var i = 0; i < groups.length; i++) {
-      if (groups[ i ].indexOf(startWith) >= 0 && groups[ i ].indexOf(endWith) >= 0) {
-        return true
+  if (rounds.length === 0) { // Not a analysis
+    const endWith = '.' + role
+    if (groups && groups.length > 0) {
+      for (var i = 0; i < groups.length; i++) {
+        if (groups[ i ].indexOf(startWith) >= 0 && groups[ i ].indexOf(endWith) >= 0) {
+          return true
+        }
+      }
+    }
+  } else {
+    const endString = '.' + role
+    let endWith = ''
+    if (groups && groups.length > 0) {
+      for (let round = 0; round < rounds.length; round++) {
+        endWith = rounds[round] + endString
+        for (var i = 0; i < groups.length; i++) {
+          if (groups[ i ].indexOf(startWith) >= 0 && groups[ i ].indexOf(endWith) >= 0) {
+            return true
+          }
+        }
       }
     }
   }
-  return false // OOOOBS!! CHANGE BACK TO FALSE
+  return false
 }
 
 function _hasCourseTeacherGroup (courseCode, courseInitials, ldapUser, rounds, role) {
   // 'edu.courses.SF.SF1624.20192.1.courseresponsible'
-  if (rounds.length === 0) { return false }
+  if (rounds.length === 0) { // Not a analysis
+    return false
+  }
   const groups = ldapUser.memberOf
   const startWith = `edu.courses.${courseInitials}.${courseCode}.` // TODO: What to do with years 20192. ?
   const endString = '.' + role
@@ -139,7 +156,7 @@ module.exports.requireRole = function () { // TODO:Different roles for selling t
     let courseCode = ''
     let rounds = []
     if (id.length > 7) {
-      let splitId = ''
+      let splitId = req.params.id.split('_')
       courseCode = splitId[0].length > 12 ? id.slice(0, 7).toUpperCase() : id.slice(0, 6).toUpperCase()
       rounds = splitId[1]
     } else {
@@ -149,7 +166,7 @@ module.exports.requireRole = function () { // TODO:Different roles for selling t
     // TODO: Add date for courseresponsible
     const userCourseRoles = {
       isExaminator: hasGroup(`edu.courses.${courseInitials}.${courseCode}.examiner`, ldapUser),
-      isCourseResponsible: _hasCourseResponsibleGroup(courseCode, courseInitials, ldapUser, 'courseresponsible'),
+      isCourseResponsible: _hasCourseResponsibleGroup(courseCode, courseInitials, ldapUser, rounds, 'courseresponsible'),
       isCourseTeacher: _hasCourseTeacherGroup(courseCode, courseInitials, ldapUser, rounds, 'teachers'),
       isSuperUser: ldapUser.isSuperUser
     }

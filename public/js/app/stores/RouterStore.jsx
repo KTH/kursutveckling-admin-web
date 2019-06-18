@@ -42,6 +42,7 @@ class RouterStore {
   errorMessage = ''
   service = ''
   member = []
+  roundAccess = {}
 
   buildApiUrl(path, params) {
     let host
@@ -197,8 +198,11 @@ class RouterStore {
       if (result.status >= 400) {
         return "ERROR-" + result.status
       }
+
       console.log('getUsedRounds', result.data)
-      return this.usedRounds = result.data
+      
+
+      return this.usedRounds =  this.analysisAccess(result.data)
     }).catch(err => {
       if (err.response) {
         throw new Error(err.message)
@@ -206,6 +210,24 @@ class RouterStore {
       throw err
     })
   }
+  analysisAccess(analysis){
+    const memberString = this.member.toString()
+    
+    for(let draft=0; draft < analysis.draftAnalysis.length; draft ++){
+      for(let key = 0; key < analysis.draftAnalysis[draft].ugKeys.length; key ++){
+        analysis.draftAnalysis[draft].hasAccess = memberString.indexOf(analysis.draftAnalysis[draft].ugKeys[key]) >= 0
+        console.log(memberString.indexOf(key), memberString,key  )
+      }
+    }
+
+    for(let publ=0; publ < analysis.publishedAnalysis.length; publ ++){
+      for( let key = 0; key < analysis.publishedAnalysis[publ].ugKeys.length; key ++){
+        analysis.publishedAnalysis[publ].hasAccess = memberString.indexOf(analysis.publishedAnalysis[publ].ugKeys[key]) >= 0
+      }
+    }
+    return analysis
+  }
+
 
 
   @action handleCourseData(courseObject, user, language) {
@@ -234,8 +256,10 @@ class RouterStore {
 
         if (!thisStore.roundData.hasOwnProperty(round.round.startTerm.term)){
           thisStore.roundData[round.round.startTerm.term] = []
+          thisStore.roundAccess[round.round.startTerm.term] = {}
           //noAccessToRoundsList(round round.round.startTerm.term)
         }
+        thisStore.roundAccess[round.round.startTerm.term][round.round.ladokRoundId] = getAccess(this.member, round, courseObject.course.courseCode)
         thisStore.roundData[round.round.startTerm.term].push({
           roundId: round.round.ladokRoundId,
           language: round.round.language,
@@ -407,15 +431,29 @@ class RouterStore {
     return list
   }
 
-  getMemberOf(memberOf){
-    this.member = memberOf.filter((member) => member.indexOf(this.courseCode))
+  getMemberOf(memberOf, id){
+    if (id.length > 7) {
+      let splitId = id.split('_')
+      this.courseCode = splitId[0].length > 12 ? id.slice(0, 7).toUpperCase() : id.slice(0, 6).toUpperCase()
+    } else {
+      this.courseCode = id.toUpperCase()
+    }
+    this.member = memberOf.filter((member) => member.indexOf(this.courseCode) > -1)
   }
 
+ /* let rounds = req.params.id.split('-')
+      for (let round = 1; round < rounds.length; rounds++) {
+        if (getAccess(round)) {
+          renderProps.props.children.props.routerStore.analysisAccess = true
+          break
+        }
+      }*/
 
-  @action setCourseCode(CourseCode, title = '') {
+
+  /*@action setCourseCode(CourseCode, title = '') {
     this.courseCode = CourseCode
     this.title = title.length > 0 ? title : ''
-  }
+  }*/
 
   setLanguage(lang = 'sv'){
     this.language = lang === 'en' ? 0 : 1

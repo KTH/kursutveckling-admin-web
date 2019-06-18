@@ -1,5 +1,7 @@
 'use strict'
-export const getDateFormat = (date, language) => {
+import '@babel/polyfill'
+
+const getDateFormat = (date, language) => {
   if (language === 'Svenska' || language === 'Engelska' || language === 1) {
     return date
   }
@@ -7,7 +9,7 @@ export const getDateFormat = (date, language) => {
   return `${splitDate[2]}/${splitDate[1]}/${splitDate[0]}`
 }
 
-export const getTodayDate = (date = '') => {
+const getTodayDate = (date = '') => {
   let today = date.length > 0 ? new Date(date) : new Date()
   let dd = String(today.getDate()).padStart(2, '0')
   let mm = String(today.getMonth() + 1).padStart(2, '0') // January is 0!
@@ -16,7 +18,7 @@ export const getTodayDate = (date = '') => {
   return yyyy + '-' + mm + '-' + dd
 }
 
-export const getLanguageToUse = (list, defaultLanguage) => {
+const getLanguageToUse = (list, defaultLanguage) => {
   if (list.length === 1) {
     return list[0].language
   }
@@ -30,12 +32,12 @@ export const getLanguageToUse = (list, defaultLanguage) => {
   return tempLang === defaultLanguage ? defaultLanguage : 'Svenska'
 }
 
-export const formatDate = (date, lang) => {
+const formatDate = (date, lang) => {
   let thisDate = getTodayDate(date)
   return getDateFormat(thisDate, lang)
 }
 
-export const noAccessToRoundsList = (memberOf, rounds, courseCode, semester) => {
+const noAccessToRoundsList = (memberOf, rounds, courseCode, semester) => {
   let roundIds = []
   if (memberOf.toString().indexOf(courseCode + '.examiner') > 0) { return roundIds }
   roundIds = rounds.filter(round => {
@@ -44,11 +46,11 @@ export const noAccessToRoundsList = (memberOf, rounds, courseCode, semester) => 
   return roundIds
 }
 
-export const getAccess = (memberOf, round, courseCode) => {
+const getAccess = (memberOf, round, courseCode) => {
   if (memberOf.toString().indexOf(courseCode.toUpperCase() + '.examiner') > -1) {
     return true
   }
-  console.log(`${courseCode.toUpperCase()}.${round.round.startTerm.term}.${round.round.ladokRoundId}.courseresponsible`, round)
+  // console.log(`${courseCode.toUpperCase()}.${round.round.startTerm.term}.${round.round.ladokRoundId}.courseresponsible`, round)
 
   if (memberOf.toString().indexOf(`${courseCode.toUpperCase()}.${round.round.startTerm.term}.${round.round.ladokRoundId}.courseresponsible`) > -1) {
     return true
@@ -56,3 +58,5 @@ export const getAccess = (memberOf, round, courseCode) => {
 
   return false
 }
+
+export { getAccess, noAccessToRoundsList, formatDate, getLanguageToUse, getTodayDate, getDateFormat }

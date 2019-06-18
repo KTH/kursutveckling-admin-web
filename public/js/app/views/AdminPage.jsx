@@ -340,7 +340,7 @@ class AdminPage extends Component {
                       <Label>{translate.header_upload_file}</Label>
                       <FilePond id="analysis" key="analysis" 
                       onprocessfile = {this.processfile}
-                      //instantUpload ={false}
+                        instantUpload ={false}
                         labelIdle={labelIdle} 
                         id = 'analysisUpload'
                         ref = {ref => (this.pond = ref)}

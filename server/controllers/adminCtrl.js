@@ -38,7 +38,7 @@ function * _saveFileToStorage (req, res, next) {
   console.log('_saveFileToStorage', req.body, req.files.filepond)
   log.info('_saveFileToStorage', req.body, req.files.filepond)
   // const blobService = storage.createBlobService()
-  yield runBlobStorage(req.files.filepond, req.params.id, req.params.type, req.params.published)
+  yield runBlobStorage(req.files.filepond, req.params.analysisid, req.params.type, req.params.published)
   return httpResponse.json(res, req.files.filepond.name)
 }
 
@@ -177,19 +177,18 @@ async function getIndex (req, res, next) {
     renderProps.props.children.props.routerStore.setBrowserConfig(browserConfig, paths, serverConfig.hostUrl, service)
     renderProps.props.children.props.routerStore.setLanguage(lang)
     renderProps.props.children.props.routerStore.setService(service)
-
+    await renderProps.props.children.props.routerStore.getMemberOf(req.session.authUser.memberOf, req.params.id)
     if (req.params.id.length <= 7) {
       // Just course code -> analysis menu depending on status
       const apiResponse = await koppsCourseData.getKoppsCourseData(req.params.id, lang)
-      renderProps.props.children.props.routerStore.setCourseCode(req.params.id) // TODO: title
+      // renderProps.props.children.props.routerStore.setCourseCode(req.params.id) // TODO: title
       renderProps.props.children.props.routerStore.status = status === 'p' ? 'published' : 'new'
-      renderProps.props.children.props.routerStore.getMemberOf(req.session.authUser.memberOf, req.params.id)
       await renderProps.props.children.props.routerStore.handleCourseData(apiResponse.body, ldapUser, lang)
     } else {
       const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(req.params.id, lang)
 
       renderProps.props.children.props.routerStore.analysisData = apiResponse.body
-      renderProps.props.children.props.routerStore.setCourseCode(apiResponse.body.courseCode)
+      // renderProps.props.children.props.routerStore.setCourseCode(apiResponse.body.courseCode)
       status = req.params.preview && req.params.preview === 'preview' ? 'preview' : status
       switch (status) {
         case 'p' : renderProps.props.children.props.routerStore.status = 'published'

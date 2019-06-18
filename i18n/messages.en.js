@@ -68,6 +68,9 @@ module.exports = {
     draft_empty: 'Det finns inga sparade utkast för vald termin',
     published_empty: 'There are no published course analysis and course data this semester.',
 
+    not_authorized_course_offering: 'You are not course responsible for this course offering and cannot select it.',
+    not_authorized_publish_new: 'You are not course responsible for this instance and cannot select it.',
+
     /** ************ BUTTONS ****************** */
     btn_preview: 'Preview ',
     btn_add_analysis: 'Edit, upload',
@@ -82,7 +85,7 @@ module.exports = {
     /** ************ PAGE 2 FORM ************** */
     add_file: 'Drag and drop the file here <span class="filepond--label-action"> or click here to browse </span>',
     asterix_text: '* Data cannot be changed after published',
-    not_authorized_course_offering: 'You are not course responsible for this course offering and cannot select it.',
+
     // asterix_text_2: '** Går ej att redigera inlagd information från Kopps',
 
     header_review_fetched_data: 'Review fetched course data',

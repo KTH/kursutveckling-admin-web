@@ -238,7 +238,7 @@ class AnalysisMenu extends Component {
         const showAllEmptyNew = status !== 'published' && this.state.draftAnalysis.length === 0 && roundList[this.state.semester].length === this.state.usedRounds.length
         const showAllEmptyPublished = status === 'published' && this.state.publishedAnalysis.length === 0 
 
-        console.log("routerStore", this.props, i18n.messages)
+        console.log("routerStore", this.props, routerStore.roundAccess[this.state.semester]['1'])
         console.log("this.state", this.state)
         return (
             <div id="YearAndRounds">
@@ -318,8 +318,9 @@ class AnalysisMenu extends Component {
                                                             value={analysis.analysisId}
                                                             onChange={this.handleSelectedDraft}
                                                             checked={this.state.selectedRadio.draft === analysis.analysisId}
+                                                            disabled ={!analysis.hasAccess}
                                                         />
-                                                        {analysis.analysisName}
+                                                        {analysis.analysisName}  - <span className='no-access'>{analysis.hasAccess ? '' : translate.not_authorized_publish_new }</span>
                                                         {/*" ( Created by: " + analysis.user + " ) "*/}
                                                     </Label>
                                                     <br />
@@ -359,6 +360,7 @@ class AnalysisMenu extends Component {
                                                                    ${this.state.semester.toString().match(/.{1,4}/g)[0]}-${round.roundId} `
                                                             } 
                                                              ( {translate.label_start_date} {getDateFormat(round.startDate, round.language)}, {round.language} )
+                                                             {round.hasAccess ? '' : translate.not_authorized_course_offering}
 
                                                         </Label>
                                                         <br />
@@ -390,8 +392,9 @@ class AnalysisMenu extends Component {
                                                         value={analysis.analysisId}
                                                         onChange={this.handleSelectedPublished}
                                                         checked={this.state.selectedRadio.published === analysis.analysisId}
+                                                        isDisabled = {!analysis.hasAccess}
                                                     />
-                                                    {analysis.analysisName}
+                                                    {analysis.analysisName} - {analysis.hasAccess ? '' : translate.not_authorized_publish_new }
                                                     {/*" ( Created by: " + analysis.user + " ) "*/}
                                                 </Label>
                                                 <br />

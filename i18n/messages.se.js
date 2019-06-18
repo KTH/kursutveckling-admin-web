@@ -66,6 +66,9 @@ module.exports = {
     published_empty: 'Det finns ingen publicerad kursutveckling för vald termin',
     new_empty: 'Det finns inga ej påbörjade kurstillfällen för vald termin',
 
+    not_authorized_course_offering: 'Du är inte kursansvarig för denna kursomgång och kan därför inte välja den.',
+    not_authorized_publish_new: 'Du är inte kursansvarig för detta kurstillfälle och kan därför inte välja det.',
+
     /** ************ BUTTONS ****************** */
     btn_preview: 'Granska',
     btn_add_analysis: ' Redigera, ladda upp',
@@ -79,7 +82,6 @@ module.exports = {
 
     /** ************ PAGE 2 FORM ************** */
     add_file: 'Dra och droppa filen här <span class="filepond--label-action"> eller klicka för att välja fil </span>',
-    not_authorized_course_offering: 'Du är inte kursansvarig för denna kursomgång och kan därför inte välja den.',
     asterix_text: '* Kommer inte att kunna ändras efter publicering',
 
     header_programs: 'Obligatorisk inom program',
