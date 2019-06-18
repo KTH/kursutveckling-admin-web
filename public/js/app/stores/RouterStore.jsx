@@ -493,7 +493,7 @@ class RouterStore {
 
   @action getBreadcrumbs() {
     return {
-      url: '/admin/kursutveckling/',
+      url: '/kursinfoadmin/kursutveckling/',
       label: 'TODO'
     }
   }

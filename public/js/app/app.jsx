@@ -8,7 +8,6 @@ import { Provider, inject } from 'mobx-react'
 import {  BrowserRouter, Route, Switch} from 'react-router-dom'
 import { configure } from 'mobx'
 import queryString from 'query-string'
-import { globalRegistry, createUtility } from 'component-registry'
 
 import { IMobxStore } from './interfaces/utils'
 import { StaticRouter } from 'react-router'
@@ -17,9 +16,6 @@ import RouterStore from './stores/RouterStore'
 import AdminPage from './views/AdminPage'
 import  '../../css/kursutveckling-admin.scss'
 import { log } from 'util';
-
-
-
 
 /* const routerStore = new RouterStore()
 if (typeof window !== 'undefined') {
@@ -63,8 +59,8 @@ function appFactory() {
   return (
     <Provider routerStore={routerStore}>
       <Switch>
-        <Route path='/admin/kursutveckling' component={AdminPage} asyncBefore={AdminPage.fetchData} />
-        <Route path='/admin/kursutveckling/preview' component={AdminPage} />
+        <Route path='/kursinfoadmin/kursutveckling' component={AdminPage} asyncBefore={AdminPage.fetchData} />
+        <Route path='/kursinfoadmin/kursutveckling/preview' component={AdminPage} />
       </Switch>
     </Provider>
 

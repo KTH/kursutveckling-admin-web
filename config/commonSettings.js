@@ -13,7 +13,7 @@ const { safeGet } = require('safe-utils')
 const devPort = 3000
 const devUrl = 'http://localhost:' + devPort
 const devSsl = false
-const devPrefixPath = devDefaults('/admin/kursutveckling')
+const devPrefixPath = devDefaults('/kursinfoadmin/kursutveckling')
 const devStorageUri = devDefaults('https://kursinfostoragestage.blob.core.windows.net/kursutveckling-blob-container/')
 
 module.exports = {
