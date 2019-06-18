@@ -6,7 +6,7 @@ const InfoButton =({ id, textObj }) => {
     return (
       <div>
         <Button id={id} type="button" className='btn-info-modal btn btn-secondary info-inline'/>
-        <UncontrolledPopover trigger="focus" placement="auto"  target={id} >
+        <UncontrolledPopover trigger="legacy" placement="auto"  target={id} >
           <PopoverHeader>{textObj.header}</PopoverHeader>
           <PopoverBody>{textObj.body}</PopoverBody>
         </UncontrolledPopover>
