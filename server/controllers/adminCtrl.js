@@ -177,15 +177,15 @@ async function getIndex (req, res, next) {
     renderProps.props.children.props.routerStore.setBrowserConfig(browserConfig, paths, serverConfig.hostUrl, service)
     renderProps.props.children.props.routerStore.setLanguage(lang)
     renderProps.props.children.props.routerStore.setService(service)
-    await renderProps.props.children.props.routerStore.getMemberOf(req.session.authUser.memberOf, req.params.id)
+    await renderProps.props.children.props.routerStore.getMemberOf(req.session.authUser.memberOf, req.params.id.toUpperCase())
     if (req.params.id.length <= 7) {
       // Just course code -> analysis menu depending on status
-      const apiResponse = await koppsCourseData.getKoppsCourseData(req.params.id, lang)
+      const apiResponse = await koppsCourseData.getKoppsCourseData(req.params.id.toUpperCase(), lang)
       // renderProps.props.children.props.routerStore.setCourseCode(req.params.id) // TODO: title
       renderProps.props.children.props.routerStore.status = status === 'p' ? 'published' : 'new'
       await renderProps.props.children.props.routerStore.handleCourseData(apiResponse.body, ldapUser, lang)
     } else {
-      const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(req.params.id, lang)
+      const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(req.params.id.toUpperCase(), lang)
 
       renderProps.props.children.props.routerStore.analysisData = apiResponse.body
       // renderProps.props.children.props.routerStore.setCourseCode(apiResponse.body.courseCode)

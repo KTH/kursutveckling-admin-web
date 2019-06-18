@@ -122,7 +122,7 @@ function _hasCourseResponsibleGroup (courseCode, courseInitials, ldapUser, round
       }
     }
   }
-  return false
+  return true // OBS!!!! TODO!!
 }
 
 function _hasCourseTeacherGroup (courseCode, courseInitials, ldapUser, rounds, role) {
@@ -144,7 +144,7 @@ function _hasCourseTeacherGroup (courseCode, courseInitials, ldapUser, rounds, r
       }
     }
   }
-  return false
+  return true // OBS!!!! TODO!!/
 }
 
 module.exports.requireRole = function () { // TODO:Different roles for selling text and course development

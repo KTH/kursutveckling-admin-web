@@ -432,6 +432,7 @@ class RouterStore {
   }
 
   getMemberOf(memberOf, id){
+    console.log('memberOf', memberOf)
     if (id.length > 7) {
       let splitId = id.split('_')
       this.courseCode = splitId[0].length > 12 ? id.slice(0, 7).toUpperCase() : id.slice(0, 6).toUpperCase()
