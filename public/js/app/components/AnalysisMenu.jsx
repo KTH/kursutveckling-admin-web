@@ -27,7 +27,7 @@ class AnalysisMenu extends Component {
                 info: false
             },
             semester: this.props.activeSemester && this.props.activeSemester.length > 0  ? this.props.activeSemester   : this.props.semesterList[0],
-            rounds: [],
+            rounds: this.props.tempData ? this.props.tempData.roundIdList.split(',') : [],
             usedRounds: this.props.routerStore.usedRounds.usedRounds ? this.props.routerStore.usedRounds.usedRounds  : [],
             draftAnalysis: this.props.routerStore.usedRounds.draftAnalysis ? this.props.routerStore.usedRounds.draftAnalysis : [],
             publishedAnalysis: this.props.routerStore.usedRounds.publishedAnalysis ? this.props.routerStore.usedRounds.publishedAnalysis : [],
@@ -35,7 +35,8 @@ class AnalysisMenu extends Component {
                 draft: '',
                 published:'',
             },
-            lastSelected: ''
+            lastSelected: this.props.tempData ? 'new' : '',
+            temporaryData: ''
         }
 
         this.toggleDropdown = this.toggleDropdown.bind(this)
@@ -170,7 +171,7 @@ class AnalysisMenu extends Component {
         event.preventDefault()
         if (this.state.rounds.length > 0 || this.state.selectedRadio.published.length > 0 || this.state.selectedRadio.draft.length > 0 )
             if(this.state.lastSelected === 'new')
-                this.props.editMode(this.state.semester, this.state.rounds, null, this.state.lastSelected)
+                this.props.editMode(this.state.semester, this.state.rounds, null, this.state.lastSelected, this.props.tempData)
             else
                 this.props.editMode(this.state.semester, null, this.state.selectedRadio[this.state.lastSelected],  this.state.lastSelected)
         else

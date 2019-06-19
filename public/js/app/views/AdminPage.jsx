@@ -55,6 +55,7 @@ class AdminPage extends Component {
     this.handleInputChange = this.handleInputChange.bind(this)
     this.toggleModal = this.toggleModal.bind(this)
     this.processfile = this.processfile.bind(this)
+    this.getTempData = this.getTempData.bind(this)
   }
 
   handleInit() {
@@ -69,6 +70,13 @@ class AdminPage extends Component {
   processfile(arg){
    arg ? console.log('processfile', arg) : null
    return false
+  }
+
+  getTempData(){
+    if(this.state.progress === 'back_new'){
+      const {alterationText, examinationGrade, registeredStudents, roundIdList} = this.state.values
+      return { alterationText, examinationGrade, registeredStudents, roundIdList }
+    }
   }
 
   handlePreview(event) {
@@ -120,16 +128,23 @@ class AdminPage extends Component {
   }
 
 
-  editMode(semester, rounds, analysisId, status) {
+  editMode(semester, rounds, analysisId, status, tempData) {
     const thisAdminPage = this
 
     if (status === 'new') {
+      
       return this.props.routerStore.createAnalysisData(semester, rounds).then( data => {
+        let values = thisAdminPage.props.routerStore.analysisData
+        if(tempData){
+        values.alterationText = tempData.alterationText
+        values.registeredStudents = tempData.registeredStudents
+        values.examinationGrade = tempData.examinationGrade
+        }
       thisAdminPage.setState({
         progress: "edit",
         isPreviewMode: false,
         isPublished: false,
-        values: thisAdminPage.props.routerStore.analysisData,
+        values,
         activeSemester: semester,
         analysisFile: thisAdminPage.props.routerStore.analysisData ? thisAdminPage.props.routerStore.analysisData.analysisFileName : '',
         alert: ''
@@ -285,6 +300,7 @@ class AdminPage extends Component {
                   activeSemester= { this.state.activeSemester } 
                   firstVisit = { routerStore.analysisData === undefined }
                   status = { routerStore.status }
+                  tempData = {this.getTempData()}
                 />
               }
             </div>
