@@ -301,6 +301,8 @@ class RouterStore {
     this.getEmployees(this.courseData.courseCode, semester, rounds)
   
     return this.getCourseEmployeesPost(this.redisKeys, 'multi', this.language).then(returnList => {
+
+      const {courseSyllabus, examinationRounds } = this.courseData.semesterObjectList[semester]
       this.status = 'new'
       const language = getLanguageToUse( this.roundData[semester], 'English' ) 
       const roundLang = language === 'English' ? 'en' : 'sv'
@@ -318,9 +320,9 @@ class RouterStore {
         changedBy: "userName", // todo
         changedDate: '',
         commentChange: '',
-        commentExam: this.courseData.semesterObjectList[semester].courseSyllabus.examComments[roundLang], //todo
+        commentExam: courseSyllabus.examComments ? courseSyllabus.examComments[roundLang] : '', //todo
         courseCode: this.courseData.courseCode,
-        examinationRounds: this.getExamObject(this.courseData.semesterObjectList[semester].examinationRounds, this.courseData.gradeScale, roundLang),
+        examinationRounds: this.getExamObject( examinationRounds, this.courseData.gradeScale, roundLang),
         examiners: '',
         examinationGrade: 0,
         isPublished: false,
