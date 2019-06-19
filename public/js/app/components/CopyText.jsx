@@ -18,7 +18,7 @@ class CopyText extends Component {
     render(){
         return(
             <InputGroup>
-                <Input type ="text" value = {this.props.textToCopy} />
+                <Input type ="text" value = {this.props.textToCopy} readOnly={true} />
                 <InputGroupAddon addonType="append">
                     <Button color="secondary" onClick={this.handleCopy}>Copy!</Button>
                 </InputGroupAddon>

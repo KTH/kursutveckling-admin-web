@@ -179,7 +179,7 @@ class RouterStore {
       if (result.status >= 400) {
         return "ERROR-" + result.status
       }
-      this.handleCourseData(result.data, ldapUsername, lang)
+      this.handleCourseData(result.data, courseCode, ldapUsername, lang)
       return result.body
     }).catch(err => {
       if (err.response) {
@@ -234,46 +234,59 @@ class RouterStore {
 
 
 
-  @action handleCourseData(courseObject, user, language) {
+  @action handleCourseData(courseObject, courseCode, ldapUsername, language) {
     //console.log('courseObject',courseObject)
     if(courseObject === undefined){
       this.errorMessage = 'Whoopsi daisy... kan just nu inte hämta data från kopps'
       return undefined
     }
     try {
+      console.log('courseObject', courseObject)
       this.courseData = {
-        courseCode: courseObject.course.courseCode,
-        examinationSets: courseObject.examinationSets,
+        courseCode,
         gradeScale: courseObject.formattedGradeScales,
-        gradeScaleCode: courseObject.course.gradeScaleCode,
-        syllabusList: courseObject.publicSyllabusVersions
+        semesterObjectList: {}
       }
       this.courseTitle = {
-        name: courseObject.course.title,
+        name: courseObject.course.title[language],
         credits: courseObject.course.credits
       }
-
+      console.log('courseObject2', this.courseData, this.courseTitle)
       const thisStore = this
-      courseObject.roundInfos.map((round, index) => {
-        if (thisStore.semesters.indexOf(round.round.startTerm.term) < 0)
-          thisStore.semesters.push(round.round.startTerm.term)
+      //this.courseData.semesterObjectList =  courseObject.termsWithCourseRounds.map((semester, index) => {
+        for(let semester = 0; semester < courseObject.termsWithCourseRounds.length; semester ++){
+          this.courseData.semesterObjectList[courseObject.termsWithCourseRounds[semester].term]= {
+          courseSyllabus: courseObject.termsWithCourseRounds[semester].courseSyllabus,
+          examinationRounds: courseObject.termsWithCourseRounds[semester].examinationRounds,
+          rounds: courseObject.termsWithCourseRounds[semester].rounds
+        }
+      }
 
-        if (!thisStore.roundData.hasOwnProperty(round.round.startTerm.term)){
-          thisStore.roundData[round.round.startTerm.term] = []
-          thisStore.roundAccess[round.round.startTerm.term] = {}
+      courseObject.termsWithCourseRounds.map((semester, index) => {
+        if (thisStore.semesters.indexOf(semester.term) < 0)
+          thisStore.semesters.push(semester.term)
+
+        if (!thisStore.roundData.hasOwnProperty(semester.term)){
+          thisStore.roundData[semester.term] = []
+          thisStore.roundAccess[semester.term] = {}
           //noAccessToRoundsList(round round.round.startTerm.term)
         }
-        thisStore.roundAccess[round.round.startTerm.term][round.round.ladokRoundId] = getAccess(this.member, round, courseObject.course.courseCode)
-        thisStore.roundData[round.round.startTerm.term].push({
-          roundId: round.round.ladokRoundId,
-          language: round.round.language,
-          shortName: round.round.shortName,
-          startDate: round.round.firstTuitionDate,
-          targetGroup: this.getTargetGroup(round),
-          hasAccess: getAccess(this.member, round, courseObject.course.courseCode)
+      
+
+        //thisStore.roundAccess[semester.term][semester.ladokRoundId] = getAccess(this.member, round, courseObject.course.courseCode)
+        thisStore.roundData[semester.term] = semester.rounds.map((round, index) => {
+          return round.ladokRoundId = {
+            roundId: round.ladokRoundId,
+            language: round.language[language],
+            shortName: round.shortName,
+            startDate: round.firstTuitionDate,
+            targetGroup: this.getTargetGroup(round),
+            ladokUID: round.ladokUID,
+            hasAccess: getAccess(this.member, round, this.courseCode)
+          }
         })
       })
-      //console.log(this.courseData, this.roundData)
+      console.log(this.courseData, this.roundData)
     }
 
     catch (err) {
@@ -289,23 +302,25 @@ class RouterStore {
   
     return this.getCourseEmployeesPost(this.redisKeys, 'multi', this.language).then(returnList => {
       this.status = 'new'
-      this.analysisId = `${this.courseData.courseCode}${semester.toString().match(/.{1,4}/g)[1] === '1' ? 'VT' : 'HT'}${semester.toString().match(/.{1,4}/g)[0]}_${rounds.join('_')}`
+      const language = getLanguageToUse( this.roundData[semester], 'English' ) 
+      const roundLang = language === 'English' ? 'en' : 'sv'
+      this.analysisId = `${this.courseData.courseCode}${semester.toString().match(/.{1,4}/g)[1] === '1' ? 'VT' : 'HT'}${semester.toString().match(/.{1,4}/g)[0]}_${rounds.sort().join('_')}`
       let newName = `${semester.toString().match(/.{1,4}/g)[1] === '1'
-        ? SEMESTER[this.language]['1']
-        : SEMESTER[this.language]['2']} ${semester.toString().match(/.{1,4}/g)[0]}`
+        ? SEMESTER[roundLang === 'en' ? 0 : 1]['1']
+        : SEMESTER[roundLang === 'en' ? 0 : 1]['2']} ${semester.toString().match(/.{1,4}/g)[0]}`
 
-      newName = this.createAnalysisName(newName, this.roundData[semester], rounds)
+      newName = this.createAnalysisName(newName, this.roundData[semester], rounds, language)
        
       this.analysisData = {
         _id: this.analysisId,
         alterationText: '',
         analysisFileName: '',
-        changedBy: "Kristian Semlan Gullefjun",
+        changedBy: "userName", // todo
         changedDate: '',
         commentChange: '',
-        commentExam: this.getExmCommentfromCorrectSyllabus(semester, this.courseData.syllabusList),
+        commentExam: this.courseData.semesterObjectList[semester].courseSyllabus.examComments[roundLang], //todo
         courseCode: this.courseData.courseCode,
-        examinationRounds: this.getExamObject(this.courseData.examinationSets, this.courseData.gradeScale, this.language, semester),
+        examinationRounds: this.getExamObject(this.courseData.semesterObjectList[semester].examinationRounds, this.courseData.gradeScale, roundLang),
         examiners: '',
         examinationGrade: 0,
         isPublished: false,
@@ -318,7 +333,8 @@ class RouterStore {
         analysisName: newName,
         semester: semester,
         roundIdList: rounds.toString(),
-        ugKeys: [...this.redisKeys.examiner, ...this.redisKeys.responsibles]
+        ugKeys: [...this.redisKeys.examiner, ...this.redisKeys.responsibles],
+        ladokUID: ''
       }
 
       this.analysisData.examiners = ''
@@ -332,10 +348,10 @@ class RouterStore {
   }
 
 
-  createAnalysisName(newName, roundList, selectedRounds) {
+  createAnalysisName(newName, roundList, selectedRounds, language) {
     let addRounds = []
     let tempName = ''
-    let language = getLanguageToUse(roundList, 'English' )
+
     for (let index = 0; index < roundList.length; index++) {
       tempName = ` ${roundList[index].shortName && roundList[index].shortName.length > 0
         ? roundList[index].shortName
@@ -365,12 +381,12 @@ class RouterStore {
   }
 
   getTargetGroup(round) {
-    if (round.usage.length === 0)
+    if (round.connectedProgrammes.length === 0)
       return []
     let usageList = []
-    for (let index = 0; index < round.usage.length; index++) {
-      if (usageList.indexOf(round.usage[index].programmeCode) < 0)
-        usageList.push(round.usage[index].programmeCode)
+    for (let index = 0; index < round.connectedProgrammes.length; index++) {
+      if (usageList.indexOf(round.connectedProgrammes[index].programmeCode) < 0 /*&& usageList.indexOf(round.connectedProgrammes[index].abbrLabel === 'Manatory'*/)
+        usageList.push(round.connectedProgrammes[index].programmeCode)
     }
     return usageList
   }
@@ -385,25 +401,17 @@ class RouterStore {
     return allTargets
   }
 
-  getExamObject(dataObject, grades, language = 1, semester = '') {
-    var matchingExamSemester = ''
-
-    Object.keys(dataObject).forEach(function (key) {
-      if (Number(semester) >= Number(key)) {
-        matchingExamSemester = key
-      }
-    })
-    let examString = []
-    if (dataObject[matchingExamSemester] && dataObject[matchingExamSemester].examinationRounds.length > 0) {
-      for (let exam of dataObject[matchingExamSemester].examinationRounds) {
-
+  getExamObject(examObject, grades, roundLang) {
+      let examString = []
+      const language = roundLang === 'en' ? 0 : 1
+      for (let exam of examObject) {
         //* * Adding a decimal if it's missing in credits **/
         exam.credits = exam.credits !== EMPTY[language] && exam.credits.toString().length === 1 ? exam.credits + '.0' : exam.credits
 
-        examString.push(`${exam.examCode};${exam.title};${language === 0 ? exam.credits : exam.credits.toString().replace('.', ',')};${language === 0 ? 'credits' : 'hp'};${language === 0 ? 'Grading scale' : 'Betygsskala'};${grades[exam.gradeScaleCode]}              
+        examString.push(`${exam.examCode};${exam.title[roundLang]};${language === 0 ? exam.credits : exam.credits.toString().replace('.', ',')};${language === 0 ? 'credits' : 'hp'};${language === 0 ? 'Grading scale' : 'Betygsskala'};${grades[exam.gradeScaleCode]}              
                          `)
       }
-    }
+    
     //console.log('!!getExamObject !!!! is ok!!', examString)
     return examString
   }

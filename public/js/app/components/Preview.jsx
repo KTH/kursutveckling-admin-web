@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
 import { Alert, Collapse, Table} from 'reactstrap'
 
+
 //Helpers 
 import i18n from '../../../../i18n/index'
 import { getDateFormat, formatDate } from '../util/helpers'
@@ -46,6 +47,7 @@ class Preview extends Component {
               linksFileNames ={{analysis:this.props.analysisFile, pm:this.props.analysisFile}} />
           </div>
         }
+      
      </div>   
     )
   }
@@ -162,6 +164,8 @@ class TableForCourse extends Component {
           <GrayTextBlock header={translate.header_analysis_edit_comment}  text={values.commentChange}/>
           <p className="underlined">{translate.last_change_date} {values.changedDate.length > 0 ? formatDate(values.changedDate, routerStore.language ) : ''}</p>
         </Collapse>
+
+        
       </div>          
     )}
 }

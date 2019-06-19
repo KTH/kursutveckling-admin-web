@@ -13,6 +13,7 @@ import Title from '../components/Title'
 import AnalysisMenu from '../components/AnalysisMenu'
 import Preview from '../components/Preview'
 import InfoModal from '../components/InfoModal'
+import CopyText from '../components/CopyText' 
 
 
 //Helpers 
@@ -414,6 +415,10 @@ class AdminPage extends Component {
             {/************************************************************************************* */}
             {/*                                BUTTONS FOR BOTH PAGES                               */}
             {/************************************************************************************* */}
+            {this.state.isPreviewMode && this.state.values.changedDate.length > 0 && routerStore.status !== 'preview'
+              ?   <CopyText textToCopy={ routerStore.browserConfig.hostUrl + routerStore.browserConfig.proxyPrefixPath.uri + '/preview/' + routerStore.analysisId} />
+              : ''
+            }
             <Row className="button-container text-center" >             
                   <Col sm="4" style={{textAlign: 'left'}}>
                     {

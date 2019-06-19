@@ -18,7 +18,7 @@ module.exports = {
 
 async function getKoppsCourseData (courseCode, lang = 'sv') {
   try {
-    return await koppsApi.getAsync(`course/${encodeURIComponent(courseCode)}/detailedinformation?l=${lang}`)
+    return await koppsApi.getAsync(`course/${encodeURIComponent(courseCode)}/courseroundterms`)
   } catch (err) {
     console.log('getKoppsCourseData has an error:' + err)
     return err

@@ -181,9 +181,9 @@ async function getIndex (req, res, next) {
     if (req.params.id.length <= 7) {
       // Just course code -> analysis menu depending on status
       const apiResponse = await koppsCourseData.getKoppsCourseData(req.params.id.toUpperCase(), lang)
-      // renderProps.props.children.props.routerStore.setCourseCode(req.params.id) // TODO: title
+      console.log('new coursedata !!!!!!!!!', apiResponse)
       renderProps.props.children.props.routerStore.status = status === 'p' ? 'published' : 'new'
-      await renderProps.props.children.props.routerStore.handleCourseData(apiResponse.body, ldapUser, lang)
+      await renderProps.props.children.props.routerStore.handleCourseData(apiResponse.body, req.params.id.toUpperCase(), ldapUser, lang)
     } else {
       const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(req.params.id.toUpperCase(), lang)
 
