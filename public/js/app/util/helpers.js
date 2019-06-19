@@ -46,13 +46,13 @@ const noAccessToRoundsList = (memberOf, rounds, courseCode, semester) => {
   return roundIds
 }
 
-const getAccess = (memberOf, round, courseCode) => {
+const getAccess = (memberOf, round, courseCode, semester) => {
   if (memberOf.toString().indexOf(courseCode.toUpperCase() + '.examiner') > -1) {
     return true
   }
   // console.log(`${courseCode.toUpperCase()}.${round.round.startTerm.term}.${round.round.ladokRoundId}.courseresponsible`, round)
 
-  if (memberOf.toString().indexOf(`${courseCode.toUpperCase()}.${round.round.startTerm.term}.${round.round.ladokRoundId}.courseresponsible`) > -1) {
+  if (memberOf.toString().indexOf(`${courseCode.toUpperCase()}.${semester}.${round.ladokRoundId}.courseresponsible`) > -1) {
     return true
   }
 
