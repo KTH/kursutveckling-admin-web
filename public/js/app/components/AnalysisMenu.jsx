@@ -297,7 +297,6 @@ class AnalysisMenu extends Component {
                          <div className='inline-flex'>
                              <h3>{translate.header_analysis_menu}</h3>
                             <InfoButton id = 'info_choose_course_offering' textObj = {translate.info_choose_course_offering}/>
-                            <InfoModal type = 'info' toggle= {this.toggleModal}  isOpen = {this.state.modalOpen.info} id='choose_course_offering' infoText={translate.info_choose_course_offering}/>
                         </div>
                    
                         {status === 'new' || status === 'draft' 

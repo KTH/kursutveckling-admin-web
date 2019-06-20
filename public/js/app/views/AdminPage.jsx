@@ -14,6 +14,7 @@ import AnalysisMenu from '../components/AnalysisMenu'
 import Preview from '../components/Preview'
 import InfoModal from '../components/InfoModal'
 import CopyText from '../components/CopyText' 
+import InfoButton from '../components/InfoButton'
 
 
 //Helpers 
@@ -357,7 +358,11 @@ class AdminPage extends Component {
                 <p>{translate.asterix_text}</p>
                 <Row className='form-group'>
                   <Col sm='3' className='col-temp'>
+                    <span className='inline-flex'>
                       <Label>{translate.header_upload_file}</Label>
+                      <InfoButton id = 'info_upload_course_analysis' textObj = {translate.info_upload_course_analysis}/>
+                    </span>
+                      
                       <FilePond id="analysis" key="analysis" 
                       onprocessfile = {this.processfile}
                         instantUpload ={false}
@@ -392,7 +397,11 @@ class AdminPage extends Component {
                         }}
                         >
                         </FilePond>
-                      <Label>{translate.header_upload_file_pm}</Label>
+                        <span className='inline-flex'>
+                          <Label>{translate.header_upload_file_pm}</Label>
+                          <InfoButton id = 'info_upload_course_memo' textObj = {translate.info_upload_course_memo}/>
+                        </span>
+                     
                       {/*<FilePond id="pm" key="pm" labelIdle={labelIdle}
                         labelIdle={labelIdle} 
                         ref={ref => (this.pond = ref)}
@@ -407,21 +416,47 @@ class AdminPage extends Component {
                       />*/}
                     </Col>
                     <Col sm='4' className='col-temp'>
-                      <Label>{translate.header_course_changes_comment}</Label>
+                    <span className='inline-flex'>
+                    <Label>{translate.header_course_changes_comment}</Label>
+                          <InfoButton id = 'info_course_changes_comment' textObj = {translate.info_course_changes_comment}/>
+                        </span>
+                     
                       <Input style={{ height: 300 }} id='alterationText' key='alterationText' type="textarea" value={this.state.values.alterationText} onChange={this.handleInputChange} />
                     </Col>  
                     <Col sm='4' className='col-temp'>
-                      <Label>{translate.header_registrated}*</Label>
+                      <span className='inline-flex'>
+                        <Label>{translate.header_registrated}*</Label>
+                        <InfoButton id = 'info_registrated' textObj = {translate.info_registrated}/>
+                      </span>
                       <Input id='registeredStudents' key='registeredStudents' type='text' value={this.state.values.registeredStudents} onChange={this.handleInputChange} disabled={isDisabled} />
-                      <Label>{translate.header_examination_grade}*</Label>
+                      
+                      
+                      <span className='inline-flex'>
+                        <Label>{translate.header_examination_grade}*</Label>
+                        <InfoButton id = 'info_examination_grade' textObj = {translate.info_examination_grade}/>
+                      </span>
                       <Input id='examinationGrade' key='examinationGrade' type='number' value={this.state.values.examinationGrade} onChange={this.handleInputChange} disabled={isDisabled} />
-                      <Label>{translate.header_examiners}*</Label>
+                      
+                      
+                      <span className='inline-flex'>
+                        <Label>{translate.header_examiners}*</Label>
+                        <InfoButton id = 'info_examiners' textObj = {translate.info_examiners}/>
+                      </span>
                       <Input id='examiners' key='examiners' type='text' value={this.state.values.examiners} onChange={this.handleInputChange} disabled={isDisabled} />
-                      <Label>{translate.header_responsibles}*</Label>
+                     
+                      
+                      <span className='inline-flex'>
+                        <Label>{translate.header_responsibles}*</Label>
+                        <InfoButton id = 'info_responsibles' textObj = {translate.info_responsibles}/>
+                      </span>
                       <Input id='responsibles' key='responsibles' type='text' value={this.state.values.responsibles} onChange={this.handleInputChange} disabled={isDisabled} />
                       {routerStore.status === 'published'
                       ? <span>
+                        
+                        <span className='inline-flex'>
                         <Label>{translate.header_analysis_edit_comment}</Label>
+                        <InfoButton id = 'info_edit_comments' textObj = {translate.info_edit_comments}/>
+                      </span>
                         <Input id='commentChange' key='commentChange' type="textarea" value={this.state.values.commentChange} onChange={this.handleInputChange} />
                       </span>
                       : ''
