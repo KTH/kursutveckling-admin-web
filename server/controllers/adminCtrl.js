@@ -186,7 +186,7 @@ async function getIndex (req, res, next) {
       await renderProps.props.children.props.routerStore.handleCourseData(apiResponse.body, req.params.id.toUpperCase(), ldapUser, lang)
     } else {
       const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(req.params.id.toUpperCase(), lang)
-
+      renderProps.props.children.props.routerStore.analysisId = req.params.id
       renderProps.props.children.props.routerStore.analysisData = apiResponse.body
       // renderProps.props.children.props.routerStore.setCourseCode(apiResponse.body.courseCode)
       status = req.params.preview && req.params.preview === 'preview' ? 'preview' : status
@@ -208,7 +208,7 @@ async function getIndex (req, res, next) {
     console.log('session!!!!!!', req)
     renderProps.props.children.props.routerStore.__SSR__setCookieHeader(req.headers.cookie)
     // await renderProps.props.children.props.routerStore.getRoundAnalysis(req.params.id)
-    renderProps.props.children.props.routerStore.analysisId = req.params.id
+
 
     const breadcrumDepartment = await renderProps.props.children.props.routerStore.getBreadcrumbs()
     let breadcrumbs = [

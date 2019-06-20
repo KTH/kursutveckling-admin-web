@@ -218,7 +218,7 @@ appRoute.get('system.gateway', config.proxyPrefixPath.uri + '/gateway', getServe
 
 appRoute.get('api.kursutvecklingGetById', config.proxyPrefixPath.uri + '/apicall/getRoundAnalysisById/:id', Admin.getRoundAnalysis)
 appRoute.all('api.kursutvecklingPost', config.proxyPrefixPath.uri + '/apicall/postRoundAnalysisById/:id/:status', Admin.postRoundAnalysis)
-appRoute.post('api.kursutvecklingPost', config.proxyPrefixPath.uri + '/apicall/postRoundAnalysisById/:id/:status', Admin.postRoundAnalysis)
+// appRoute.post('api.kursutvecklingPost', config.proxyPrefixPath.uri + '/apicall/postRoundAnalysisById/:id/:status', Admin.postRoundAnalysis)
 appRoute.delete('api.kursutvecklingDelete', config.proxyPrefixPath.uri + '/apicall/deleteRoundAnalysisById/:id', Admin.deleteRoundAnalysis)
 appRoute.get('api.kursutvecklingGetUsedRounds', config.proxyPrefixPath.uri + '/apicall/kursutvecklingGetUsedRounds/:courseCode/:semester', Admin.getUsedRounds)
 appRoute.get('api.koppsCourseData', config.proxyPrefixPath.uri + '/api/kursutveckling-admin/getKoppsCourseDataByCourse/:courseCode/:language', Admin.getKoppsCourseData)

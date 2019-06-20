@@ -99,7 +99,7 @@ class RouterStore {
       //console.log("!!!!getRoundAnalysis", result.data)
       this.status = result.data.isPublished ? 'published' : 'draft'
       this.courseCode = result.data.courseCode
-      this.analysisId = result._id
+      //this.analysisId = result._id
       return this.analysisData = result.data
     }).catch(err => {
       if (err.response) {
@@ -121,7 +121,7 @@ class RouterStore {
         this.hasChangedStatus = true
 
       this.status = apiResponse.data.isPublished ? 'published' : 'draft'
-
+      this.analysisId = apiResponse.data._id
       return apiResponse.data
     }).catch(err => {
       if (err.response) {
@@ -210,6 +210,8 @@ class RouterStore {
       throw err
     })
   }
+
+  
   analysisAccess(analysis){
     const memberString = this.member.toString()
     

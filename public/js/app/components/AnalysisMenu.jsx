@@ -27,7 +27,7 @@ class AnalysisMenu extends Component {
                 info: false
             },
             semester: this.props.activeSemester && this.props.activeSemester.length > 0  ? this.props.activeSemester   : this.props.semesterList[0],
-            rounds: this.props.tempData ? this.props.tempData.roundIdList.split(',') : [],
+            rounds: this.props.tempData && !this.props.saved ? this.props.tempData.roundIdList.split(',') : [],
             usedRounds: this.props.routerStore.usedRounds.usedRounds ? this.props.routerStore.usedRounds.usedRounds  : [],
             draftAnalysis: this.props.routerStore.usedRounds.draftAnalysis ? this.props.routerStore.usedRounds.draftAnalysis : [],
             publishedAnalysis: this.props.routerStore.usedRounds.publishedAnalysis ? this.props.routerStore.usedRounds.publishedAnalysis : [],
@@ -173,7 +173,7 @@ class AnalysisMenu extends Component {
             if(this.state.lastSelected === 'new')
                 this.props.editMode(this.state.semester, this.state.rounds, null, this.state.lastSelected, this.props.tempData)
             else
-                this.props.editMode(this.state.semester, null, this.state.selectedRadio[this.state.lastSelected],  this.state.lastSelected)
+                this.props.editMode(this.state.semester, null, this.state.selectedRadio[this.state.lastSelected],  this.state.lastSelected, null)
         else
             this.setState({
                 alert: i18n.messages[this.props.routerStore.language].messages.alert_no_rounds_selected

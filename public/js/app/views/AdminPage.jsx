@@ -73,10 +73,12 @@ class AdminPage extends Component {
   }
 
   getTempData(){
-    if(this.state.progress === 'back_new'){
+  
+    if(this.state.progress === 'back_new' && this.state.values.changedDate.length === 0){
       const {alterationText, examinationGrade, registeredStudents, roundIdList} = this.state.values
       return { alterationText, examinationGrade, registeredStudents, roundIdList }
     }
+    return null
   }
 
   handlePreview(event) {
@@ -192,7 +194,7 @@ class AdminPage extends Component {
             progress: 'edit',
             alert: 'finimangsparat...',
             hasNewUploadedFileAnalysis: false,
-            hasNewUploadedFilePM: false
+            hasNewUploadedFilePM: false,
           })
           thisInstance.props.history.push(thisInstance.props.routerStore.browserConfig.proxyPrefixPath.uri + '/' + thisInstance.props.routerStore.analysisId)
         }  
@@ -300,7 +302,8 @@ class AdminPage extends Component {
                   activeSemester= { this.state.activeSemester } 
                   firstVisit = { routerStore.analysisData === undefined }
                   status = { routerStore.status }
-                  tempData = {this.getTempData()}
+                  tempData = {this.state.saved ? {} : this.getTempData()}
+                  saved = { this.state.saved }
                 />
               }
             </div>
@@ -431,7 +434,7 @@ class AdminPage extends Component {
             {/************************************************************************************* */}
             {/*                                BUTTONS FOR BOTH PAGES                               */}
             {/************************************************************************************* */}
-            {this.state.isPreviewMode && this.state.values.changedDate.length > 0 && routerStore.status !== 'preview'
+            {this.state.isPreviewMode && this.state.values.changedDate.length > 0 && routerStore.status !== 'preview' && routerStore.analysisId
               ?   <CopyText textToCopy={ routerStore.browserConfig.hostUrl + routerStore.browserConfig.proxyPrefixPath.uri + '/preview/' + routerStore.analysisId} />
               : ''
             }
