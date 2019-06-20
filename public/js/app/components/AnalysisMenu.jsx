@@ -291,7 +291,7 @@ class AnalysisMenu extends Component {
                       showAllEmptyNew || showAllEmptyPublished
                       ?  
                       <Alert color='info'>
-                          <p>{showAllEmptyNew ? 'new empty' :'published empty'}</p>
+                          <p>{showAllEmptyNew ? translate.alert_no_rounds : translate.alert_no_published }</p>
                       </Alert>
                     :<Form> 
                          <div className='inline-flex'>

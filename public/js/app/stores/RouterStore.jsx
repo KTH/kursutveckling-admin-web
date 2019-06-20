@@ -43,6 +43,7 @@ class RouterStore {
   service = ''
   member = []
   roundAccess = {}
+  user =''
 
   buildApiUrl(path, params) {
     let host
@@ -319,7 +320,7 @@ class RouterStore {
         _id: this.analysisId,
         alterationText: '',
         analysisFileName: '',
-        changedBy: "userName", // todo
+        changedBy: this.user, // todo
         changedDate: '',
         commentChange: '',
         commentExam: courseSyllabus.examComments ? courseSyllabus.examComments[roundLang] : '', //todo
@@ -338,7 +339,9 @@ class RouterStore {
         semester: semester,
         roundIdList: rounds.toString(),
         ugKeys: [...this.redisKeys.examiner, ...this.redisKeys.responsibles],
-        ladokUID: ''
+        ladokUID: '',
+        syllabusStartTerm: courseSyllabus.validFromTerm,
+        changedAfterPublishedDate: ''
       }
 
       this.analysisData.examiners = ''
@@ -447,7 +450,7 @@ class RouterStore {
     return list
   }
 
-  getMemberOf(memberOf, id){
+  getMemberOf(memberOf, id, ldapUsername){
     console.log('memberOf', memberOf)
     if (id.length > 7) {
       let splitId = id.split('_')
@@ -456,6 +459,7 @@ class RouterStore {
       this.courseCode = id.toUpperCase()
     }
     this.member = memberOf.filter((member) => member.indexOf(this.courseCode) > -1)
+    this.user = ldapUsername
   }
 
  /* let rounds = req.params.id.split('-')

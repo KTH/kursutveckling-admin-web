@@ -74,8 +74,7 @@ class AdminPage extends Component {
   }
 
   getTempData(){
-  
-    if(this.state.progress === 'back_new' && this.state.values.changedDate.length === 0){
+    if( this.state.progress === 'back_new' && this.state.values.changedDate.length === 0 ){
       const {alterationText, examinationGrade, registeredStudents, roundIdList} = this.state.values
       return { alterationText, examinationGrade, registeredStudents, roundIdList }
     }
@@ -219,16 +218,19 @@ class AdminPage extends Component {
       postObject.pdfAnalysisDate = getTodayDate()
     }
 
-   
-    postObject.analysisFileName = this.state.analysisFile
-    if(postObject.publishedDate.length === 0)
-       postObject.publishedDate = getTodayDate()
-    postObject.isPublished = true
+    if(this.state.values.isPublished){
+      postObject.changedAfterPublishedDate = getTodayDate()
+    }else{
+      postObject.publishedDate = getTodayDate()
+      postObject.isPublished = true
+    }
 
-    //console.log('postObjecteeee', this.state.values.isPublished)
+    postObject.analysisFileName = this.state.analysisFile
+
+    console.log('postObjecteeee', this.state.values.isPublished)
     return this.props.routerStore.postRoundAnalysisData(postObject, this.props.routerStore.status === 'new' )
       .then((response) => {
-        console.log('handlePublish', response)
+        console.log('handlePublish!!!!!', response)
         window.location= encodeURI(`${routerStore.browserConfig.hostUrl}${SERVICE_URL[routerStore.service]}${routerStore.analysisData.courseCode}?serv=kutv&event=pub&id=${routerStore.analysisId}&term=${routerStore.analysisData.semester}&name=${routerStore.analysisData.analysisName}`)
         thisInstance.setState({
           saved: true,

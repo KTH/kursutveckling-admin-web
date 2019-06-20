@@ -177,7 +177,7 @@ async function getIndex (req, res, next) {
     renderProps.props.children.props.routerStore.setBrowserConfig(browserConfig, paths, serverConfig.hostUrl, service)
     renderProps.props.children.props.routerStore.setLanguage(lang)
     renderProps.props.children.props.routerStore.setService(service)
-    await renderProps.props.children.props.routerStore.getMemberOf(req.session.authUser.memberOf, req.params.id.toUpperCase())
+    await renderProps.props.children.props.routerStore.getMemberOf(req.session.authUser.memberOf, req.params.id.toUpperCase(), req.session.authUser.username)
     if (req.params.id.length <= 7) {
       // Just course code -> analysis menu depending on status
       const apiResponse = await koppsCourseData.getKoppsCourseData(req.params.id.toUpperCase(), lang)
@@ -208,7 +208,6 @@ async function getIndex (req, res, next) {
     console.log('session!!!!!!', req)
     renderProps.props.children.props.routerStore.__SSR__setCookieHeader(req.headers.cookie)
     // await renderProps.props.children.props.routerStore.getRoundAnalysis(req.params.id)
-
 
     const breadcrumDepartment = await renderProps.props.children.props.routerStore.getBreadcrumbs()
     let breadcrumbs = [
