@@ -282,7 +282,7 @@ class RouterStore {
             startDate: round.firstTuitionDate,
             targetGroup: this.getTargetGroup(round),
             ladokUID: round.ladokUID,
-            hasAccess: getAccess(this.member, round, this.courseCode, semester)
+            hasAccess: getAccess(this.member, round, this.courseCode, semester.term)
           }
         })
       })
