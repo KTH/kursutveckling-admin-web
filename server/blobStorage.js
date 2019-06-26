@@ -4,12 +4,9 @@ const {
   ContainerURL,
   ServiceURL,
   SharedKeyCredential,
-  StorageURL,
-  uploadFileToBlockBlob
+  StorageURL
 } = require('@azure/storage-blob')
 
-const fs = require('fs')
-const path = require('path')
 const serverConfig = require('./configuration').server
 const log = require('kth-node-log')
 
@@ -30,7 +27,7 @@ const ONE_MINUTE = 60 * 1000
 
 async function runBlobStorage (file, id, type, saveCopyOfFile) {
   const containerName = 'kursutveckling-blob-container'
-  const blobName = id + '.' + file.name.split('.')[1]
+  let blobName = ''
   const content = file.data
   const fileType = file.mimetype
   console.log('runBlobStorage:', file)
@@ -39,16 +36,27 @@ async function runBlobStorage (file, id, type, saveCopyOfFile) {
   const serviceURL = new ServiceURL(`https://${STORAGE_ACCOUNT_NAME}.blob.core.windows.net`, pipeline)
 
   const containerURL = ContainerURL.fromServiceURL(serviceURL, containerName)
-  const blockBlobURL = BlockBlobURL.fromContainerURL(containerURL, blobName)
-
   const aborter = Aborter.timeout(30 * ONE_MINUTE)
+
+  const draftFileName = `${type}-${id}_draft.${file.name.split('.')[1]}`
 
   console.log('Containers:', file)
   await showContainerNames(aborter, serviceURL)
+  await renameBlob()
   if (fileType !== 'text/html') {
+    if (saveCopyOfFile === 'true') {
+      blobName = `${type}-${id}-${getTodayDate()}.${file.name.split('.')[1]}`
+    } else {
+      blobName = draftFileName
+    }
+    const blockBlobURL = BlockBlobURL.fromContainerURL(containerURL, blobName)
+    // TODO: const blockBlobURL_oldFile = BlockBlobURL.fromContainerURL(containerURL, draftFileName)
+    // const downloadResponse = await blockBlobURL_oldFile.download(aborter, 0)
     const resp = await blockBlobURL.upload(aborter, content, content.length)
     log.info(`Blob "${blobName}" is uploaded`, resp)
     await blockBlobURL.setHTTPHeaders(aborter, { blobContentType: fileType })
+    file.name = blobName
+    return file
   }
 
   /* console.log(`Blobs in "${containerName}" container:`) */
@@ -56,6 +64,7 @@ async function runBlobStorage (file, id, type, saveCopyOfFile) {
 }
 
 //* *********************************************************************** */
+
 async function showContainerNames (aborter, serviceURL) {
   let response
   let marker
@@ -82,4 +91,15 @@ async function showBlobNames (aborter, containerURL, fileName) {
       }
     }
   } while (marker)
+}
+
+const getTodayDate = (date = '') => {
+  let today = date.length > 0 ? new Date(date) : new Date()
+  let dd = String(today.getDate()).padStart(2, '0')
+  let mm = String(today.getMonth() + 1).padStart(2, '0') // January is 0!
+  let yyyy = today.getFullYear()
+  let hh = today.getHours()
+  let min = today.getMinutes()
+
+  return yyyy + mm + dd + '-' + hh + '-' + min
 }

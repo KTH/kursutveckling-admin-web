@@ -91,10 +91,29 @@ class RouterStore {
       credits: title.split('_')[1]
     }
   }
+
+  /*@action postUploadedFile(postObject, type, status) { 
+    console.log('postObject', postObject)
+    return axios.post(this.buildApiUrl(this.paths.storage.saveFile.uri,
+      { analysisid: this.analysisId, type: type, published: status}),
+      this._getOptions(postObject)
+    ).then(apiResponse => {
+      if (apiResponse.statusCode >= 400) {
+        return "ERROR-" + apiResponse.statusCode
+      }
+      if (this.status === 'new')
+      return apiResponse.data
+    }).catch(err => {
+      if (err.response) {
+        throw new Error(err.message)
+      }
+      throw err
+    })
+  }*/
  
   @action getRoundAnalysis(id, lang = 'sv') {
     return axios.get(this.buildApiUrl(this.paths.api.kursutvecklingGetById.uri,
-      { id: id/*, lang: lang*/ }),
+      { id: id }),
       this._getOptions()
     ).then(result => {
       //console.log("!!!!getRoundAnalysis", result.data)
@@ -360,10 +379,7 @@ class RouterStore {
     let tempName = ''
 
     for (let index = 0; index < roundList.length; index++) {
-      tempName = ` ${roundList[index].shortName && roundList[index].shortName.length > 0
-        ? roundList[index].shortName
-        : newName + '-' + roundList[index].roundId} 
-      ( ${language === 'English' ? 'Start date ' : 'Startdatum'} ${getDateFormat(roundList[index].startDate, language)}, ${language} ) `
+      tempName = ` ${roundList[index].shortName && roundList[index].shortName.length > 0 ? roundList[index].shortName : newName + '-' + roundList[index].roundId} ( ${language === 'English' ? 'Start date ' : 'Startdatum'} ${getDateFormat(roundList[index].startDate, language)}, ${language} ) `
 
       if(selectedRounds.indexOf(roundList[index].roundId) >= 0){
         addRounds.push(tempName)

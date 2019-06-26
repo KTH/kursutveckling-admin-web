@@ -1,12 +1,6 @@
 import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
 import { Row, Col, Button, Form, Label, Input, Alert } from 'reactstrap'
-import { FilePond, registerPlugin } from 'react-filepond'
-import 'filepond/dist/filepond.min.css'
-import FilePondPluginFileMetadata from 'filepond-plugin-file-metadata';
-
-// Register the plugin
-registerPlugin(FilePondPluginFileMetadata);
 
 //Components
 import Title from '../components/Title'
@@ -15,7 +9,7 @@ import Preview from '../components/Preview'
 import InfoModal from '../components/InfoModal'
 import CopyText from '../components/CopyText' 
 import InfoButton from '../components/InfoButton'
-
+import UpLoad from '../components/UpLoad'
 
 //Helpers 
 import { EMPTY, SERVICE_URL } from '../util/constants'
@@ -30,7 +24,7 @@ class AdminPage extends Component {
     this.state = {
       saved: false,
       values: this.props.routerStore.analysisData,
-      isPublished: this.props.routerStore.status === 'published',
+      isPublished: this.props.routerStore.analysisData ? this.props.routerStore.analysisData.isPublished : this.props.routerStore.status === 'published',
       progress: this.props.routerStore.status === 'new' ? 'new' : 'edit',
       isPreviewMode: this.props.routerStore.status === 'preview',
       activeSemester: '',
@@ -40,10 +34,9 @@ class AdminPage extends Component {
         cancel: false
       },
       alert: '',
+      madatoryMessage: '',
       analysisFile: this.props.routerStore.analysisData ? this.props.routerStore.analysisData.analysisFileName : '',
-      analysisFileItem:[],
-      pmFile:'',
-      pmFileItem:[],
+      pmFile: this.props.routerStore.analysisData ? this.props.routerStore.analysisData.pmFileName : '',
       hasNewUploadedFilePM: false,
       hasNewUploadedFileAnalysis: false
     }
@@ -55,24 +48,46 @@ class AdminPage extends Component {
     this.handleCancel = this.handleCancel.bind(this)
     this.handleInputChange = this.handleInputChange.bind(this)
     this.toggleModal = this.toggleModal.bind(this)
-    this.processfile = this.processfile.bind(this)
     this.getTempData = this.getTempData.bind(this)
+    //this.divTop = React.createRef() 
+    //this.fileInput = React.createRef()
+    this.hanleUploadFile = this.hanleUploadFile.bind(this)
+    this.handleRemoveFile = this.handleRemoveFile.bind(this)
   }
 
-  handleInit() {
-    console.log('FilePond instance has initialised', this.pond)
-    //this.pond.setState({status:5})
-    //this.pond.allowFilesSync =false
-    let pondis = this.pond.getFiles()
-    //pondis[0].allowFilesSync=false
-    console.log('wwwww',this)
+  handleRemoveFile(event){
+    console.log(event.target.id)
+    event.target.id === 'removeAnalysis'
+    ? this.setState({analysisFile: '', hasNewUploadedFileAnalysis: true})
+    : this.setState({pmFile: '', hasNewUploadedFilePM: true})
   }
 
-  processfile(arg){
-   arg ? console.log('processfile', arg) : null
-   return false
+
+  async hanleUploadFile(id, file, e){
+   let response = await this.sendRequest(id, file, e)
   }
 
+  sendRequest(id, file, e) {
+    const thisPage = this
+    return new Promise((resolve, reject) => {
+      const req = new XMLHttpRequest()
+      req.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          if(id === 'analysis')
+            thisPage.setState({analysisFile: this.responseText })
+          else
+            thisPage.setState({pmFile: this.responseText })
+          }
+      }
+
+      let formData = new FormData()
+      formData.append("file", e.target.files[0], e.target.files[0].name);
+      req.open("POST", `${this.props.routerStore.browserConfig.hostUrl}${this.props.routerStore.paths.storage.saveFile.uri.split(':')[0]}${this.props.routerStore.analysisData._id}/${id}/${this.state.isPublished}`);
+      req.send(formData)
+    })
+  }
+
+  
   getTempData(){
     if( this.state.progress === 'back_new' && this.state.values.changedDate.length === 0 ){
       const {alterationText, examinationGrade, registeredStudents, roundIdList} = this.state.values
@@ -125,16 +140,13 @@ class AdminPage extends Component {
   }
 
   handleCancel(event) {
-    //event.preventDefault()
     window.location=`${SERVICE_URL[this.props.routerStore.service]}${this.props.routerStore.analysisData.courseCode}?serv=kutv&event=cancel`
   }
 
 
   editMode(semester, rounds, analysisId, status, tempData) {
     const thisAdminPage = this
-
     if (status === 'new') {
-      
       return this.props.routerStore.createAnalysisData(semester, rounds).then( data => {
         let values = thisAdminPage.props.routerStore.analysisData
         if(tempData){
@@ -178,6 +190,10 @@ class AdminPage extends Component {
       postObject.analysisFileName = this.state.analysisFile
     }
 
+    if(this.state.pmFile !== postObject.pmFileName){
+      postObject.pmFileName = this.state.pmFile
+    }
+
     if( this.state.hasNewUploadedFileAnalysis ){
       postObject.pdfAnalysisDate = getTodayDate()
     }
@@ -209,35 +225,55 @@ class AdminPage extends Component {
     const { routerStore } = this.props
     const thisInstance = this
     let postObject = this.state.values
+    let modal = this.state.modalOpen
+    
 
-    if(this.state.analysisFile !== postObject.analysisFileName){
-      postObject.analysisFileName = this.state.analysisFile
-    }
-
-    if( this.state.hasNewUploadedFileAnalysis ){
-      postObject.pdfAnalysisDate = getTodayDate()
-    }
-
-    if(this.state.values.isPublished){
-      postObject.changedAfterPublishedDate = getTodayDate()
+    if( this.state.analysisFile.length === 0 || postObject.examinationGrade <= 0  || postObject.registeredStudents <= 0){
+      modal.publish = false
+      this.setState({alert: "Not published! Missing mandatory information",  modalOpen: modal})
     }else{
-      postObject.publishedDate = getTodayDate()
-      postObject.isPublished = true
-    }
-
-    postObject.analysisFileName = this.state.analysisFile
-
-    console.log('postObjecteeee', this.state.values.isPublished)
-    return this.props.routerStore.postRoundAnalysisData(postObject, this.props.routerStore.status === 'new' )
-      .then((response) => {
-        console.log('handlePublish!!!!!', response)
-        window.location= encodeURI(`${routerStore.browserConfig.hostUrl}${SERVICE_URL[routerStore.service]}${routerStore.analysisData.courseCode}?serv=kutv&event=pub&id=${routerStore.analysisId}&term=${routerStore.analysisData.semester}&name=${routerStore.analysisData.analysisName}`)
-        thisInstance.setState({
-          saved: true,
-          isPublished: true,
-          modalOpen: false
-        })
-      })
+      if(postObject.isPublished && postObject.commentChange.length === 0){
+        modal.publish = false
+        this.setState({alert: "Not published! Have no comment for change",  modalOpen: modal})
+        window.scrollTo(0, 0)
+      }else{
+        if(this.state.analysisFile !== postObject.analysisFileName){
+          postObject.analysisFileName = this.state.analysisFile
+        }
+    
+        if( this.state.hasNewUploadedFileAnalysis ){
+          postObject.pdfAnalysisDate = getTodayDate()
+        }
+    
+        if(postObject.isPublished){
+          postObject.changedAfterPublishedDate = getTodayDate()
+        }else{
+          postObject.publishedDate = getTodayDate()
+          postObject.isPublished = true
+        }
+    
+        postObject.analysisFileName = this.state.analysisFile
+    
+        console.log('postObjecteeee', this.state.values.isPublished)
+        return this.props.routerStore.postRoundAnalysisData(postObject, this.props.routerStore.status === 'new' )
+          .then((response) => {
+            console.log('handlePublish!!!!!', response)
+            modal.publish = false
+           
+            if(response.hasOwnProperty('messages')){
+              thisInstance.setState({alert: response.messages })
+            }else{
+              thisInstance.setState({
+                saved: true,
+                isPublished: true,
+                modalOpen: modal,
+                values: response
+              })
+           // window.location= encodeURI(`${routerStore.browserConfig.hostUrl}${SERVICE_URL[routerStore.service]}${routerStore.analysisData.courseCode}?serv=kutv&event=pub&id=${routerStore.analysisId}&term=${routerStore.analysisData.semester}&name=${routerStore.analysisData.analysisName}`)
+          }
+          })
+        }
+      }
   }
 
   toggleModal(event){
@@ -258,12 +294,13 @@ class AdminPage extends Component {
     })
   }
 
-  componentDidUpdate() {
-   // window.scrollTo(0, 0)
+  componentDidMount() {
+    //this.divTop.current.scrollTo(0, 0)
+  // window.scrollTo(0, 0)
     //this._div.scrollTop = 0
-    window.onpopstate  = (e) => {
+    /*window.onpopstate  = (e) => {
       console.log('adminP onpopstate', this.state)
-     }
+     }*/
   }
 
   
@@ -271,7 +308,7 @@ class AdminPage extends Component {
 
   render() {
     const { routerStore } = this.props
-    const isDisabled = this.state.isPublished === true
+    const { isPublished }= this.state
     const translate = i18n.messages[routerStore.language].messages
     const labelIdle =  translate.add_file 
 
@@ -280,7 +317,7 @@ class AdminPage extends Component {
    
     if (routerStore.analysisData === undefined || this.state.progress === 'back_new')
       return (
-        <div ref={(ref) => this._div = ref}>
+        <div ref={this.divTop}>
           { routerStore.errorMessage.length === 0
             ? <div>
               <Title 
@@ -333,11 +370,7 @@ class AdminPage extends Component {
             image = {routerStore.browserConfig.proxyPrefixPath.uri + '/static/'+ images[translate.progressImage[this.state.progress]]}
             header = {translate.header_main[routerStore.status]}
           />
-          {this.state.alert.length > 0 ?
-              <Alert>
-                {this.state.alert}
-            </Alert>
-              : ''}
+          
           {/************************************************************************************* */}
           {/*                                   PREVIEW                                           */}
           {/************************************************************************************* */}
@@ -353,69 +386,45 @@ class AdminPage extends Component {
             {/************************************************************************************* */}
             {/*                                 EDIT FORM                                               */}
             {/************************************************************************************* */}
+              
             {this.state.values && !this.state.isPreviewMode
               ? <Form className='admin-form'>
                 <h2>{translate.header_edit_content}</h2>
                 {/*<h3>{this.state.values.analysisName}</h3>*/}
                 <p>{translate.asterix_text}</p>
                 <Row className='form-group'>
-                  <Col sm='3' className='col-temp'>
+                  <Col sm='4' className='col-temp'>
+
+                    {/** ANALYSIS UPLOAD */}
                     <span className='inline-flex'>
                       <Label>{translate.header_upload_file}</Label>
                       <InfoButton id = 'info_upload_course_analysis' textObj = {translate.info_upload_course_analysis}/>
                     </span>
-                      
-                      <FilePond id="analysis" key="analysis" 
-                      onprocessfile = {this.processfile}
-                        instantUpload ={false}
-                        labelIdle={labelIdle} 
-                        id = 'analysisUpload'
-                        ref = {ref => (this.pond = ref)}
-                        files = {this.state.analysisFile}
-                        //abortLoad ={this.state.analysisFile.length > 0}
-                        allowMultiple = {false}
-                        maxFiles = {1}
-                        oninit={() => this.handleInit() }
-                        type='local'
-                        onprocessfile={this.processfile('tjohooo')}
-                      /* fileMetadataObject ={ {
-                          'type': 'analysis',
-                          'name':this.props.routerStore.analysisId,
-                          'status':this.props.routerStore.isPublished ?'published' : 'draft',
-                          'courseCode':this.props.routerStore.courseCode
-                        }
-                        }*/
-                        server= { `${this.props.routerStore.browserConfig.hostUrl}${this.props.routerStore.paths.storage.saveFile.uri.split(':')[0]}${this.props.routerStore.analysisData._id}/analysis/${this.state.isPublished}`}
-                        onupdatefiles={fileItems => {
-                          console.log('fileItems', fileItems)
-                          if(fileItems && fileItems.length > 0)
-                          //fileItems[0].abortProcessing()
-                          this.state.values['pdfAnalysisDate'] =  getTodayDate()
-                            this.setState({
-                              hasNewUploadedFileAnalysis: fileItems.fileExtension !== 'text/html',
-                              analysisFile: this.props.routerStore.analysisData._id+'.'+fileItems[0].fileExtension,
-                              analysisFileItem: fileItems[0],
-                            }) 
-                        }}
-                        >
-                        </FilePond>
-                        <span className='inline-flex'>
-                          <Label>{translate.header_upload_file_pm}</Label>
-                          <InfoButton id = 'info_upload_course_memo' textObj = {translate.info_upload_course_memo}/>
-                        </span>
-                     
-                      {/*<FilePond id="pm" key="pm" labelIdle={labelIdle}
-                        labelIdle={labelIdle} 
-                        ref={ref => (this.pond = ref)}
-                        files={this.state.pmFile}
-                        allowMultiple={true}
-                        maxFiles={1}
-                        onupdatefiles={fileItems => {
-                          this.setState({
-                            pmFile: fileItems.map(fileItem => fileItem.file)
-                          }) 
-                        }}
-                      />*/}
+                    
+                    {this.state.analysisFile.length > 0
+                            ? <div className='inline-flex '>
+                              <p className='upload-text'> {this.state.analysisFile} </p>
+                              <div className="iconContainer icon-trash-can" id="removeAnalysis" onClick={this.handleRemoveFile}></div>
+                            </div>
+                            : <UpLoad id="analysis" key="analysis" handleUpload = {this.hanleUploadFile}/>
+                    }
+
+                    <br/>
+
+                    {/** PM UPLOAD */}
+                    <div className='inline-flex'>
+                      <Label>{translate.header_upload_file_pm}</Label>
+                      <InfoButton id = 'info_upload_course_memo' textObj = {translate.info_upload_course_memo}/>
+                    </div>
+                   
+                   {this.state.pmFile.length > 0
+                            ? <div className='inline-flex '>
+                              <p className='upload-text'>{this.state.pmFile}</p>
+                              <div className="iconContainer icon-trash-can" id="removePm" onClick={this.handleRemoveFile}></div>
+                            </div>
+                            : <UpLoad id="memo" key="memo" handleUpload = {this.hanleUploadFile}/>
+                    }
+
                     </Col>
                     <Col sm='4' className='col-temp'>
                     <span className='inline-flex'>
@@ -423,42 +432,41 @@ class AdminPage extends Component {
                           <InfoButton id = 'info_course_changes_comment' textObj = {translate.info_course_changes_comment}/>
                         </span>
                      
-                      <Input style={{ height: 300 }} id='alterationText' key='alterationText' type="textarea" value={this.state.values.alterationText} onChange={this.handleInputChange} />
+                      <Input style={{ height: 300 }} id='alterationText' key='alterationText' type="textarea" value={this.state.values.alterationText} onChange={this.handleInputChange} disabled = {this.state.isPublished}/>
                     </Col>  
-                    <Col sm='4' className='col-temp'>
+                    <Col sm='3' className='col-temp'>
                       <span className='inline-flex'>
                         <Label>{translate.header_registrated}*</Label>
                         <InfoButton id = 'info_registrated' textObj = {translate.info_registrated}/>
                       </span>
-                      <Input id='registeredStudents' key='registeredStudents' type='text' value={this.state.values.registeredStudents} onChange={this.handleInputChange} disabled={isDisabled} />
+                      <Input id='registeredStudents' key='registeredStudents' type='text' value={this.state.values.registeredStudents} onChange={this.handleInputChange} disabled={isPublished} />
                       
                       
                       <span className='inline-flex'>
                         <Label>{translate.header_examination_grade}*</Label>
                         <InfoButton id = 'info_examination_grade' textObj = {translate.info_examination_grade}/>
                       </span>
-                      <Input id='examinationGrade' key='examinationGrade' type='number' value={this.state.values.examinationGrade} onChange={this.handleInputChange} disabled={isDisabled} />
+                      <Input id='examinationGrade' key='examinationGrade' type='number' value={this.state.values.examinationGrade} onChange={this.handleInputChange} disabled={isPublished} />
                       
                       
                       <span className='inline-flex'>
                         <Label>{translate.header_examiners}*</Label>
                         <InfoButton id = 'info_examiners' textObj = {translate.info_examiners}/>
                       </span>
-                      <Input id='examiners' key='examiners' type='text' value={this.state.values.examiners} onChange={this.handleInputChange} disabled={isDisabled} />
+                      <Input id='examiners' key='examiners' type='text' value={this.state.values.examiners} onChange={this.handleInputChange} disabled={isPublished} />
                      
                       
                       <span className='inline-flex'>
                         <Label>{translate.header_responsibles}*</Label>
                         <InfoButton id = 'info_responsibles' textObj = {translate.info_responsibles}/>
                       </span>
-                      <Input id='responsibles' key='responsibles' type='text' value={this.state.values.responsibles} onChange={this.handleInputChange} disabled={isDisabled} />
-                      {routerStore.status === 'published'
+                      <Input id='responsibles' key='responsibles' type='text' value={this.state.values.responsibles} onChange={this.handleInputChange} disabled={isPublished} />
+                      { isPublished
                       ? <span>
-                        
-                        <span className='inline-flex'>
-                        <Label>{translate.header_analysis_edit_comment}</Label>
-                        <InfoButton id = 'info_edit_comments' textObj = {translate.info_edit_comments}/>
-                      </span>
+                          <span className='inline-flex'>
+                            <Label>{translate.header_analysis_edit_comment}</Label>
+                            <InfoButton id = 'info_edit_comments' textObj = {translate.info_edit_comments}/>
+                         </span>
                         <Input id='commentChange' key='commentChange' type="textarea" value={this.state.values.commentChange} onChange={this.handleInputChange} />
                       </span>
                       : ''
@@ -475,7 +483,15 @@ class AdminPage extends Component {
               ?   <CopyText textToCopy={ routerStore.browserConfig.hostUrl + routerStore.browserConfig.proxyPrefixPath.uri + '/preview/' + routerStore.analysisId} />
               : ''
             }
-            <Row className="button-container text-center" >             
+              {this.state.alert.length > 0 
+            ? <Row>
+                <Alert color= 'info'>
+                  {this.state.alert}
+              </Alert>
+              </Row>
+              : ''}  
+            <Row className="button-container text-center" >  
+                   
                   <Col sm="4" style={{textAlign: 'left'}}>
                     {
                       routerStore.status === 'preview'

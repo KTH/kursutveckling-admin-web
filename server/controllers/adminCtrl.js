@@ -35,11 +35,15 @@ module.exports = {
 }
 
 function * _saveFileToStorage (req, res, next) {
-  console.log('_saveFileToStorage', req.body, req.files.filepond)
-  log.info('_saveFileToStorage', req.body, req.files.filepond)
+  console.log('_saveFileToStorage', req)
+  // log.info('_saveFileToStorage', req.body, req.files.filepond)
+  let file = req.files.file
   // const blobService = storage.createBlobService()
-  yield runBlobStorage(req.files.filepond, req.params.analysisid, req.params.type, req.params.published)
-  return httpResponse.json(res, req.files.filepond.name)
+  if (file.mimetype === 'application/pdf') {
+    file = yield runBlobStorage(file, req.params.analysisid, req.params.type, req.params.published)
+    console.log('file!!!!!', file)
+  }
+  return httpResponse.json(res, file.name)
 }
 
 function * _postRoundAnalysis (req, res, next) {

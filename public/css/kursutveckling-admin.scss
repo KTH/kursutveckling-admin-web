@@ -145,6 +145,13 @@ p.underlined {
   display: inline-table;
 }
 
+.upload-text{
+  border: 1px solid #d4d4d4;
+  padding-bottom: 10px;
+  font-size: .875rem;
+  padding: 5px;
+  border-radius: 5px;
+}
 
 
 
@@ -198,6 +205,16 @@ p.underlined {
   height: 20px;
   width: 30px;
   background: top left / 1.0em auto no-repeat url('https://app.kth.se/style/kth-style/img/kth-style/icons/back-link.svg');
+}
+
+.icon-trash-can{
+  background-image: url('https://app.kth.se/style/kth-style/img/kth-style/icons/trash-can-blue.svg');
+  cursor: pointer;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  margin-top: 5px;
+  margin-left: 5px;
 }
 
 .fa, .fas {
