@@ -49,8 +49,8 @@ async function runBlobStorage (file, id, type, saveCopyOfFile) {
       blobName = draftFileName
     }
     const blockBlobURL = BlockBlobURL.fromContainerURL(containerURL, blobName)
-    const blockBlobURL_oldFile = BlockBlobURL.fromContainerURL(containerURL, draftFileName)
-    const downloadResponse = await blockBlobURL_oldFile.download(aborter, 0)
+    // const blockBlobURL_oldFile = BlockBlobURL.fromContainerURL(containerURL, draftFileName)
+    // const downloadResponse = await blockBlobURL_oldFile.download(aborter, 0)
     const resp = await blockBlobURL.upload(aborter, content, content.length)
     log.info(`Blob "${blobName}" is uploaded`, resp)
     await blockBlobURL.setHTTPHeaders(aborter, { blobContentType: fileType })
