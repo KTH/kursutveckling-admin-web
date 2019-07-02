@@ -34,6 +34,7 @@ class Preview extends Component {
       return (
         <div key='kursutveckling-andmin-preview' className='container' id='preview-container' >
            <h2>{translate.header_preview_content}</h2>
+           <p>{translate.intro_preview}</p>
           {routerStore.analysisData.examinationRounds && routerStore.analysisData.examinationRounds.length === 0 
           ?<Alert>Fel fel fel !</Alert>
           : <div className='tables-list col'>
@@ -120,8 +121,12 @@ class TableForCourse extends Component {
           <ProgramCollapse header={translate.header_programs} text={values.programmeCodes} label={togglerId}/>
           <span className="right-links" >
            <a>{translate.link_syllabus}</a>
-            <a key='pmLink' id='pmLink' href='https://kth.box.com/s/i9xu34n5conqdoj7re81bmcto20wavib' target='_blank' >{translate.link_pm}: 2019-05-20</a> 
-            <a key='analysisLink'  id='analysisLink' href={routerStore.browserConfig.storageUri + linksFileNames.analysis} target='_blank' >{translate.link_analysis}: {values.pdfAnalysisDate.length > 0 ? getDateFormat(values.pdfAnalysisDate, routerStore.language) : '( ej uppladdad text?? )' }</a>
+            <a key='pmLink' id='pmLink' href='https://kth.box.com/s/i9xu34n5conqdoj7re81bmcto20wavib' target='_blank' >
+              {translate.link_pm}: 2019-05-20
+            </a> 
+            <a key='analysisLink'  id='analysisLink' href={routerStore.browserConfig.storageUri + linksFileNames.analysis} target='_blank' >  
+                {translate.link_analysis} {values.pdfAnalysisDate.length > 0 ? ': '+ getDateFormat(values.pdfAnalysisDate, routerStore.language) : '' }
+            </a>
           </span>
           <Table responsive>
             <thead>

@@ -20,7 +20,7 @@ class InfoModal extends Component {
 
 
   render () {
-    const { fade, isOpen, toggle, className, type, infoText, id } = this.props
+    const { fade, isOpen, toggle, className, type, infoText, id, url } = this.props
     const fadeModal = (this.props.hasOwnProperty('fade') ? fade : true)
 
       return (
@@ -30,11 +30,13 @@ class InfoModal extends Component {
             ? <Button id={type} type="button"  onClick={toggle} className='btn-info-modal btn btn-secondary info-inline'/>
             : ''
           }
-          <Modal isOpen = {isOpen} toggle={toggle} className={className} fade={fadeModal}>
+          <Modal isOpen = {isOpen} toggle={toggle} className={className} fade={fadeModal} id={id}>
             <ModalHeader toggle={toggle}>{infoText.header}</ModalHeader>
             <ModalBody>
-              <p dangerouslySetInnerHTML={{ __html:infoText.body}}/>
-             {/* <CopyText textToCopy={'tjohoooooooooooooo'} />*/}
+              {type=== 'copy'
+                ? <CopyText textToCopy={url} />
+                : <p dangerouslySetInnerHTML={{ __html:infoText.body}}/>
+              }
             </ModalBody>
             <ModalFooter>
               <Button id={type} color='secondary' onClick={toggle}>{infoText.btnCancel}</Button>

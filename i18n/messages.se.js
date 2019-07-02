@@ -51,22 +51,23 @@ module.exports = {
     select_semester: 'Välj termin',
     header_analysis_menu: 'Välj kursomgång',
     label_start_date: 'Startdatum',
+
     /* **** INTRO TEXT FOR ANALYSIS MENUE, EDIT, PREVIEW */
-    intro_analysis_menu: 'Börja med att välja termin och kursomgång för den kursanalys som ska publiceras (steg 1 av 3). I nästa steg (2 av 3) kommer kursdata för kursen att hämtas automatiskt från Ladok och Kopps för den termin och kursomgång som valts,det finns sedan möjlighet att redigera viss kursdata samt ladda upp kursanalysen. I sista steget (3 av 3) ges möjlighet att först granska och sedan publicera tabellen med kursanalys och all kursdata på sidan Kursens utveckling och historik.',
-    intro_edit: 'Redigera, ladda upp kuranalys med kursdata (steg 2 av 3)',
+    intro_analysis_menu: 'Börja med att välja termin och kursomgång för den kursanalys som ska publiceras (steg 1 av 3). I nästa steg (2 av 3) kommer kursdata för kursen att hämtas automatiskt från Ladok och Kopps för den termin och kursomgång som valts. Det finns sedan möjlighet att redigera viss kursdata samt ladda upp kursanalysen. I sista steget (3 av 3) ges möjlighet att först granska och sedan publicera tabellen med kursanalys och all kursdata på sidan Kursens utveckling och historik.',
+    intro_edit: 'I detta steg (2 av 3) så laddas kursanalys och kurs-PM upp, förändringar för vald kursomgång summeras samt en del av kursdata kontrolleras och vid behov justeras när inte stämmer. I nästa steg granskas all kursdata innan publicering.',
     intro_preview: 'In this step (3 of 3) a preview of the course analysis with course data is presented as it will be published on the page Course development and history. It is possible to go back to make adjustments, to save a draft or publish the information.',
 
     /* **** INTRO SELECT NEW, DRAFT, PUBLISHED */
-    intro_new: 'Följande kurstillfällen saknar publicerad kursanalys/ kursdata. Markera en eller flera som ingår i kursomgången: ',
-    intro_draft: 'Följande kursomgångar har sparade utkast som ännuej publicerats: ',
+    intro_new: 'Följande kurstillfällen saknar publicerad kursanalys/kursdata. Markera en eller flera som ingår i kursomgången: ',
+    intro_draft: 'Följande kursomgångar har sparade utkast som ännu ej publicerats: ',
     intro_published: 'Följande kursomgångar har publicerad kursanalys med kursdata. Välj den kursomgång nedan som du vill du vill ändra och sedan publicera om: ',
 
     /* **** EMPTY TEXT FOR NEW, DRAFT, PUBLISHED */
     draft_empty: 'Det finns inga sparade utkast för vald termin',
     published_empty: 'Det finns ingen publicerad kursutveckling för vald termin',
-    new_empty: 'Det finns inga ej påbörjade kurstillfällen för vald termin',
+    new_empty: 'Kursanalys och kursdata har publicerats för samtliga kursomgångar den valda terminen. Kontrollera publicerad kursanalys på sidan Kursens utveckling och historik',
 
-    not_authorized_course_offering: 'Du är inte kursansvarig för denna kursomgång och kan därför inte välja den.',
+    not_authorized_course_offering: 'Du kan endast granska detta utkast då du inte kursansvarig för kursomgången.',
     not_authorized_publish_new: 'Du är inte kursansvarig för detta kurstillfälle och kan därför inte välja det.',
 
     /** ************ BUTTONS ****************** */
@@ -76,12 +77,12 @@ module.exports = {
     btn_save: 'Spara utkast',
     btn_publish: 'Publicera',
     btn_back: 'Välj kursomgång',
-    btn_back_edit: 'Till redigering',
+    btn_back_edit: 'Redigera, ladda upp',
     btn_delete: 'Radera',
-    btn_save_and_cancel: 'Spara och avbryt',
+    btn_save_and_cancel: 'Spara utkast och avsluta',
+    btn_copy: 'Kopiera granska länk',
 
     /** ************ PAGE 2 FORM ************** */
-    add_file: 'Dra och droppa filen här <span class="filepond--label-action"> eller klicka för att välja fil </span>',
     asterix_text: '* Kommer inte att kunna ändras efter publicering',
 
     header_programs: 'Obligatorisk inom program',
@@ -95,8 +96,8 @@ module.exports = {
     header_examination_grade: 'Examinationsgrad',
     header_course_changes_comment: 'Förändringar som har införts till den här kursomgången',
     header_analysis_edit_comment: 'Kommentar till ändringar',
-    header_upload_file: 'Ladda upp analys',
-    header_upload_file_pm: 'Ladda upp PM',
+    header_upload_file: 'Kursanalys',
+    header_upload_file_pm: 'Kurs-pm',
     last_change_date: 'Senaste ändring:',
 
     link_syllabus: 'Kursplan',
@@ -104,26 +105,40 @@ module.exports = {
     link_pm: 'Kurs-PM',
 
     alert_no_rounds_selected: 'Du måste välja en kursomgång/ kurstillfälle nedan, innan du klickar på knapp "Redigera, ladda upp".',
-    alert_no_rounds: 'Den här kursen har inga kursomgångar',
+    alert_no_rounds: 'Den här kursen har inga opublicerade kursomgångar denna termin',
     alert_no_published: 'Det finns ingen publicerad kursanalys och kursdata denna termin',
+    alert_saved_draft: 'Utkast för kursanalys och kursdata har sparats',
+    alert_empty_fields: 'Vänligen fyll i alla markerade fält innan du fortsätter.',
+    alert_uploaded_file: 'Filen har laddats upp och fått nytt namn',
 
     /** ************ MODALS ************** */
+    info_copy_link: {
+      header: 'Kopiera länk till sparat utkast',
+	    body: 'Kopiera länken nedan, klistra in och skicka länken till den person som du vill ska granska utkastet.',
+      btnCancel: 'Stäng'
+    },
     info_publish: {
       header: 'Att tänka på innan du publicerar!',
       body: `Följande fält kommer inte att kunna ändras efter publicering: <br/>
-      <li> Examinator</li>
-      <li> Kursansvarig,</li>
-      <li> Antal reg. Studenter</li>
-      <li> Examinationsgrad</li>
-      <br/>  
-      <br/> 
+        <li> Examinator</li>
+        <li> Kursansvarig</li>
+        <li> Antal förstagångsregistrerade studenter</li>
+        <li> Examinationsgrad</li>
+        <br/>  
+        <br/> 
+        Publicering kommer att ske på sidan Kursens utveckling och historik.
+        <br/>
+        <br/>
         Vill du fortsätta att publicera?`,
       btnCancel: 'Nej, gå tillbaka',
       btnConfirm: 'Ja, fortsätt publicera'
     },
     info_cancel: {
       header: 'Att tänka på innan du avbryter!',
-      body: `Osparade ändringar kommer att försvinna om du avbryter. 
+      /** selected: 'Du har valt...', /** */
+	  /** semester: 'Termin:', /** Följt av kursomgångens starttermin */
+	  /** course_round: 'Kursomgång:', /** Följt av kursomgångens namn */
+	  body: `Osparade ändringar kommer att försvinna om du avbryter. 
       <br/>  
       <br/> 
             Vill du fortsätta att avbryta?`,
@@ -131,23 +146,26 @@ module.exports = {
       btnConfirm: 'Ja, fortsätt avbryta'
     },
     info_delete: {
-      header: 'Att tänka på innan du XXX!',
-      body: `XXXXXX. 
+      header: 'Är du säker på att du vill radera utkast?',
+      /** selected: 'Du har valt...', /** */
+	  /** semester: 'Termin:', /** Följt av kursomgångens starttermin */
+	  /** course_round: 'Kursomgång:', /** Följt av kursomgångens namn */
+	  body: `XXXXXX. 
       <br/>  
       <br/> 
-            Vill du fortsätta att radera?`,
+            Vill du fortsätta att radera utkast?`,
       btnCancel: 'Nej, gå tillbaka',
       btnConfirm: 'Ja, fortsätt radera'
     },
     /** **** INFO BUTTONS ***** */
     info_select_semester: {
       header: 'Info',
-      body: 'Välj vilken termin kursomgångenstartade. Om kursomgångensträcker sig över flera termer välj första terminen.',
+      body: 'Välj vilken termin kursomgångenstartade. Om kursomgången sträcker sig över flera terminer; välj kursomgångens starttermin.',
       btnCancel: 'Close'
     },
     info_choose_course_offering: {
       header: 'Info',
-      body: 'Välj alla kurstillfällen som ingick i kursomgången. Studenter är antagna till ett kurstillfälle Programstudenter, betalande studenter och fristående studenter antas till olika kurstill fällen men kan utbildas i samma kursomgång. Kurstillfällen ska alltså grupperas ihop till en kursomgång.Kursomgången är ett praktiskt genomförande av en kurs. Kursomgången har en gemensam starttidpunkt, gemensam kurstakt och normalt gemensam undervisning för en studentgrupp. Schemat läggs per kursomgång,kurs-PM utformas per kursomgång och kursanalys genomförs per kursomgång.',
+      body: 'Välj alla kurstillfällen som ingick i kursomgången. Studenter är antagna till ett kurstillfälle. Programstudenter, betalande studenter och fristående studenter antas till olika kurstillfällen men kan utbildas i samma kursomgång. Kurstillfällen ska alltså grupperas ihop till en kursomgång. Kursomgången är ett praktiskt genomförande av en kurs. Kursomgången har en gemensam starttidpunkt, gemensam kurstakt och normalt gemensam undervisning för en studentgrupp. Schemat läggs per kursomgång, kurs-PM utformas per kursomgång och kursanalys genomförs per kursomgång.',
       btnCancel: 'Close'
     },
 
@@ -159,13 +177,13 @@ module.exports = {
 
     info_examiners: {
       header: 'Info',
-      body: 'Examinator för kurs och vid gällande kursomgång. Examinatorer administreras i Kopps.',
+      body: 'Examinator för kurs vid gällande kursomgång. Examinatorer administreras i Kopps.',
       btnCancel: 'Close'
     },
 
     info_responsibles: {
       header: 'Info',
-      body: 'Samtligakursansvariga för de kurstillfällen som ingår i kursomgången. Kursansvariga administreras i Kopps.',
+      body: 'Samtliga kursansvariga för de kurstillfällen som ingår i kursomgången. Kursansvariga administreras i Kopps.',
       btn_close: 'Close'
     },
 
@@ -177,13 +195,13 @@ module.exports = {
 
     info_upload_course_analysis: {
       header: 'Info',
-      body: 'Ladda upp den senaste versionen av kursanalysen förkursomgången.',
+      body: 'Ladda upp den senaste versionen av kursanalysen för kursomgången.',
       btnCancel: 'Close'
     },
 
     info_upload_course_memo: {
       header: 'Info',
-      body: 'Ladda upp den senaste versionen av kurs-PM för kursomgången.',
+      body: 'Ladda upp den senaste versionen av kurs-pm för kursomgången.',
       btnCancel: 'Close'
     },
 
@@ -194,8 +212,39 @@ module.exports = {
     },
     info_registrated: {
       header: 'Info',
-      body: 'Antal förstagångsregistrerade på de kurstillfällen som ingår i kursomgången.Studenter som antagits men som inte registrerats ska inte räknas in. Inte heller registrerade studenter som omregistrerats från ett annat kurstillfälle påsamma kurs ska räknas in.',
+      body: 'Antal förstagångsregistrerade på de kurstillfällen som ingår i kursomgången. Studenter som antagits men som inte registrerats ska inte räknas in. Inte heller registrerade studenter som omregistrerats från ett annat kurstillfälle på samma kurs ska räknas in.',
       btnCancel: 'Close'
-    }
+    },
+
+    header_semester: 'Termin:', /** Visas i steg 2, följt av kursomgångens starttermin */
+    header_course_offering: 'Kursomgång:', /** Visas i steg 2, följt av kursomgångens namn */
+    header_upload: 'Ladda upp', /** Visas i steg 2, rubrik för kolumn 1 */
+    header_summarize: 'Summera förändringar', /** Visas i steg 2, rubrik för kolumn 2 */
+    header_check_data: 'Kontrollera hämtat data', /** Visas i steg 2, rubrik för kolumn 3 */
+    header_progress_select: '1. Välj kursomgång', /** Ersätter bilden, ska vara understruket med blå linje om användaren är i detta steg */
+    header_progress_edit_upload: '2. Redigera kursdata och ladda upp kursanalys', /** Ersätter bilden, ska vara understruket med blå linje om användaren är i detta steg */
+    header_progress_review: '3. Granska och publicera', /** Ersätter bilden, ska vara understruket med blå linje om användaren är i detta steg */
+
+    info_published: {
+	  header: 'Kursanalys och kursdata har publicerats',
+      /** semester: 'Termin:', /** Följt av kursomgångens starttermin */
+	  /** course_round: 'Kursomgång:', /** Följt av kursomgångens namn */
+	  body: 'Se resultat på sidan:' /** Följt av länk till sidan Kursens utveckling och historik */
+    },
+    info_draft_saved: {
+	  header: 'Utkast för kursanalys och kursdata har sparats',
+      /** semester: 'Termin:', /** Följt av kursomgångens starttermin */
+	  /** course_round: 'Kursomgång:', /** Följt av kursomgångens namn */
+	  body: 'Kopiera länk till utkast eller publicera från sidan:' /** Följt av länk till steg 1, Välj kursomgång */
+    },
+    info_draft_deleted: {
+	  header: 'Utkast för kursanalys och kursdata har raderats'
+      /** semester: 'Termin:', /** Följt av kursomgångens starttermin */
+	  /** course_round: 'Kursomgång:', /** Följt av kursomgångens namn */
+	  /** Länk till steg 1, Välj kursomgång */
+    },
+    error_mandantory_fields: 'Du behöver fylla i obligatoriska fält för att gå vidare till Granska och publicera.',
+    file_uploaded: 'Vald fil har laddatas upp',
+    header_draft_saved: 'Utkast för kursanalys och kursdata har sparats'
   }
 }

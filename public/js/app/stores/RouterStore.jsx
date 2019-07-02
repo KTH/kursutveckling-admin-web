@@ -160,11 +160,14 @@ class RouterStore {
       if (apiResponse.statusCode >= 400) {
         return "ERROR-" + apiResponse.statusCode
       }
+      this.errorMessage = apiResponse.data.message
+      if(this.errorMessage !== undefined){
       if (this.status === 'draft' && apiResponse.data.isPublished)
         this.hasChangedStatus = true
 
       this.status = apiResponse.data.isPublished ? 'published' : 'draft'
       this.analysisId = apiResponse.data._id
+      }
       return apiResponse.data
     }).catch(err => {
       if (err.response) {
@@ -346,13 +349,13 @@ class RouterStore {
         courseCode: this.courseData.courseCode,
         examinationRounds: this.getExamObject( examinationRounds, this.courseData.gradeScale, roundLang),
         examiners: '',
-        examinationGrade: 0,
+        examinationGrade: '',
         isPublished: false,
         pdfAnalysisDate: '',
         pdfPMDate: '',
         programmeCodes: this.getAllTargetGroups(rounds, this.roundData[semester]).join(', '),
         publishedDate: '',
-        registeredStudents: 0,
+        registeredStudents: '',
         responsibles: '',
         analysisName: newName,
         semester: semester,
@@ -453,13 +456,16 @@ class RouterStore {
   getEmployeesNames(employeeList) {
     let list = []
     let toObject
-
+    let fullName = ''
     for (let index = 0; index < employeeList.length; index++) {
       if (employeeList[index] !== null) {
         toObject = JSON.parse(employeeList[index]) 
         for (let index2 = 0; index2 < toObject.length; index2++) {
-          if(toObject[index2].givenName)
-          list.push(`${toObject[index2].givenName} ${toObject[index2].lastName}`)
+          if(toObject[index2].givenName){
+            fullName = `${toObject[index2].givenName} ${toObject[index2].lastName}`
+            if(list.indexOf(fullName) < 0 )
+              list.push(fullName)
+          }
         }
       }
     }

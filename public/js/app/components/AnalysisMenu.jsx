@@ -24,7 +24,8 @@ class AnalysisMenu extends Component {
             collapseOpen: this.props.progress === 'back_new',
             modalOpen: {
                 delete: false,
-                info: false
+                info: false,
+                copy: false
             },
             semester: this.props.activeSemester && this.props.activeSemester.length > 0  ? this.props.activeSemester   : this.props.semesterList[0],
             rounds: this.props.tempData && !this.props.saved ? this.props.tempData.roundIdList.split(',') : [],
@@ -46,6 +47,7 @@ class AnalysisMenu extends Component {
         this.handleSelectedDraft = this.handleSelectedDraft.bind(this)
         this.handleSelectedPublished = this.handleSelectedPublished.bind(this)
         this.handleCancel = this.handleCancel.bind(this)
+        this.handleDelete = this.handleDelete.bind(this)
         this.toggleModal = this.toggleModal.bind(this)
     }
 
@@ -135,7 +137,7 @@ class AnalysisMenu extends Component {
             prevState.alert = ''
 
         if ( event.target.checked ){
-            prevState.selectedRadio.draft = null
+            prevState.selectedRadio.draft = []
             prevState.rounds.push(event.target.id)
             prevState.lastSelected = 'new'
             this.setState(prevState)
@@ -180,20 +182,10 @@ class AnalysisMenu extends Component {
             })
     }
 
-   /* goToPreviewMode(event) {
-        event.preventDefault()
-        console.log(event.target)
-        if (this.state.selectedRadio[event.target.id].length > 0)
-            this.props.editMode(this.state.semester, this.state.rounds, this.state.selectedRadio[event.target.id], event.target.id)
-        else
-            this.setState({
-                alert: i18n.messages[this.props.routerStore.language].messages.alert_no_rounds_selected
-            })
-    }*/
 
     handleCancel(event) {
         event.preventDefault()
-        window.location=`${SERVICE_URL[this.props.routerStore.service]}${this.props.routerStore.analysisData.courseCode}?serv=kutv&event=cancel`
+        window.location=`${SERVICE_URL[this.props.routerStore.service]}${this.props.routerStore.courseCode}?serv=kutv&event=cancel`
       }
 
     handleDelete ( id, fromModal = false ){
@@ -255,7 +247,7 @@ class AnalysisMenu extends Component {
                 >
                     <div className='inline-flex'>
                         <h3 > {translate.select_semester} </h3> 
-                        <InfoButton id = 'info_select_semester' textObj = {translate.info_select_semester}/>
+                        <InfoButton className = 'padding-top-30' id = 'info_select_semester' textObj = {translate.info_select_semester}/>
                     </div>
                     
                     <DropdownToggle >
@@ -308,7 +300,7 @@ class AnalysisMenu extends Component {
                                 {this.state.draftAnalysis.length > 0
                                         ?<span>
                                             <p>{translate.intro_draft}</p>
-                                            <ul>
+                                            <ul className='no-padding-left'>
                                             {this.state.draftAnalysis.map(analysis =>
                                                 <li className = 'select-list' key={analysis.analysisId}>
                                                     < Label key={"Label" + analysis.analysisId} for={analysis.analysisId} >
@@ -337,10 +329,10 @@ class AnalysisMenu extends Component {
                             {/*                               NEW ANALYSIS                                          */}
                             {/************************************************************************************* */}
                                 {roundList[this.state.semester].length > this.state.usedRounds.length
-                                    ?  <div>
+                                    ?  <div className = 'padding-top-30'>
                                         {/* <h3>{translate.header_select_rounds}</h3>*/}
                                         <p>{translate.intro_new}</p>
-                                        <ul> 
+                                        <ul className='no-padding-left'> 
                                             {roundList[this.state.semester].map(round =>
                                                 this.state.usedRounds.indexOf(round.roundId) < 0
                                                     ? <li className = 'select-list' key={round.roundId}>
@@ -381,7 +373,7 @@ class AnalysisMenu extends Component {
                             {this.state.publishedAnalysis.length > 0
                                 ?  <div>
                                 {/* <h3>{translate.header_select_rounds}</h3>*/}
-                                <p>{translate.intro_published}</p><ul>
+                                <p>{translate.intro_published}</p><ul className='no-padding-left'>
                                     
                                     {
                                         this.state.publishedAnalysis.map(analysis =>
@@ -416,9 +408,17 @@ class AnalysisMenu extends Component {
                 {/************************************************************************************* */}
                 <Row className="button-container text-center">
                     <Col sm="6" lg="4">
-                       {/**  <Button color='secondary' id='cancel' key='cancel' onClick={this.handleCancel} >
-                            {translate.btn_cancel}
-                        </Button>*/}
+                        { this.state.selectedRadio.draft.length > 0 
+                            ? <span>
+                                <Button color='danger' id='delete' key='delete' onClick={this.toggleModal} >
+                                    {translate.btn_delete}
+                                </Button>
+                                <Button color='secondary' id='copy' key='copy' onClick={this.toggleModal} >
+                                    {translate.btn_copy}
+                                </Button>
+                            </span>
+                            : ''
+                        }
                     </Col>
                     <Col sm="6" lg="4">
                         <Button color='secondary' id='cancel' key='cancel' onClick={this.handleCancel} >
@@ -437,6 +437,7 @@ class AnalysisMenu extends Component {
                     </Col>
                 </Row>
                 <InfoModal type = 'delete' toggle= {this.toggleModal} isOpen = {this.state.modalOpen.delete} id={this.state.selectedRadio.draft} handleConfirm={this.handleDelete} infoText={translate.info_delete}/>
+                <InfoModal type = 'copy' toggle= {this.toggleModal} isOpen = {this.state.modalOpen.copy} id={'copy'} url={routerStore.browserConfig.hostUrl + routerStore.browserConfig.proxyPrefixPath.uri + '/preview/' + this.state.selectedRadio.draft} infoText={translate.info_copy_link}/>
             </div>
         )
     }

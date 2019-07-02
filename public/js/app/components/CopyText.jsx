@@ -20,7 +20,7 @@ class CopyText extends Component {
             <InputGroup>
                 <Input type ="text" value = {this.props.textToCopy} readOnly={true} />
                 <InputGroupAddon addonType="append">
-                    <Button color="secondary" onClick={this.handleCopy}>Copy!</Button>
+                    <Button color="secondary" className = 'copy-btn' onClick={this.handleCopy}>Copy!</Button>
                 </InputGroupAddon>
             </InputGroup>
         )

@@ -38,11 +38,11 @@ module.exports = {
  * Renders the view 'notFound' with the layout 'exampleLayout'.
  */
 function _notFound (req, res, next) {
-  if (req.originalUrl.indexOf('.map') < 0) { // Temp TODO
-    const err = new Error('Not Found: ' + req.originalUrl)
-    err.status = 404
-    next(err)
-  }
+  // if (req.originalUrl.indexOf('.map') < 0) { // Temp TODO
+  const err = new Error('Not Found: ' + req.originalUrl)
+  err.status = 404
+  next(err)
+  // }
 }
 
 // this function must keep this signature for it to work properly

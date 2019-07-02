@@ -38,7 +38,8 @@ class AdminPage extends Component {
       analysisFile: this.props.routerStore.analysisData ? this.props.routerStore.analysisData.analysisFileName : '',
       pmFile: this.props.routerStore.analysisData ? this.props.routerStore.analysisData.pmFileName : '',
       hasNewUploadedFilePM: false,
-      hasNewUploadedFileAnalysis: false
+      hasNewUploadedFileAnalysis: false,
+      notValid: []
     }
     this.handlePreview = this.handlePreview.bind(this)
     this.editMode = this.editMode.bind(this)
@@ -53,6 +54,7 @@ class AdminPage extends Component {
     //this.fileInput = React.createRef()
     this.hanleUploadFile = this.hanleUploadFile.bind(this)
     this.handleRemoveFile = this.handleRemoveFile.bind(this)
+    this.validateData = this.validateData.bind(this)
   }
 
   handleRemoveFile(event){
@@ -96,13 +98,22 @@ class AdminPage extends Component {
     return null
   }
 
-  handlePreview(event) {
+  handlePreview(event) { 
     event.preventDefault()
+    let invalidList = this.validateData(this.state.values)
+    if(invalidList.length > 0){
+      this.setState({
+        notValid: invalidList,
+        alert: i18n.messages[this.props.routerStore.language].messages.alert_empty_fields
+      })
+    }else{
     this.setState({
       isPreviewMode: true,
       progress: 'preview',
-      alert: ''
+      alert: '',
+      notValid: invalidList
     })
+  }
   }
 
   handleBack(event) {
@@ -208,7 +219,7 @@ class AdminPage extends Component {
           thisInstance.setState({
             saved: true,
             progress: 'edit',
-            alert: 'finimangsparat...',
+            alert: i18n.messages[routerStore.language].messages.alert_saved_draft,
             hasNewUploadedFileAnalysis: false,
             hasNewUploadedFilePM: false,
           })
@@ -221,63 +232,50 @@ class AdminPage extends Component {
     if(!fromModal){    
       event.preventDefault()
     }
-
     const { routerStore } = this.props
     const thisInstance = this
     let postObject = this.state.values
     let modal = this.state.modalOpen
     
-
-    if( this.state.analysisFile.length === 0 || postObject.examinationGrade <= 0  || postObject.registeredStudents <= 0){
-      modal.publish = false
-      this.setState({alert: "Not published! Missing mandatory information",  modalOpen: modal})
+    if(this.state.analysisFile !== postObject.analysisFileName){
+      postObject.analysisFileName = this.state.analysisFile
+    }
+    
+    if( this.state.hasNewUploadedFileAnalysis ){
+      postObject.pdfAnalysisDate = getTodayDate()
+    }
+    
+    if(postObject.isPublished){
+      postObject.changedAfterPublishedDate = getTodayDate()
     }else{
-      if(postObject.isPublished && postObject.commentChange.length === 0){
+      postObject.publishedDate = getTodayDate()
+      postObject.isPublished = true
+    }
+    
+    postObject.analysisFileName = this.state.analysisFile
+    console.log('postObjecteeee', this.state.values.isPublished)
+    return this.props.routerStore.postRoundAnalysisData(postObject, this.props.routerStore.status === 'new' )
+      .then((response) => {
+        console.log('handlePublish!!!!!', response)
         modal.publish = false
-        this.setState({alert: "Not published! Have no comment for change",  modalOpen: modal})
-        window.scrollTo(0, 0)
-      }else{
-        if(this.state.analysisFile !== postObject.analysisFileName){
-          postObject.analysisFileName = this.state.analysisFile
-        }
-    
-        if( this.state.hasNewUploadedFileAnalysis ){
-          postObject.pdfAnalysisDate = getTodayDate()
-        }
-    
-        if(postObject.isPublished){
-          postObject.changedAfterPublishedDate = getTodayDate()
-        }else{
-          postObject.publishedDate = getTodayDate()
-          postObject.isPublished = true
-        }
-    
-        postObject.analysisFileName = this.state.analysisFile
-    
-        console.log('postObjecteeee', this.state.values.isPublished)
-        return this.props.routerStore.postRoundAnalysisData(postObject, this.props.routerStore.status === 'new' )
-          .then((response) => {
-            console.log('handlePublish!!!!!', response)
-            modal.publish = false
-           
-            if(response.hasOwnProperty('messages')){
-              thisInstance.setState({alert: response.messages })
-            }else{
-              thisInstance.setState({
-                saved: true,
-                isPublished: true,
-                modalOpen: modal,
-                values: response
-              })
-           // window.location= encodeURI(`${routerStore.browserConfig.hostUrl}${SERVICE_URL[routerStore.service]}${routerStore.analysisData.courseCode}?serv=kutv&event=pub&id=${routerStore.analysisId}&term=${routerStore.analysisData.semester}&name=${routerStore.analysisData.analysisName}`)
-          }
+        if(response.message){
+          this.setState({
+            alert: response.message,
+            modalOpen: modal
           })
+        }else{
+          thisInstance.setState({
+            saved: true,
+            isPublished: true,
+            modalOpen: modal,
+            values: response
+          })
+    // window.location= encodeURI(`${routerStore.browserConfig.hostUrl}${SERVICE_URL[routerStore.service]}${routerStore.analysisData.courseCode}?serv=kutv&event=pub&id=${routerStore.analysisId}&term=${routerStore.analysisData.semester}&name=${routerStore.analysisData.analysisName}`)
         }
-      }
+      })  
   }
 
   toggleModal(event){
-    console.log("modal", event.target === 'modal' )
     let modalOpen = this.state.modalOpen
     modalOpen[event.target.id] = !modalOpen[event.target.id]
     this.setState({
@@ -290,8 +288,26 @@ class AdminPage extends Component {
     values[event.target.id] = event.target.value
     this.setState({
       values: values,
-      saved: false
+      saved: false,
+      notValid: []
     })
+  }
+
+  validateData(values){
+    let invalidList = []
+    const toValidate = ['registeredStudents', 'examinationGrade', 'examiners', 'responsibles']
+    for (let key of toValidate) {
+      if( values[key].length === 0){
+        invalidList.push(key)
+      }
+    }
+    if(this.state.analysisFile.length === 0){
+      invalidList.push('analysisFile')
+    }
+    if(this.state.isPublished && values.commentChange.length === 0){
+      invalidList.push('commentChange')
+    }
+    return invalidList
   }
 
   componentDidMount() {
@@ -302,9 +318,6 @@ class AdminPage extends Component {
       console.log('adminP onpopstate', this.state)
      }*/
   }
-
-  
-
 
   render() {
     const { routerStore } = this.props
@@ -327,7 +340,6 @@ class AdminPage extends Component {
                 image = {routerStore.browserConfig.proxyPrefixPath.uri + '/static/'+ images[translate.progressImage['first']]}
                 header = {translate.header_main[routerStore.status]}
                 />
-             
          
               {/************************************************************************************* */}
               {/*                               PAGE1: ANALYSIS MENU                             */}
@@ -353,7 +365,6 @@ class AdminPage extends Component {
       )
     else
       return (
-        
         <div key='kursutveckling-form-container' className='container' id='kursutveckling-form-container' ref={(ref) => this._div = ref} >
         {/************************************************************************************* */}
         {/*                     PAGE 2: EDIT AND  PAGE 3: PREVIEW                               */}
@@ -361,8 +372,9 @@ class AdminPage extends Component {
          {
            routerStore.errorMessage.length > 0
             ?<Alert color='info'>{routerStore.errorMessage}</Alert>
-            :''
-         }
+            :
+          <div>
+          
           <Title 
             title={routerStore.courseTitle} 
             language={routerStore.language} 
@@ -370,6 +382,7 @@ class AdminPage extends Component {
             image = {routerStore.browserConfig.proxyPrefixPath.uri + '/static/'+ images[translate.progressImage[this.state.progress]]}
             header = {translate.header_main[routerStore.status]}
           />
+         
           
           {/************************************************************************************* */}
           {/*                                   PREVIEW                                           */}
@@ -378,6 +391,7 @@ class AdminPage extends Component {
             ? <Preview 
               values={ this.state.values } 
               analysisFile= { this.state.analysisFile }
+              pmFile = { this.state.pmFile }
             />
             : ""
           }
@@ -389,12 +403,21 @@ class AdminPage extends Component {
               
             {this.state.values && !this.state.isPreviewMode
               ? <Form className='admin-form'>
+                  <p>{translate.intro_edit}</p>
+
+                {this.state.alert.length > 0 
+                  ? <Row>
+                    <Alert color= 'info'>{this.state.alert} </Alert>
+                  </Row>
+                  : ''
+                }  
                 <h2>{translate.header_edit_content}</h2>
-                {/*<h3>{this.state.values.analysisName}</h3>*/}
-                <p>{translate.asterix_text}</p>
+               <h3>{translate.header_semester} {this.state.values.semester}</h3>
+               <h3>{translate.header_course_offering} {this.state.values.analysisName}</h3>
+              
                 <Row className='form-group'>
                   <Col sm='4' className='col-temp'>
-
+                    <h4>{translate.header_upload}</h4>
                     {/** ANALYSIS UPLOAD */}
                     <span className='inline-flex'>
                       <Label>{translate.header_upload_file}</Label>
@@ -402,13 +425,14 @@ class AdminPage extends Component {
                     </span>
                     
                     {this.state.analysisFile.length > 0
-                            ? <div className='inline-flex '>
-                              <p className='upload-text'> {this.state.analysisFile} </p>
-                              <div className="iconContainer icon-trash-can" id="removeAnalysis" onClick={this.handleRemoveFile}></div>
-                            </div>
-                            : <UpLoad id="analysis" key="analysis" handleUpload = {this.hanleUploadFile}/>
+                      ? <div className='inline-flex'>
+                        <p className='upload-text'> {this.state.analysisFile} </p>
+                         <div className="iconContainer icon-trash-can" id="removeAnalysis" onClick={this.handleRemoveFile}></div>
+                      </div>
+                      : <div className={this.state.notValid.indexOf('analysisFile') > -1 ? 'not-valid' : ''}>
+                        <UpLoad id="analysis" key="analysis" handleUpload = {this.hanleUploadFile}/>
+                      </div>
                     }
-
                     <br/>
 
                     {/** PM UPLOAD */}
@@ -418,56 +442,89 @@ class AdminPage extends Component {
                     </div>
                    
                    {this.state.pmFile.length > 0
-                            ? <div className='inline-flex '>
-                              <p className='upload-text'>{this.state.pmFile}</p>
-                              <div className="iconContainer icon-trash-can" id="removePm" onClick={this.handleRemoveFile}></div>
-                            </div>
-                            : <UpLoad id="memo" key="memo" handleUpload = {this.hanleUploadFile}/>
+                      ? <div className='inline-flex '>
+                        <p className='upload-text'>{this.state.pmFile}</p>
+                        <div className="iconContainer icon-trash-can" id="removePm" onClick={this.handleRemoveFile}></div>
+                      </div>
+                      : <UpLoad id="memo" key="memo" handleUpload = {this.hanleUploadFile}/>
                     }
+                  </Col>
 
-                    </Col>
-                    <Col sm='4' className='col-temp'>
+
+                  <Col sm='4' className='col-temp'>
+                    <h4>{translate.header_summarize}</h4>
+
                     <span className='inline-flex'>
-                    <Label>{translate.header_course_changes_comment}</Label>
-                          <InfoButton id = 'info_course_changes_comment' textObj = {translate.info_course_changes_comment}/>
-                        </span>
-                     
-                      <Input style={{ height: 300 }} id='alterationText' key='alterationText' type="textarea" value={this.state.values.alterationText} onChange={this.handleInputChange} disabled = {this.state.isPublished}/>
-                    </Col>  
-                    <Col sm='3' className='col-temp'>
+                      <Label>{translate.header_course_changes_comment}</Label>
+                        <InfoButton id = 'info_course_changes_comment' textObj = {translate.info_course_changes_comment}/>
+                    </span>
+                    <Input style={{ height: 300 }} id='alterationText' key='alterationText' type="textarea" 
+                      value={this.state.values.alterationText} 
+                      onChange={this.handleInputChange} 
+                    />
+                  </Col>  
+
+                    <Col sm='4' className='col-temp'>
+                      <h4>{translate.header_check_data}</h4>
+                      <p>{translate.asterix_text}</p>
+
                       <span className='inline-flex'>
-                        <Label>{translate.header_registrated}*</Label>
+                        <Label>{translate.header_registrated} *</Label>
                         <InfoButton id = 'info_registrated' textObj = {translate.info_registrated}/>
                       </span>
-                      <Input id='registeredStudents' key='registeredStudents' type='text' value={this.state.values.registeredStudents} onChange={this.handleInputChange} disabled={isPublished} />
-                      
+                      <Input id='registeredStudents' key='registeredStudents' type='number' 
+                        placeholder = '0' 
+                        value={this.state.values.registeredStudents} 
+                        onChange={this.handleInputChange} disabled={isPublished} 
+                        className = {this.state.notValid.indexOf('registeredStudents') > -1 ? 'not-valid' : ''}
+                      />
                       
                       <span className='inline-flex'>
-                        <Label>{translate.header_examination_grade}*</Label>
+                        <Label>{translate.header_examination_grade} *</Label>
                         <InfoButton id = 'info_examination_grade' textObj = {translate.info_examination_grade}/>
                       </span>
-                      <Input id='examinationGrade' key='examinationGrade' type='number' value={this.state.values.examinationGrade} onChange={this.handleInputChange} disabled={isPublished} />
+                      <Input id='examinationGrade' key='examinationGrade' type='number' 
+                        placeholder = '0' 
+                        value={this.state.values.examinationGrade} 
+                        onChange={this.handleInputChange} disabled={isPublished} 
+                        className = {this.state.notValid.indexOf('examinationGrade') > -1 ? 'not-valid' : ''}
+                        />
                       
                       
                       <span className='inline-flex'>
-                        <Label>{translate.header_examiners}*</Label>
+                        <Label>{translate.header_examiners} *</Label>
                         <InfoButton id = 'info_examiners' textObj = {translate.info_examiners}/>
                       </span>
-                      <Input id='examiners' key='examiners' type='text' value={this.state.values.examiners} onChange={this.handleInputChange} disabled={isPublished} />
+                      <Input id='examiners' key='examiners' type='text' 
+                        value={this.state.values.examiners} 
+                        onChange={this.handleInputChange} 
+                        disabled={isPublished}
+                        className = {this.state.notValid.indexOf('examiners') > -1 ? 'not-valid' : ''}
+
+                      />
                      
-                      
                       <span className='inline-flex'>
-                        <Label>{translate.header_responsibles}*</Label>
+                        <Label>{translate.header_responsibles} *</Label>
                         <InfoButton id = 'info_responsibles' textObj = {translate.info_responsibles}/>
                       </span>
-                      <Input id='responsibles' key='responsibles' type='text' value={this.state.values.responsibles} onChange={this.handleInputChange} disabled={isPublished} />
+                      <Input id='responsibles' key='responsibles' type='text' 
+                        value={this.state.values.responsibles} 
+                        onChange={this.handleInputChange} 
+                        disabled={isPublished} 
+                        className = {this.state.notValid.indexOf('responsibles') > -1 ? 'not-valid' : ''}
+                        />
+
                       { isPublished
                       ? <span>
                           <span className='inline-flex'>
                             <Label>{translate.header_analysis_edit_comment}</Label>
                             <InfoButton id = 'info_edit_comments' textObj = {translate.info_edit_comments}/>
                          </span>
-                        <Input id='commentChange' key='commentChange' type="textarea" value={this.state.values.commentChange} onChange={this.handleInputChange} />
+                        <Input id='commentChange' key='commentChange' type="textarea" 
+                          value={this.state.values.commentChange} 
+                          onChange={this.handleInputChange} 
+                          className = {this.state.notValid.indexOf('commentChange') > -1 ? 'not-valid' : ''}
+                        />
                       </span>
                       : ''
                       }
@@ -483,15 +540,8 @@ class AdminPage extends Component {
               ?   <CopyText textToCopy={ routerStore.browserConfig.hostUrl + routerStore.browserConfig.proxyPrefixPath.uri + '/preview/' + routerStore.analysisId} />
               : ''
             }
-              {this.state.alert.length > 0 
-            ? <Row>
-                <Alert color= 'info'>
-                  {this.state.alert}
-              </Alert>
-              </Row>
-              : ''}  
+             
             <Row className="button-container text-center" >  
-                   
                   <Col sm="4" style={{textAlign: 'left'}}>
                     {
                       routerStore.status === 'preview'
@@ -515,7 +565,7 @@ class AdminPage extends Component {
                   {
                     this.state.isPublished || routerStore.status === 'preview'
                     ? ''
-                    : <Button color='success' id='save' key='save' onClick={this.handleSave} >
+                    : <Button color='secondary' id='save' key='save' onClick={this.handleSave} >
                       {this.state.isPreviewMode ? translate.btn_save_and_cancel : translate.btn_save}
                     </Button>
                   }
@@ -540,10 +590,14 @@ class AdminPage extends Component {
           </Row>
           <InfoModal type = 'publish' toggle= {this.toggleModal} isOpen = {this.state.modalOpen.publish} id={this.props.routerStore.analysisId} handleConfirm={this.handlePublish} infoText={translate.info_publish}/>
           <InfoModal type = 'cancel' toggle= {this.toggleModal} isOpen = {this.state.modalOpen.cancel} id={this.props.routerStore.analysisId} handleConfirm={this.handleCancel} infoText={translate.info_cancel}/>
+          </div>
+         }
         </div>
       )
   }
 }
+
+
 
 
 

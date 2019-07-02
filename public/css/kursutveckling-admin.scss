@@ -41,6 +41,10 @@ border-left: 1px dotted #fff;
   margin-top: 20px;
 }
 
+.collapse{
+  padding-left: 15px;
+}
+
 .select-semester{
   width: 100%;
   max-width: 370px;
@@ -81,9 +85,19 @@ border-left: 1px dotted #fff;
     min-width: 100%;
   }
 }
+ul.no-padding-left{
+  padding-inline-start: 20px;
+}
+
 .no-access{
   font-weight: 100;
 }
+.not-valid{
+  border: 2px solid red !important;
+  padding-top: 10px;
+  padding-left: 10px;
+}
+
 .border-bottom{
   border-bottom: 1px solid #ddd;
   margin-bottom: 30px;
@@ -94,9 +108,17 @@ border-left: 1px dotted #fff;
   padding: 20px 10px;
   min-width: 100%;
   border-top: 1px solid #ddd;
+  margin-top: 15px;
   .btn {
     margin-left: 5px;
   }
+}
+
+.popover-body{
+  font-family: "Open Sans",Arial,"Helvetica Neue",helvetica,sans-serif;
+  //font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5; 
 }
 
 .select-list{
@@ -145,6 +167,10 @@ p.underlined {
   display: inline-table;
 }
 
+.padding-top-30{
+  padding-top: 30px;
+}
+
 .upload-text{
   border: 1px solid #d4d4d4;
   padding-bottom: 10px;
@@ -153,7 +179,10 @@ p.underlined {
   border-radius: 5px;
 }
 
-
+.copy-btn{
+  border-color: #e9ecef;
+  height: 38px;
+}
 
 
 /****ICONS*****/
