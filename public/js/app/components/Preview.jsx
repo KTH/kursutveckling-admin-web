@@ -121,10 +121,10 @@ class TableForCourse extends Component {
           <ProgramCollapse header={translate.header_programs} text={values.programmeCodes} label={togglerId}/>
           <span className="right-links" >
            <a>{translate.link_syllabus}</a>
-            <a key='pmLink' id='pmLink' href='https://kth.box.com/s/i9xu34n5conqdoj7re81bmcto20wavib' target='_blank' >
-              {translate.link_pm}: 2019-05-20
+            <a key='pmLink' id='pmLink' href={routerStore.browserConfig.storageUri + linksFileNames.analysis} target='_blank' > 
+              {translate.link_pm}: {values.pdfAnalysisDate.length > 0 ? ': '+ getDateFormat(values.pdfPMDate, routerStore.language) : '' }
             </a> 
-            <a key='analysisLink'  id='analysisLink' href={routerStore.browserConfig.storageUri + linksFileNames.analysis} target='_blank' >  
+            <a key='analysisLink'  id='analysisLink' href={routerStore.browserConfig.storageUri + linksFileNames.pm} target='_blank' >  
                 {translate.link_analysis} {values.pdfAnalysisDate.length > 0 ? ': '+ getDateFormat(values.pdfAnalysisDate, routerStore.language) : '' }
             </a>
           </span>

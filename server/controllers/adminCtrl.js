@@ -11,6 +11,7 @@ const i18n = require('../../i18n')
 
 const api = require('../api')
 const { runBlobStorage } = require('../blobStorage')
+// const { blobStorageUpload } = require('../blobStorage1')
 
 const kursutvecklingAPI = require('../apiCalls/kursutvecklingAPI')
 const koppsCourseData = require('../apiCalls/koppsCourseData')
@@ -39,11 +40,11 @@ function * _saveFileToStorage (req, res, next) {
   // log.info('_saveFileToStorage', req.body, req.files.filepond)
   let file = req.files.file
   // const blobService = storage.createBlobService()
-  if (file.mimetype === 'application/pdf') {
-    file = yield runBlobStorage(file, req.params.analysisid, req.params.type, req.params.published)
-    console.log('file!!!!!', file)
-  }
-  return httpResponse.json(res, file.name)
+  // if (file.mimetype === 'application/pdf') {
+  const fileName = yield runBlobStorage(file, req.params.analysisid, req.params.type, req.params.published, req.body)
+  console.log('file!!!!!', file)
+  // }
+  return httpResponse.json(res, fileName)
 }
 
 function * _postRoundAnalysis (req, res, next) {
@@ -167,7 +168,7 @@ async function getIndex (req, res, next) {
     staticFactory = tmp.staticFactory
   // doAllAsyncBefore = tmp.doAllAsyncBefore
   }
-
+  // let test = await blobStorageUpload()
   let lang = language.getLanguage(res) || 'sv'
   const ldapUser = req.session.authUser ? req.session.authUser.username : 'null'
   const courseTitle = req.query.title || ''
@@ -186,8 +187,12 @@ async function getIndex (req, res, next) {
       // Just course code -> analysis menu depending on status
       const apiResponse = await koppsCourseData.getKoppsCourseData(req.params.id.toUpperCase(), lang)
       console.log('new coursedata !!!!!!!!!', apiResponse)
-      renderProps.props.children.props.routerStore.status = status === 'p' ? 'published' : 'new'
-      await renderProps.props.children.props.routerStore.handleCourseData(apiResponse.body, req.params.id.toUpperCase(), ldapUser, lang)
+      if (apiResponse.statusCode >= 400) {
+        renderProps.props.children.props.routerStore.errorMessage = apiResponse.statusMessage
+      } else {
+        renderProps.props.children.props.routerStore.status = status === 'p' ? 'published' : 'new'
+        await renderProps.props.children.props.routerStore.handleCourseData(apiResponse.body, req.params.id.toUpperCase(), ldapUser, lang)
+      }
     } else {
       const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(req.params.id.toUpperCase(), lang)
       renderProps.props.children.props.routerStore.analysisId = req.params.id

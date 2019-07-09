@@ -19,8 +19,6 @@ border-left: 1px dotted #fff;
   min-width: 100%;
 }
 
-
-
 .container.articleNavigation{
     padding: 15px 15px 0 !important;
    
@@ -33,6 +31,15 @@ border-left: 1px dotted #fff;
 .progressImage{
   width: 100%;
   height: auto;
+}
+
+.progress-bar1{
+  text-align: center;
+  border-bottom: 2px solid #d4d4d4;
+  font-weight: 900;
+  &.progress-active{
+    border-bottom: 3px solid #007fae;
+  }
 }
 
 #analysisMenuContainer{
@@ -85,6 +92,7 @@ border-left: 1px dotted #fff;
     min-width: 100%;
   }
 }
+
 ul.no-padding-left{
   padding-inline-start: 20px;
 }
@@ -92,6 +100,10 @@ ul.no-padding-left{
 .no-access{
   font-weight: 100;
 }
+.form-control {
+  margin-bottom: 10px;
+}
+
 .not-valid{
   border: 2px solid red !important;
   padding-top: 10px;
@@ -163,7 +175,7 @@ p.underlined {
 
 .info-inline{
   margin-left: 10px;
-  margin-top: inherit;
+  margin-top: -6px;
   display: inline-table;
 }
 

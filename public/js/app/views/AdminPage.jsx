@@ -10,6 +10,7 @@ import InfoModal from '../components/InfoModal'
 import CopyText from '../components/CopyText' 
 import InfoButton from '../components/InfoButton'
 import UpLoad from '../components/UpLoad'
+import ProgressBar from '../components/ProgressBar'
 
 //Helpers 
 import { EMPTY, SERVICE_URL } from '../util/constants'
@@ -34,6 +35,8 @@ class AdminPage extends Component {
         cancel: false
       },
       alert: '',
+      alertSuccess: '',
+      alertError: '',
       madatoryMessage: '',
       analysisFile: this.props.routerStore.analysisData ? this.props.routerStore.analysisData.analysisFileName : '',
       pmFile: this.props.routerStore.analysisData ? this.props.routerStore.analysisData.pmFileName : '',
@@ -70,20 +73,37 @@ class AdminPage extends Component {
   }
 
   sendRequest(id, file, e) {
-    const thisPage = this
+    const thisInstance = this
     return new Promise((resolve, reject) => {
       const req = new XMLHttpRequest()
       req.onreadystatechange = function() {
+        let values = thisInstance.state.values
         if (this.readyState == 4 && this.status == 200) {
-          if(id === 'analysis')
-            thisPage.setState({analysisFile: this.responseText })
-          else
-            thisPage.setState({pmFile: this.responseText })
+          values.pdfAnalysisDate = getTodayDate()
+          if(id === 'analysis'){
+          thisInstance.setState({
+            analysisFile: this.responseText, 
+            alertSuccess: i18n.messages[thisInstance.props.routerStore.language].messages.alert_uploaded_file,
+            values: values,
+            alertError:''
+           })
+          } else {
+            values.pdfPMDate = getTodayDate()
+            thisInstance.setState({
+              pmFile: this.responseText,  
+              alertSuccess: i18n.messages[thisInstance.props.routerStore.language].messages.alert_uploaded_file,
+              values: values
+            })
           }
+        }
       }
 
       let formData = new FormData()
-      formData.append("file", e.target.files[0], e.target.files[0].name);
+      formData.append("file", e.target.files[0], e.target.files[0].name)
+      formData.append('courseCode', this.state.values.courseCode)
+      formData.append('analysis', this.state.values._id)
+      //formData.append('rounds', this.state.values._id.split('_')[])
+      formData.append('status', this.state.isPublished ? 'published' : 'draft')
       req.open("POST", `${this.props.routerStore.browserConfig.hostUrl}${this.props.routerStore.paths.storage.saveFile.uri.split(':')[0]}${this.props.routerStore.analysisData._id}/${id}/${this.state.isPublished}`);
       req.send(formData)
     })
@@ -104,16 +124,16 @@ class AdminPage extends Component {
     if(invalidList.length > 0){
       this.setState({
         notValid: invalidList,
-        alert: i18n.messages[this.props.routerStore.language].messages.alert_empty_fields
+        alertError: i18n.messages[this.props.routerStore.language].messages.alert_empty_fields
       })
     }else{
-    this.setState({
-      isPreviewMode: true,
-      progress: 'preview',
-      alert: '',
-      notValid: invalidList
-    })
-  }
+      this.setState({
+        isPreviewMode: true,
+        progress: 'preview',
+        alertError: '',
+        notValid: invalidList
+      })
+    }
   }
 
   handleBack(event) {
@@ -203,11 +223,12 @@ class AdminPage extends Component {
 
     if(this.state.pmFile !== postObject.pmFileName){
       postObject.pmFileName = this.state.pmFile
+      //postObject.pdfPmDate = getTodayDate()
     }
 
-    if( this.state.hasNewUploadedFileAnalysis ){
+    /*if( this.state.hasNewUploadedFileAnalysis ){
       postObject.pdfAnalysisDate = getTodayDate()
-    }
+    }*/
 
     return routerStore.postRoundAnalysisData(postObject, postObject.changedDate.length === 0 )
       .then((data) => {
@@ -219,9 +240,10 @@ class AdminPage extends Component {
           thisInstance.setState({
             saved: true,
             progress: 'edit',
-            alert: i18n.messages[routerStore.language].messages.alert_saved_draft,
+            alertSuccess: i18n.messages[routerStore.language].messages.alert_saved_draft,
             hasNewUploadedFileAnalysis: false,
             hasNewUploadedFilePM: false,
+            values: data
           })
           thisInstance.props.history.push(thisInstance.props.routerStore.browserConfig.proxyPrefixPath.uri + '/' + thisInstance.props.routerStore.analysisId)
         }  
@@ -289,7 +311,8 @@ class AdminPage extends Component {
     this.setState({
       values: values,
       saved: false,
-      notValid: []
+      notValid: [],
+      alertError:''
     })
   }
 
@@ -310,13 +333,13 @@ class AdminPage extends Component {
     return invalidList
   }
 
-  componentDidMount() {
-    //this.divTop.current.scrollTo(0, 0)
-  // window.scrollTo(0, 0)
-    //this._div.scrollTop = 0
-    /*window.onpopstate  = (e) => {
-      console.log('adminP onpopstate', this.state)
-     }*/
+  componentDidUpdate() {
+    const thisInstance = this
+    if(thisInstance.state.alertSuccess.length > 0){
+      setTimeout(() => {
+        thisInstance.setState({ alertSuccess: '' })
+      }, 5000)
+    }
   }
 
   render() {
@@ -337,7 +360,7 @@ class AdminPage extends Component {
                 title={routerStore.courseTitle} 
                 language={routerStore.language} 
                 courseCode={routerStore.courseData.courseCode} 
-                image = {routerStore.browserConfig.proxyPrefixPath.uri + '/static/'+ images[translate.progressImage['first']]}
+                progress = {1}
                 header = {translate.header_main[routerStore.status]}
                 />
          
@@ -379,15 +402,15 @@ class AdminPage extends Component {
             title={routerStore.courseTitle} 
             language={routerStore.language} 
             courseCode={routerStore.courseData.courseCode} 
-            image = {routerStore.browserConfig.proxyPrefixPath.uri + '/static/'+ images[translate.progressImage[this.state.progress]]}
+            progress = {this.state.progress === 'edit' ? 2 : 3}
             header = {translate.header_main[routerStore.status]}
           />
          
-          
           {/************************************************************************************* */}
           {/*                                   PREVIEW                                           */}
           {/************************************************************************************* */}
           {this.state.values && this.state.isPreviewMode
+          
             ? <Preview 
               values={ this.state.values } 
               analysisFile= { this.state.analysisFile }
@@ -408,6 +431,18 @@ class AdminPage extends Component {
                 {this.state.alert.length > 0 
                   ? <Row>
                     <Alert color= 'info'>{this.state.alert} </Alert>
+                  </Row>
+                  : ''
+                }  
+                {this.state.alertSuccess.length > 0 
+                  ? <Row>
+                    <Alert color= 'success'>{this.state.alertSuccess} </Alert>
+                  </Row>
+                  : ''
+                }  
+                {this.state.alertError.length > 0 
+                  ? <Row>
+                    <Alert color= 'danger'>{this.state.alertError} </Alert>
                   </Row>
                   : ''
                 }  
@@ -442,10 +477,13 @@ class AdminPage extends Component {
                     </div>
                    
                    {this.state.pmFile.length > 0
-                      ? <div className='inline-flex '>
-                        <p className='upload-text'>{this.state.pmFile}</p>
-                        <div className="iconContainer icon-trash-can" id="removePm" onClick={this.handleRemoveFile}></div>
-                      </div>
+                      ? <span>
+                        <br/>
+                        <div className='inline-flex '>
+                          <p className='upload-text'>{this.state.pmFile}</p>
+                          <div className="iconContainer icon-trash-can" id="removePm" onClick={this.handleRemoveFile}></div>
+                        </div>
+                      </span>
                       : <UpLoad id="memo" key="memo" handleUpload = {this.hanleUploadFile}/>
                     }
                   </Col>

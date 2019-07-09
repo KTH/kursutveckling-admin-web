@@ -1,14 +1,19 @@
+
 const {
   Aborter,
   BlockBlobURL,
   ContainerURL,
   ServiceURL,
   SharedKeyCredential,
-  StorageURL
+  StorageURL,
+  BlobURL,
+  BlobDownloadResponse,
+  downloadBlobToBuffer
 } = require('@azure/storage-blob')
 
 const serverConfig = require('./configuration').server
 const log = require('kth-node-log')
+const fs = require('fs')
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
@@ -25,7 +30,7 @@ const ONE_MEGABYTE = 1024 * 1024
 const FOUR_MEGABYTES = 4 * ONE_MEGABYTE
 const ONE_MINUTE = 60 * 1000
 
-async function runBlobStorage (file, id, type, saveCopyOfFile) {
+async function runBlobStorage (file, id, type, saveCopyOfFile, metadata) {
   const containerName = 'kursutveckling-blob-container'
   let blobName = ''
   const content = file.data
@@ -38,58 +43,145 @@ async function runBlobStorage (file, id, type, saveCopyOfFile) {
   const containerURL = ContainerURL.fromServiceURL(serviceURL, containerName)
   const aborter = Aborter.timeout(30 * ONE_MINUTE)
 
-  const draftFileName = `${type}-${id}_draft.${file.name.split('.')[1]}`
-
-  console.log('Containers:', file)
-  await showContainerNames(aborter, serviceURL)
-  if (fileType !== 'text/html') {
+  // console.log('Containers:', file)
+  // await showContainerNames(aborter, serviceURL)
+  // await changeBlobName(aborter, containerURL, draftFileName)
+  if (type === 'analysis') {
+    const draftFileName = `${type}-${id}_draft.${file.name.split('.')[1]}`
+    const newFileName = `${type}-${id}-${getTodayDate()}.${file.name.split('.')[1]}`
     if (saveCopyOfFile === 'true') {
-      blobName = `${type}-${id}-${getTodayDate()}.${file.name.split('.')[1]}`
+      blobName = newFileName
     } else {
       blobName = draftFileName
     }
-    const blockBlobURL = BlockBlobURL.fromContainerURL(containerURL, blobName)
-    // const blockBlobURL_oldFile = BlockBlobURL.fromContainerURL(containerURL, draftFileName)
-    // const downloadResponse = await blockBlobURL_oldFile.download(aborter, 0)
-    const resp = await blockBlobURL.upload(aborter, content, content.length)
-    log.info(`Blob "${blobName}" is uploaded`, resp)
-    await blockBlobURL.setHTTPHeaders(aborter, { blobContentType: fileType })
-    file.name = blobName
-    return file
+  } else {
+    blobName = `${type}-${id}.${file.name.split('.')[1]}`
   }
 
-  /* console.log(`Blobs in "${containerName}" container:`) */
-  await showBlobNames(aborter, containerURL, blobName)
+  const uploadResponse = await uploadBlob(aborter, containerURL, blobName, content, fileType, metadata)
+  console.log('!!!', uploadResponse)
+  // var test = await changeBlobName(aborter, containerURL, draftFileName, newFileName)
+  // file.name = blobName
+  return blobName
+
+  // console.log('!TEST', test, test.readableBuffer)
+
+  // const newBlobURL = BlobURL.fromContainerURL(containerURL, 'testar.pdf')
+  // console.log('UP!!!!', test)
+  // const blockBlobURL = BlockBlobURL.fromBlobURL(newBlobURL)
+  // const uploadBlobResponse = await blockBlobURL.upload(
+  //   aborter.none,
+  //   await test.readableBuffer.toString,
+  //   await test.readableLength
+  // // )
+  // await blockBlobURL.setHTTPHeaders(aborter, { blobContentType: fileType })
+  // console.log('Upp!!!!', uploadBlobResponse, blockBlobURL)
+
+  // await showBlobNames(aborter, containerURL, blobName)
 }
 
 //* *********************************************************************** */
 
-async function showContainerNames (aborter, serviceURL) {
-  let response
-  let marker
+async function uploadBlob (aborter, containerURL, blobName, content, fileType, metadata = {}) {
+  const blobURL = BlobURL.fromContainerURL(containerURL, blobName)
+  const blockBlobURL = BlockBlobURL.fromBlobURL(blobURL)
+  const uploadBlobResponse = await blockBlobURL.upload(
+    aborter.none,
+    content,
+    content.length
+  )
+  console.log(
+    `Upload block blob ${blobName} successfully`,
+    uploadBlobResponse.requestId
+  )
+  await blockBlobURL.setHTTPHeaders(aborter, { blobContentType: fileType })
+  await blockBlobURL.setMetadata(aborter, { date: getTodayDate(), courseCode: metadata.courseCode, analysis: metadata.analysis })
+  console.log('blockBlobURL', blockBlobURL)
 
-  do {
-    response = await serviceURL.listContainersSegment(aborter, marker)
-    marker = response.marker
-    for (let container of response.containerItems) {
-      console.log(` - ${container.name}`)
-    }
-  } while (marker)
+  return uploadBlobResponse
 }
 
-async function showBlobNames (aborter, containerURL, fileName) {
+async function changeBlobName (aborter, containerURL, draftFileName, newFileName) {
   let response
   let marker
 
-  do {
-    response = await containerURL.listBlobFlatSegment(aborter)
-    marker = response.marker
-    for (let blob of response.segment.blobItems) {
-      if (blob.name === fileName) {
-        console.log(` - ${blob.name}`)
-      }
-    }
-  } while (marker)
+  const oldBlockBlobURL = BlockBlobURL.fromContainerURL(containerURL, draftFileName)
+  console.log('DOWN 1!!!!', oldBlockBlobURL)
+  const downloadResponse = await oldBlockBlobURL.download(aborter, 0)
+
+  const downloadedContent = await downloadResponse.readableStreamBody// blobDownloadStream
+  return downloadedContent
+  var test = 'await streamToString(downloadedContent)'
+  console.log('DOWN!!!!', downloadedContent, test)
+
+  const newBlobURL = BlobURL.fromContainerURL(containerURL, 'testar.pdf')
+  console.log('UP!!!!', downloadResponse)
+  const blockBlobURL = BlockBlobURL.fromBlobURL(newBlobURL)
+  const uploadBlobResponse = await blockBlobURL.upload(
+    aborter.none,
+    await downloadedContent.readableBuffer,
+    await downloadedContent.readableBuffer.readableLength
+  )
+  console.log('Upp!!!!', uploadBlobResponse)
+
+  // console.log(
+  //   "Downloaded blob content",
+  //   await streamToString(downloadResponse.readableStreamBody)
+  // )
+  // const blockBlobURLnew = await BlockBlobURL.fromContainerURL(containerURL, 'newNameTest!!!!!.pdf')
+  // console.log('changeBlobName1:', downloadResponse.blobDownloadStream.source, downloadResponse.blobDownloadStream.source.readableBuffer)
+  // const resp = await blockBlobURLnew.upload(aborter, downloadResponse.blobDownloadStream.source.readableBuffer.BufferList.head.data, downloadResponse.blobDownloadStream.source.readableBuffer.BufferList.head.data.length)
+  // console.log('changeBlobName2:', resp)
+  // do {
+  //   response = await containerURL.listBlobFlatSegment(aborter)
+  //   marker = response.marker
+  //   for (let blob of response.segment.blobItems) {
+  //     if (blob.name === draftFileName) {
+  //       console.log(` changeBlobName: ${blob}`, blob)
+  //     }
+  //   }
+  // } while (marker)
+  return newFileName
+}
+
+// async function showBlobNames (aborter, containerURL, fileName) {
+//   let response
+//   let marker
+//   do {
+//     response = await containerURL.listBlobFlatSegment(aborter)
+//     marker = response.marker
+//     for (let blob of response.segment.blobItems) {
+//       if (blob.name === fileName) {
+//         console.log(` - ${blob.name}`)
+//       }
+//     }
+//   } while (marker)
+// }
+
+// async function showContainerNames (aborter, serviceURL) {
+//   let response
+//   let marker
+
+//   do {
+//     response = await serviceURL.listContainersSegment(aborter, marker)
+//     marker = response.marker
+//     for (let container of response.containerItems) {
+//       console.log(` - ${container.name}`)
+//     }
+//   } while (marker)
+// }
+
+async function streamToString (readableStream) {
+  return new Promise((resolve, reject) => {
+    const chunks = []
+    readableStream.on('data', data => {
+      chunks.push(data.toString())
+    })
+    readableStream.on('end', () => {
+      resolve(chunks.join(''))
+    })
+    readableStream.on('error', reject)
+  })
 }
 
 const getTodayDate = (date = '') => {

@@ -117,6 +117,10 @@ class RouterStore {
       this._getOptions()
     ).then(result => {
       //console.log("!!!!getRoundAnalysis", result.data)
+      if (result.statusCode >= 400) {
+        this.errorMessage = result.statusText
+        return "ERROR-" + result.statusCode
+      }
       this.status = result.data.isPublished ? 'published' : 'draft'
       this.courseCode = result.data.courseCode
       //this.analysisId = result._id
@@ -135,6 +139,7 @@ class RouterStore {
       this._getOptions(JSON.stringify(postObject))
     ).then(apiResponse => {
       if (apiResponse.statusCode >= 400) {
+        this.errorMessage = result.statusText
         return "ERROR-" + apiResponse.statusCode
       }
       if (this.status === 'new')
@@ -145,7 +150,9 @@ class RouterStore {
       return apiResponse.data
     }).catch(err => {
       if (err.response) {
-        throw new Error(err.message)
+        this.errorMessage = err.message
+        return err.message
+        //throw new Error(err.message)
       }
       throw err
     })
@@ -158,6 +165,7 @@ class RouterStore {
     ).then(apiResponse => {
       //console.log('putRoundAnalysisData', apiResponse)
       if (apiResponse.statusCode >= 400) {
+        this.errorMessage = result.statusText
         return "ERROR-" + apiResponse.statusCode
       }
       this.errorMessage = apiResponse.data.message
@@ -200,6 +208,7 @@ class RouterStore {
     ).then((result) => {
       console.log('getCourseInformation', result)
       if (result.status >= 400) {
+        this.errorMessage = result.statusText
         return "ERROR-" + result.status
       }
       this.handleCourseData(result.data, courseCode, ldapUsername, lang)
@@ -260,7 +269,7 @@ class RouterStore {
 
 
   @action handleCourseData(courseObject, courseCode, ldapUsername, language) {
-    //console.log('courseObject',courseObject)
+    console.log('courseObject',courseObject)
     if(courseObject === undefined){
       this.errorMessage = 'Whoopsi daisy... kan just nu inte hämta data från kopps'
       return undefined

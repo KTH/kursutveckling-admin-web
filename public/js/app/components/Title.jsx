@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
+import ProgressBar from '../components/ProgressBar'
 
 class Title extends Component{
     render(){
-        const { courseCode, header, title, language, image} = this.props
+        const { courseCode, header, title, language, progress} = this.props
         return(
         <div key='course-title' id='course-title'>
              <h1>{header}</h1>
@@ -17,7 +18,7 @@ class Title extends Component{
             </span>
             : ''}
             </h4>
-            <img src={image} className='progressImage' />
+            <ProgressBar language={language} active = {progress}/>
         </div>
         )
     }

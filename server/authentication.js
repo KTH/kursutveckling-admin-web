@@ -99,7 +99,7 @@ function _hasCourseResponsibleGroup (courseCode, courseInitials, ldapUser, round
   // 'edu.courses.SF.SF1624.20192.1.courseresponsible'
   const groups = ldapUser.memberOf
   const startWith = `edu.courses.${courseInitials}.${courseCode}.` // TODO: What to do with years 20192. ?
-  if (rounds.length === 0) { // Not a analysis
+  if (rounds === undefined || rounds.length === 0) { // Not a analysis
     const endWith = '.' + role
     if (groups && groups.length > 0) {
       for (var i = 0; i < groups.length; i++) {
@@ -127,7 +127,7 @@ function _hasCourseResponsibleGroup (courseCode, courseInitials, ldapUser, round
 
 function _hasCourseTeacherGroup (courseCode, courseInitials, ldapUser, rounds, role) {
   // 'edu.courses.SF.SF1624.20192.1.courseresponsible'
-  if (rounds.length === 0) { // Not a analysis
+  if (rounds === undefined || rounds.length === 0) { // Not a analysis
     return false
   }
   const groups = ldapUser.memberOf

@@ -85,6 +85,13 @@ module.exports = {
     /** ************ PAGE 2 FORM ************** */
     asterix_text: '* Kommer inte att kunna ändras efter publicering',
 
+    header_semester: 'Termin:', /** Visas i steg 2, följt av kursomgångens starttermin */
+    header_course_offering: 'Kursomgång:', /** Visas i steg 2, följt av kursomgångens namn */
+
+    header_upload: 'Ladda upp', /** Visas i steg 2, rubrik för kolumn 1 */
+    header_summarize: 'Summera förändringar', /** Visas i steg 2, rubrik för kolumn 2 */
+    header_check_data: 'Kontrollera hämtat data', /** Visas i steg 2, rubrik för kolumn 3 */
+
     header_programs: 'Obligatorisk inom program',
     header_rounds: 'Kurstillfällen som ingår',
     header_examiners: 'Examinator ',
@@ -108,8 +115,8 @@ module.exports = {
     alert_no_rounds: 'Den här kursen har inga opublicerade kursomgångar denna termin',
     alert_no_published: 'Det finns ingen publicerad kursanalys och kursdata denna termin',
     alert_saved_draft: 'Utkast för kursanalys och kursdata har sparats',
-    alert_empty_fields: 'Vänligen fyll i alla markerade fält innan du fortsätter.',
-    alert_uploaded_file: 'Filen har laddats upp och fått nytt namn',
+    alert_empty_fields: 'Du behöver fylla i obligatoriska fält för att gå vidare till Granska och publicera.',
+    alert_uploaded_file: 'Vald fil har laddatas upp',
 
     /** ************ MODALS ************** */
     info_copy_link: {
@@ -216,11 +223,6 @@ module.exports = {
       btnCancel: 'Close'
     },
 
-    header_semester: 'Termin:', /** Visas i steg 2, följt av kursomgångens starttermin */
-    header_course_offering: 'Kursomgång:', /** Visas i steg 2, följt av kursomgångens namn */
-    header_upload: 'Ladda upp', /** Visas i steg 2, rubrik för kolumn 1 */
-    header_summarize: 'Summera förändringar', /** Visas i steg 2, rubrik för kolumn 2 */
-    header_check_data: 'Kontrollera hämtat data', /** Visas i steg 2, rubrik för kolumn 3 */
     header_progress_select: '1. Välj kursomgång', /** Ersätter bilden, ska vara understruket med blå linje om användaren är i detta steg */
     header_progress_edit_upload: '2. Redigera kursdata och ladda upp kursanalys', /** Ersätter bilden, ska vara understruket med blå linje om användaren är i detta steg */
     header_progress_review: '3. Granska och publicera', /** Ersätter bilden, ska vara understruket med blå linje om användaren är i detta steg */
@@ -242,9 +244,7 @@ module.exports = {
       /** semester: 'Termin:', /** Följt av kursomgångens starttermin */
 	  /** course_round: 'Kursomgång:', /** Följt av kursomgångens namn */
 	  /** Länk till steg 1, Välj kursomgång */
-    },
-    error_mandantory_fields: 'Du behöver fylla i obligatoriska fält för att gå vidare till Granska och publicera.',
-    file_uploaded: 'Vald fil har laddatas upp',
-    header_draft_saved: 'Utkast för kursanalys och kursdata har sparats'
+    }
+
   }
 }

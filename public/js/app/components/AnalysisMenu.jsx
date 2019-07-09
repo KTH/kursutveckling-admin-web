@@ -245,7 +245,7 @@ class AnalysisMenu extends Component {
                     toggle={this.toggleDropdown}
                     className='select-semester'
                 >
-                    <div className='inline-flex'>
+                    <div className='inline-flex padding-top-30'>
                         <h3 > {translate.select_semester} </h3> 
                         <InfoButton className = 'padding-top-30' id = 'info_select_semester' textObj = {translate.info_select_semester}/>
                     </div>
@@ -276,6 +276,8 @@ class AnalysisMenu extends Component {
                     ? <Alert color='danger'> {this.state.alert}</Alert>
                     : ''
                 }
+                
+                
 
                 <Collapse isOpen={this.state.collapseOpen}>
                 <Row id='analysisMenuContainer'>
