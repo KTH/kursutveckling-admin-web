@@ -290,7 +290,7 @@ class AnalysisMenu extends Component {
                     :<Form> 
                          <div className='inline-flex'>
                              <h3>{translate.header_analysis_menu}</h3>
-                            <InfoButton id = 'info_choose_course_offering' textObj = {translate.info_choose_course_offering}/>
+                            <InfoButton addClass = 'padding-top-30' id = 'info_choose_course_offering' textObj = {translate.info_choose_course_offering}/>
                         </div>
                    
                         {status === 'new' || status === 'draft' 
