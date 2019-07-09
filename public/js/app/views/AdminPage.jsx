@@ -292,7 +292,7 @@ class AdminPage extends Component {
             modalOpen: modal,
             values: response
           })
-    // window.location= encodeURI(`${routerStore.browserConfig.hostUrl}${SERVICE_URL[routerStore.service]}${routerStore.analysisData.courseCode}?serv=kutv&event=pub&id=${routerStore.analysisId}&term=${routerStore.analysisData.semester}&name=${routerStore.analysisData.analysisName}`)
+          window.location= encodeURI(`${routerStore.browserConfig.hostUrl}${SERVICE_URL[routerStore.service]}${routerStore.analysisData.courseCode}?serv=kutv&event=pub&id=${routerStore.analysisId}&term=${routerStore.analysisData.semester}&name=${routerStore.analysisData.analysisName}`)
         }
       })  
   }
@@ -359,7 +359,7 @@ class AdminPage extends Component {
               <Title 
                 title={routerStore.courseTitle} 
                 language={routerStore.language} 
-                courseCode={routerStore.courseData.courseCode} 
+                courseCode={routerStore.courseCode} 
                 progress = {1}
                 header = {translate.header_main[routerStore.status]}
                 />
@@ -401,7 +401,7 @@ class AdminPage extends Component {
           <Title 
             title={routerStore.courseTitle} 
             language={routerStore.language} 
-            courseCode={routerStore.courseData.courseCode} 
+            courseCode={routerStore.courseCode} 
             progress = {this.state.progress === 'edit' ? 2 : 3}
             header = {translate.header_main[routerStore.status]}
           />

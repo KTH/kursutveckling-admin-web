@@ -247,7 +247,7 @@ class AnalysisMenu extends Component {
                 >
                     <div className='inline-flex padding-top-30'>
                         <h3 > {translate.select_semester} </h3> 
-                        <InfoButton className = 'padding-top-30' id = 'info_select_semester' textObj = {translate.info_select_semester}/>
+                        <InfoButton addClass = 'padding-top-30' id = 'info_select_semester' textObj = {translate.info_select_semester}/>
                     </div>
                     
                     <DropdownToggle >

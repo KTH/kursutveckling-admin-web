@@ -282,7 +282,7 @@ class RouterStore {
         semesterObjectList: {}
       }
       this.courseTitle = {
-        name: courseObject.course.title[language],
+        name: courseObject.course.title[this.language === 0 ? 'en' : 'sv'],
         credits: courseObject.course.credits
       }
       console.log('courseObject2', this.courseData, this.courseTitle)
