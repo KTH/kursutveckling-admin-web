@@ -37,6 +37,7 @@ class AnalysisMenu extends Component {
                 published:'',
             },
             lastSelected: this.props.tempData ? 'new' : '',
+            canOnlyPreview: '',
             temporaryData: ''
         }
 
@@ -48,6 +49,7 @@ class AnalysisMenu extends Component {
         this.handleSelectedPublished = this.handleSelectedPublished.bind(this)
         this.handleCancel = this.handleCancel.bind(this)
         this.handleDelete = this.handleDelete.bind(this)
+        this.handlePreview = this.handlePreview.bind(this)
         this.toggleModal = this.toggleModal.bind(this)
     }
 
@@ -132,7 +134,7 @@ class AnalysisMenu extends Component {
 
     handleRoundCheckbox(event) {
         let prevState = this.state
-
+        prevState.canOnlyPreview = false
         if ( this.state.alert.length > 0 )
             prevState.alert = ''
 
@@ -152,10 +154,17 @@ class AnalysisMenu extends Component {
     handleSelectedDraft(event) {
         let prevState = this.state
         prevState.rounds =[]
-        prevState.selectedRadio.draft = event.target.id
-        prevState.lastSelected = 'draft'
-        prevState.alert = ''
-        this.setState(prevState)
+        if(event.target.id.indexOf('_preview') >0 ){
+            prevState.selectedRadio.draft = event.target.id.split('_preview')[0]
+            prevState.canOnlyPreview = true
+            this.setState(prevState)
+        }else{
+            prevState.selectedRadio.draft = event.target.id
+            prevState.lastSelected = 'draft'
+            prevState.alert = ''
+            prevState.canOnlyPreview = false
+            this.setState(prevState)
+        }
     }
 
     handleSelectedPublished(event) {
@@ -215,6 +224,12 @@ class AnalysisMenu extends Component {
             })
         }
     }
+
+   handlePreview(event){
+       event.preventDefault()
+       const analysisId = this.state.selectedRadio.draft.length > 0 ? this.state.selectedRadio.draft : this.state.selectedRadio.published
+       window.open(`${this.props.routerStore.browserConfig.hostUrl}${this.props.routerStore.browserConfig.proxyPrefixPath.uri}/preview/${analysisId}`)
+   }
 
     toggleModal(event){
         let modalOpen = this.state.modalOpen
@@ -305,15 +320,14 @@ class AnalysisMenu extends Component {
                                                 <li className = 'select-list' key={analysis.analysisId}>
                                                     < Label key={"Label" + analysis.analysisId} for={analysis.analysisId} >
                                                         <Input type="radio"
-                                                            id={analysis.analysisId}
+                                                            id={`${!analysis.hasAccess ? analysis.analysisId +'_preview' : analysis.analysisId }`}
                                                             key={analysis.analysisId}
                                                             value={analysis.analysisId}
                                                             onChange={this.handleSelectedDraft}
                                                             checked={this.state.selectedRadio.draft === analysis.analysisId}
-                                                            disabled ={!analysis.hasAccess}
+                                                            //disabled ={!analysis.hasAccess}
                                                         />
                                                         {analysis.analysisName}  <span className='no-access'>  {analysis.hasAccess ? '' : translate.not_authorized_publish_new }</span>
-                                                        {/*" ( Created by: " + analysis.user + " ) "*/}
                                                     </Label>
                                                     <br />
                                                 </li>
@@ -330,7 +344,6 @@ class AnalysisMenu extends Component {
                                     {/************************************************************************************* */}
                                         {roundList[this.state.semester].length > this.state.usedRounds.length
                                             ?  <div className = 'padding-top-30'>
-                                                {/* <h3>{translate.header_select_rounds}</h3>*/}
                                                 <p>{translate.intro_new}</p>
                                                 <ul className='no-padding-left'> 
                                                     {roundList[this.state.semester].map(round =>
@@ -379,12 +392,12 @@ class AnalysisMenu extends Component {
                                                         <li className = 'select-list' key={analysis.analysisId}>
                                                             < Label key={"Label" + analysis.analysisId} for={analysis.analysisId} >
                                                                 <Input type="radio"
-                                                                    id={analysis.analysisId}
+                                                                    id={analysis.analysisId + !analysis.hasAccess ? '_preview' : ''}
                                                                     key={analysis.analysisId}
                                                                     value={analysis.analysisId}
                                                                     onChange={this.handleSelectedPublished}
                                                                     checked={this.state.selectedRadio.published === analysis.analysisId}
-                                                                    disabled = {!analysis.hasAccess}
+                                                                    //disabled = {!analysis.hasAccess}
                                                                 />
                                                             {analysis.analysisName} <span className='no-access'>  {analysis.hasAccess ? '' : translate.not_authorized_publish_new }</span>
                                                             </Label>
@@ -406,7 +419,7 @@ class AnalysisMenu extends Component {
                 {/************************************************************************************* */}
                 <Row className="button-container text-center">
                     <Col sm="6" lg="4">
-                        { this.state.selectedRadio.draft.length > 0 
+                        { this.state.selectedRadio.draft.length > 0 && !this.state.canOnlyPreview
                             ? <span>
                                 <Button color='danger' id='delete' key='delete' onClick={this.toggleModal} >
                                     {translate.btn_delete}
@@ -424,11 +437,17 @@ class AnalysisMenu extends Component {
                         </Button>
                     </Col>
                     <Col sm="6" lg="4">
-                        {
-                            !this.state.firstVisit && this.showEditButton()
+                        { !this.state.firstVisit && this.showEditButton() && !this.state.canOnlyPreview
                                 ? <Button color='success' id='new' key='new' onClick={this.goToEditMode} disabled ={this.state.firstVisit}>
                                     <div className="iconContainer arrow-forward" id='new' />  
                                     {translate.btn_add_analysis}
+                            </Button>
+                            : ''
+                        }
+                        { this.state.canOnlyPreview
+                                ? <Button color='success' id='new' key='new' onClick={this.handlePreview}>
+                                    <div className="iconContainer arrow-forward" id='new' />  
+                                    {translate.btn_preview}
                             </Button>
                             : ''
                         }
