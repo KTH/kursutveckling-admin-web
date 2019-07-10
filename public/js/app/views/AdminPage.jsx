@@ -406,6 +406,7 @@ class AdminPage extends Component {
             courseCode={routerStore.courseCode} 
             progress = {this.state.progress === 'edit' ? 2 : 3}
             header = {translate.header_main[routerStore.status]}
+            showProgressBar = {routerStore.status !== 'preview'}
           />
          
           {/************************************************************************************* */}

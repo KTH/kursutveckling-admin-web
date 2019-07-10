@@ -392,7 +392,7 @@ class AnalysisMenu extends Component {
                                                         <li className = 'select-list' key={analysis.analysisId}>
                                                             < Label key={"Label" + analysis.analysisId} for={analysis.analysisId} >
                                                                 <Input type="radio"
-                                                                    id={analysis.analysisId + !analysis.hasAccess ? '_preview' : ''}
+                                                                    id={`${!analysis.hasAccess ? analysis.analysisId +'_preview' : analysis.analysisId }`}
                                                                     key={analysis.analysisId}
                                                                     value={analysis.analysisId}
                                                                     onChange={this.handleSelectedPublished}

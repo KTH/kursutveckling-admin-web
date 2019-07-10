@@ -34,7 +34,7 @@ class Preview extends Component {
       return (
         <div key='kursutveckling-andmin-preview' className='container' id='preview-container' >
            <h2>{translate.header_preview_content}</h2>
-           <p>{translate.intro_preview}</p>
+           <p>{routerStore.status === 'preview' ? '' : translate.intro_preview}</p>
           {routerStore.analysisData.examinationRounds && routerStore.analysisData.examinationRounds.length === 0 
           ?<Alert>Fel fel fel !</Alert>
           : <div className='tables-list col'>

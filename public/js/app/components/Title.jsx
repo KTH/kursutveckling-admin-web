@@ -3,7 +3,7 @@ import ProgressBar from '../components/ProgressBar'
 
 class Title extends Component{
     render(){
-        const { courseCode, header, title, language, progress} = this.props
+        const { courseCode, header, title, language, progress, showProgressBar} = this.props
         return(
         <div key='course-title' id='course-title'>
              <h1>{header}</h1>
@@ -18,7 +18,10 @@ class Title extends Component{
             </span>
             : ''}
             </h4>
-            <ProgressBar language={language} active = {progress}/>
+            {showProgressBar
+                ? <ProgressBar language={language} active = {progress}/>
+                : ''
+            }
         </div>
         )
     }
