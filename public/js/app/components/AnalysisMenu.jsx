@@ -225,7 +225,6 @@ class AnalysisMenu extends Component {
       }
 
     render() {
-        
         const { status, semesterList, roundList, routerStore } = this.props
         const translate = i18n.messages[routerStore.language].messages
         const showAllEmptyNew = status !== 'published' && this.state.draftAnalysis.length === 0 && roundList[this.state.semester].length === this.state.usedRounds.length
@@ -259,47 +258,46 @@ class AnalysisMenu extends Component {
                             }
                         </span>
                         <span className='caretholder' id={'_spanCaret'}></span>
-                            </DropdownToggle>
-                                <DropdownMenu>
-                                    {semesterList && semesterList.map(semester =>
-                                        <DropdownItem id={semester} key={semester} onClick={this.handleSelectedSemester}>
-                                            {`
-                                            ${translate.course_short_semester[semester.toString().match(/.{1,4}/g)[1]]} 
-                                            ${semester.toString().match(/.{1,4}/g)[0]}
-                                            `}
-                                        </DropdownItem>
-                                )}
-                            </DropdownMenu>
-                        </Dropdown>
+                    </DropdownToggle>
+                    <DropdownMenu>
+                        {semesterList && semesterList.map(semester =>
+                            <DropdownItem id={semester} key={semester} onClick={this.handleSelectedSemester}>
+                                {`
+                                    ${translate.course_short_semester[semester.toString().match(/.{1,4}/g)[1]]} 
+                                    ${semester.toString().match(/.{1,4}/g)[0]}
+                                `}
+                            </DropdownItem>
+                        )}
+                    </DropdownMenu>
+                </Dropdown>
                 <br />
                 {this.state.alert.length > 0
                     ? <Alert color='danger'> {this.state.alert}</Alert>
                     : ''
                 }
                 
-                
-
+                {/************************************************************************************* */}
+                {/*                        SELECT BUTTONS FOR ANALYSIS OR ROUNDS                        */}
+                {/************************************************************************************* */}
                 <Collapse isOpen={this.state.collapseOpen}>
-                <Row id='analysisMenuContainer'>
-                    {
-                      showAllEmptyNew || showAllEmptyPublished
-                      ?  
-                      <Alert color='info'>
-                          <p>{showAllEmptyNew ? translate.alert_no_rounds : translate.alert_no_published }</p>
-                      </Alert>
-                    :<Form> 
-                         <div className='inline-flex'>
-                             <h3>{translate.header_analysis_menu}</h3>
-                            <InfoButton addClass = 'padding-top-30' id = 'info_choose_course_offering' textObj = {translate.info_choose_course_offering}/>
-                        </div>
+                    <Row id='analysisMenuContainer'>
+                        { showAllEmptyNew || showAllEmptyPublished
+                            ? <Alert color='info'>
+                                <p>{showAllEmptyNew ? translate.alert_no_rounds : translate.alert_no_published }</p>
+                            </Alert>
+                            :<Form> 
+                                <div className='inline-flex'>
+                                    <h3>{translate.header_analysis_menu}</h3>
+                                    <InfoButton addClass = 'padding-top-30' id = 'info_choose_course_offering' textObj = {translate.info_choose_course_offering}/>
+                                </div>
                    
-                        {status === 'new' || status === 'draft' 
-                        ? <span>
-                            <FormGroup>
-                            {/************************************************************************************* */}
-                            {/*                              DRAFT ANALYSIS                                          */}
-                            {/************************************************************************************* */}
-                                {this.state.draftAnalysis.length > 0
+                                {status === 'new' || status === 'draft' 
+                                    ? <span>
+                                        <FormGroup>
+                                        {/************************************************************************************* */}
+                                        {/*                              DRAFT ANALYSIS                                          */}
+                                        {/************************************************************************************* */}
+                                        {this.state.draftAnalysis.length > 0
                                         ?<span>
                                             <p>{translate.intro_draft}</p>
                                             <ul className='no-padding-left'>
@@ -320,93 +318,91 @@ class AnalysisMenu extends Component {
                                                     <br />
                                                 </li>
                                             )}
-                                        </ul>
-                                     </span> 
-                                    : ''
-                                }
-                            </FormGroup>
+                                            </ul>
+                                        </span> 
+                                        : ''
+                                    }
+                                    </FormGroup>
                            
-                            <FormGroup >
-                            {/************************************************************************************* */}
-                            {/*                               NEW ANALYSIS                                          */}
-                            {/************************************************************************************* */}
-                                {roundList[this.state.semester].length > this.state.usedRounds.length
-                                    ?  <div className = 'padding-top-30'>
-                                        {/* <h3>{translate.header_select_rounds}</h3>*/}
-                                        <p>{translate.intro_new}</p>
-                                        <ul className='no-padding-left'> 
-                                            {roundList[this.state.semester].map(round =>
-                                                this.state.usedRounds.indexOf(round.roundId) < 0
-                                                    ? <li className = 'select-list' key={round.roundId}>
-                                                        <Label key={"Label" + round.roundId}
-                                                            for={round.roundId}
-                                                        >
-                                                            <Input type="checkbox"
-                                                                id={round.roundId}
-                                                                key={"checkbox" + round.roundId}
-                                                                onChange={this.handleRoundCheckbox}
-                                                                checked = {this.state.rounds.indexOf(round.roundId) > -1 }
-                                                                name={round.roundId}
-                                                                disabled = {!round.hasAccess}
-                                                            />
-                                                            {round.shortName 
-                                                                ? round.shortName + ' '
-                                                                : `${translate.course_short_semester[this.state.semester.toString().match(/.{1,4}/g)[1]]} 
-                                                                   ${this.state.semester.toString().match(/.{1,4}/g)[0]}-${round.roundId} `
-                                                            } 
-                                                             ( {translate.label_start_date} {getDateFormat(round.startDate, round.language)}, {round.language} )
-                                                             <span className='no-access'>   {round.hasAccess ? '' : translate.not_authorized_course_offering}</span>
+                                    <FormGroup >
+                                    {/************************************************************************************* */}
+                                    {/*                               NEW ANALYSIS                                          */}
+                                    {/************************************************************************************* */}
+                                        {roundList[this.state.semester].length > this.state.usedRounds.length
+                                            ?  <div className = 'padding-top-30'>
+                                                {/* <h3>{translate.header_select_rounds}</h3>*/}
+                                                <p>{translate.intro_new}</p>
+                                                <ul className='no-padding-left'> 
+                                                    {roundList[this.state.semester].map(round =>
+                                                        this.state.usedRounds.indexOf(round.roundId) < 0
+                                                            ? <li className = 'select-list' key={round.roundId}>
+                                                                <Label key={"Label" + round.roundId}
+                                                                    for={round.roundId}
+                                                                >
+                                                                    <Input type="checkbox"
+                                                                        id={round.roundId}
+                                                                        key={"checkbox" + round.roundId}
+                                                                        onChange={this.handleRoundCheckbox}
+                                                                        checked = {this.state.rounds.indexOf(round.roundId) > -1 }
+                                                                        name={round.roundId}
+                                                                        disabled = {!round.hasAccess}
+                                                                    />
+                                                                    {round.shortName 
+                                                                        ? round.shortName + ' '
+                                                                        : `${translate.course_short_semester[this.state.semester.toString().match(/.{1,4}/g)[1]]} 
+                                                                        ${this.state.semester.toString().match(/.{1,4}/g)[0]}-${round.roundId} `
+                                                                    } 
+                                                                    ( {translate.label_start_date} {getDateFormat(round.startDate, round.language)}, {round.language} )
+                                                                    <span className='no-access'>   {round.hasAccess ? '' : translate.not_authorized_course_offering}</span>
 
-                                                        </Label>
-                                                        <br />
-                                                    </li>
-                                                : ''
-                                            )}
-                                        </ul>
-                                    </div>
-                                    : ''
+                                                                </Label>
+                                                                <br />
+                                                            </li>
+                                                        : ''
+                                                    )}
+                                                </ul>
+                                            </div>
+                                            : ''
+                                        }
+                                    </FormGroup>
+                                </span>
+                                : <FormGroup >
+                                    {/************************************************************************************* */}
+                                    {/*                               PUBLISHED ANALYSIS                                    */}
+                                    {/************************************************************************************* */}
+                                        {this.state.publishedAnalysis.length > 0
+                                            ?  <div>
+                                                <p>{translate.intro_published}</p><ul className='no-padding-left'>
+                                                
+                                                {
+                                                    this.state.publishedAnalysis.map(analysis =>
+                                                        <li className = 'select-list' key={analysis.analysisId}>
+                                                            < Label key={"Label" + analysis.analysisId} for={analysis.analysisId} >
+                                                                <Input type="radio"
+                                                                    id={analysis.analysisId}
+                                                                    key={analysis.analysisId}
+                                                                    value={analysis.analysisId}
+                                                                    onChange={this.handleSelectedPublished}
+                                                                    checked={this.state.selectedRadio.published === analysis.analysisId}
+                                                                    disabled = {!analysis.hasAccess}
+                                                                />
+                                                            {analysis.analysisName} <span className='no-access'>  {analysis.hasAccess ? '' : translate.not_authorized_publish_new }</span>
+                                                            </Label>
+                                                            <br />
+                                                        </li>
+                                                    )}
+                                                </ul>
+                                                </div>
+                                            : <p>{translate.published_empty}</p>
+                                        }
+                                    </FormGroup>
                                 }
-                            </FormGroup>
-                        </span>
-                       : <FormGroup >
-                        {/************************************************************************************* */}
-                        {/*                               PUBLISHED ANALYSIS                                    */}
-                        {/************************************************************************************* */}
-                            {this.state.publishedAnalysis.length > 0
-                                ?  <div>
-                                {/* <h3>{translate.header_select_rounds}</h3>*/}
-                                <p>{translate.intro_published}</p><ul className='no-padding-left'>
-                                    
-                                    {
-                                        this.state.publishedAnalysis.map(analysis =>
-                                            <li className = 'select-list' key={analysis.analysisId}>
-                                                < Label key={"Label" + analysis.analysisId} for={analysis.analysisId} >
-                                                    <Input type="radio"
-                                                        id={analysis.analysisId}
-                                                        key={analysis.analysisId}
-                                                        value={analysis.analysisId}
-                                                        onChange={this.handleSelectedPublished}
-                                                        checked={this.state.selectedRadio.published === analysis.analysisId}
-                                                        disabled = {!analysis.hasAccess}
-                                                    />
-                                                   {analysis.analysisName} <span className='no-access'>  {analysis.hasAccess ? '' : translate.not_authorized_publish_new }</span>
-                                                    {/*" ( Created by: " + analysis.user + " ) "*/}
-                                                </Label>
-                                                <br />
-                                            </li>
-                                        )}
-                                    </ul>
-                                    </div>
-                                : <p>{translate.published_empty}</p>
+                            </Form>
                             }
-                        </FormGroup>
-                        }
-                    </Form>
-                    }
-                </Row>
+                    </Row>
                 </Collapse>
                 {/************************************************************************************* */}
-                {/*                               BUTTONS ANALYSIS MENU                                         */}
+                {/*                             BUTTONS FOR ANALYSIS MENU                               */}
                 {/************************************************************************************* */}
                 <Row className="button-container text-center">
                     <Col sm="6" lg="4">
@@ -438,6 +434,9 @@ class AnalysisMenu extends Component {
                         }
                     </Col>
                 </Row>
+                {/************************************************************************************* */}
+                {/*                               MODALS FOR DELETE AND COPY                            */}
+                {/************************************************************************************* */}  
                 <InfoModal type = 'delete' toggle= {this.toggleModal} isOpen = {this.state.modalOpen.delete} id={this.state.selectedRadio.draft} handleConfirm={this.handleDelete} infoText={translate.info_delete}/>
                 <InfoModal type = 'copy' toggle= {this.toggleModal} isOpen = {this.state.modalOpen.copy} id={'copy'} url={routerStore.browserConfig.hostUrl + routerStore.browserConfig.proxyPrefixPath.uri + '/preview/' + this.state.selectedRadio.draft} infoText={translate.info_copy_link}/>
             </div>

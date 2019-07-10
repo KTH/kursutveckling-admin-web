@@ -85,6 +85,7 @@ class AdminPage extends Component {
             analysisFile: this.responseText, 
             alertSuccess: i18n.messages[thisInstance.props.routerStore.language].messages.alert_uploaded_file,
             values: values,
+            hasNewUploadedFileAnalysis: true,
             alertError:''
            })
           } else {
@@ -259,13 +260,14 @@ class AdminPage extends Component {
     let postObject = this.state.values
     let modal = this.state.modalOpen
     
-    if(this.state.analysisFile !== postObject.analysisFileName){
-      postObject.analysisFileName = this.state.analysisFile
-    }
-    
     if( this.state.hasNewUploadedFileAnalysis ){
       postObject.pdfAnalysisDate = getTodayDate()
     }
+
+    if(this.state.pmFile !== postObject.pmFileName){
+      postObject.pmFileName = this.state.pmFile
+    }
+
     
     if(postObject.isPublished){
       postObject.changedAfterPublishedDate = getTodayDate()

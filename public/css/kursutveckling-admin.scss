@@ -37,6 +37,7 @@ border-left: 1px dotted #fff;
   text-align: center;
   border-bottom: 2px solid #d4d4d4;
   font-weight: 900;
+  padding-top: 30px;
   &.progress-active{
     border-bottom: 3px solid #007fae;
   }
@@ -108,6 +109,8 @@ ul.no-padding-left{
   border: 2px solid red !important;
   padding-top: 10px;
   padding-left: 10px;
+  padding-bottom: 10px;
+  border-radius: 5px;
 }
 
 .border-bottom{

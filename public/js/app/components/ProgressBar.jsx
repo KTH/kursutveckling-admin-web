@@ -9,13 +9,13 @@ const ProgressBar = (props) => {
     <div>
       <Row className = 'test'>
         <Col className = {`col-md-4 col-sm-12 progress-bar1 ${active === 1 ? 'progress-active' : ''}` }>
-          {i18n.messages[language].messages.header_progress_select}
+          <h4>{i18n.messages[language].messages.header_progress_select}</h4>
         </Col>
         <Col className = {`col-md-4 col-sm-12 progress-bar1 ${active === 2 ? 'progress-active' : ''}` }>
-        {i18n.messages[language].messages.header_progress_edit_upload}
+        <h4>{i18n.messages[language].messages.header_progress_edit_upload}</h4>
         </Col>
         <Col className = {`col-md-4 col-sm-12 progress-bar1 ${active === 3 ? 'progress-active' : ''}` }>
-        {i18n.messages[language].messages.header_progress_review}
+        <h4>{i18n.messages[language].messages.header_progress_review}</h4>
         </Col>
       </Row>
      
