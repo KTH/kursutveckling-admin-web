@@ -381,6 +381,7 @@ class AdminPage extends Component {
                   status = { routerStore.status }
                   tempData = {this.state.saved ? {} : this.getTempData()}
                   saved = { this.state.saved }
+                  analysisId = {this.state.values ? this.state.values._id : ''}
                 />
               }
             </div>
@@ -575,7 +576,7 @@ class AdminPage extends Component {
               : ''
             }
             {/************************************************************************************* */}
-            {/*                                BUTTONS FOR BOTH PAGES                               */}
+            {/*                                BUTTONS FOR PAG 2 AND 3                              */}
             {/************************************************************************************* */}
             {this.state.isPreviewMode && this.state.values.changedDate.length > 0 && routerStore.status !== 'preview' && routerStore.analysisId
               ?   <CopyText textToCopy={ routerStore.browserConfig.hostUrl + routerStore.browserConfig.proxyPrefixPath.uri + '/preview/' + routerStore.analysisId + '?title=' + encodeURI(routerStore.courseTitle.name+'_'+routerStore.courseTitle.credits)} />

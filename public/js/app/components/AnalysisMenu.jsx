@@ -71,18 +71,36 @@ class AnalysisMenu extends Component {
       }
 
     componentWillMount() {
-        const routerStore = this.props.routerStore
-        if (routerStore.usedRounds.length === 0 || routerStore.hasChangedStatus)
+        const {routerStore , analysisId } = this.props
+        const prevSelectedId = analysisId
+        const prevState = this.state
+        if( analysisId.length > 0){
+            if(routerStore.status === 'draft'){
+                prevState.selectedRadio.draft = analysisId
+            } else {
+                prevState.selectedRadio.draft = analysisId
+            }
+        }
+        if (routerStore.usedRounds.length === 0 || routerStore.hasChangedStatus){
             this.getUsedRounds(this.state.semester)
-        else
+        } else {
+            if( analysisId && analysisId.length > 0){
+                if(routerStore.status === 'draft'){
+                    prevState.selectedRadio.draft = analysisId
+                } else {
+                    prevState.selectedRadio.published = analysisId
+                }
+            }
             if (this.props.progress === 'new_back')
                 this.setState({
                     semester: this.state.semester,
                     usedRounds: routerStore.usedRounds.usedRounds,
                     draftAnalysis: routerStore.usedRounds.draftAnalysis,
                     publishedAnalysis: routerStore.usedRounds.publishedAnalysis,
+                    selectedRadio: prevState.selectedRadio,
                     alert: ''
                 })
+            }
     }
 
     toggleDropdown(event) {
@@ -419,7 +437,7 @@ class AnalysisMenu extends Component {
                 {/*                             BUTTONS FOR ANALYSIS MENU                               */}
                 {/************************************************************************************* */}
                 <Row className="button-container text-center">
-                    <Col sm="6" lg="4">
+                    <Col sm="12" lg="4">
                         { this.state.selectedRadio.draft.length > 0 && !this.state.canOnlyPreview
                             ? <span>
                                 <Button color='danger' id='delete' key='delete' onClick={this.toggleModal} >
@@ -432,12 +450,12 @@ class AnalysisMenu extends Component {
                             : ''
                         }
                     </Col>
-                    <Col sm="6" lg="4">
+                    <Col sm="12" lg="4">
                         <Button color='secondary' id='cancel' key='cancel' onClick={this.handleCancel} >
                             {translate.btn_cancel}
                         </Button>
                     </Col>
-                    <Col sm="6" lg="4">
+                    <Col sm="12" lg="4">
                         { !this.state.firstVisit && this.showEditButton() && !this.state.canOnlyPreview
                                 ? <Button color='success' id='new' key='new' onClick={this.goToEditMode} disabled ={this.state.firstVisit}>
                                     <div className="iconContainer arrow-forward" id='new' />  
