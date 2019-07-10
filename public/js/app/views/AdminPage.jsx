@@ -578,7 +578,7 @@ class AdminPage extends Component {
             {/*                                BUTTONS FOR BOTH PAGES                               */}
             {/************************************************************************************* */}
             {this.state.isPreviewMode && this.state.values.changedDate.length > 0 && routerStore.status !== 'preview' && routerStore.analysisId
-              ?   <CopyText textToCopy={ routerStore.browserConfig.hostUrl + routerStore.browserConfig.proxyPrefixPath.uri + '/preview/' + routerStore.analysisId} />
+              ?   <CopyText textToCopy={ routerStore.browserConfig.hostUrl + routerStore.browserConfig.proxyPrefixPath.uri + '/preview/' + routerStore.analysisId + '?title=' + encodeURI(routerStore.courseTitle.name+'_'+routerStore.courseTitle.credits)} />
               : ''
             }
              
@@ -629,6 +629,9 @@ class AdminPage extends Component {
                 </Row>
             </Col>
           </Row>
+          {/************************************************************************************* */}
+          {/*                               MODALS FOR PUBLISH AND CANCEL                         */}
+          {/************************************************************************************* */}  
           <InfoModal type = 'publish' toggle= {this.toggleModal} isOpen = {this.state.modalOpen.publish} id={this.props.routerStore.analysisId} handleConfirm={this.handlePublish} infoText={translate.info_publish}/>
           <InfoModal type = 'cancel' toggle= {this.toggleModal} isOpen = {this.state.modalOpen.cancel} id={this.props.routerStore.analysisId} handleConfirm={this.handleCancel} infoText={translate.info_cancel}/>
           </div>
