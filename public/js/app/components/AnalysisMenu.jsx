@@ -53,56 +53,9 @@ class AnalysisMenu extends Component {
         this.toggleModal = this.toggleModal.bind(this)
     }
 
-    componentDidMount() {
-
-       /*  this._isMounted = true;
-        window.onpopstate = ()=> {
-          if(this._isMounted) {
-            console.log('this.super.state', this.super)
-           const { hash } = location;
-            if( this.state.value!==0)
-              this.setState({value: 0})
-            if(hash.indexOf('users')>-1 && this.state.value!==1)
-              this.setState({value: 1})
-            if(hash.indexOf('data')>-1 && this.state.value!==2)
-              this.setState({value: 2})*/
-         // }
-       // }
-      }
-
-    componentWillMount() {
-        const {routerStore , analysisId } = this.props
-        const prevSelectedId = analysisId
-        const prevState = this.state
-        if( analysisId.length > 0){
-            if(routerStore.status === 'draft'){
-                prevState.selectedRadio.draft = analysisId
-            } else {
-                prevState.selectedRadio.draft = analysisId
-            }
-        }
-        if (routerStore.usedRounds.length === 0 || routerStore.hasChangedStatus){
-            this.getUsedRounds(this.state.semester)
-        } else {
-            if( analysisId && analysisId.length > 0){
-                if(routerStore.status === 'draft'){
-                    prevState.selectedRadio.draft = analysisId
-                } else {
-                    prevState.selectedRadio.published = analysisId
-                }
-            }
-            if (this.props.progress === 'new_back')
-                this.setState({
-                    semester: this.state.semester,
-                    usedRounds: routerStore.usedRounds.usedRounds,
-                    draftAnalysis: routerStore.usedRounds.draftAnalysis,
-                    publishedAnalysis: routerStore.usedRounds.publishedAnalysis,
-                    selectedRadio: prevState.selectedRadio,
-                    alert: ''
-                })
-            }
-    }
-
+    
+    //******************************* SEMESTER DROPDOWN ******************************* */
+    //********************************************************************************** */
     toggleDropdown(event) {
         event.preventDefault()
         this.setState({
@@ -126,30 +79,9 @@ class AnalysisMenu extends Component {
         })
     }
 
-    getUsedRounds(semester) {
-        const thisInstance = this
-        const routerStore = this.props.routerStore
-        return this.props.routerStore.getUsedRounds(this.props.routerStore.courseData.courseCode, semester)
-            .then(result => {
-                thisInstance.setState({
-                    semester: semester,
-                    usedRounds: routerStore.usedRounds.usedRounds,
-                    draftAnalysis: routerStore.usedRounds.draftAnalysis,
-                    publishedAnalysis: routerStore.usedRounds.publishedAnalysis,
-                    alert: ''
-                })
-            })
-    }
-
-    showEditButton(){
-        return(
-            this.props.routerStore.status === 'published'
-                ? this.state.publishedAnalysis.length > 0
-                : this.state.draftAnalysis.length > 0 || this.props.roundList[this.state.semester].length > this.state.usedRounds.length
-        )
-    }
+    
     //************************ CHECKBOXES AND RADIO BUTTONS **************************** */
-
+    //********************************************************************************** */
     handleRoundCheckbox(event) {
         let prevState = this.state
         prevState.canOnlyPreview = false
@@ -186,15 +118,22 @@ class AnalysisMenu extends Component {
     }
 
     handleSelectedPublished(event) {
-        let prevState = this.state
-        prevState.selectedRadio.published = event.target.id
-        prevState.lastSelected = 'published'
-        prevState.alert = ''
-        this.setState(prevState)
+        if(event.target.id.indexOf('_preview') >0 ){
+            prevState.selectedRadio.publish = event.target.id.split('_preview')[0]
+            prevState.canOnlyPreview = true
+            this.setState(prevState)
+        }else{
+            let prevState = this.state
+            prevState.selectedRadio.published = event.target.id
+            prevState.lastSelected = 'published'
+            prevState.alert = ''
+            this.setState(prevState)
+        }
     }
 
-
+   
     //************************ SUBMIT BUTTONS **************************** */
+     //******************************************************************** */
 
     goToEditMode(event) {
         event.preventDefault()
@@ -208,7 +147,6 @@ class AnalysisMenu extends Component {
                 alert: i18n.messages[this.props.routerStore.language].messages.alert_no_rounds_selected
             })
     }
-
 
     handleCancel(event) {
         event.preventDefault()
@@ -257,6 +195,79 @@ class AnalysisMenu extends Component {
           modalOpen: modalOpen
         })
       }
+    //******************************************************************** */
+    //****************************** OTHER ******************************* */
+
+    getUsedRounds(semester) {
+        const thisInstance = this
+        const routerStore = this.props.routerStore
+        return this.props.routerStore.getUsedRounds(this.props.routerStore.courseData.courseCode, semester)
+            .then(result => {
+                thisInstance.setState({
+                    semester: semester,
+                    usedRounds: routerStore.usedRounds.usedRounds,
+                    draftAnalysis: routerStore.usedRounds.draftAnalysis,
+                    publishedAnalysis: routerStore.usedRounds.publishedAnalysis,
+                    alert: ''
+                })
+            })
+    }
+
+    showEditButton(){
+        return(
+            this.props.routerStore.status === 'published'
+                ? this.state.publishedAnalysis.length > 0
+                : this.state.draftAnalysis.length > 0 || this.props.roundList[this.state.semester].length > this.state.usedRounds.length
+        )
+    }
+    
+    componentDidMount() {
+
+        /*  this._isMounted = true;
+         window.onpopstate = ()=> {
+           if(this._isMounted) {
+             console.log('this.super.state', this.super)
+            const { hash } = location;
+             if( this.state.value!==0)
+               this.setState({value: 0})
+             if(hash.indexOf('users')>-1 && this.state.value!==1)
+               this.setState({value: 1})
+             if(hash.indexOf('data')>-1 && this.state.value!==2)
+               this.setState({value: 2})*/
+          // }
+        // }
+       }
+
+    componentWillMount() {
+        const {routerStore , analysisId } = this.props
+        const prevSelectedId = analysisId
+        const prevState = this.state
+       
+        if (routerStore.usedRounds.length === 0 || routerStore.hasChangedStatus){
+            this.getUsedRounds(this.state.semester)
+        } else {
+            if( analysisId && analysisId.length > 0){
+                if(routerStore.status === 'draft'){
+                    prevState.selectedRadio.draft = analysisId
+                    prevState.lastSelected = 'draft'
+                } else {
+                    prevState.selectedRadio.published = analysisId
+                    prevState.lastSelected = 'published'
+                }
+            }
+            if (this.props.progress === 'new_back'){
+                this.setState({
+                    semester: this.state.semester,
+                    usedRounds: routerStore.usedRounds.usedRounds,
+                    draftAnalysis: routerStore.usedRounds.draftAnalysis,
+                    publishedAnalysis: routerStore.usedRounds.publishedAnalysis,
+                    selectedRadio: prevState.selectedRadio,
+                    lastSelected: prevState.lastSelected,
+                    alert: ''
+                })
+            }
+        }
+    }
 
     render() {
         const { status, semesterList, roundList, routerStore } = this.props
@@ -306,7 +317,7 @@ class AnalysisMenu extends Component {
                 </Dropdown>
                 <br />
                 {this.state.alert.length > 0
-                    ? <Alert color='danger'> {this.state.alert}</Alert>
+                    ? <Alert color='danger' className = 'margin-bottom-40'> {this.state.alert}</Alert>
                     : ''
                 }
                 
@@ -316,7 +327,7 @@ class AnalysisMenu extends Component {
                 <Collapse isOpen={this.state.collapseOpen}>
                     <Row id='analysisMenuContainer'>
                         { showAllEmptyNew || showAllEmptyPublished
-                            ? <Alert color='info'>
+                            ? <Alert color='info' className = 'margin-bottom-40'>
                                 <p>{showAllEmptyNew ? translate.alert_no_rounds : translate.alert_no_published }</p>
                             </Alert>
                             :<Form> 

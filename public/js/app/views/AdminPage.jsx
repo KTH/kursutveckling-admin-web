@@ -364,13 +364,14 @@ class AdminPage extends Component {
                 courseCode={routerStore.courseCode} 
                 progress = {1}
                 header = {translate.header_main[routerStore.status]}
+                showProgressBar = {true}
                 />
          
               {/************************************************************************************* */}
               {/*                               PAGE1: ANALYSIS MENU                             */}
               {/************************************************************************************* */}
               {routerStore.semesters.length === 0
-                ?<Alert color='info' style={{marginBottom:60}}> {translate.alert_no_rounds} </Alert>
+                ?<Alert color='info' className='margin-bottom-40'> {translate.alert_no_rounds} </Alert>
                 : <AnalysisMenu
                   editMode= { this.editMode }
                   semesterList= { routerStore.semesters }
@@ -385,7 +386,7 @@ class AdminPage extends Component {
                 />
               }
             </div>
-            :<Alert color='info'> { routerStore.errorMessage }</Alert>
+            :<Alert className='margin-bottom-40' color='info'> { routerStore.errorMessage }</Alert>
           }
         </div>
       )
@@ -397,7 +398,7 @@ class AdminPage extends Component {
         {/************************************************************************************* */}
          {
            routerStore.errorMessage.length > 0
-            ?<Alert color='info'>{routerStore.errorMessage}</Alert>
+            ?<Alert color='info' className='margin-bottom-40'>{routerStore.errorMessage}</Alert>
             :
           <div>
           
@@ -434,25 +435,25 @@ class AdminPage extends Component {
 
                 {this.state.alert.length > 0 
                   ? <Row>
-                    <Alert color= 'info'>{this.state.alert} </Alert>
+                    <Alert color= 'info' className='margin-bottom-40'>{this.state.alert} </Alert>
                   </Row>
                   : ''
                 }  
                 {this.state.alertSuccess.length > 0 
                   ? <Row>
-                    <Alert color= 'success'>{this.state.alertSuccess} </Alert>
+                    <Alert color= 'success' className='margin-bottom-40'>{this.state.alertSuccess} </Alert>
                   </Row>
                   : ''
                 }  
                 {this.state.alertError.length > 0 
                   ? <Row>
-                    <Alert color= 'danger'>{this.state.alertError} </Alert>
+                    <Alert color= 'danger' className='margin-bottom-40'>{this.state.alertError} </Alert>
                   </Row>
                   : ''
                 }  
                 <h2>{translate.header_edit_content}</h2>
-               <h3>{translate.header_semester} {this.state.values.semester}</h3>
-               <h3>{translate.header_course_offering} {this.state.values.analysisName}</h3>
+                <h3>{translate.header_semester} {this.state.values.semester}</h3>
+                <h3>{translate.header_course_offering} {this.state.values.analysisName}</h3>
               
                 <Row className='form-group'>
                   <Col sm='4' className='col-temp'>
@@ -584,7 +585,7 @@ class AdminPage extends Component {
             }
              
             <Row className="button-container text-center" >  
-                  <Col sm="4" style={{textAlign: 'left'}}>
+                  <Col sm="4" className ='align-left-sm-center'>
                     {
                       routerStore.status === 'preview'
                       ? ''
@@ -594,7 +595,7 @@ class AdminPage extends Component {
                         </Button>
                     }
                   </Col>
-                  <Col sm="3" style={{textAlign: 'right'}} >
+                  <Col sm="3" className='align-right-sm-center' >
                     {
                       routerStore.status !== 'preview'
                       ? <Button color='secondary' id='cancel' key='cancel' onClick={this.toggleModal} >
