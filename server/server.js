@@ -225,7 +225,7 @@ appRoute.get('api.koppsCourseData', config.proxyPrefixPath.uri + '/api/kursutvec
 appRoute.get('redis.ugCache', config.proxyPrefixPath.uri + '/redis/ugChache/:key/:type', Admin.getCourseEmployees)
 appRoute.post('redis.ugCache', config.proxyPrefixPath.uri + '/redis/ugChache/:key/:type', Admin.getCourseEmployees)
 appRoute.post('storage.saveFile', config.proxyPrefixPath.uri + '/storage/saveFile/:analysisid/:type/:published', Admin.saveFileToStorage)
-
+appRoute.post('storage.updateFile', config.proxyPrefixPath.uri + '/storage/updateFile/:fileName/', Admin.updateFileInStorage)
 server.use('/', appRoute.getRouter())
 
 // Not found etc

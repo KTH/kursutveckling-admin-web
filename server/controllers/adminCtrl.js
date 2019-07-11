@@ -10,7 +10,7 @@ const httpResponse = require('kth-node-response')
 const i18n = require('../../i18n')
 
 const api = require('../api')
-const { runBlobStorage } = require('../blobStorage')
+const { runBlobStorage, updateMetaData } = require('../blobStorage')
 // const { blobStorageUpload } = require('../blobStorage1')
 
 const kursutvecklingAPI = require('../apiCalls/kursutvecklingAPI')
@@ -32,7 +32,8 @@ module.exports = {
   getCourseEmployees: co.wrap(_getCourseEmployees),
   getUsedRounds: co.wrap(_getUsedRounds),
   getKoppsCourseData: co.wrap(_getKoppsCourseData),
-  saveFileToStorage: co.wrap(_saveFileToStorage)
+  saveFileToStorage: co.wrap(_saveFileToStorage),
+  updateFileInStorage: co.wrap(_updateFileInStorage)
 }
 
 function * _saveFileToStorage (req, res, next) {
@@ -45,6 +46,11 @@ function * _saveFileToStorage (req, res, next) {
   console.log('file!!!!!', file)
   // }
   return httpResponse.json(res, fileName)
+}
+
+function * _updateFileInStorage (req, res, next) {
+  const response = yield updateMetaData(req.params.fileName, req.body.params.metadata)
+  return httpResponse.json(res, response)
 }
 
 function * _postRoundAnalysis (req, res, next) {

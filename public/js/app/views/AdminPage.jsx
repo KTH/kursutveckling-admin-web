@@ -23,7 +23,7 @@ class AdminPage extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      saved: false,
+      saved: this.props.routerStore.analysisData !== undefined && this.props.routerStore.analysisData.changedDate.length > 2,
       values: this.props.routerStore.analysisData,
       isPublished: this.props.routerStore.analysisData ? this.props.routerStore.analysisData.isPublished : this.props.routerStore.status === 'published',
       progress: this.props.routerStore.status === 'new' ? 'new' : 'edit',
@@ -53,6 +53,7 @@ class AdminPage extends Component {
     this.handleInputChange = this.handleInputChange.bind(this)
     this.toggleModal = this.toggleModal.bind(this)
     this.getTempData = this.getTempData.bind(this)
+    this.getMetadata = this.getMetadata.bind(this)
     //this.divTop = React.createRef() 
     //this.fileInput = React.createRef()
     this.hanleUploadFile = this.hanleUploadFile.bind(this)
@@ -100,17 +101,24 @@ class AdminPage extends Component {
       }
 
       let formData = new FormData()
+      const data = this.getMetadata(this.state.isPublished ? 'published' : this.state.saved ? 'draft' : 'new')
       formData.append("file", e.target.files[0], e.target.files[0].name)
-      formData.append('courseCode', this.state.values.courseCode)
-      formData.append('analysis', this.state.values._id)
+      formData.append('courseCode', data.courseCode)
+      formData.append('analysis', data.analysis)
       //formData.append('rounds', this.state.values._id.split('_')[])
-      formData.append('status', this.state.isPublished ? 'published' : 'draft')
+      formData.append('status', data.status)
       req.open("POST", `${this.props.routerStore.browserConfig.hostUrl}${this.props.routerStore.paths.storage.saveFile.uri.split(':')[0]}${this.props.routerStore.analysisData._id}/${id}/${this.state.isPublished}`);
       req.send(formData)
     })
   }
 
-  
+  getMetadata(status){
+    return {
+      courseCode: this.state.values.courseCode,
+      analysis: this.state.values._id,
+      status
+    }
+  }
   getTempData(){
     if( this.state.progress === 'back_new' && this.state.values.changedDate.length === 0 ){
       const {alterationText, examinationGrade, registeredStudents, roundIdList} = this.state.values
@@ -227,9 +235,9 @@ class AdminPage extends Component {
       //postObject.pdfPmDate = getTodayDate()
     }
 
-    /*if( this.state.hasNewUploadedFileAnalysis ){
-      postObject.pdfAnalysisDate = getTodayDate()
-    }*/
+    if( !this.state.saved && this.state.analysisFile.length > 0 ){
+      this.props.routerStore.updateFileInStorage(this.state.analysisFile, this.getMetadata('draft'))
+    }
 
     return routerStore.postRoundAnalysisData(postObject, postObject.changedDate.length === 0 )
       .then((data) => {
@@ -272,6 +280,7 @@ class AdminPage extends Component {
     if(postObject.isPublished){
       postObject.changedAfterPublishedDate = getTodayDate()
     }else{
+      routerStore.updateFileInStorage(this.state.analysisFile, this.getMetadata('published'))
       postObject.publishedDate = getTodayDate()
       postObject.isPublished = true
     }

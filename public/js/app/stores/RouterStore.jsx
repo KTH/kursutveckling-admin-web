@@ -92,16 +92,14 @@ class RouterStore {
     }
   }
 
-  /*@action postUploadedFile(postObject, type, status) { 
-    console.log('postObject', postObject)
-    return axios.post(this.buildApiUrl(this.paths.storage.saveFile.uri,
-      { analysisid: this.analysisId, type: type, published: status}),
-      this._getOptions(postObject)
+  @action updateFileInStorage(fileName, metadata) { 
+    return axios.post(this.buildApiUrl(this.paths.storage.updateFile.uri,
+      { fileName: fileName}),
+      this._getOptions({ metadata })
     ).then(apiResponse => {
       if (apiResponse.statusCode >= 400) {
         return "ERROR-" + apiResponse.statusCode
       }
-      if (this.status === 'new')
       return apiResponse.data
     }).catch(err => {
       if (err.response) {
@@ -109,7 +107,7 @@ class RouterStore {
       }
       throw err
     })
-  }*/
+  }
  
   @action getRoundAnalysis(id, lang = 'sv') {
     return axios.get(this.buildApiUrl(this.paths.api.kursutvecklingGetById.uri,
