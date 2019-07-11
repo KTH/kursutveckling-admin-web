@@ -112,18 +112,19 @@ async function updateMetaData (blobName, metadata) {
 
 async function deleteBlob (blobName, metadata) {
   const containerName = 'kursutveckling-blob-container'
-  const containerURL = ContainerURL.fromServiceURL(serviceURL, containerName)
-  const aborter = Aborter.timeout(30 * ONE_MINUTE)
-  const blobURL = BlobURL.fromContainerURL(containerURL, blobName)
-  const blockBlobURL = BlockBlobURL.fromBlobURL(blobURL)
-  const dateAndTime = new Date()
-  await blockBlobURL.setMetadata(
-    aborter,
-    {
-      date: dateAndTime,
-      status: metadata.status
-    }
-  )
+
+  try {
+    const containerURL = ContainerURL.fromServiceURL(serviceURL, containerName)
+    const aborter = Aborter.timeout(30 * ONE_MINUTE)
+    const blobURL = BlobURL.fromContainerURL(containerURL, blobName)
+    const blockBlobURL = BlockBlobURL.fromBlobURL(blobURL)
+
+    const response = await blockBlobURL.delete(aborter)
+    return response
+  } catch (error) {
+    log.error('Error in deleting blob ' + blobName, { error: error })
+    return error
+  }
 }
 
 const getTodayDate = (fileDate = true) => {

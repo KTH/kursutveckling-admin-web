@@ -108,6 +108,18 @@ class RouterStore {
       throw err
     })
   }
+
+  @action deleteFileInStorage(fileName){
+    return axios.post(this.buildApiUrl(this.paths.storage.deleteFileInStorage.uri,
+      {fileName: fileName}),
+      this._getOptions({})
+    ).then(apiResponse => {
+      if (apiResponse.statusCode >= 400) {
+        return "ERROR-" + apiResponse.statusCode
+      }
+      return apiResponse.data
+    })
+  }
  
   @action getRoundAnalysis(id, lang = 'sv') {
     return axios.get(this.buildApiUrl(this.paths.api.kursutvecklingGetById.uri,

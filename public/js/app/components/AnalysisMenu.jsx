@@ -170,6 +170,7 @@ class AnalysisMenu extends Component {
         }
         else{
             this.props.routerStore.deleteRoundAnalysis(id).then(result =>{
+                //this.props.routerStore.deleteFileInStorage(id+'.pdf')
                 window.location=`${SERVICE_URL[this.props.routerStore.service]}${this.props.routerStore.courseCode}?serv=kutv&event=delete`
                 this.getUsedRounds(this.state.semester)
                 let modalOpen = this.state.modalOpen
