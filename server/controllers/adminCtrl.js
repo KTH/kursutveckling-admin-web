@@ -50,7 +50,7 @@ function * _updateFileInStorage (req, res, next) {
 }
 
 function * _deleteFileInStorage (res, req, next) {
-  const response = yield deleteBlob(req.param.fileName)
+  const response = yield deleteBlob(req.req.params.id)
   return httpResponse.json(res, response)
 }
 

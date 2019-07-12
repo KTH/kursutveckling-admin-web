@@ -109,10 +109,10 @@ class RouterStore {
     })
   }
 
-  @action deleteFileInStorage(fileName){
-    return axios.post(this.buildApiUrl(this.paths.storage.deleteFileInStorage.uri,
-      {fileName: fileName}),
-      this._getOptions({})
+  @action deleteFileInStorage(id){
+    return axios.post(this.buildApiUrl(this.paths.storage.deleteFile.uri,
+      { id: id }),
+      this._getOptions()
     ).then(apiResponse => {
       if (apiResponse.statusCode >= 400) {
         return "ERROR-" + apiResponse.statusCode

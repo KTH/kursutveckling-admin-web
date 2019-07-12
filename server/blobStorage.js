@@ -110,19 +110,43 @@ async function updateMetaData (blobName, metadata) {
   }
 }
 
-async function deleteBlob (blobName, metadata) {
+async function deleteBlob (analysisId) {
   const containerName = 'kursutveckling-blob-container'
-
+  const aborter = Aborter.timeout(30 * ONE_MINUTE)
   try {
     const containerURL = ContainerURL.fromServiceURL(serviceURL, containerName)
-    const aborter = Aborter.timeout(30 * ONE_MINUTE)
-    const blobURL = BlobURL.fromContainerURL(containerURL, blobName)
-    const blockBlobURL = BlockBlobURL.fromBlobURL(blobURL)
+    let response
+    let marker
+    let blobName = ''
+    let blobURL
+    let blockBlobURL
+    let responseDelete = []
 
-    const response = await blockBlobURL.delete(aborter)
+    do {
+      response = await containerURL.listBlobFlatSegment(aborter)
+      marker = response.marker
+      for (let blob of response.segment.blobItems) {
+        if (blob.name.indexOf(analysisId) > -1) {
+          blobURL = BlobURL.fromContainerURL(containerURL, blob.name)
+          blockBlobURL = BlockBlobURL.fromBlobURL(blobURL)
+          responseDelete.push(await blockBlobURL.delete(aborter))
+          if (responseDelete.length === 2) {
+            break
+          }
+        }
+      }
+    } while (marker)
+    log.info(responseDelete.length + 'file(s) was deleted from blobstorage with analysisId: ' + analysisId)
+    /* if (blobName.length > 0) {
+      const blobURL = BlobURL.fromContainerURL(containerURL, blobName)
+      const blockBlobURL = BlockBlobURL.fromBlobURL(blobURL)
+
+      const response = await blockBlobURL.delete(aborter)
+
+    } */
     return response
   } catch (error) {
-    log.error('Error in deleting blob ' + blobName, { error: error })
+    log.error('Error in deleting blob ', { error: error })
     return error
   }
 }

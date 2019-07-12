@@ -226,7 +226,7 @@ appRoute.get('redis.ugCache', config.proxyPrefixPath.uri + '/redis/ugChache/:key
 appRoute.post('redis.ugCache', config.proxyPrefixPath.uri + '/redis/ugChache/:key/:type', Admin.getCourseEmployees)
 appRoute.post('storage.saveFile', config.proxyPrefixPath.uri + '/storage/saveFile/:analysisid/:type/:published', Admin.saveFileToStorage)
 appRoute.post('storage.updateFile', config.proxyPrefixPath.uri + '/storage/updateFile/:fileName/', Admin.updateFileInStorage)
-appRoute.post('storage.deleteFile', config.proxyPrefixPath.uri + '/storage/deleteFile/:fileName/', Admin.deleteFileInStorage)
+appRoute.post('storage.deleteFile', config.proxyPrefixPath.uri + '/storage/deleteFile/:id/', Admin.deleteFileInStorage)
 server.use('/', appRoute.getRouter())
 
 // Not found etc

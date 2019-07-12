@@ -474,13 +474,17 @@ class AdminPage extends Component {
                     </span>
                     
                     {this.state.analysisFile.length > 0
-                      ? <div className='inline-flex'>
+                      ? <span>
+                        <br/>
+                        <div className='inline-flex'>
                         <p className='upload-text'> {this.state.analysisFile} </p>
                          <div className="iconContainer icon-trash-can" id="removeAnalysis" onClick={this.handleRemoveFile}></div>
                       </div>
+                      </span>
                       : <div className={this.state.notValid.indexOf('analysisFile') > -1 ? 'not-valid' : ''}>
                         <UpLoad id="analysis" key="analysis" handleUpload = {this.hanleUploadFile}/>
                       </div>
+                     
                     }
                     <br/>
 
