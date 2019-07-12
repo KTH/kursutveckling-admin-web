@@ -120,7 +120,7 @@ class AdminPage extends Component {
     }
   }
   getTempData(){
-    if( this.state.progress === 'back_new' && this.state.values.changedDate.length === 0 ){
+    if( this.state.progress === 'back_new' ){
       const {alterationText, examinationGrade, registeredStudents, roundIdList} = this.state.values
       return { alterationText, examinationGrade, registeredStudents, roundIdList }
     }
@@ -184,7 +184,7 @@ class AdminPage extends Component {
   }
 
 
-  editMode(semester, rounds, analysisId, status, tempData) {
+  editMode(semester, rounds, analysisId, status, tempData) { 
     const thisAdminPage = this
     if (status === 'new') {
       return this.props.routerStore.createAnalysisData(semester, rounds).then( data => {
@@ -201,6 +201,7 @@ class AdminPage extends Component {
         values,
         activeSemester: semester,
         analysisFile: thisAdminPage.props.routerStore.analysisData ? thisAdminPage.props.routerStore.analysisData.analysisFileName : '',
+        pmFile: thisAdminPage.props.routerStore.analysisData ? thisAdminPage.props.routerStore.analysisData.pmFileName : '',
         alert: ''
       })
     })
@@ -214,6 +215,8 @@ class AdminPage extends Component {
           isPublished: thisAdminPage.props.routerStore.analysisData.isPublished,
           values: thisAdminPage.props.routerStore.analysisData,
           analysisFile: thisAdminPage.props.routerStore.analysisData ? thisAdminPage.props.routerStore.analysisData.analysisFileName : '',
+          pmFile: thisAdminPage.props.routerStore.analysisData ? thisAdminPage.props.routerStore.analysisData.pmFileName : '',
+          saved: true,
           alert: ''
         })
       })
@@ -391,7 +394,7 @@ class AdminPage extends Component {
                   status = { routerStore.status }
                   tempData = {this.state.saved ? {} : this.getTempData()}
                   saved = { this.state.saved }
-                  analysisId = {this.state.values ? this.state.values._id : ''}
+                  analysisId = {this.state.saved && this.state.values ? this.state.values._id : ''}
                 />
               }
             </div>
@@ -410,7 +413,7 @@ class AdminPage extends Component {
             ?<Alert color='info' className='margin-bottom-40'>{routerStore.errorMessage}</Alert>
             :
           <div>
-            
+
           <Title 
             title={routerStore.courseTitle} 
             language={routerStore.language} 
@@ -473,7 +476,7 @@ class AdminPage extends Component {
                       <InfoButton id = 'info_upload_course_analysis' textObj = {translate.info_upload_course_analysis}/>
                     </span>
                     
-                    {this.state.analysisFile.length > 0
+                    {this.state.analysisFile && this.state.analysisFile.length > 0
                       ? <span>
                         <br/>
                         <div className='inline-flex'>

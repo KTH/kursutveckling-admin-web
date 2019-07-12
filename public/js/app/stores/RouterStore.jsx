@@ -361,7 +361,8 @@ class RouterStore {
         _id: this.analysisId,
         alterationText: '',
         analysisFileName: '',
-        changedBy: this.user, // todo
+        pmFileName: '',
+        changedBy: this.user, 
         changedDate: '',
         commentChange: '',
         commentExam: courseSyllabus.examComments ? courseSyllabus.examComments[roundLang] : '', //todo

@@ -38,7 +38,7 @@ class UpLoad extends React.Component {
           <i className="fa fa-cloud-upload" /> 
        
         </label>
-        <Spinner color='primary' style={{ width: '3rem', height: '3rem' }} visible={true}/>{' '}
+        {/*<Spinner color='primary' style={{ width: '3rem', height: '3rem' }} visible={true}/>*/}
       </div>
     )
   }
