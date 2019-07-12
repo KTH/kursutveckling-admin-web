@@ -410,7 +410,7 @@ class AdminPage extends Component {
             ?<Alert color='info' className='margin-bottom-40'>{routerStore.errorMessage}</Alert>
             :
           <div>
-          
+            
           <Title 
             title={routerStore.courseTitle} 
             language={routerStore.language} 

@@ -1,6 +1,6 @@
-import React from 'react';
-import { render } from 'react-dom';
-
+import React from 'react'
+import { render } from 'react-dom'
+import { Spinner } from 'reactstrap'
 
 const styles = {
   fontFamily: 'sans-serif',
@@ -36,7 +36,9 @@ class UpLoad extends React.Component {
         <label className="custom-file-upload">
           <input type="file" id={this.props.id} onChange={this.onChange} />
           <i className="fa fa-cloud-upload" /> 
+       
         </label>
+        <Spinner color='primary' style={{ width: '3rem', height: '3rem' }} visible={true}/>{' '}
       </div>
     )
   }

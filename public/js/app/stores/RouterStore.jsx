@@ -318,7 +318,7 @@ class RouterStore {
       
 
         //thisStore.roundAccess[semester.term][semester.ladokRoundId] = getAccess(this.member, round, courseObject.course.courseCode)
-        thisStore.roundData[semester.term] = semester.rounds.map((round, index) => {
+        thisStore.roundData[semester.term] = semester.rounds.map((round, index) => { 
           return round.ladokRoundId = {
             roundId: round.ladokRoundId,
             language: round.language[language],
@@ -430,8 +430,9 @@ class RouterStore {
       return []
     let usageList = []
     for (let index = 0; index < round.connectedProgrammes.length; index++) {
-      if (usageList.indexOf(round.connectedProgrammes[index].programmeCode) < 0 /*&& usageList.indexOf(round.connectedProgrammes[index].abbrLabel === 'Manatory'*/)
+      if (usageList.indexOf(round.connectedProgrammes[index].programmeCode) === -1 && round.connectedProgrammes[index].electiveCondition.en === 'Mandatory'){
         usageList.push(round.connectedProgrammes[index].programmeCode)
+      }
     }
     return usageList
   }
