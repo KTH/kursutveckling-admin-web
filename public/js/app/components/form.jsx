@@ -107,57 +107,154 @@ class AnalysisForm extends Component {
     return (
       <div key='kursutveckling-form-container' className='container' id='kursutveckling-form-container' >
       
-        <Row key='form' id='form-container'>
-        {this.state.saved ?
-            <Alert>
-            Finimangsparat
-            </Alert>
-          : ''}
-          <Form className='admin-form'>
-            <Row  className='form-group'>
-            
-          <Col sm='5' className='col-temp'>
-              <Label>round name</Label>
-              <Input id='analysisName' key='round' type='text' value={this.state.values.analysisName} onChange={this.handleInputChange} disabled={isDisabled} />
-              <Label>Programmes</Label>
-              <Input id='programmeCodes' key='programmeCodes' type='text' value={this.state.values.programmeCodes} onChange={this.handleInputChange} disabled={isDisabled}/>
-              <Label>examiners</Label>
-              <Input id='examiners' key='examiners' type='text' value={this.state.values.examiners} onChange={this.handleInputChange} disabled={isDisabled}/>
-              <Label>responsibles</Label>
-              <Input id='responsibles' key='responsibles' type='text' value={this.state.values.responsibles} onChange={this.handleInputChange} disabled={isDisabled}/>
-              <Label>examinationRounds</Label>
-              <Input id='examinationRounds' key='examinationRounds' type="textarea" value={this.state.values.examinationRounds} onChange={this.handleInputChange} disabled={isDisabled}/>
-              <Label>registered students</Label>
-              <Input id='registeredStudents' key='registeredStudents' type='text' value={this.state.values.registeredStudents} onChange={this.handleInputChange} disabled={isDisabled}/>
-              <Label>examinationGrade</Label>
-              <Input id='examinationGrade' key='examinationGrade' type='number'  value={this.state.values.examinationGrade} onChange={this.handleInputChange} disabled={isDisabled}/>
-          </Col>
-          <Col sm='5' className='col-temp'>
-         
-              <Label>alteration text (max xxx tecken)</Label>
-              <Input id='alterationText' key='alterationText' type="textarea" value={this.state.values.alterationText} onChange={this.handleInputChange} />
-              <Label>commentChange (max xxx tecken)</Label>
-              <Input id='commentChange' key='commentChange' type="textarea" value={this.state.values.commentChange} onChange={this.handleInputChange} />
-              <Label>commentExam</Label>
-              {this.state.values.commentExam.length === 0 
-                ? <Input id='commentExam' key='commentExam' type='textarea' value={this.state.values.commentExam} onChange={this.handleInputChange} disabled={isDisabled} />
-                :  <p id='commentExam' key='commentExam' dangerouslySetInnerHTML={{__html: this.state.values.commentExam}}/>
-              }
-              <Label>upload analysis-pdf</Label>
-              <FilePond id="analysis" key="analysis" labelIdle={labelIdle}/>
-              <Label>upload PM-file</Label>
-              <FilePond id="pm" key="pm" labelIdle={labelIdle}/>
-              <Button type="submit" id='Save' key='Save' onClick={this.handleSave}>Save</Button>
-              </Col>
-            </Row>
-            <Label>ID</Label>
-              <Input id='_id' key='round' type='id' value={this.state.values._id} onChange={this.handleInputChange} disabled={isDisabled} />
-   
-              <Label>courseCode</Label>
-              <Input id='courseCode' key='courseCode' type='text' value={this.state.values.courseCode} onChange={this.handleInputChange} disabled={isDisabled} />
-    
-            </Form>
-          </Row>
+      <Form className='admin-form'>
+                  <p>{translate.intro_edit}</p>
+
+                {this.state.alert.length > 0 
+                  ? <Row>
+                    <Alert color= 'info' className='margin-bottom-40'>{this.state.alert} </Alert>
+                  </Row>
+                  : ''
+                }  
+                {this.state.alertSuccess.length > 0 
+                  ? <Row>
+                    <Alert color= 'success' className='margin-bottom-40'>{this.state.alertSuccess} </Alert>
+                  </Row>
+                  : ''
+                }  
+                {this.state.alertError.length > 0 
+                  ? <Row>
+                    <Alert color= 'danger' className='margin-bottom-40'>{this.state.alertError} </Alert>
+                  </Row>
+                  : ''
+                }  
+                <h2>{translate.header_edit_content}</h2>
+                <h3>{translate.header_semester} {this.state.values.semester}</h3>
+                <h3>{translate.header_course_offering} {this.state.values.analysisName}</h3>
+              
+                <Row className='form-group'>
+                  <Col sm='4' className='col-temp'>
+                    <h4>{translate.header_upload}</h4>
+                    {/** ANALYSIS UPLOAD */}
+                    <span className='inline-flex'>
+                      <Label>{translate.header_upload_file}</Label>
+                      <InfoButton id = 'info_upload_course_analysis' textObj = {translate.info_upload_course_analysis}/>
+                    </span>
+                    
+                    {this.state.analysisFile && this.state.analysisFile.length > 0
+                      ? <span>
+                        <br/>
+                        <div className='inline-flex'>
+                        <p className='upload-text'> {this.state.analysisFile} </p>
+                         <div className="iconContainer icon-trash-can" id="removeAnalysis" onClick={this.handleRemoveFile}></div>
+                      </div>
+                      </span>
+                      : <div className={this.state.notValid.indexOf('analysisFile') > -1 ? 'not-valid' : ''}>
+                        <UpLoad id="analysis" key="analysis" handleUpload = {this.hanleUploadFile}/>
+                      </div>
+                     
+                    }
+                    <br/>
+
+                    {/** PM UPLOAD */}
+                    <div className='inline-flex'>
+                      <Label>{translate.header_upload_file_pm}</Label>
+                      <InfoButton id = 'info_upload_course_memo' textObj = {translate.info_upload_course_memo}/>
+                    </div>
+                   
+                   {this.state.pmFile.length > 0
+                      ? <span>
+                        <br/>
+                        <div className='inline-flex '>
+                          <p className='upload-text'>{this.state.pmFile}</p>
+                          <div className="iconContainer icon-trash-can" id="removePm" onClick={this.handleRemoveFile}></div>
+                        </div>
+                      </span>
+                      : <UpLoad id="memo" key="memo" handleUpload = {this.hanleUploadFile}/>
+                    }
+                  </Col>
+
+
+                  <Col sm='4' className='col-temp'>
+                    <h4>{translate.header_summarize}</h4>
+
+                    <span className='inline-flex'>
+                      <Label>{translate.header_course_changes_comment}</Label>
+                        <InfoButton id = 'info_course_changes_comment' textObj = {translate.info_course_changes_comment}/>
+                    </span>
+                    <Input style={{ height: 300 }} id='alterationText' key='alterationText' type="textarea" 
+                      value={this.state.values.alterationText} 
+                      onChange={this.handleInputChange} 
+                    />
+                  </Col>  
+
+                    <Col sm='4' className='col-temp'>
+                      <h4>{translate.header_check_data}</h4>
+                      <p>{translate.asterix_text}</p>
+
+                      <span className='inline-flex'>
+                        <Label>{translate.header_registrated} *</Label>
+                        <InfoButton id = 'info_registrated' textObj = {translate.info_registrated}/>
+                      </span>
+                      <Input id='registeredStudents' key='registeredStudents' type='number' 
+                        placeholder = '0' 
+                        value={this.state.values.registeredStudents} 
+                        onChange={this.handleInputChange} disabled={isPublished} 
+                        className = {this.state.notValid.indexOf('registeredStudents') > -1 ? 'not-valid' : ''}
+                      />
+                      
+                      <span className='inline-flex'>
+                        <Label>{translate.header_examination_grade} *</Label>
+                        <InfoButton id = 'info_examination_grade' textObj = {translate.info_examination_grade}/>
+                      </span>
+                      <Input id='examinationGrade' key='examinationGrade' type='number' 
+                        placeholder = '0' 
+                        value={this.state.values.examinationGrade} 
+                        onChange={this.handleInputChange} disabled={isPublished} 
+                        className = {this.state.notValid.indexOf('examinationGrade') > -1 ? 'not-valid' : ''}
+                        />
+                      
+                      
+                      <span className='inline-flex'>
+                        <Label>{translate.header_examiners} *</Label>
+                        <InfoButton id = 'info_examiners' textObj = {translate.info_examiners}/>
+                      </span>
+                      <Input id='examiners' key='examiners' type='text' 
+                        value={this.state.values.examiners} 
+                        onChange={this.handleInputChange} 
+                        disabled={isPublished}
+                        className = {this.state.notValid.indexOf('examiners') > -1 ? 'not-valid' : ''}
+
+                      />
+                     
+                      <span className='inline-flex'>
+                        <Label>{translate.header_responsibles} *</Label>
+                        <InfoButton id = 'info_responsibles' textObj = {translate.info_responsibles}/>
+                      </span>
+                      <Input id='responsibles' key='responsibles' type='text' 
+                        value={this.state.values.responsibles} 
+                        onChange={this.handleInputChange} 
+                        disabled={isPublished} 
+                        className = {this.state.notValid.indexOf('responsibles') > -1 ? 'not-valid' : ''}
+                        />
+
+                      { isPublished
+                      ? <span>
+                          <span className='inline-flex'>
+                            <Label>{translate.header_analysis_edit_comment}</Label>
+                            <InfoButton id = 'info_edit_comments' textObj = {translate.info_edit_comments}/>
+                         </span>
+                        <Input id='commentChange' key='commentChange' type="textarea" 
+                          value={this.state.values.commentChange} 
+                          onChange={this.handleInputChange} 
+                          className = {this.state.notValid.indexOf('commentChange') > -1 ? 'not-valid' : ''}
+                        />
+                      </span>
+                      : ''
+                      }
+                    </Col>
+                  </Row> 
+              </Form>
           </div>
   )
 }

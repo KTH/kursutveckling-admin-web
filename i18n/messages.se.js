@@ -244,7 +244,29 @@ module.exports = {
       /** semester: 'Termin:', /** Följt av kursomgångens starttermin */
 	  /** course_round: 'Kursomgång:', /** Följt av kursomgångens namn */
 	  /** Länk till steg 1, Välj kursomgång */
-    }
+    },
 
+    // PREVIEW PAGE
+    header_course_round: 'Kursomgång',
+    table_headers_with_popup: {
+      examiners: { header: 'Examinator', popoverText: 'Examinator för kurs vid gällande kursomgång. Examinatorer administreras i Kopps.' },
+      examShortAndLongStrArr: { header: 'Examination', popoverText: 'Form av examination vid gällande kursomgång.' },
+      alterationText: { header: 'Förändringar som har införts till den här kursomgången', popoverText: 'Summerade förändringar som har införts till den här kursomgången.' },
+      examinationGrade: { header: 'Resultat', popoverText: 'Examinationsgrad är antal förstagångsregistrerade studenter som godkänts på hela kursomgången efter första examinationstillfället efter kursomgångensslut dividerat med antal förstagångsregistrerade på kursomgången. Examinationsgrad redovisas inte för respektive delmoment i examinationen. Examinationsgrad beräknas inte heller om efter efterföljande omtentor.' },
+      responsibles: { header: 'Kursansvarig', popoverText: 'Samtliga kursansvariga för de kurstillfällen som ingår i kursomgången. Kursansvariga administreras i Kopps.' },
+      registeredStudents: { header: 'Studenter', popoverText: 'Antal förstagångsregistrerade på de kurstillfällen som ingår i kursomgången. Studenter som antagits men som inte registrerats ska inte räknas in. Inte heller registrerade studenter som omregistrerats från ett annat kurstillfälle på samma kurs ska räknas in.' }
+    },
+    extra_kopps_info: {
+      commentExam: { header: 'Kommentar till examination', popoverText: 'Kommentar till form av examination vid gällande kursomgång.' },
+      programmeCodes: { header: 'Obligatorisk inom program', popoverText: '' },
+      analysisName: { header: 'Kurstillfällen som ingår i kursomgång', popoverText: 'Alla kurstillfällen som ingick i kursomgången. Studenter är antagna till ett kurstillfälle. Programstudenter, betalande studenter och fristående studenter antas till olika kurstillfällen men kan utbildas i samma kursomgång. Kurstillfällen ska alltså grupperas ihop till en kursomgång. Kursomgången är ett praktiskt genomförande av en kurs. Kursomgången har en gemensam starttidpunkt, gemensam kurstakt och normalt gemensam undervisning för en studentgrupp. Schemat läggs per kursomgång, kurs-PM utformas per kursomgång och kursanalys genomförs per kursomgång.' }
+    },
+    extra_dates_and_comments: {
+      header_publishing_dates: 'Datum för publicering',
+      publishedDate: 'Publicerad första gången',
+      changedAfterPublishedDate: 'Senaste ändrad',
+      commentChange: 'Kommentar till gjorda ändringar',
+      no_date_last_changed: 'ej ändrad efter publicering'
+    }
   }
 }

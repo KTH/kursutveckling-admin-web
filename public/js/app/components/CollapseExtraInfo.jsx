@@ -1,0 +1,69 @@
+import React, { Component } from 'react'
+import { Collapse } from 'reactstrap'
+import { PopOverTextForTableHeaders } from './PopOverTextForTable'
+
+
+const ExtraKoppsInfo = ({translate, courseRoundObj}) => {
+  const popOverId = courseRoundObj._id
+  const orderedColumns = ['commentExam', 'programmeCodes', 'analysisName']
+  return (
+    <span className='extra-kopps-info-from-kutv-api'>
+      {
+        orderedColumns.map((apiName, index) =>
+          <span key={index} className={apiName}>
+            <p id={popOverId + index} key={'header-for-' + apiName}><b>{translate[apiName].header}</b></p>
+            <p className='textBlock' dangerouslySetInnerHTML={{__html: courseRoundObj[apiName]}}></p>
+          </span>
+        )
+      }
+    </span>
+  )
+}
+const ExtraDatesAndComment = ({translate, courseRoundObj}) => {
+  return (
+    <span>
+      <p><b>{translate.header_publishing_dates}</b></p>
+      <p>{translate.publishedDate}:&nbsp;{courseRoundObj.publishedDate}</p>
+      <p>{translate.changedAfterPublishedDate}:&nbsp;
+      {courseRoundObj.changedAfterPublishedDate && courseRoundObj.changedAfterPublishedDate !== ''
+        ? courseRoundObj.changedAfterPublishedDate
+        : <i>{translate.no_date_last_changed}</i>
+      }
+      </p>
+      <p>{translate.commentChange}:</p>
+      <p>{courseRoundObj.commentChange === ''
+          ? '  -  '
+          : courseRoundObj.commentChange
+          }
+      </p>
+    </span>
+  )
+}
+class CollapseExtraInfo extends Component {
+  constructor (props) {
+    super(props)
+    this.toggleHeader = this.toggleHeader.bind(this)
+    this.state = true
+  }
+  toggleHeader () {
+    this.setState(state => ({collapseExtraInfo: !state.collapseExtraInfo}))
+  }
+  render () {
+    const { courseRoundObj, label, translate } = this.props
+    return (
+      <div className='card collapsible rubric-list white' >
+        <span className='card-header info-rubric' role='tab' tabIndex='0' onClick={this.toggleHeader}>
+          <a className='collapse-header title' id={label} aria-expanded={this.state.collapseExtraInfo} load='false' data-toggle='collapse'>{translate.header_more_info}</a>
+        </span>
+        <Collapse color='white' isOpen={this.state.collapseExtraInfo} toggler={label}>
+          <div className='card-body col extra-info'>
+            <ExtraKoppsInfo translate={translate.extra_kopps_info} courseRoundObj={courseRoundObj} />
+            <ExtraDatesAndComment translate={translate.extra_dates_and_comments} courseRoundObj={courseRoundObj} />
+          </div>
+        </Collapse>
+      </div>
+      )
+  }
+  }
+
+export default CollapseExtraInfo

@@ -9,6 +9,23 @@
 @import "node_modules/kth-style/public/sass/bootstrap/variables";
 @import "node_modules/bootstrap/scss/mixins";*/
 
+$white: #ffffff;
+
+$light-grey: #d4d4d4;
+
+$dark-grey: #65656c;
+
+$black: #000;
+
+%bordered-area {
+  border: 1px solid $light-grey;
+  border-radius: 0.25rem;
+  border-top: 0;
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+
+
 
 
 .col-temp{
@@ -47,11 +64,12 @@ border-left: 1px dotted #fff;
   padding-top: 30px;
   border-top: 1px solid #ddd;
   margin-top: 20px;
+  & > .collapse{
+    padding-left: 15px;
+  }
 }
 
-.collapse{
-  padding-left: 15px;
-}
+
 
 .select-semester{
   width: 100%;
@@ -141,18 +159,28 @@ ul.no-padding-left{
   display: block;
 }
 //******* PREVIEW ******//
+/*p.right-link, span.right-links{
+  float: right;
+  text-align: right;
+}*/
+
+span.right-links {
+  p { margin-bottom: 0; }
+  @media (min-width: 768px) {
+      display: flex;
+      justify-content: flex-end; 
+  }
+}
 .right-links {
   float: right;
   text-align: right;
   margin: 1em;
-  a {
-      margin-left: 2em;
+  @media screen and (max-width: 768px) {
+    float: none;
+  text-align: left;
+  margin: 0.5em;
   }
 }
-p.underlined {
-  border-bottom: 1px solid #000;
-}
-
 
 .table-title {
     display: flex;
@@ -285,6 +313,173 @@ p.underlined {
 .fa, .fas {
     font-weight: 900;
     padding-right: 8px;
+}
+
+//******************** PREVIEW PAGE ***********************///
+
+#preview-container, #kursutveckling-form-container{
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.card.collapsible.blue {
+  margin-top: 1em;
+  .course-data-title > a::before{
+      margin-left: .5em;
+  }
+  .course-data-title {
+      display: flex;
+      justify-content: space-between;
+  }
+}
+
+.card.collapsible.blue.course-plans {
+  margin-top: 0 !important;
+  margin-bottom: 1.5em;
+  margin-left: 1em;
+  @media (min-width: 768px){
+      margin-left: 10em;
+  }
+  div.kursplan-bordered-list {
+      @extend %bordered-area !optional;
+      p {
+          margin-bottom: 0;
+      }
+  }
+}
+.card.collapsible.blue.course-data-for-round {
+  width: 100%;
+  div.bordered-table {
+      @extend %bordered-area !optional;
+      margin-bottom: 1.5em;
+      padding: 0 .5em .5em .7em;
+  }
+}
+
+span.table-for-each-round > table.table > thead > tr {
+  th:after {
+      content: '';
+      border: solid .8px $white;
+      border-radius: 0.6em;
+      margin-left: .2em;
+      height: 1.2em; 
+      width: 1.2em;
+      display: inline-block;
+      vertical-align: middle;
+      background: center / 1.1em auto no-repeat url(https://app.kth.se/style/kth-style/img/kth-style/icons/modal-info.svg);
+      filter: grayscale(1) brightness(88%) contrast(2);
+  }
+}
+
+/*Table cells try to give it more stable width*/
+/* ['responsibles', 'examiners', 'registeredStudents', 'examShortAndLongStrArr', 'examinationGrade', 'alterationText']*/
+@media (min-width: 768px) {
+  .responsibles, .examiners {
+      min-width: 9em;
+      max-width: 9em;
+  }
+  .examShortAndLongStrArr {
+      min-width: 9em;
+      max-width: 9em;
+  }
+  .registeredStudents {
+      min-width: 8em;
+      max-width: 8em;
+  }
+  .examinationGrade {
+      min-width: 7em;
+      max-width: 7em;
+  }
+}
+
+.pdf-link{
+  margin: 0 1.5em 0 1em;
+  @media screen and (max-width: 768px) {
+    margin: 0 0.5em 0 0.5em;
+  }
+  &:before {
+      background: url(https://app.kth.se/style/kth-style/img/kth-style/icons/file-pdf-fa-regular.svg) no-repeat;
+      content: '';
+      display: inline-block;
+      height: 1.3em;
+      width: 1.3em;
+      margin: .5em .4em .6em .4em;
+      vertical-align: middle;
+  }
+}
+
+.card.collapsible.white.rubric-list {
+margin-top: -1em;
+.card-body.col.extra-info {
+  padding: .3em 0;
+  @media (min-width: 768px) {
+      display: flex;
+      justify-items: first baseline; 
+      span:first-of-type {
+          width: 60%;
+          margin-right: 3em;
+      }
+  }
+}
+& > .card-header.info-rubric {
+  background-color: $white;
+
+  a.collapse-header.title{
+      color: $black;
+      &:before {
+        margin-left: -.7em;
+        font-size: 16px;
+        background: url(https://app.kth.se/style/kth-style/img/kth-style/icons/arrow-black-right.svg) no-repeat;
+        background-size: .9em .9em;
+      }
+  }}
+}
+
+/*Mobile View for Tables*/
+/* 
+Max width before this PARTICULAR table gets nasty
+This query will take effect for any screen smaller than 760px
+and also iPads specifically.
+*/
+@media only screen and (max-width: 767px) {
+
+/* Force table to not be like tables anymore */
+.table table, thead, tbody, th, td, tr { 
+  display: block; 
+}
+
+/* Hide table headers (but not display: none;, for accessibility) */
+.table thead tr { 
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+}
+
+.table tr { border: 1px solid #fff; }
+
+.table td { 
+  /* Behave  like a "row" */
+  border: none;
+  border-bottom: 1px solid #fff; 
+  position: relative;
+      padding-top: 2.5em;
+      &:last-of-type {
+          padding-top: 3.2em;
+      }
+}
+
+.table td:before { 
+  content: attr(data-label);
+    position: absolute;
+    font-weight: 500;
+    top: 2px;
+    left: 1px;
+    padding: 0px 4px;
+    width: 99%;
+    white-space: normal;
+    background: $dark-grey;
+    color: #fff;
+}
 }
 
 

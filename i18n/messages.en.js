@@ -237,24 +237,59 @@ module.exports = {
     header_progress_review: '3. Review and publish', /** Ersätter bilden, ska vara understruket med blå linje om användaren är i detta steg */
 
     info_published: {
-	  header: 'Course analysis and course data have been published',
+      header: 'Course analysis and course data have been published',
       /** semester: 'Semester:', /** Följt av kursomgångens starttermin */
-	  /** course_round: 'Course offering:', /** Följt av kursomgångens namn */
-	  body: 'View results on the page:' /** Följt av länk till sidan "Course development and history */
+      /** course_round: 'Course offering:', /** Följt av kursomgångens namn */
+      body: 'View results on the page:' /** Följt av länk till sidan "Course development and history */
     },
     info_draft_saved: {
-	  header: 'A draft of course analysis and course data have been saved',
+      header: 'A draft of course analysis and course data have been saved',
       /** semester: 'Semester:', /** Följt av kursomgångens starttermin */
-	  /** course_round: 'Course offering:', /** Följt av kursomgångens namn */
-	  body: 'Copy link to draft of publish from the page:' /** Följt av länk till steg 1, "Publish new course analysis and course data" */
+      /** course_round: 'Course offering:', /** Följt av kursomgångens namn */
+      body: 'Copy link to draft of publish from the page:' /** Följt av länk till steg 1, "Publish new course analysis and course data" */
     },
     info_draft_deleted: {
-	  header: 'Draft of course analysis and course data have been deleted'
+      header: 'Draft of course analysis and course data have been deleted'
       /** semester: 'Semester:', /** Följt av kursomgångens starttermin */
-	  /** course_round: 'Course offering:', /** Följt av kursomgångens namn */
-	  /** Länk till steg 1, "Publish new course analysis and course data" */
-    }
-    // error_mandantory_fields: 'All mandatory fields must contain information before proceeding to Review and publish.',
+      /** course_round: 'Course offering:', /** Följt av kursomgångens namn */
+      /** Länk till steg 1, "Publish new course analysis and course data" */
 
+      // error_mandantory_fields: 'All mandatory fields must contain information before proceeding to Review and publish.',
+
+    },
+    //* **** PREVIEW **********
+    header_course_round: 'Course round ',
+    table_headers_with_popup: {
+      examiners: { header: 'Examiners', popoverText: 'The examiners of the course at the time for the course offering. Examiners are administrated in Kopps.' },
+      examShortAndLongStrArr: { header: 'Examination', popoverText: 'Form of examinataion for the course offering.' },
+      alterationText: { header: 'Changes of the course before this course offering', popoverText: 'Summarized changes made to the course before this particular course offering.' },
+      examinationGrade: { header: 'Result', popoverText: 'Graduation rate is defined as the number of passed first registration students on the whole course divided by the number of registered student (as defined above) after the first ordinary examination after the end date of the course offering. Graduation rate is not calculated for each examination session in the course examination set. Neither is it recalculated after each following re-examination. Graduation rate is calculated based on information fetched from Ladok.' },
+      responsibles: { header: 'Responsible', popoverText: 'All the course responsibles for the all the administrative course instances that are included in the course offering. Course responsibles are administrated in Kopps.' },
+      registeredStudents: { header: 'Students', popoverText: 'Number of registered students are defined as the number of first registration students on all the administrative course instances that are included in the course offering. Admitted students that have not been registered shall not be counted. Neither shall registered students that have been re-registered from a previous administrative course instance counted. Number of registered students is calculated based on information fetched from Ladok.' }
+    },
+    extra_kopps_info: {
+      commentExam: { header: 'Examination comments', popoverText: 'Examination comments for the course offering examination.' },
+      programmeCodes: { header: 'Compulsory within programme', popoverText: '' },
+      analysisName: { header: 'Administrative course instances included in the course offering', popoverText: 'All the administrative course instances that was included in the course offering. Students are admitted to an administrative course instance. Degree program students and non-programme students are admitted to different administrative course instances but may be educated in the same course offering. A course offering is thereby the practical realisation of the course with a common start date, common pace, common timetable etc. for all students. Several administrative course instances are grouped to one course offering' }
+    },
+    extra_dates_and_comments: {
+      header_publishing_dates: 'Published date',
+      // alt_alla: 'It is possible to upload new versions of course analysis and course memos and rewrite changes to this course offering. Look at comments about the purpose of the new versions in this field',
+      publishedDate: 'Published first time',
+      changedAfterPublishedDate: 'Last time changed',
+      commentChange: 'Comments to changes in course data or course analysis after publishing',
+      no_date_last_changed: 'No changes since first published.'
+    },
+    header_more_info: 'More information',
+    link_syllabus: 'Course plan',
+    link_analysis: 'Course analys',
+    link_pm: 'Course memo',
+    no_course_analys: 'Course analyses with course data is not available yet.',
+    // no_pdf_document: 'not found',
+    popover_more_info: 'More information',
+    course_short_semester: {
+      1: 'Spring ',
+      2: 'Autumn '
+    }
   }
 }

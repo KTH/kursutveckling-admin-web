@@ -2,15 +2,10 @@ import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
 import { Alert, Collapse, Table} from 'reactstrap'
 
-// Custom components
-import TableWithCourseData from './TableWithCourseData'
-import CollapseExtraInfo from './CollapseExtraInfo'
-import SyllabusPmAnalysLinks from './SyllabusPmAnalysLinks'
-
 
 //Helpers 
 import i18n from '../../../../i18n/index'
-
+import { getDateFormat, formatDate } from '../util/helpers'
 
 @inject(['routerStore']) @observer
 class Preview extends Component {
@@ -19,8 +14,7 @@ class Preview extends Component {
     this.state = {
       isPublished: this.props.routerStore.roundAnalysis === 'published',
       isNew: this.props.routerStore.roundAnalysis === 'new',
-      values: this.props.values,
-      collapse: true
+      values: this.props.values
     }
   }
 
@@ -33,7 +27,7 @@ class Preview extends Component {
   render () {
     const routerStore = this.props.routerStore
     const translate = i18n.messages[routerStore.language].messages
-    const courseRoundObj = this.state.values
+    
     if(routerStore.analysisData === undefined)
       return (<div></div>)
     else
@@ -42,33 +36,17 @@ class Preview extends Component {
            <h2>{translate.header_preview_content}</h2>
            <p>{routerStore.status === 'preview' ? '' : translate.intro_preview}</p>
           {routerStore.analysisData.examinationRounds && routerStore.analysisData.examinationRounds.length === 0 
-            ? <Alert className='margin-bottom-40'>Something got wrong</Alert>
-            : <div className='card collapsible blue course-data-for-round'>
-              <span className='course-data-title card-header' role='tab' tabIndex='0' onClick={this.toggleRound}>
-                <a id={courseRoundObj._id} aria-expanded={this.state.collapse} load='false'>
-                {translate.header_course_round}: {courseRoundObj.analysisName}
-                </a>
-              </span>
-          {/*  */}
-          <Collapse className='bordered-table' isOpen={this.state.collapse} toggler={'#' + courseRoundObj._id}>
-            <SyllabusPmAnalysLinks translate={translate} 
-              courseRoundObj={courseRoundObj} 
-              storageUri={this.props.routerStore.browserConfig.storageUri} 
-              //koppsData={this.props.adminStore.courseKoppsData}
-            />
-            
-            <TableWithCourseData 
-              translate={translate.table_headers_with_popup} 
-              courseRoundObj={courseRoundObj}
-              language = {routerStore.language}
-            />
-   
-            <CollapseExtraInfo translate={translate}
-              courseRoundObj={courseRoundObj}
-              label={courseRoundObj._id} 
-          />
-          </Collapse>
-        </div>
+          ?<Alert className='margin-bottom-40'>Something got wrong</Alert>
+          : <div className='tables-list col'>
+             
+            <TableForCourse 
+              courseRound="HT 2018" 
+              togglerId="toggler1" 
+              analysisObject={this.props.values} 
+              translate={translate} 
+              routerStore={routerStore}
+              linksFileNames ={{analysis:this.props.analysisFile, pm:this.props.analysisFile}} />
+          </div>
         }
       
      </div>   
