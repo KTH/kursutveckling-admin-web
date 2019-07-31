@@ -38,7 +38,7 @@ class AnalysisMenu extends Component {
             },
             lastSelected: this.props.tempData ? 'new' : '',
             canOnlyPreview: '',
-            temporaryData: ''
+            temporaryData: this.props.tempData
         }
 
         this.toggleDropdown = this.toggleDropdown.bind(this)
@@ -92,6 +92,7 @@ class AnalysisMenu extends Component {
             prevState.selectedRadio.draft = []
             prevState.rounds.push(event.target.id)
             prevState.lastSelected = 'new'
+            prevState.temporaryData = undefined
             this.setState(prevState)
         }
         else{
@@ -113,6 +114,7 @@ class AnalysisMenu extends Component {
             prevState.lastSelected = 'draft'
             prevState.alert = ''
             prevState.canOnlyPreview = false
+            prevState.temporaryData = undefined
             this.setState(prevState)
         }
     }
@@ -127,6 +129,7 @@ class AnalysisMenu extends Component {
             prevState.selectedRadio.published = event.target.id
             prevState.lastSelected = 'published'
             prevState.alert = ''
+            prevState.temporaryData = undefined
             this.setState(prevState)
         }
     }
@@ -139,9 +142,9 @@ class AnalysisMenu extends Component {
         event.preventDefault()
         if (this.state.rounds.length > 0 || this.state.selectedRadio.published.length > 0 || this.state.selectedRadio.draft.length > 0 )
             if(this.state.lastSelected === 'new')
-                this.props.editMode(this.state.semester, this.state.rounds, null, this.state.lastSelected, this.props.tempData)
+                this.props.editMode(this.state.semester, this.state.rounds, null, this.state.lastSelected, this.state.temporaryData)
             else
-                this.props.editMode(this.state.semester, null, this.state.selectedRadio[this.state.lastSelected],  this.state.lastSelected, null)
+                this.props.editMode(this.state.semester, null, this.state.selectedRadio[this.state.lastSelected],  this.state.lastSelected, this.state.temporaryData)
         else
             this.setState({
                 alert: i18n.messages[this.props.routerStore.language].messages.alert_no_rounds_selected
@@ -202,14 +205,26 @@ class AnalysisMenu extends Component {
 
     getUsedRounds(semester) {
         const thisInstance = this
-        const routerStore = this.props.routerStore
-        return this.props.routerStore.getUsedRounds(this.props.routerStore.courseData.courseCode, semester)
+        const {routerStore , analysisId } = this.props
+        const prevState = this.state
+        return this.props.routerStore.getUsedRounds(routerStore.courseData.courseCode, semester)
             .then(result => {
+                if( analysisId && analysisId.length > 0){
+                    if(routerStore.status === 'draft'){
+                        prevState.selectedRadio.draft = analysisId
+                        prevState.lastSelected = 'draft'
+                    } else {
+                        prevState.selectedRadio.published = analysisId
+                        prevState.lastSelected = 'published'
+                    }
+                }
                 thisInstance.setState({
                     semester: semester,
                     usedRounds: routerStore.usedRounds.usedRounds,
                     draftAnalysis: routerStore.usedRounds.draftAnalysis,
                     publishedAnalysis: routerStore.usedRounds.publishedAnalysis,
+                    selectedRadio: prevState.selectedRadio,
+                    lastSelected: prevState.lastSelected,
                     alert: ''
                 })
             })

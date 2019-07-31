@@ -3,9 +3,9 @@ import { inject, observer } from 'mobx-react'
 import { Alert, Collapse, Table} from 'reactstrap'
 
 // Custom components
-import TableWithCourseData from './TableWithCourseData'
-import CollapseExtraInfo from './CollapseExtraInfo'
-import SyllabusPmAnalysLinks from './SyllabusPmAnalysLinks'
+import TableWithCourseData from './preview/TableWithCourseData'
+import CollapseExtraInfo from './preview/CollapseExtraInfo'
+import SyllabusPmAnalysLinks from './preview/SyllabusPmAnalysLinks'
 
 
 //Helpers 

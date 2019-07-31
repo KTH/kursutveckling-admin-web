@@ -133,7 +133,7 @@ class RouterStore {
       }
       this.status = result.data.isPublished ? 'published' : 'draft'
       this.courseCode = result.data.courseCode
-      //this.analysisId = result._id
+      this.analysisId = result.data._id
       return this.analysisData = result.data
     }).catch(err => {
       if (err.response) {

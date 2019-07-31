@@ -9,13 +9,12 @@
 @import "node_modules/kth-style/public/sass/bootstrap/variables";
 @import "node_modules/bootstrap/scss/mixins";*/
 
+// *COLORS*
 $white: #ffffff;
-
 $light-grey: #d4d4d4;
-
 $dark-grey: #65656c;
-
 $black: #000;
+$kth-blue: #007fae;
 
 %bordered-area {
   border: 1px solid $light-grey;
@@ -56,9 +55,22 @@ border-left: 1px dotted #fff;
   font-weight: 900;
   padding-top: 30px;
   &.progress-active{
-    border-bottom: 3px solid #007fae;
+    border-bottom: 3px solid $kth-blue;
   }
 }
+
+.file-progress-bar{
+  height: 4px;
+  width: 100%;
+  display: block;
+  border: 1px solid $light-grey;
+  .file-progress{
+    height: 4px;
+    display: block;
+    background: $kth-blue;
+  }
+}
+
 
 #analysisMenuContainer{
   padding-top: 30px;
@@ -88,7 +100,7 @@ border-left: 1px dotted #fff;
           overflow-y: hidden;
       }
       .caretholder {
-          background-color: #007fae;
+          background-color: $kth-blue;
           width: 36px;
           height: 36px;
           margin: 0;
@@ -119,6 +131,8 @@ ul.no-padding-left{
 .no-access{
   font-weight: 100;
 }
+
+//FORM
 .form-control {
   margin-bottom: 10px;
 }
@@ -303,13 +317,20 @@ span.right-links {
 .icon-trash-can{
   background-image: url('https://app.kth.se/style/kth-style/img/kth-style/icons/trash-can-blue.svg');
   cursor: pointer;
-  cursor: pointer;
   width: 20px;
   height: 20px;
   margin-top: 5px;
   margin-left: 5px;
 }
-
+.icon-copy{
+  background-image: url('https://app.kth.se/style/kth-style/img/kth-style/icons/copy.svg');
+  width: 20px;
+  height: 20px;
+  width: 20px;
+  height: 20px;
+  margin: 0px 5px 5px 5px;
+  display: block;
+}
 .fa, .fas {
     font-weight: 900;
     padding-right: 8px;
@@ -373,7 +394,7 @@ span.table-for-each-round > table.table > thead > tr {
 
 /*Table cells try to give it more stable width*/
 /* ['responsibles', 'examiners', 'registeredStudents', 'examShortAndLongStrArr', 'examinationGrade', 'alterationText']*/
-@media (min-width: 768px) {
+@media (min-width: 769px) {
   .responsibles, .examiners {
       min-width: 9em;
       max-width: 9em;
@@ -441,7 +462,7 @@ Max width before this PARTICULAR table gets nasty
 This query will take effect for any screen smaller than 760px
 and also iPads specifically.
 */
-@media only screen and (max-width: 767px) {
+@media only screen and (max-width: 769px) {
 
 /* Force table to not be like tables anymore */
 .table table, thead, tbody, th, td, tr { 
