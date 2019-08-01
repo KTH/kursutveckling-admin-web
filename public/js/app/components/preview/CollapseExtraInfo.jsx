@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { Collapse } from 'reactstrap'
-import { PopOverTextForTableHeaders } from './PopOverTextForTable'
 
 
 const ExtraKoppsInfo = ({translate, courseRoundObj}) => {

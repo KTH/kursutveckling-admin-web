@@ -514,7 +514,7 @@ class AdminPage extends Component {
                 <h3>{translate.header_course_offering} {this.state.values.analysisName}</h3>
               
                 <Row className='form-group'>
-                  <Col sm='4' className='col-temp'>
+                  <Col sm='4' className='col-form'>
                     <h4>{translate.header_upload}</h4>
                     {/*********************/}
                     {/** ANALYSIS UPLOAD **/}
@@ -545,7 +545,7 @@ class AdminPage extends Component {
                   </Col>
 
 
-                  <Col sm='4' className='col-temp'>
+                  <Col sm='4' className='col-form'>
                     <h4>{translate.header_summarize}</h4>
 
                     <FormLabel translate = {translate} header = {'header_course_changes_comment'} id = {'info_course_changes_comment'} />
@@ -555,7 +555,7 @@ class AdminPage extends Component {
                     />
                   </Col>  
 
-                    <Col sm='4' className='col-temp'>
+                    <Col sm='4' className='col-form'>
                       <h4>{translate.header_check_data}</h4>
                       <p>{translate.asterix_text}</p>
 

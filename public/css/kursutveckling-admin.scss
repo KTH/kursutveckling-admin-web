@@ -12,7 +12,7 @@
 // *COLORS*
 $white: #ffffff;
 $light-grey: #d4d4d4;
-$dark-grey: #65656c;
+$dark-grey: #65656c; 
 $black: #000;
 $kth-blue: #007fae;
 
@@ -27,12 +27,18 @@ $kth-blue: #007fae;
 
 
 
-.col-temp{
-border-left: 1px dotted #fff;
+.col-form{
+padding-top: 10px;
 }
 
 .admin-form{
   min-width: 100%;
+  & > .form-group {
+    margin-bottom: 1rem;
+    margin-top: 30px;
+    border: 1px solid #e6e6e6;
+    border-radius: 5px;
+  }
 }
 
 .container.articleNavigation{
@@ -89,7 +95,7 @@ border-left: 1px dotted #fff;
   padding-top: 30px;
   & > .btn{
       background-color: #f6f6f6;
-      border: 1px solid #d4d4d4;
+      border: 1px solid $light-grey;
       display: flex;
       justify-content: space-between;
       padding: 0;
@@ -242,7 +248,7 @@ span.right-links {
 }
 
 .copy-btn{
-  border-color: #e9ecef;
+  border-color: $light-grey;
   height: 38px;
 }
 
