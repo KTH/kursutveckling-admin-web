@@ -42,7 +42,7 @@ class CollapseExtraInfo extends Component {
   constructor (props) {
     super(props)
     this.toggleHeader = this.toggleHeader.bind(this)
-    this.state = true
+    this.state = {collapseExtraInfo: true}
   }
   toggleHeader () {
     this.setState(state => ({collapseExtraInfo: !state.collapseExtraInfo}))
