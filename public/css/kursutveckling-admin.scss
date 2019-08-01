@@ -66,12 +66,12 @@ padding-top: 10px;
 }
 
 .file-progress-bar{
-  height: 4px;
+  height: 6px;
   width: 100%;
   display: block;
   border: 1px solid $light-grey;
   .file-progress{
-    height: 4px;
+    height: 5px;
     display: block;
     background: $kth-blue;
   }

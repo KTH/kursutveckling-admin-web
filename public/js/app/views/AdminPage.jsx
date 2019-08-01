@@ -440,7 +440,7 @@ class AdminPage extends Component {
                   firstVisit = { routerStore.analysisData === undefined }
                   status = { routerStore.status }
                   tempData = {/*this.state.saved ? {} : */ this.getTempData()}
-                  saved = { this.state.saved }
+                  saved = { this.state.values && this.state.values.changedDate.length > 0}
                   analysisId = {this.state.saved && this.state.values ? this.state.values._id : ''}
                 />
               }

@@ -251,13 +251,6 @@ async function getIndex (req, res, next) {
     ]
     breadcrumbs.push(breadcrumDepartment)
 
-    // await doAllAsyncBefore({
-    // pathname: req.originalUrl,
-    // query: (req.originalUrl === undefined || req.originalUrl.indexOf('?') === -1) ? undefined : req.originalUrl.substring(req.originalUrl.indexOf('?'), req.originalUrl.length),
-    // routerStore: renderProps.props.children.props.routerStore
-    // routes: renderProps.props.children.props.children.props.children.props.children
-    // })
-
     const html = ReactDOMServer.renderToString(renderProps)
 
     res.render('admin/index', {
