@@ -40,18 +40,35 @@ module.exports = {
 function * _saveFileToStorage (req, res, next) {
   log.info('Saving uploaded file to storage ' + req.files.file)
   let file = req.files.file
-  const fileName = yield runBlobStorage(file, req.params.analysisid, req.params.type, req.params.published, req.body)
-  return httpResponse.json(res, fileName)
+  try {
+    const fileName = yield runBlobStorage(file, req.params.analysisid, req.params.type, req.params.published, req.body)
+    return httpResponse.json(res, fileName)
+  } catch (error) {
+    log.error('Exception calling from saveFileToStorage ', { error: error })
+    next(error)
+  }
 }
 
 function * _updateFileInStorage (req, res, next) {
-  const response = yield updateMetaData(req.params.fileName, req.body.params.metadata)
-  return httpResponse.json(res, response)
+  log.info('_updateFileInStorage file name:' + req.params.fileName + ', metadata:' + req.body.params.metadata)
+  try {
+    const response = yield updateMetaData(req.params.fileName, req.body.params.metadata)
+    return httpResponse.json(res, response)
+  } catch (error) {
+    log.error('Exception calling from updateFileInStorage ', { error: error })
+    next(error)
+  }
 }
 
 function * _deleteFileInStorage (res, req, next) {
-  const response = yield deleteBlob(req.req.params.id)
-  return httpResponse.json(res, response)
+  log.info('_deleteFileInStorage, id:' + req.req.params.id)
+  try {
+    const response = yield deleteBlob(req.req.params.id)
+    return httpResponse.json(res, response)
+  } catch (error) {
+    log.error('Exception calling from _deleteFileInStorage ', { error: error })
+    next(error)
+  }
 }
 
 function * _postRoundAnalysis (req, res, next) {
@@ -59,7 +76,7 @@ function * _postRoundAnalysis (req, res, next) {
   const isNewAnalysis = req.params.status
   const language = req.params.language || 'sv'
   const sendObject = JSON.parse(req.body.params)
-
+  log.info('_postRoundAnalysis id:' + req.params.id)
   try {
     let apiResponse = {}
     if (isNewAnalysis === 'true') {
@@ -84,7 +101,7 @@ function * _postRoundAnalysis (req, res, next) {
 function * _getRoundAnalysis (req, res, next) {
   const roundAnalysisId = req.params.id || ''
   const language = req.params.language || 'sv'
-  // console.log('getRoundAnalysis', roundAnalysisId)
+  log.info('_getRoundAnalysis id:' + req.params.id)
   try {
     const apiResponse = yield kursutvecklingAPI.getRoundAnalysisData(roundAnalysisId, language)
     /* if (apiResponse.statusCode !== 200) {
@@ -101,6 +118,7 @@ function * _getRoundAnalysis (req, res, next) {
 
 function * _deleteRoundAnalysis (req, res, next) {
   const roundAnalysisId = req.params.id
+  log.info('_deleteRoundAnalysis with id:' + req.params.id)
   const apiResponse = yield kursutvecklingAPI.deleteRoundAnalysisData(roundAnalysisId)
   return httpResponse.json(res, apiResponse)
 }
@@ -108,7 +126,7 @@ function * _deleteRoundAnalysis (req, res, next) {
 function * _getKoppsCourseData (req, res, next) {
   const courseCode = req.params.courseCode
   const language = req.params.language || 'sv'
-
+  log.info('_getKoppsCourseData with code:' + courseCode)
   try {
     const apiResponse = yield koppsCourseData.getKoppsCourseData(courseCode, language)
     /* if (apiResponse.statusCode !== 200) {
@@ -127,6 +145,7 @@ function * _getKoppsCourseData (req, res, next) {
 function * _getUsedRounds (req, res, next) {
   const courseCode = req.params.courseCode
   const semester = req.params.semester
+  log.info('_getUsedRounds with course code: ' + courseCode + 'and semester: ' + semester)
   try {
     const apiResponse = yield kursutvecklingAPI.getUsedRounds(courseCode, semester)
     console.log('_getUsedRounds', req.session, apiResponse.body)
@@ -145,9 +164,10 @@ function * _getUsedRounds (req, res, next) {
 function * _getCourseEmployees (req, res) {
   let key = req.params.key
   key = key.replace(/_/g, '.')
+
   try {
     const roundsKeys = JSON.parse(req.body.params)
-
+    log.info('_getCourseEmployees with keys: ' + roundsKeys)
     yield redis('ugRedis', serverConfig.cache.ugRedis.redis)
       .then(function (ugClient) {
         return ugClient.multi()
@@ -173,9 +193,8 @@ async function getIndex (req, res, next) {
     delete require.cache[require.resolve('../../dist/app.js')]
     const tmp = require('../../dist/app.js')
     staticFactory = tmp.staticFactory
-  // doAllAsyncBefore = tmp.doAllAsyncBefore
   }
-  // let test = await blobStorageUpload()
+
   let lang = language.getLanguage(res) || 'sv'
   const ldapUser = req.session.authUser ? req.session.authUser.username : 'null'
   const courseTitle = req.query.title || ''
@@ -192,6 +211,7 @@ async function getIndex (req, res, next) {
     await renderProps.props.children.props.routerStore.getMemberOf(req.session.authUser.memberOf, req.params.id.toUpperCase(), req.session.authUser.username)
     if (req.params.id.length <= 7) {
       // Just course code -> analysis menu depending on status
+      log.info(' getIndex, get course data for : ' + req.params.id)
       const apiResponse = await koppsCourseData.getKoppsCourseData(req.params.id.toUpperCase(), lang)
       console.log('new coursedata !!!!!!!!!', apiResponse)
       if (apiResponse.statusCode >= 400) {
@@ -201,6 +221,7 @@ async function getIndex (req, res, next) {
         await renderProps.props.children.props.routerStore.handleCourseData(apiResponse.body, req.params.id.toUpperCase(), ldapUser, lang)
       }
     } else {
+      log.info(' getIndex, get analysis data for : ' + req.params.id)
       const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(req.params.id.toUpperCase(), lang)
       renderProps.props.children.props.routerStore.analysisId = req.params.id
       renderProps.props.children.props.routerStore.analysisData = apiResponse.body
@@ -221,9 +242,8 @@ async function getIndex (req, res, next) {
         renderProps.props.children.props.routerStore.errorMessage = 'Not found'
       }
     }
-    console.log('session!!!!!!', req)
+
     renderProps.props.children.props.routerStore.__SSR__setCookieHeader(req.headers.cookie)
-    // await renderProps.props.children.props.routerStore.getRoundAnalysis(req.params.id)
 
     const breadcrumDepartment = await renderProps.props.children.props.routerStore.getBreadcrumbs()
     let breadcrumbs = [

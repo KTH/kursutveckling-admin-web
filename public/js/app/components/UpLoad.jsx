@@ -42,6 +42,9 @@ class UpLoad extends React.Component {
           {progress > 0 
             ? <span>
               <img title = 'loading file' src={path + '/static/'+ loader['ajax-loader']}/>
+              <div className='file-progress-bar'>
+                <div className = 'file-progress' style={{width: progress + '%'}}></div>
+              </div>
               </span>
             : ''
           }
