@@ -4,24 +4,19 @@ const co = require('co')
 const log = require('kth-node-log')
 const redis = require('kth-node-redis')
 const language = require('kth-node-web-common/lib/language')
-const { safeGet } = require('safe-utils')
 const { toJS } = require('mobx')
 const httpResponse = require('kth-node-response')
-const i18n = require('../../i18n')
-
-const api = require('../api')
-const { runBlobStorage, updateMetaData, deleteBlob } = require('../blobStorage')
-// const { blobStorageUpload } = require('../blobStorage1')
-
-const kursutvecklingAPI = require('../apiCalls/kursutvecklingAPI')
-const koppsCourseData = require('../apiCalls/koppsCourseData')
+const paths = require('../server').getPaths()
+const ReactDOMServer = require('react-dom/server')
 
 const browserConfig = require('../configuration').browser
 const serverConfig = require('../configuration').server
-const paths = require('../server').getPaths()
 
-const ReactDOMServer = require('react-dom/server')
-// const { StaticRouter } = require('react-router')
+const { runBlobStorage, updateMetaData, deleteBlob } = require('../blobStorage')
+const kursutvecklingAPI = require('../apiCalls/kursutvecklingAPI')
+const koppsCourseData = require('../apiCalls/koppsCourseData')
+const i18n = require('../../i18n')
+
 let { staticFactory } = require('../../dist/app.js')
 
 module.exports = {
@@ -44,7 +39,7 @@ function * _saveFileToStorage (req, res, next) {
     const fileName = yield runBlobStorage(file, req.params.analysisid, req.params.type, req.params.published, req.body)
     return httpResponse.json(res, fileName)
   } catch (error) {
-    log.error('Exception calling from saveFileToStorage ', { error: error })
+    log.error('Exception from saveFileToStorage ', { error: error })
     next(error)
   }
 }
@@ -55,7 +50,7 @@ function * _updateFileInStorage (req, res, next) {
     const response = yield updateMetaData(req.params.fileName, req.body.params.metadata)
     return httpResponse.json(res, response)
   } catch (error) {
-    log.error('Exception calling from updateFileInStorage ', { error: error })
+    log.error('Exception from updateFileInStorage ', { error: error })
     next(error)
   }
 }
@@ -66,7 +61,7 @@ function * _deleteFileInStorage (res, req, next) {
     const response = yield deleteBlob(req.req.params.id)
     return httpResponse.json(res, response)
   } catch (error) {
-    log.error('Exception calling from _deleteFileInStorage ', { error: error })
+    log.error('Exception from _deleteFileInStorage ', { error: error })
     next(error)
   }
 }
@@ -76,7 +71,7 @@ function * _postRoundAnalysis (req, res, next) {
   const isNewAnalysis = req.params.status
   const language = req.params.language || 'sv'
   const sendObject = JSON.parse(req.body.params)
-  log.info('_postRoundAnalysis id:' + req.params.id)
+  log.debug('_postRoundAnalysis id:' + req.params.id)
   try {
     let apiResponse = {}
     if (isNewAnalysis === 'true') {
@@ -93,7 +88,7 @@ function * _postRoundAnalysis (req, res, next) {
 
     return httpResponse.json(res, apiResponse.body)
   } catch (err) {
-    log.error('Exception calling from setRoundAnalysis ', { error: err })
+    log.error('Exception from setRoundAnalysis ', { error: err })
     next(err)
   }
 }
@@ -111,7 +106,7 @@ function * _getRoundAnalysis (req, res, next) {
     } */
     return httpResponse.json(res, apiResponse.body)
   } catch (err) {
-    log.error('Exception calling from getRoundAnalysis ', { error: err })
+    log.error('Exception from getRoundAnalysis ', { error: err })
     next(err)
   }
 }
@@ -137,7 +132,7 @@ function * _getKoppsCourseData (req, res, next) {
 
     return httpResponse.json(res, apiResponse.body)
   } catch (err) {
-    log.error('Exception calling from koppsAPI ', { error: err })
+    log.error('Exception from koppsAPI ', { error: err })
     next(err)
   }
 }
@@ -145,10 +140,10 @@ function * _getKoppsCourseData (req, res, next) {
 function * _getUsedRounds (req, res, next) {
   const courseCode = req.params.courseCode
   const semester = req.params.semester
-  log.info('_getUsedRounds with course code: ' + courseCode + 'and semester: ' + semester)
+  log.debug('_getUsedRounds with course code: ' + courseCode + 'and semester: ' + semester)
   try {
     const apiResponse = yield kursutvecklingAPI.getUsedRounds(courseCode, semester)
-    console.log('_getUsedRounds', req.session, apiResponse.body)
+    log.debug('_getUsedRounds response: ', apiResponse.body)
     /* if (apiResponse.statusCode !== 200) {
       res.status(apiResponse.statusCode)
       res.statusCode = apiResponse.statusCode
@@ -156,7 +151,7 @@ function * _getUsedRounds (req, res, next) {
     } */
     return httpResponse.json(res, apiResponse.body)
   } catch (error) {
-    log.error('Exception calling from _getUsedRounds ', { error: error })
+    log.error('Exception from _getUsedRounds ', { error: error })
     next(error)
   }
 }
@@ -167,7 +162,7 @@ function * _getCourseEmployees (req, res) {
 
   try {
     const roundsKeys = JSON.parse(req.body.params)
-    log.info('_getCourseEmployees with keys: ' + roundsKeys)
+    log.info('_getCourseEmployees with keys: ' + roundsKeys.examiner, roundsKeys.responsibles)
     yield redis('ugRedis', serverConfig.cache.ugRedis.redis)
       .then(function (ugClient) {
         return ugClient.multi()
@@ -176,14 +171,14 @@ function * _getCourseEmployees (req, res) {
           .execAsync()
       })
       .then(function (returnValue) {
-        console.log('ugRedis - multi -VALUE', returnValue)
+        log.debug('ugRedis - return:', returnValue)
         return httpResponse.json(res, returnValue)
       })
       .catch(function (err) {
         console.log('ugRedis - error:: ', err)
       })
   } catch (err) {
-    log.error('Exception calling from ugRedis - multi', { error: err })
+    log.error('Exception from ugRedis - multi', { error: err })
     return err
   }
 }
@@ -201,7 +196,7 @@ async function getIndex (req, res, next) {
   let status = req.query.status
   const service = req.query.serv
 
-  console.log('!!!!!!', req)
+  // console.log('!!!!!!', req)
 
   try {
     const renderProps = staticFactory()
@@ -211,9 +206,8 @@ async function getIndex (req, res, next) {
     await renderProps.props.children.props.routerStore.getMemberOf(req.session.authUser.memberOf, req.params.id.toUpperCase(), req.session.authUser.username)
     if (req.params.id.length <= 7) {
       // Just course code -> analysis menu depending on status
-      log.info(' getIndex, get course data for : ' + req.params.id)
+      log.debug(' getIndex, get course data for : ' + req.params.id)
       const apiResponse = await koppsCourseData.getKoppsCourseData(req.params.id.toUpperCase(), lang)
-      console.log('new coursedata !!!!!!!!!', apiResponse)
       if (apiResponse.statusCode >= 400) {
         renderProps.props.children.props.routerStore.errorMessage = apiResponse.statusMessage
       } else {
@@ -221,11 +215,11 @@ async function getIndex (req, res, next) {
         await renderProps.props.children.props.routerStore.handleCourseData(apiResponse.body, req.params.id.toUpperCase(), ldapUser, lang)
       }
     } else {
-      log.info(' getIndex, get analysis data for : ' + req.params.id)
+      log.debug(' getIndex, get analysis data for : ' + req.params.id)
       const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(req.params.id.toUpperCase(), lang)
       renderProps.props.children.props.routerStore.analysisId = req.params.id
       renderProps.props.children.props.routerStore.analysisData = apiResponse.body
-      // renderProps.props.children.props.routerStore.setCourseCode(apiResponse.body.courseCode)
+
       status = req.params.preview && req.params.preview === 'preview' ? 'preview' : status
       switch (status) {
         case 'p' : renderProps.props.children.props.routerStore.status = 'published'
@@ -236,10 +230,10 @@ async function getIndex (req, res, next) {
           break
         default : renderProps.props.children.props.routerStore.status = 'draft'
       }
-      // renderProps.props.children.props.routerStore.status = status === 'p' ? 'published' : 'draft'
+      log.debug(' getIndex, has status : ' + status)
       renderProps.props.children.props.routerStore.setCourseTitle(courseTitle.length > 0 ? decodeURIComponent(courseTitle) : '')
       if (apiResponse.body.message) {
-        renderProps.props.children.props.routerStore.errorMessage = 'Not found'
+        renderProps.props.children.props.routerStore.errorMessage = apiResponse.body.message
       }
     }
 
@@ -257,10 +251,10 @@ async function getIndex (req, res, next) {
       breadcrumbsPath: breadcrumbs,
       debug: 'debug' in req.query,
       html: html,
-      title: 'TODO',
+      title: i18n.messages[lang === 'en' ? 0 : 1].messages.title,
       initialState: JSON.stringify(hydrateStores(renderProps)),
       lang: lang,
-      description: 'TODO' // lang === 'sv' ? "KTH  för "+courseCode.toUpperCase() : "KTH course information "+courseCode.toUpperCase()
+      description: i18n.messages[lang === 'en' ? 0 : 1].messages.title
     })
   } catch (err) {
     log.error('Error in getIndex', { error: err })

@@ -4,6 +4,7 @@ import axios from 'axios'
 import { safeGet } from 'safe-utils'
 import { EMPTY, SEMESTER } from '../util/constants'
 import { getDateFormat, getLanguageToUse, getAccess } from '../util/helpers'
+//const log = require('kth-node-log')
 //import { createDynamicObservableObject } from 'mobx/lib/internal';
 //import i18n from '../../../../i18n'
 const paramRegex = /\/(:[^\/\s]*)/g
@@ -92,6 +93,9 @@ class RouterStore {
     }
   }
 
+  /** ***************************************************************************************************************************************** */
+  /*                                                       FILE STORAGE ACTIONS                                                      */
+  /** ***************************************************************************************************************************************** */
   @action updateFileInStorage(fileName, metadata) { 
     return axios.post(this.buildApiUrl(this.paths.storage.updateFile.uri,
       { fileName: fileName}),
@@ -120,6 +124,10 @@ class RouterStore {
       return apiResponse.data
     })
   }
+
+  /** ***************************************************************************************************************************************** */
+  /*                                               ANALYSIS ACTIONS (kursutveckling - API)                                                      */
+  /** ***************************************************************************************************************************************** */
  
   @action getRoundAnalysis(id, lang = 'sv') {
     return axios.get(this.buildApiUrl(this.paths.api.kursutvecklingGetById.uri,
@@ -200,29 +208,7 @@ class RouterStore {
       { id: id }),
       this._getOptions()
     ).then(result => {
-      console.log("!!!!DELETE...", result.data)
       return result.data
-    }).catch(err => {
-      if (err.response) {
-        throw new Error(err.message)
-      }
-      throw err
-    })
-  }
-
-  @action getCourseInformation(courseCode, ldapUsername, lang = 'sv') {
-    this.courseCode = courseCode
-    return axios.get(this.buildApiUrl(this.paths.api.koppsCourseData.uri,
-      { courseCode: courseCode, language: lang }),
-      this._getOptions()
-    ).then((result) => {
-      console.log('getCourseInformation', result)
-      if (result.status >= 400) {
-        this.errorMessage = result.statusText
-        return "ERROR-" + result.status
-      }
-      this.handleCourseData(result.data, courseCode, ldapUsername, lang)
-      return result.body
     }).catch(err => {
       if (err.response) {
         throw new Error(err.message)
@@ -240,10 +226,6 @@ class RouterStore {
       if (result.status >= 400) {
         return "ERROR-" + result.status
       }
-
-      console.log('getUsedRounds', result.data)
-      
-
       return this.usedRounds =  this.analysisAccess(result.data)
     }).catch(err => {
       if (err.response) {
@@ -252,9 +234,37 @@ class RouterStore {
       throw err
     })
   }
+  /** ***************************************************************************************************************************************** */
+  /*                                             GET COURSE INFORMATION ACTION (KOPPS - API)                                                    */
+  /** ***************************************************************************************************************************************** */
+  @action getCourseInformation(courseCode, ldapUsername, lang = 'sv') {
+    this.courseCode = courseCode
+    return axios.get(this.buildApiUrl(this.paths.api.koppsCourseData.uri,
+      { courseCode: courseCode, language: lang }),
+      this._getOptions()
+    ).then((result) => {
+      //log.info('getCourseInformation: ' + result)
+      if (result.status >= 400) {
+        this.errorMessage = result.statusText
+        return "ERROR-" + result.status
+      }
+      this.handleCourseData(result.data, courseCode, ldapUsername, lang)
+      return result.body
+    }).catch(err => {
+      if (err.response) {
+        throw new Error(err.message)
+      }
+      throw err
+    })
+  }
+
+ /** ***************************************************************************************************************************************** */
+  /*                                                     HANDLE DATA FROM API                                                                  */
+  /** ***************************************************************************************************************************************** */
 
   
   analysisAccess(analysis){
+    // Loops thrue published and draft analyises for access check
     const memberString = this.member.toString()
     
     for(let draft=0; draft < analysis.draftAnalysis.length; draft ++){
@@ -262,7 +272,7 @@ class RouterStore {
         analysis.draftAnalysis[draft].hasAccess = memberString.indexOf(analysis.draftAnalysis[draft].ugKeys[key]) >= 0
         if(analysis.draftAnalysis[draft].hasAccess === true)
           break
-        console.log(memberString.indexOf(key), memberString,key  )
+        //console.log(memberString.indexOf(key), memberString,key  )
       }
     }
 
@@ -279,7 +289,7 @@ class RouterStore {
 
 
   @action handleCourseData(courseObject, courseCode, ldapUsername, language) {
-    console.log('courseObject',courseObject)
+    // Building up courseTitle, courseData, semesters and roundData
     if(courseObject === undefined){
       this.errorMessage = 'Whoopsi daisy... kan just nu inte hämta data från kopps'
       return undefined
@@ -295,10 +305,9 @@ class RouterStore {
         name: courseObject.course.title[this.language === 0 ? 'en' : 'sv'],
         credits: courseObject.course.credits
       }
-      console.log('courseObject2', this.courseData, this.courseTitle)
-      const thisStore = this
-      //this.courseData.semesterObjectList =  courseObject.termsWithCourseRounds.map((semester, index) => {
-        for(let semester = 0; semester < courseObject.termsWithCourseRounds.length; semester ++){
+
+      
+      for(let semester = 0; semester < courseObject.termsWithCourseRounds.length; semester ++){
           this.courseData.semesterObjectList[courseObject.termsWithCourseRounds[semester].term]= {
           courseSyllabus: courseObject.termsWithCourseRounds[semester].courseSyllabus,
           examinationRounds: courseObject.termsWithCourseRounds[semester].examinationRounds,
@@ -306,6 +315,7 @@ class RouterStore {
         }
       }
 
+      const thisStore = this
       courseObject.termsWithCourseRounds.map((semester, index) => {
         if (thisStore.semesters.indexOf(semester.term) < 0)
           thisStore.semesters.push(semester.term)
@@ -313,11 +323,8 @@ class RouterStore {
         if (!thisStore.roundData.hasOwnProperty(semester.term)){
           thisStore.roundData[semester.term] = []
           thisStore.roundAccess[semester.term] = {}
-          //noAccessToRoundsList(round round.round.startTerm.term)
         }
       
-
-        //thisStore.roundAccess[semester.term][semester.ladokRoundId] = getAccess(this.member, round, courseObject.course.courseCode)
         thisStore.roundData[semester.term] = semester.rounds.map((round, index) => { 
           return round.ladokRoundId = {
             roundId: round.ladokRoundId,
@@ -330,10 +337,7 @@ class RouterStore {
           }
         })
       })
-      console.log(this.courseData, this.roundData)
-    }
-
-    catch (err) {
+    } catch (err) {
       if (err.response) {
         throw new Error(err.message)
       }
@@ -342,15 +346,16 @@ class RouterStore {
   }
 
   @action createAnalysisData(semester, rounds) {
+    // Creates a new analysis object with information from selected rounds
+
     this.getEmployees(this.courseData.courseCode, semester, rounds)
-  
     return this.getCourseEmployeesPost(this.redisKeys, 'multi', this.language).then(returnList => {
 
       const {courseSyllabus, examinationRounds } = this.courseData.semesterObjectList[semester]
-      this.status = 'new'
       const language = getLanguageToUse( this.roundData[semester], 'English' ) 
       const roundLang = language === 'English' ? 'en' : 'sv'
       this.analysisId = `${this.courseData.courseCode}${semester.toString().match(/.{1,4}/g)[1] === '1' ? 'VT' : 'HT'}${semester.toString().match(/.{1,4}/g)[0]}_${rounds.sort().join('_')}`
+      this.status = 'new'
       let newName = `${semester.toString().match(/.{1,4}/g)[1] === '1'
         ? SEMESTER[roundLang === 'en' ? 0 : 1]['1']
         : SEMESTER[roundLang === 'en' ? 0 : 1]['2']} ${semester.toString().match(/.{1,4}/g)[0]}`
@@ -398,6 +403,7 @@ class RouterStore {
 
 
   createAnalysisName(newName, roundList, selectedRounds, language) {
+    // Creates the analysis name based on shortname, semester, start date from selevted round(s)
     let addRounds = []
     let tempName = ''
 
@@ -494,7 +500,6 @@ class RouterStore {
   }
 
   getMemberOf(memberOf, id, ldapUsername){
-    console.log('memberOf', memberOf)
     if (id.length > 7) {
       let splitId = id.split('_')
       this.courseCode = splitId[0].length > 12 ? id.slice(0, 7).toUpperCase() : id.slice(0, 6).toUpperCase()
@@ -504,20 +509,6 @@ class RouterStore {
     this.member = memberOf.filter((member) => member.indexOf(this.courseCode) > -1)
     this.user = ldapUsername
   }
-
- /* let rounds = req.params.id.split('-')
-      for (let round = 1; round < rounds.length; rounds++) {
-        if (getAccess(round)) {
-          renderProps.props.children.props.routerStore.analysisAccess = true
-          break
-        }
-      }*/
-
-
-  /*@action setCourseCode(CourseCode, title = '') {
-    this.courseCode = CourseCode
-    this.title = title.length > 0 ? title : ''
-  }*/
 
   setLanguage(lang = 'sv'){
     this.language = lang === 'en' ? 0 : 1
@@ -531,7 +522,7 @@ class RouterStore {
   /** ***************************************************************************************************************************************** */
   @action getCourseEmployeesPost(key, type = 'multi', lang = 'sv') {
     return axios.post(this.buildApiUrl(this.paths.redis.ugCache.uri, { key: key, type: type }), this._getOptions(JSON.stringify(this.redisKeys))).then(result => {
-      console.log('result.body', result.data)
+      //console.log('result.body', result.data)
 
       return result.data
     }).catch(err => {
@@ -604,17 +595,6 @@ class RouterStore {
     const store = this
 
     if (typeof window !== 'undefined' && window.__initialState__ && window.__initialState__[storeName]) {
-      /* TODO:
-      const util = globalRegistry.getUtility(IDeserialize, 'kursinfo-web')
-      const importData = JSON.parse(decodeURIComponent(window.__initialState__[storeName]))
-      console.log("importData",importData, "util",util)
-      for (let key in importData) {
-        // Deserialize so we get proper ObjectPrototypes
-        // NOTE! We need to escape/unescape each store to avoid JS-injection
-        store[key] = util.deserialize(importData[key])
-      }
-      delete window.__initialState__[storeName]*/
-
       const tmp = JSON.parse(decodeURIComponent(window.__initialState__[storeName]))
       for (let key in tmp) {
         store[key] = tmp[key]

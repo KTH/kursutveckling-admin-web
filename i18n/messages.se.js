@@ -20,6 +20,7 @@ module.exports = {
      * Message keys
      */
     service_name: 'kurs ',
+    title: 'Administrera kursutveckling',
 
     lang_block_id: '1.272446',
     locale_text: 'Administrera kursutveckling på svenska',
@@ -28,12 +29,6 @@ module.exports = {
     host_name: 'KTH',
     page_student: 'STUDENT PÅ KTH',
     page_course_programme: 'KURS- OCH PROGRAMKATALOGEN',
-
-    progressImage: {
-      first: 'stegvis_1_sv',
-      edit: 'stegvis_2_sv',
-      preview: 'stegvis_3_sv'
-    },
 
     course_short_semester: {
       1: 'VT ',
@@ -46,6 +41,12 @@ module.exports = {
       published: 'Ändra publicerad kursanalys med kursdata',
       preview: 'preview'
     },
+    //* **** PROGRESS BAR  */
+    header_progress_select: '1. Välj kursomgång', /** Ersätter bilden, ska vara understruket med blå linje om användaren är i detta steg */
+    header_progress_edit_upload: '2. Redigera kursdata och ladda upp kursanalys', /** Ersätter bilden, ska vara understruket med blå linje om användaren är i detta steg */
+    header_progress_review: '3. Granska och publicera', /** Ersätter bilden, ska vara understruket med blå linje om användaren är i detta steg */
+
+    /** ***** PAGE 1 - ANALYSIS MENU */
 
     header_select_semester: 'Välj termin',
     select_semester: 'Välj termin',
@@ -121,7 +122,7 @@ module.exports = {
     /** ************ MODALS ************** */
     info_copy_link: {
       header: 'Kopiera länk till sparat utkast',
-	    body: 'Kopiera länken nedan, klistra in och skicka länken till den person som du vill ska granska utkastet.',
+      body: 'Kopiera länken nedan, klistra in och skicka länken till den person som du vill ska granska utkastet.',
       btnCancel: 'Stäng'
     },
     info_publish: {
@@ -143,9 +144,9 @@ module.exports = {
     info_cancel: {
       header: 'Att tänka på innan du avbryter!',
       /** selected: 'Du har valt...', /** */
-	  /** semester: 'Termin:', /** Följt av kursomgångens starttermin */
-	  /** course_round: 'Kursomgång:', /** Följt av kursomgångens namn */
-	  body: `Osparade ändringar kommer att försvinna om du avbryter. 
+      /** semester: 'Termin:', /** Följt av kursomgångens starttermin */
+      /** course_round: 'Kursomgång:', /** Följt av kursomgångens namn */
+      body: `Osparade ändringar kommer att försvinna om du avbryter. 
       <br/>  
       <br/> 
             Vill du fortsätta att avbryta?`,
@@ -154,12 +155,9 @@ module.exports = {
     },
     info_delete: {
       header: 'Är du säker på att du vill radera utkast?',
-      /** selected: 'Du har valt...', /** */
-	  /** semester: 'Termin:', /** Följt av kursomgångens starttermin */
-	  /** course_round: 'Kursomgång:', /** Följt av kursomgångens namn */
-	  body: `XXXXXX. 
-      <br/>  
-      <br/> 
+      body: `
+        <br/>  
+        <br/> 
             Vill du fortsätta att radera utkast?`,
       btnCancel: 'Nej, gå tillbaka',
       btnConfirm: 'Ja, fortsätt radera'
@@ -222,10 +220,6 @@ module.exports = {
       body: 'Antal förstagångsregistrerade på de kurstillfällen som ingår i kursomgången. Studenter som antagits men som inte registrerats ska inte räknas in. Inte heller registrerade studenter som omregistrerats från ett annat kurstillfälle på samma kurs ska räknas in.',
       btnCancel: 'Close'
     },
-
-    header_progress_select: '1. Välj kursomgång', /** Ersätter bilden, ska vara understruket med blå linje om användaren är i detta steg */
-    header_progress_edit_upload: '2. Redigera kursdata och ladda upp kursanalys', /** Ersätter bilden, ska vara understruket med blå linje om användaren är i detta steg */
-    header_progress_review: '3. Granska och publicera', /** Ersätter bilden, ska vara understruket med blå linje om användaren är i detta steg */
 
     info_published: {
 	  header: 'Kursanalys och kursdata har publicerats',

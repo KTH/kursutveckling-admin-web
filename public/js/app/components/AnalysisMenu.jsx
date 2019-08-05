@@ -173,15 +173,15 @@ class AnalysisMenu extends Component {
         }
         else{
             this.props.routerStore.deleteRoundAnalysis(id).then(result =>{
-                console.log(id)
-                this.props.routerStore.deleteFileInStorage(id)
-                //window.location=`${SERVICE_URL[this.props.routerStore.service]}${this.props.routerStore.courseCode}?serv=kutv&event=delete`
+                this.props.routerStore.deleteFileInStorage(id).then( result => {
+                window.location=`${SERVICE_URL[this.props.routerStore.service]}${this.props.routerStore.courseCode}?serv=kutv&event=delete`
                 this.getUsedRounds(this.state.semester)
                 let modalOpen = this.state.modalOpen
                 modalOpen.delete = ! modalOpen.delete === true
                 this.setState({
                     modalOpen: modalOpen
                 })
+            })
             })
         }
     }
@@ -257,7 +257,7 @@ class AnalysisMenu extends Component {
 
     componentWillMount() {
         const {routerStore , analysisId } = this.props
-        const prevSelectedId = analysisId
+        //const prevSelectedId = analysisId
         const prevState = this.state
        
         if (routerStore.usedRounds.length === 0 || routerStore.hasChangedStatus){
@@ -292,8 +292,10 @@ class AnalysisMenu extends Component {
         const showAllEmptyNew = status !== 'published' && this.state.draftAnalysis.length === 0 && roundList[this.state.semester].length === this.state.usedRounds.length
         const showAllEmptyPublished = status === 'published' && this.state.publishedAnalysis.length === 0 
 
-        console.log("routerStore", this.props, routerStore.roundAccess[this.state.semester]['1'])
-        console.log("this.state", this.state)
+        if (routerStore.browserConfig.env === 'dev'){
+            console.log("this.props", this.props)
+            console.log("this.state", this.state)
+        }
         return (
             <div id="YearAndRounds">
                  <p>{translate.intro_analysis_menu}</p>

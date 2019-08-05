@@ -17,18 +17,30 @@ const ActiveOrDisavledLink = ({href, linkTitle, validFrom, language}) => {
     )
 }
 
-const SyllabusPmAnalysLinks = ({translate, courseRoundObj, storageUri, koppsData}) => {
-  const { pdfAnalysisDate, pdfPMDate, analysisFileName, pmFileName } = courseRoundObj
-  const analysisLink = analysisFileName !== '' ? storageUri + analysisFileName : '#'
-  const pmLink = pmFileName !== '' ? storageUri + pmFileName : '#'
+const SyllabusPmAnalysLinks = ({translate, courseRoundObj, storageUri, analysisFile, pmFile, language }) => {
+  const { pdfAnalysisDate, pdfPMDate } = courseRoundObj
+  const analysisLink = analysisFile  !== '' ? storageUri + analysisFile  : '#'
+  const pmLink = pmFile  !== '' ? storageUri + pmFile  : '#'
   //const syllabusHref = syllabusStartTerm ? `${SYLLABUS_URL}${koppsData.course_code}-${syllabusStartTerm}` : '#'
   //const syllabusPublishedDate = syllabusStartTerm ? `${translate.course_short_semester[syllabusStartTerm.toString().substring(4, 5)]} ${syllabusStartTerm.toString().substring(0, 4)}` : ''
 
   return (
     <span className='right-links' >
       <p className='pdf-link'>{translate.link_syllabus}: - </p>
-      <ActiveOrDisavledLink href={pmLink} linkTitle={translate.link_pm} alt={translate.alt_link_pm} validFrom={pdfPMDate} />
-      <ActiveOrDisavledLink href={analysisLink} linkTitle={translate.link_analysis} alt={translate.alt_link_analysis} validFrom={pdfAnalysisDate} />
+      <ActiveOrDisavledLink 
+        href={pmLink} 
+        linkTitle={translate.link_pm}  
+        alt={translate.alt_link_pm} 
+        validFrom={pdfPMDate}
+        language ={language}
+      />
+      <ActiveOrDisavledLink 
+        href={analysisLink} 
+        linkTitle={translate.link_analysis}   
+        alt={translate.alt_link_analysis} 
+        validFrom={pdfAnalysisDate} 
+        language ={language}
+      />
     </span>
     )
 }

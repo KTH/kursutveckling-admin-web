@@ -31,7 +31,7 @@ class Preview extends Component {
   }
 
   render () {
-    const routerStore = this.props.routerStore
+    const { routerStore, analysisFile, pmFile } = this.props
     const translate = i18n.messages[routerStore.language].messages
     const courseRoundObj = this.state.values
     if(routerStore.analysisData === undefined)
@@ -54,7 +54,9 @@ class Preview extends Component {
             <SyllabusPmAnalysLinks translate={translate} 
               courseRoundObj={courseRoundObj} 
               storageUri={this.props.routerStore.browserConfig.storageUri} 
-              //koppsData={this.props.adminStore.courseKoppsData}
+              analysisFile = { analysisFile }
+              pmFile = { pmFile }
+              language = {routerStore.language}
             />
             
             <TableWithCourseData 
@@ -132,7 +134,7 @@ class TableForCourse extends Component {
   render () {    
     const values = this.props.analysisObject
     const { translate, routerStore, togglerId, linksFileNames } = this.props
-    //console.log('values', values)
+
     return(
       <div className='card collapsible blue'>
         <span className='table-title card-header'  role="tab" tabIndex='0' >

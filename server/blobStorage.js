@@ -38,8 +38,6 @@ async function runBlobStorage (file, id, type, saveCopyOfFile, metadata) {
   let blobName = ''
   const content = file.data
   const fileType = file.mimetype
-  console.log('runBlobStorage:', file)
-
   const containerURL = ContainerURL.fromServiceURL(serviceURL, containerName)
   const aborter = Aborter.timeout(30 * ONE_MINUTE)
 
@@ -56,7 +54,7 @@ async function runBlobStorage (file, id, type, saveCopyOfFile, metadata) {
   }
 
   const uploadResponse = await uploadBlob(aborter, containerURL, blobName, content, fileType, metadata)
-  console.log('!!!', uploadResponse)
+  log.debug(' Blobstorage - uploaded file response ', uploadResponse)
 
   return blobName
 }
@@ -72,17 +70,15 @@ async function uploadBlob (aborter, containerURL, blobName, content, fileType, m
       content,
       content.length
     )
-    console.log(
-      `Upload block blob ${blobName} successfully`,
-      uploadBlobResponse.requestId
-    )
+    log.debug(`Blobstorage - Upload block blob ${blobName} `)
+
     await blockBlobURL.setHTTPHeaders(aborter, { blobContentType: fileType })
     metadata['date'] = getTodayDate(false)
     await blockBlobURL.setMetadata(
       aborter,
       metadata
     )
-    console.log('blockBlobURL', blockBlobURL)
+    // console.log('blockBlobURL', blockBlobURL)
     return uploadBlobResponse
   } catch (error) {
     log.error('Error when uploading file in blobStorage: ' + blobName, { error: error })
@@ -96,8 +92,10 @@ async function updateMetaData (blobName, metadata) {
   const aborter = Aborter.timeout(30 * ONE_MINUTE)
   const blobURL = BlobURL.fromContainerURL(containerURL, blobName)
   const blockBlobURL = BlockBlobURL.fromBlobURL(blobURL)
-  const dateAndTime = new Date()
+
   metadata['date'] = getTodayDate(false)
+
+  log.debug(`Update metadata for ${blobName}`)
   try {
     const response = await blockBlobURL.setMetadata(
       aborter,
@@ -113,6 +111,7 @@ async function updateMetaData (blobName, metadata) {
 async function deleteBlob (analysisId) {
   const containerName = 'kursutveckling-blob-container'
   const aborter = Aborter.timeout(30 * ONE_MINUTE)
+  log.debug(`Blobstorage - Delete file: ${analysisId}`)
   try {
     const containerURL = ContainerURL.fromServiceURL(serviceURL, containerName)
     let response
@@ -136,7 +135,7 @@ async function deleteBlob (analysisId) {
         }
       }
     } while (marker)
-    log.info(responseDelete.length + 'file(s) was deleted from blobstorage with analysisId: ' + analysisId)
+    log.debug(responseDelete.length + 'file(s) was deleted from blobstorage with analysisId: ' + analysisId, responseDelete)
     /* if (blobName.length > 0) {
       const blobURL = BlobURL.fromContainerURL(containerURL, blobName)
       const blockBlobURL = BlockBlobURL.fromBlobURL(blobURL)

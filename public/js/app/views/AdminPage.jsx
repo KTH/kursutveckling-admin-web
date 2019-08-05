@@ -78,14 +78,10 @@ class AdminPage extends Component {
     return new Promise((resolve, reject) => {
       const req = new XMLHttpRequest()
       req.upload.addEventListener("progress", event => {
-        console.log(event)
         if (event.lengthComputable) {
-        
-        
-         fileProgress[id] = (event.loaded / event.total) * 100
-         console.log(fileProgress[id])
-         
-         this.setState({ fileProgress: fileProgress })
+          fileProgress[id] = (event.loaded / event.total) * 100
+         //console.log(fileProgress[id])
+          this.setState({ fileProgress: fileProgress })
         }
        })
 
@@ -134,7 +130,6 @@ class AdminPage extends Component {
   }
 
   handleRemoveFile(event){
-    console.log(event.target.id)
     event.target.id === 'remove_analysis'
     ? this.setState({analysisFile: '', hasNewUploadedFileAnalysis: true})
     : this.setState({pmFile: '', hasNewUploadedFilePM: true})
@@ -196,6 +191,7 @@ class AdminPage extends Component {
   }
 
   handleCancel(event) {
+    event.preventDefault()
     window.location=`${SERVICE_URL[this.props.routerStore.service]}${this.props.routerStore.analysisData.courseCode}?serv=kutv&event=cancel`
   }
   
@@ -220,7 +216,7 @@ class AdminPage extends Component {
 
     return routerStore.postRoundAnalysisData(postObject, postObject.changedDate.length === 0 )
       .then((data) => {
-        console.log('postObject', data)
+        //console.log('postObject', data)
         if(this.state.isPreviewMode){
           window.location= encodeURI(`${routerStore.browserConfig.hostUrl}${SERVICE_URL[routerStore.service]}${routerStore.analysisData.courseCode}?serv=kutv&event=save&id=${routerStore.analysisId}&term=${routerStore.analysisData.semester}&name=${routerStore.analysisData.analysisName}`)// term=, name=
         }
@@ -264,14 +260,13 @@ class AdminPage extends Component {
     }
     
     postObject.analysisFileName = this.state.analysisFile
-    console.log('postObjecteeee', this.state.values.isPublished)
     return this.props.routerStore.postRoundAnalysisData(postObject, this.props.routerStore.status === 'new' )
       .then((response) => {
-        console.log('handlePublish!!!!!', response)
+        //console.log('handlePublish!!!!!', response)
         modal.publish = false
-        if(response.message){
+        if(response === undefined || response.message){
           this.setState({
-            alert: response.message,
+            alert: response.message ? response.message : 'No connection with data base',
             modalOpen: modal
           })
         }else{
@@ -307,8 +302,7 @@ class AdminPage extends Component {
           alert: ''
         })
     })
-    }
-    else {
+    } else {
       this.props.history.push(this.props.routerStore.browserConfig.proxyPrefixPath.uri + '/' + analysisId)
       return thisAdminPage.props.routerStore.getRoundAnalysis(analysisId).then(analysis => {
         const valuesObject = this.handleTemporaryData(thisAdminPage.props.routerStore.analysisData, tempData)
@@ -407,11 +401,11 @@ class AdminPage extends Component {
     const { routerStore } = this.props
     const { isPublished, fileProgress } = this.state
     const translate = i18n.messages[routerStore.language].messages
-    const labelIdle =  translate.add_file 
-
-    console.log("routerStore1", routerStore)
-    console.log("this.state1", this.state)
-   
+ 
+    if (routerStore.browserConfig.env === 'dev'){
+      console.log("routerStore1", routerStore)
+      console.log("this.state1", this.state)
+    }
     if (routerStore.analysisData === undefined || this.state.progress === 'back_new')
       return (
         <div ref={this.divTop}>

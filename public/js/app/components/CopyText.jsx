@@ -6,8 +6,8 @@ class CopyText extends Component {
         super(props)
         this.handleCopy = this.handleCopy.bind(this)
     }
-    handleCopy(event){ console.log(this.props.textToCopy)
-    
+
+    handleCopy(event){
         var textField = document.createElement('textarea')
         textField.innerText = this.props.textToCopy
         document.body.appendChild(textField)
@@ -15,6 +15,7 @@ class CopyText extends Component {
         document.execCommand('copy')
         textField.remove()
     }
+    
     render(){
         return(
             <InputGroup>

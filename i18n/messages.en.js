@@ -20,6 +20,7 @@ module.exports = {
      * Message keys
      */
     service_name: 'kurs ',
+    title: 'Course analyses administration',
 
     lang_block_id: '1.272446',
     locale_text: 'Course information in English',
@@ -27,12 +28,6 @@ module.exports = {
     host_name: 'KTH',
     page_student: 'STUDENT PÅ KTH',
     page_course_programme: 'KURS- OCH PROGRAMKATALOGEN',
-
-    progressImage: {
-      first: 'stegvis_1_en',
-      edit: 'stegvis_2_en',
-      preview: 'stegvis_3_en'
-    },
 
     course_short_semester: {
       1: 'Spring ',
@@ -43,7 +38,7 @@ module.exports = {
       new: 'Publish new course analysis and course data',
       draft: 'Publish new course analysis and course data',
       published: 'Change published course analysis and course data',
-      preview: 'preview'
+      preview: 'Preview course analysis'
     },
 
     /** * PAGE 1 */
@@ -84,7 +79,7 @@ module.exports = {
     btn_copy: 'Copy link to preview',
 
     /** ************ PAGE 2 FORM ************** */
-    add_file: 'Drag and drop the file here <span class="filepond--label-action"> or click here to browse </span>',
+
     asterix_text: '* Data cannot be changed after published',
 
     header_semester: 'Semester: ', /** Visas i steg 2, följt av kursomgångens starttermin */
