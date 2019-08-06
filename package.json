@@ -62,7 +62,6 @@
     "locale": "^0.1.0",
     "mobx": "^5.9.0",
     "mobx-react": "^5.4.3",
-    "morgan": "^1.9.1",
     "parcel-bundler": "^1.12.3",
     "passport": "^0.4.0",
     "popper.js": "^1.14.5",

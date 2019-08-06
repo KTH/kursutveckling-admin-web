@@ -74,8 +74,6 @@ const browserConfig = require('./configuration').browser
 const browserConfigHandler = require('kth-node-configuration').getHandler(browserConfig, getPaths())
 const express = require('express')
 
-// const morgan = require('morgan')
-// server.use(morgan(':method :url :status :res[content-length] --kip_web-- :response-time ms'))
 // const compression = require('compression')
 // server.use(compression({
 // filter: function () { return true }
@@ -226,7 +224,7 @@ appRoute.get('redis.ugCache', config.proxyPrefixPath.uri + '/redis/ugChache/:key
 appRoute.post('redis.ugCache', config.proxyPrefixPath.uri + '/redis/ugChache/:key/:type', Admin.getCourseEmployees)
 appRoute.post('storage.saveFile', config.proxyPrefixPath.uri + '/storage/saveFile/:analysisid/:type/:published', Admin.saveFileToStorage)
 appRoute.post('storage.updateFile', config.proxyPrefixPath.uri + '/storage/updateFile/:fileName/', Admin.updateFileInStorage)
-appRoute.post('storage.deleteFile', config.proxyPrefixPath.uri + '/storage/deleteFile/:id/', Admin.deleteFileInStorage)
+appRoute.post('storage.deleteFile', config.proxyPrefixPath.uri + '/storage/deleteFile/:id', Admin.deleteFileInStorage)
 server.use('/', appRoute.getRouter())
 
 // Not found etc

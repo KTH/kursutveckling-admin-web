@@ -18,3 +18,8 @@ export const SERVICE_URL = {
 }
 export const BREADCRUMB_URL = '/student/kurser/kurser-inom-program'
 export const SYLLABUS_URL = 'student/kurser/kurs/kursplan/'
+export const LANGUAGE = {
+  sv: {
+    svenska: 'svenska'
+  }
+}

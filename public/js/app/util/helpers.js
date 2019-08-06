@@ -2,7 +2,7 @@
 import '@babel/polyfill'
 
 const getDateFormat = (date, language) => {
-  if (language === 'Svenska' || language === 'Engelska' || language === 1) {
+  if (language === 'Svenska' || language === 'Engelska' || language === 1 || language === 'sv') {
     return date
   }
   const splitDate = date.split('-')
@@ -18,15 +18,21 @@ const getTodayDate = (date = '') => {
   return yyyy + '-' + mm + '-' + dd
 }
 
-const getLanguageToUse = (list, defaultLanguage) => {
-  if (list.length === 1) {
-    return list[0].language
+const getLanguageToUse = (roundList, roundIdlist, defaultLanguage) => {
+  if (roundIdlist.length === 1) {
+    for (let round = 0; round < roundList.length; round++) {
+      if (roundList[round].roundId === roundIdlist.toString()) {
+        return roundList[round].language
+      }
+    }
   }
 
-  let tempLang = list[0].language
-  for (let index = 1; index < list.length; index++) {
-    if (tempLang !== list[index].language) {
-      return defaultLanguage
+  let tempLang = roundIdlist[0].language
+  for (let id = 0; id < roundIdlist.length; id++) {
+    for (let round = 0; round < roundList.length; round++) {
+      if (roundList[round].roundId === roundIdlist[id] && tempLang !== roundList[round].language) {
+        return defaultLanguage
+      }
     }
   }
   return tempLang === defaultLanguage ? defaultLanguage : 'Svenska'

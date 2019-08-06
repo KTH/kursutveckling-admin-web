@@ -175,11 +175,15 @@ class AnalysisMenu extends Component {
             this.props.routerStore.deleteRoundAnalysis(id).then(result =>{
                 this.props.routerStore.deleteFileInStorage(id).then( result => {
                 window.location=`${SERVICE_URL[this.props.routerStore.service]}${this.props.routerStore.courseCode}?serv=kutv&event=delete`
+                console.log(result)
                 this.getUsedRounds(this.state.semester)
-                let modalOpen = this.state.modalOpen
+
+                let { modalOpen, selectedRadio} = this.state
+                selectedRadio.draft = ''
                 modalOpen.delete = ! modalOpen.delete === true
                 this.setState({
-                    modalOpen: modalOpen
+                    modalOpen,
+                    selectedRadio
                 })
             })
             })
@@ -264,7 +268,7 @@ class AnalysisMenu extends Component {
             this.getUsedRounds(this.state.semester)
         } else {
             if( analysisId && analysisId.length > 0){
-                if(routerStore.status === 'draft'){
+                if(routerStore.status === 'draft' && routerStore.analysisData && routerStore.analysisData.isPublished !== true){
                     prevState.selectedRadio.draft = analysisId
                     prevState.lastSelected = 'draft'
                 } else {

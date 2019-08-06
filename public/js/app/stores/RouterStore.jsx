@@ -243,7 +243,7 @@ class RouterStore {
       { courseCode: courseCode, language: lang }),
       this._getOptions()
     ).then((result) => {
-      //log.info('getCourseInformation: ' + result)
+      log.info('getCourseInformation: ' + result)
       if (result.status >= 400) {
         this.errorMessage = result.statusText
         return "ERROR-" + result.status
@@ -352,15 +352,15 @@ class RouterStore {
     return this.getCourseEmployeesPost(this.redisKeys, 'multi', this.language).then(returnList => {
 
       const {courseSyllabus, examinationRounds } = this.courseData.semesterObjectList[semester]
-      const language = getLanguageToUse( this.roundData[semester], 'English' ) 
-      const roundLang = language === 'English' ? 'en' : 'sv'
+      const language = getLanguageToUse( this.roundData[semester], rounds, 'English' ) 
+      const roundLang = language === 'English' || language === 'Engelska' ? 'en' : 'sv'
       this.analysisId = `${this.courseData.courseCode}${semester.toString().match(/.{1,4}/g)[1] === '1' ? 'VT' : 'HT'}${semester.toString().match(/.{1,4}/g)[0]}_${rounds.sort().join('_')}`
       this.status = 'new'
       let newName = `${semester.toString().match(/.{1,4}/g)[1] === '1'
         ? SEMESTER[roundLang === 'en' ? 0 : 1]['1']
         : SEMESTER[roundLang === 'en' ? 0 : 1]['2']} ${semester.toString().match(/.{1,4}/g)[0]}`
 
-      newName = this.createAnalysisName(newName, this.roundData[semester], rounds, language)
+      newName = this.createAnalysisName(newName, this.roundData[semester], rounds, roundLang)
        
       this.analysisData = {
         _id: this.analysisId,
@@ -406,9 +406,11 @@ class RouterStore {
     // Creates the analysis name based on shortname, semester, start date from selevted round(s)
     let addRounds = []
     let tempName = ''
-
+    let thisRoundLanguage = ''
     for (let index = 0; index < roundList.length; index++) {
-      tempName = ` ${roundList[index].shortName && roundList[index].shortName.length > 0 ? roundList[index].shortName : newName + '-' + roundList[index].roundId} ( ${language === 'English' ? 'Start date ' : 'Startdatum'} ${getDateFormat(roundList[index].startDate, language)}, ${language} ) `
+      thisRoundLanguage = language === 'en' && roundList[index].language === 'Svenska' ? 'Swedish' : ''
+      thisRoundLanguage = thisRoundLanguage.length > 0 ? thisRoundLanguage : language === 'en' ? 'English' : 'Svenska'
+      tempName = ` ${roundList[index].shortName && roundList[index].shortName.length > 0 ? roundList[index].shortName : newName + '-' + roundList[index].roundId} ( ${language === 'en' ? 'Start date ' : 'Startdatum'} ${getDateFormat(roundList[index].startDate, language)}, ${thisRoundLanguage} ) `
 
       if(selectedRounds.indexOf(roundList[index].roundId) >= 0){
         addRounds.push(tempName)

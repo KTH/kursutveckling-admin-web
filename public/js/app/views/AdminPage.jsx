@@ -376,7 +376,7 @@ class AdminPage extends Component {
     if(tempData){
       returnObject.values.alterationText = tempData.alterationText
       returnObject.values.registeredStudents = tempData.registeredStudents
-      returnObject.values.examinationGrade = tempData.examinationGrad
+      returnObject.values.examinationGrade = tempData.examinationGrade
       returnObject.files.analysisFile = tempData.analysisFile
       returnObject.files.pmFile = tempData.pmFile
     }else{
@@ -504,7 +504,10 @@ class AdminPage extends Component {
                   : ''
                 }  
                 <h2>{translate.header_edit_content}</h2>
-                <h3>{translate.header_semester} {this.state.values.semester}</h3>
+                <h3>{translate.header_semester} {
+                  `${translate.course_short_semester[this.state.values.semester.toString().match(/.{1,4}/g)[1]]} 
+                                    ${this.state.values.semester.toString().match(/.{1,4}/g)[0]}`
+                }</h3>
                 <h3>{translate.header_course_offering} {this.state.values.analysisName}</h3>
               
                 <Row className='form-group'>
