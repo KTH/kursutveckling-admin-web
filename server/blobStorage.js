@@ -126,8 +126,8 @@ async function deleteBlob (analysisId) {
       marker = response.marker
       for (let blob of response.segment.blobItems) {
         if (blob.name.indexOf(analysisId) > -1) {
-          blobURL = BlobURL.fromContainerURL(containerURL, blob.name)
-          blockBlobURL = BlockBlobURL.fromBlobURL(blobURL)
+          blobURL = await BlobURL.fromContainerURL(containerURL, blob.name)
+          blockBlobURL = await BlockBlobURL.fromBlobURL(blobURL)
           responseDelete.push(await blockBlobURL.delete(aborter))
           if (responseDelete.length === 2) {
             break
@@ -135,7 +135,7 @@ async function deleteBlob (analysisId) {
         }
       }
     } while (marker)
-    log.debug(responseDelete.length + 'file(s) was deleted from blobstorage with analysisId: ' + analysisId, responseDelete)
+    log.debug(responseDelete.length + ' file(s) deleted from blobstorage with analysisId: ' + analysisId, responseDelete)
     /* if (blobName.length > 0) {
       const blobURL = BlobURL.fromContainerURL(containerURL, blobName)
       const blockBlobURL = BlockBlobURL.fromBlobURL(blobURL)
@@ -143,7 +143,7 @@ async function deleteBlob (analysisId) {
       const response = await blockBlobURL.delete(aborter)
 
     } */
-    return response
+    return responseDelete
   } catch (error) {
     log.error('Error in deleting blob ', { error: error })
     return error

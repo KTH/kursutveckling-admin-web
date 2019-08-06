@@ -62,6 +62,7 @@ class AdminPage extends Component {
     this.hanleUploadFile = this.hanleUploadFile.bind(this)
     this.handleRemoveFile = this.handleRemoveFile.bind(this)
     this.validateData = this.validateData.bind(this)
+    this.hanleOnlyPreviewBack = this.hanleOnlyPreviewBack.bind(this)
   }
 
 
@@ -188,6 +189,13 @@ class AdminPage extends Component {
         alert: ''
       })
     }
+  }
+
+  hanleOnlyPreviewBack(event){
+    event.preventDefault()
+    this.setState({
+      progress: 'back_new'
+    })
   }
 
   handleCancel(event) {
@@ -631,6 +639,12 @@ class AdminPage extends Component {
                 { routerStore.status !== 'preview'
                   ? <Button color='secondary' id='cancel' key='cancel' onClick={this.toggleModal} >
                       {translate.btn_cancel}
+                  </Button>
+                  : ''
+                }
+                { routerStore.status === 'preview' && routerStore.semesters.length > 0
+                  ? <Button color='secondary' id='cancel' key='cancel' onClick={this.hanleOnlyPreviewBack} >
+                      {translate.btn_back}
                   </Button>
                   : ''
                 }

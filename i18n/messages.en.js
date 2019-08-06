@@ -110,9 +110,9 @@ module.exports = {
     no_changes: 'No changes since first published',
     published_first_time: 'Published first time: ',
 
-    link_syllabus: 'Course syllabus ', /** Followed by ([giltighetstermin år] – [sista giltighetstermin år]) */
+    link_syllabus: 'Course syllabus', /** Followed by ([giltighetstermin år] – [sista giltighetstermin år]) */
     link_pm: 'Course memo',
-    link_analysis: 'Course anlaysis ', /** Followed by [dd/mm/yyyy] */
+    link_analysis: 'Course anlaysis', /** Followed by [dd/mm/yyyy] */
 
     /** draft_empty: 'Det finns inga sparade utkast för vald termin', */
     /** published_empty: 'There are no published course analysis and course data this semester.', */
@@ -276,9 +276,6 @@ module.exports = {
       no_date_last_changed: 'No changes since first published.'
     },
     header_more_info: 'More information',
-    link_syllabus: 'Course plan',
-    link_analysis: 'Course analys',
-    link_pm: 'Course memo',
     no_course_analys: 'Course analyses with course data is not available yet.',
     // no_pdf_document: 'not found',
     popover_more_info: 'More information',

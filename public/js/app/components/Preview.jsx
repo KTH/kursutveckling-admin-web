@@ -34,8 +34,10 @@ class Preview extends Component {
     const { routerStore, analysisFile, pmFile } = this.props
     const translate = i18n.messages[routerStore.language].messages
     const courseRoundObj = this.state.values
+    
+    
     if(routerStore.analysisData === undefined)
-      return (<div></div>)
+      return (<div>A message here of some kind...</div>)
     else
       return (
         <div key='kursutveckling-andmin-preview' className='container' id='preview-container' >

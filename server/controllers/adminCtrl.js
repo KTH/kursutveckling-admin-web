@@ -56,10 +56,11 @@ function * _updateFileInStorage (req, res, next) {
 }
 
 function * _deleteFileInStorage (res, req, next) {
-  log.info('_deleteFileInStorage, id:' + req.req.params.id)
+  log.debug('_deleteFileInStorage, id:' + req.req.params.id)
   try {
     const response = yield deleteBlob(req.req.params.id)
-    return httpResponse.json(res, response)
+    log.debug('_deleteFileInStorage, id:', response)
+    return httpResponse.json(res.res)
   } catch (error) {
     log.error('Exception from _deleteFileInStorage ', { error: error })
     next(error)
@@ -217,26 +218,29 @@ async function getIndex (req, res, next) {
     } else {
       log.debug(' getIndex, get analysis data for : ' + req.params.id)
       const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(req.params.id.toUpperCase(), lang)
-      renderProps.props.children.props.routerStore.analysisId = req.params.id
-      renderProps.props.children.props.routerStore.analysisData = apiResponse.body
+      if (apiResponse.statusCode >= 400) {
+        renderProps.props.children.props.routerStore.errorMessage = apiResponse.statusMessage
+      } else {
+        renderProps.props.children.props.routerStore.analysisId = req.params.id
+        renderProps.props.children.props.routerStore.analysisData = apiResponse.body
 
-      status = req.params.preview && req.params.preview === 'preview' ? 'preview' : status
-      switch (status) {
-        case 'p' : renderProps.props.children.props.routerStore.status = 'published'
-          break
-        case 'n' : renderProps.props.children.props.routerStore.status = 'draft'
-          break
-        case 'preview' : renderProps.props.children.props.routerStore.status = 'preview'
-          break
-        default : renderProps.props.children.props.routerStore.status = 'draft'
-      }
-      log.debug(' getIndex, has status : ' + status)
-      renderProps.props.children.props.routerStore.setCourseTitle(courseTitle.length > 0 ? decodeURIComponent(courseTitle) : '')
-      if (apiResponse.body.message) {
-        renderProps.props.children.props.routerStore.errorMessage = apiResponse.body.message
+        status = req.params.preview && req.params.preview === 'preview' ? 'preview' : status
+        switch (status) {
+          case 'p' : renderProps.props.children.props.routerStore.status = 'published'
+            break
+          case 'n' : renderProps.props.children.props.routerStore.status = 'draft'
+            break
+          case 'preview' : renderProps.props.children.props.routerStore.status = 'preview'
+            break
+          default : renderProps.props.children.props.routerStore.status = 'draft'
+        }
+        log.debug(' getIndex, has status : ' + status)
+        renderProps.props.children.props.routerStore.setCourseTitle(courseTitle.length > 0 ? decodeURIComponent(courseTitle) : '')
+        if (apiResponse.body.message) {
+          renderProps.props.children.props.routerStore.errorMessage = apiResponse.body.message
+        }
       }
     }
-
     renderProps.props.children.props.routerStore.__SSR__setCookieHeader(req.headers.cookie)
 
     const breadcrumDepartment = await renderProps.props.children.props.routerStore.getBreadcrumbs()
