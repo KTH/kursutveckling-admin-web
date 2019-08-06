@@ -380,7 +380,7 @@ class AnalysisMenu extends Component {
                                                             checked={this.state.selectedRadio.draft === analysis.analysisId}
                                                             //disabled ={!analysis.hasAccess}
                                                         />
-                                                        {analysis.analysisName}  <span className='no-access'>  {analysis.hasAccess ? '' : translate.not_authorized_publish_new }</span>
+                                                        {analysis.analysisName}  <span className='no-access'>  {analysis.hasAccess ? '' : translate.not_authorized_course_offering }</span>
                                                     </Label>
                                                     <br />
                                                 </li>
@@ -419,7 +419,7 @@ class AnalysisMenu extends Component {
                                                                         ${this.state.semester.toString().match(/.{1,4}/g)[0]}-${round.roundId} `
                                                                     } 
                                                                     ( {translate.label_start_date} {getDateFormat(round.startDate, round.language)}, {round.language} )
-                                                                    <span className='no-access'>   {round.hasAccess ? '' : translate.not_authorized_course_offering}</span>
+                                                                    <span className='no-access'>   {round.hasAccess ? '' : translate.not_authorized_publish_new}</span>
 
                                                                 </Label>
                                                                 <br />
@@ -452,8 +452,7 @@ class AnalysisMenu extends Component {
                                                                     checked={this.state.selectedRadio.published === analysis.analysisId}
                                                                     //disabled = {!analysis.hasAccess}
                                                                 />
-                                                            {analysis.analysisName} <span className='no-access'>  {analysis.hasAccess ? '' : translate.not_authorized_publish_new }</span>
-                                                            </Label>
+                                                            {analysis.analysisName} <span className='no-access'>  {analysis.hasAccess ? '' : translate.not_authorized_course_offering }</span>
                                                             <br />
                                                         </li>
                                                     )}
