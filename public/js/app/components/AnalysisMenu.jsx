@@ -453,6 +453,7 @@ class AnalysisMenu extends Component {
                                                                     //disabled = {!analysis.hasAccess}
                                                                 />
                                                             {analysis.analysisName} <span className='no-access'>  {analysis.hasAccess ? '' : translate.not_authorized_course_offering }</span>
+                                                            </Label>
                                                             <br />
                                                         </li>
                                                     )}
