@@ -26,9 +26,9 @@ class UpLoad extends React.Component {
   }
 
   render() {
-    const {id, path, progress, file, notValid} = this.props
+    const {id, path, progress, file, notValid, type} = this.props
     return (
-      <div className={notValid.indexOf('analysisFile') > -1 ? 'not-valid' : ''}>
+      <div className={notValid.indexOf(type) > -1 ? 'not-valid' : ''}>
        { file && file.length > 0
         ? <span>
           <br/>

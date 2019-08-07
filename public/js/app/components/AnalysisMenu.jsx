@@ -99,7 +99,6 @@ class AnalysisMenu extends Component {
             prevState.rounds.splice(this.state.rounds.indexOf(event.target.id), 1)
             this.setState(prevState)
         }
-        
     }
 
     handleSelectedDraft(event) {

@@ -95,10 +95,11 @@ module.exports.redirectAuthenticatedUserHandler = require('kth-node-passport-cas
   Usage:
   requireRole('isAdmin', 'isEditor')
 */
-function _hasCourseResponsibleGroup (courseCode, courseInitials, ldapUser, rounds, role) {
+function _hasCourseResponsibleGroup (courseCode, courseInitials, ldapUser, rounds, role, isPreview) {
   // 'edu.courses.SF.SF1624.20192.1.courseresponsible'
   const groups = ldapUser.memberOf
   const startWith = `edu.courses.${courseInitials}.${courseCode}.` // TODO: What to do with years 20192. ?
+  let isResponsibleForRound = false
   if (rounds === undefined || rounds.length === 0) { // Not a analysis
     const endWith = '.' + role
     if (groups && groups.length > 0) {
@@ -116,6 +117,9 @@ function _hasCourseResponsibleGroup (courseCode, courseInitials, ldapUser, round
         endWith = rounds[round] + endString
         for (var i = 0; i < groups.length; i++) {
           if (groups[ i ].indexOf(startWith) >= 0 && groups[ i ].indexOf(endWith) >= 0) {
+            return true
+          }
+          if (groups[ i ].indexOf(startWith) >= 0 && groups[ i ].indexOf(role) >= 0 && isPreview) {
             return true
           }
         }
@@ -153,6 +157,7 @@ module.exports.requireRole = function () { // TODO:Different roles for selling t
   return async function _hasCourseAcceptedRoles (req, res, next) {
     const ldapUser = req.session.authUser || {}
     const id = req.params.id
+    const isPreview = req.params.preview && req.params.preview === 'preview'
     let courseCode = ''
     let rounds = []
     if (id.length > 7) {
@@ -166,7 +171,7 @@ module.exports.requireRole = function () { // TODO:Different roles for selling t
     // TODO: Add date for courseresponsible
     const userCourseRoles = {
       isExaminator: hasGroup(`edu.courses.${courseInitials}.${courseCode}.examiner`, ldapUser),
-      isCourseResponsible: _hasCourseResponsibleGroup(courseCode, courseInitials, ldapUser, rounds, 'courseresponsible'),
+      isCourseResponsible: _hasCourseResponsibleGroup(courseCode, courseInitials, ldapUser, rounds, 'courseresponsible', isPreview),
       isCourseTeacher: _hasCourseTeacherGroup(courseCode, courseInitials, ldapUser, rounds, 'teachers'),
       isSuperUser: ldapUser.isSuperUser
     }

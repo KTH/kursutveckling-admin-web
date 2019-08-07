@@ -62,7 +62,6 @@ class AdminPage extends Component {
     this.hanleUploadFile = this.hanleUploadFile.bind(this)
     this.handleRemoveFile = this.handleRemoveFile.bind(this)
     this.validateData = this.validateData.bind(this)
-    this.hanleOnlyPreviewBack = this.hanleOnlyPreviewBack.bind(this)
   }
 
 
@@ -70,7 +69,16 @@ class AdminPage extends Component {
 //********************************************************************************** */
 
   async hanleUploadFile(id, file, e){
-   let response = await this.sendRequest(id, file, e)
+    console.log('file', file)
+    if(e.target.files[0].type === 'application/pdf'){
+     response = await this.sendRequest(id, file, e)
+    } else {
+      const notValid = id === 'analysis' ? ['analysisFile'] : ['pmFile']
+      this.setState({
+        notValid: notValid,
+        alertError: 'MUST BE PDF!!!!!' //i18n.messages[this.props.routerStore.language].messages.alert_empty_fields
+      })
+    }
   }
 
   sendRequest(id, file, e) {
@@ -97,6 +105,8 @@ class AdminPage extends Component {
               alertSuccess: i18n.messages[thisInstance.props.routerStore.language].messages.alert_uploaded_file,
               values: values,
               hasNewUploadedFileAnalysis: true,
+              notValid: [],
+              alertError: ''
             })
             } else {
               values.pdfPMDate = getTodayDate()
@@ -104,7 +114,9 @@ class AdminPage extends Component {
               thisInstance.setState({
                 pmFile: this.responseText,  
                 alertSuccess: i18n.messages[thisInstance.props.routerStore.language].messages.alert_uploaded_file,
-                values: values
+                values: values,
+                notValid: [],
+                alertError: ''
               })
             }
         }
@@ -189,13 +201,6 @@ class AdminPage extends Component {
         alert: ''
       })
     }
-  }
-
-  hanleOnlyPreviewBack(event){
-    event.preventDefault()
-    this.setState({
-      progress: 'back_new'
-    })
   }
 
   handleCancel(event) {
@@ -533,6 +538,7 @@ class AdminPage extends Component {
                       file = {this.state.analysisFile}
                       notValid = {this.state.notValid}
                       handleRemoveFile ={this.handleRemoveFile}
+                      type = 'analysisFile'
                       />
                     <br/>
                     {/**************/}
@@ -544,8 +550,9 @@ class AdminPage extends Component {
                       progress={fileProgress.pm} 
                       path={routerStore.browserConfig.proxyPrefixPath.uri}
                       file = {this.state.pmFile}
-                      notValid = {[]}
+                      notValid = {this.state.notValid}
                       handleRemoveFile ={this.handleRemoveFile}
+                      type = 'pmFile'
                       />
                   </Col>
 
@@ -639,12 +646,6 @@ class AdminPage extends Component {
                 { routerStore.status !== 'preview'
                   ? <Button color='secondary' id='cancel' key='cancel' onClick={this.toggleModal} >
                       {translate.btn_cancel}
-                  </Button>
-                  : ''
-                }
-                { routerStore.status === 'preview' && routerStore.semesters.length > 0
-                  ? <Button color='secondary' id='cancel' key='cancel' onClick={this.hanleOnlyPreviewBack} >
-                      {translate.btn_back}
                   </Button>
                   : ''
                 }
