@@ -12,12 +12,20 @@ export const PopoverExamItem = ({examShortAndLongStrArr, id}) => {
 }
 
 export const PopOverTextForTableHeaders = ({translate, columnsArr, popOverId}) => {
-  return columnsArr.map((colName, index) =>
-    <UncontrolledPopover trigger='hover' placement='top' target={popOverId + index} key={index} className='header-popup'>
-      <PopoverHeader>{translate[colName].header}</PopoverHeader>
-      <PopoverBody>
-        {translate[colName].popoverText}
-      </PopoverBody>
-    </UncontrolledPopover>
+  return columnsArr.map((apiColName, index) =>
+    <span>
+      <UncontrolledPopover trigger='legacy' placement='auto' target={popOverId + apiColName} key={index} className='header-popup'>
+        <PopoverHeader>{translate[apiColName].header}</PopoverHeader>
+        <PopoverBody>
+          {translate[apiColName].popoverText}
+        </PopoverBody>
+      </UncontrolledPopover>
+      <UncontrolledPopover trigger='legacy' placement='auto' target={'labelfor' + popOverId + apiColName} key={popOverId} className='header-popup'>
+        <PopoverHeader>{translate[apiColName].header}</PopoverHeader>
+        <PopoverBody>
+          {translate[apiColName].popoverText}
+        </PopoverBody>
+      </UncontrolledPopover>
+    </span>
     )
 }

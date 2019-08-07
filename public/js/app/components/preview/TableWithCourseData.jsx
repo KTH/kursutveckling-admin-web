@@ -1,14 +1,7 @@
 import React from 'react'
-import { Table } from 'reactstrap'
+import { Table, Button } from 'reactstrap'
 import { PopOverTextForTableHeaders, PopoverExamItem } from './PopOverTextForTable'
 
-const TableStandardCells = ({columnsArr, tableTitlesTranslation, popOverId, courseRoundData}) => {
-  return columnsArr.map((apiColName, index) =>
-    <td className={apiColName} id={apiColName + popOverId} data-label={tableTitlesTranslation[apiColName].header} key={index}>
-      <p>{courseRoundData[apiColName]}</p>
-    </td>
-    )
-}
 
 function _getShortAndLongStrForEachExam (examinationRoundsArr) {
   let shortAndLongExamStrArr = []
@@ -23,6 +16,28 @@ function _getShortAndLongStrForEachExam (examinationRoundsArr) {
   return shortAndLongExamStrArr
 }
 
+const MobileLabelForTableWithInfo = ({translate, id}) => {
+  return (
+    <span className='mobile-header-popovers'>
+      <label>{translate.header}</label>
+      {' '}
+      <Button id={id} type='button' className='mobile btn-info-modal' />
+      {' '}
+    </span>
+  )
+}
+
+const TableStandardCells = ({columnsArr, tableTitlesTranslation, popOverId, courseRoundData}) => {
+  return columnsArr.map((apiColName, index) =>
+    <td className={apiColName} id={apiColName + popOverId} key={index}>
+      <MobileLabelForTableWithInfo translate={tableTitlesTranslation[apiColName]}
+        id={'labelfor' + popOverId + apiColName}
+      />
+      <p>{courseRoundData[apiColName]}</p>
+    </td>
+    )
+}
+
 const TableWithCourseData = ({translate, courseRoundObj}) => {
   const orderedColumns = ['responsibles', 'examiners', 'registeredStudents', 'examShortAndLongStrArr', 'examinationGrade', 'alterationText']
   const examShortAndLongStrArr = _getShortAndLongStrForEachExam(courseRoundObj.examinationRounds)
@@ -33,8 +48,11 @@ const TableWithCourseData = ({translate, courseRoundObj}) => {
         <thead>
           <tr>
             {orderedColumns.map((apiColName, index) =>
-              <th id={popOverId + index} key={index} className={apiColName}>
+               <th key={index} className={apiColName}>
                 {translate[apiColName].header}
+                {' '}
+                <Button id={popOverId + apiColName} type='button' className='desktop btn-info-modal' />
+                {' '}
               </th>
             )}
           </tr>
@@ -44,7 +62,10 @@ const TableWithCourseData = ({translate, courseRoundObj}) => {
             <TableStandardCells columnsArr={orderedColumns.slice(0, 3)}
               tableTitlesTranslation={translate}
               popOverId={popOverId} courseRoundData={courseRoundObj} />
-            <td className='examShortAndLongStrArr' id={'examShortAndLongStrArr' + popOverId} data-label={translate.examShortAndLongStrArr.header}>
+             <td className='examShortAndLongStrArr' id={'examShortAndLongStrArr' + popOverId}>
+              <MobileLabelForTableWithInfo translate={translate.examShortAndLongStrArr}
+                id={'labelfor' + popOverId + 'examShortAndLongStrArr'}
+              />
               {examShortAndLongStrArr.map((shortAndLongTextStr, index) => <p key={index}>{shortAndLongTextStr[0]}</p>)}
             </td>
             <TableStandardCells columnsArr={orderedColumns.slice(4)}

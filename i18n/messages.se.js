@@ -241,6 +241,7 @@ module.exports = {
     },
 
     // PREVIEW PAGE
+    header_more_info: 'Mer information',
     header_course_round: 'Kursomgång',
     table_headers_with_popup: {
       examiners: { header: 'Examinator', popoverText: 'Examinator för kurs vid gällande kursomgång. Examinatorer administreras i Kopps.' },
