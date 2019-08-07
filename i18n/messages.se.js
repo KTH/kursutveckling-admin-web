@@ -36,10 +36,10 @@ module.exports = {
     },
 
     header_main: {
-      new: 'Publicera ny kursanalys med kursdata',
-      draft: 'Publicera ny kursanalys med kursdata',
-      published: 'Ändra publicerad kursanalys med kursdata',
-      preview: 'preview'
+      new: 'Publicera ny kursanalys och kursdata',
+      draft: 'Publicera ny kursanalys och kursdata',
+      published: 'Ändra publicerad kursanalys och kursdata',
+      preview: 'Förhandsgranska sparat utkast av kursanalys och kursdata'
     },
     //* **** PROGRESS BAR  */
     header_progress_select: '1. Välj kursomgång', /** Ersätter bilden, ska vara understruket med blå linje om användaren är i detta steg */
@@ -56,12 +56,12 @@ module.exports = {
     /* **** INTRO TEXT FOR ANALYSIS MENUE, EDIT, PREVIEW */
     intro_analysis_menu: 'Börja med att välja termin och kursomgång för den kursanalys som ska publiceras (steg 1 av 3). I nästa steg (2 av 3) kommer kursdata för kursen att hämtas automatiskt från Ladok och Kopps för den termin och kursomgång som valts. Det finns sedan möjlighet att redigera viss kursdata samt ladda upp kursanalysen. I sista steget (3 av 3) ges möjlighet att först granska och sedan publicera tabellen med kursanalys och all kursdata på sidan Kursens utveckling och historik.',
     intro_edit: 'I detta steg (2 av 3) så laddas kursanalys och kurs-PM upp, förändringar för vald kursomgång summeras samt en del av kursdata kontrolleras och vid behov justeras när inte stämmer. I nästa steg granskas all kursdata innan publicering.',
-    intro_preview: 'In this step (3 of 3) a preview of the course analysis with course data is presented as it will be published on the page Course development and history. It is possible to go back to make adjustments, to save a draft or publish the information.',
+    intro_preview: 'I detta steg (3 av 3) visas hur kursanalys och kursdata kommer att se ut på sidan Kursens utveckling och historik. Här finns möjlighet att gå tillbaka för att redigera ytterligare, spara som utkast eller publicera direkt.',
 
     /* **** INTRO SELECT NEW, DRAFT, PUBLISHED */
     intro_new: 'Följande kurstillfällen saknar publicerad kursanalys/kursdata. Markera en eller flera som ingår i kursomgången: ',
     intro_draft: 'Följande kursomgångar har sparade utkast som ännu ej publicerats: ',
-    intro_published: 'Följande kursomgångar har publicerad kursanalys med kursdata. Välj den kursomgång nedan som du vill du vill ändra och sedan publicera om: ',
+    intro_published: 'Följande kursomgångar har publicerad kursanalys och kursdata. Välj den kursomgång nedan som du vill du vill ändra och sedan publicera om: ',
 
     /* **** EMPTY TEXT FOR NEW, DRAFT, PUBLISHED */
     draft_empty: 'Det finns inga sparade utkast för vald termin',
@@ -81,7 +81,7 @@ module.exports = {
     btn_back_edit: 'Redigera, ladda upp',
     btn_delete: 'Radera',
     btn_save_and_cancel: 'Spara utkast och avsluta',
-    btn_copy: 'Kopiera granska länk',
+    btn_copy: 'Kopiera länk till utkast',
 
     /** ************ PAGE 2 FORM ************** */
     asterix_text: '* Kommer inte att kunna ändras efter publicering',
@@ -104,8 +104,8 @@ module.exports = {
     header_examination_grade: 'Examinationsgrad',
     header_course_changes_comment: 'Förändringar som har införts till den här kursomgången',
     header_analysis_edit_comment: 'Kommentar till ändringar',
-    header_upload_file: 'Kursanalys',
-    header_upload_file_pm: 'Kurs-pm',
+    header_upload_file: 'Kursanalys (endast i fil-formatet PDF)',
+    header_upload_file_pm: 'Kurs-pm (endast i fil-formatet PDF)',
     last_change_date: 'Senaste ändring:',
 
     link_syllabus: 'Kursplan',
@@ -118,6 +118,7 @@ module.exports = {
     alert_saved_draft: 'Utkast för kursanalys och kursdata har sparats',
     alert_empty_fields: 'Du behöver fylla i obligatoriska fält för att gå vidare till Granska och publicera.',
     alert_uploaded_file: 'Vald fil har laddatas upp',
+    alert_not_pdf: 'Vald fil kunde inte laddas upp. Filen måste vara av typen PDF.',
 
     /** ************ MODALS ************** */
     info_copy_link: {
@@ -154,8 +155,8 @@ module.exports = {
       btnConfirm: 'Ja, fortsätt avbryta'
     },
     info_delete: {
-      header: 'Är du säker på att du vill radera utkast?',
-      body: `
+      header: 'Att tänka på innan du raderar utkastet!',
+      body: `Radera utkast kan inte ångras. Utkastet kommer att försvinna.
         <br/>  
         <br/> 
             Vill du fortsätta att radera utkast?`,
@@ -165,7 +166,7 @@ module.exports = {
     /** **** INFO BUTTONS ***** */
     info_select_semester: {
       header: 'Info',
-      body: 'Välj vilken termin kursomgångenstartade. Om kursomgången sträcker sig över flera terminer; välj kursomgångens starttermin.',
+      body: 'Välj vilken termin kursomgången startade. Om kursomgången sträcker sig över flera terminer; välj kursomgångens starttermin.',
       btnCancel: 'Close'
     },
     info_choose_course_offering: {
@@ -209,7 +210,6 @@ module.exports = {
       body: 'Ladda upp den senaste versionen av kurs-pm för kursomgången.',
       btnCancel: 'Close'
     },
-
     info_course_changes_comment: {
       header: 'Info',
       body: 'Summera förändringar som har införts till den här kursomgången',

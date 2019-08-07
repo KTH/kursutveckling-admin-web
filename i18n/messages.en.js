@@ -3,14 +3,8 @@ module.exports = {
   longNameSe: 'Engelska',
   longNameEn: 'English',
   messages: {
-    /**
-     * General stuff
-     */
-    date_format_short: '%d-%b-%Y',
 
-    /**
-     * Error messages
-     */
+    date_format_short: '%d-%b-%Y',
 
     error_not_found: 'Sorry, we can\'t find your requested page',
     error_course_not_found: 'Sorry, there is no course with course code ',
@@ -33,12 +27,11 @@ module.exports = {
       1: 'Spring ',
       2: 'Autumn '
     },
-
     header_main: {
       new: 'Publish new course analysis and course data',
       draft: 'Publish new course analysis and course data',
       published: 'Change published course analysis and course data',
-      preview: 'Preview course analysis'
+      preview: 'Preview draft of course analysis and course data'
     },
 
     /** * PAGE 1 */
@@ -100,8 +93,8 @@ module.exports = {
     header_examination_grade: 'Graduation rate',
     header_course_changes_comment: 'Changes of the course before this course offering',
     header_analysis_edit_comment: 'Comments to changes in course data or course analysis after published.',
-    header_upload_file: 'Course analysis',
-    header_upload_file_pm: 'Course memo',
+    header_upload_file: 'Course analysis (only as PDF file format)',
+    header_upload_file_pm: 'Course memo (only as PDF file format)',
     header_more_information: 'More information', // ?
     header_publish_dates: 'Date of published course analysis with course data', // ?
     header_results: 'Results', // ?
@@ -110,9 +103,9 @@ module.exports = {
     no_changes: 'No changes since first published',
     published_first_time: 'Published first time: ',
 
-    link_syllabus: 'Course syllabus', /** Followed by ([giltighetstermin år] – [sista giltighetstermin år]) */
+    link_syllabus: 'Course syllabus ', /** Followed by ([giltighetstermin år] – [sista giltighetstermin år]) */
     link_pm: 'Course memo',
-    link_analysis: 'Course anlaysis', /** Followed by [dd/mm/yyyy] */
+    link_analysis: 'Course anlaysis ', /** Followed by [dd/mm/yyyy] */
 
     /** draft_empty: 'Det finns inga sparade utkast för vald termin', */
     /** published_empty: 'There are no published course analysis and course data this semester.', */
@@ -125,6 +118,7 @@ module.exports = {
     alert_saved_draft: 'A draft of course analysis and course data have been saved',
     alert_empty_fields: 'All mandatory fields must contain information before proceeding to Review and publish.',
     alert_uploaded_file: 'Selected file has been uploaded',
+    alert_not_pdf: 'The specified file could not be uploaded. The file format must be PDF.',
 
     /** ************ MODALS ************** */
 
@@ -155,9 +149,9 @@ module.exports = {
       btnCancel: 'No, go back',
       btnConfirm: 'Yes, cancel'
     },
-
     info_delete: {
-      header: 'Are you sure you want to delete the draft?',
+      header: 'To be aware of before deleting this draft!',
+      body: 'Deleting the draft cannot be undone. The draft draft will be lost. <br/><br/> Do you want do delete this draft?',
       btnCancel: 'No, go back',
       btnConfirm: 'Yes, delete'
     },
@@ -188,13 +182,13 @@ module.exports = {
 
     info_examiners: {
       header: 'Info',
-      body: 'The examiners of the course at the time for the course offering. Examiners are administrated in Kopps.',
+      body: 'The examiners of the course at the time of the course offering. Examiners are administrated in Kopps.',
       btnCancel: 'Close'
     },
 
     info_responsibles: {
       header: 'Info',
-      body: 'All the course responsibles for the all the administrative course instances that are included in the course offering. Course responsibles are administrated in Kopps.',
+      body: 'All the course responsibles for all the administrative course instances that are included in the course offering. Course responsibles are administrated in Kopps.',
       btn_close: 'Close'
     },
 
