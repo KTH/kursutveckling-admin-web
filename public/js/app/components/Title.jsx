@@ -4,6 +4,7 @@ import ProgressBar from '../components/ProgressBar'
 class Title extends Component{
     render(){
         const { courseCode, header, title, language, progress, showProgressBar} = this.props
+        title.credits = title.credits.toString().indexOf('.') < 0 ? title.credits + '.0' : title.credits
         return(
         <div key='course-title' id='course-title'>
              <h1>{header}</h1>
