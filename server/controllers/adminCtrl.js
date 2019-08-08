@@ -12,6 +12,7 @@ const ReactDOMServer = require('react-dom/server')
 const browserConfig = require('../configuration').browser
 const serverConfig = require('../configuration').server
 
+const api = require('../api')
 const { runBlobStorage, updateMetaData, deleteBlob } = require('../blobStorage')
 const kursutvecklingAPI = require('../apiCalls/kursutvecklingAPI')
 const koppsCourseData = require('../apiCalls/koppsCourseData')
@@ -145,11 +146,9 @@ function * _getUsedRounds (req, res, next) {
   try {
     const apiResponse = yield kursutvecklingAPI.getUsedRounds(courseCode, semester)
     log.debug('_getUsedRounds response: ', apiResponse.body)
-    /* if (apiResponse.statusCode !== 200) {
-      res.status(apiResponse.statusCode)
-      res.statusCode = apiResponse.statusCode
-      res.send()
-    } */
+    if (apiResponse.message) {
+      throw new Error(apiResponse.message)
+    }
     return httpResponse.json(res, apiResponse.body)
   } catch (error) {
     log.error('Exception from _getUsedRounds ', { error: error })
@@ -157,7 +156,7 @@ function * _getUsedRounds (req, res, next) {
   }
 }
 
-function * _getCourseEmployees (req, res) {
+function * _getCourseEmployees (req, res, next) {
   let key = req.params.key
   key = key.replace(/_/g, '.')
 
@@ -180,11 +179,18 @@ function * _getCourseEmployees (req, res) {
       })
   } catch (err) {
     log.error('Exception from ugRedis - multi', { error: err })
-    return err
+    return next(err)
   }
 }
 
 async function getIndex (req, res, next) {
+  if (api.kursutvecklingApi.connected === false) {
+    log.error('No connection to kursutveckling-api', api.kursutvecklingApi)
+    const error = new Error('API - ERR_CONNECTION_REFUSED')
+    error.status = 500
+    return next(error)
+  }
+
   if (process.env['NODE_ENV'] === 'development') {
     delete require.cache[require.resolve('../../dist/app.js')]
     const tmp = require('../../dist/app.js')

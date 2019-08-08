@@ -15,6 +15,7 @@ module.exports = {
     error_not_found: 'Tyvärr kunde vi inte hitta sidan du efterfrågade',
     error_course_not_found: 'Tyvärr så finns det ingen kurs med kurskod ',
     error_generic: 'Något gick fel på servern, var god försök igen senare',
+    error_auth: 'Du har inte behörighet att se sidan.',
 
     /**
      * Message keys

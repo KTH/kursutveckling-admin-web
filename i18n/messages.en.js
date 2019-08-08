@@ -9,6 +9,7 @@ module.exports = {
     error_not_found: 'Sorry, we can\'t find your requested page',
     error_course_not_found: 'Sorry, there is no course with course code ',
     error_generic: 'Something went wrong on the server, please try again later.',
+    error_auth: 'You are not authorized to access this page',
 
     /**
      * Message keys

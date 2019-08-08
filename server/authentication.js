@@ -5,6 +5,7 @@ const config = require('./configuration').server
 const log = require('kth-node-log')
 const CasStrategy = require('kth-node-passport-cas').Strategy
 const GatewayStrategy = require('kth-node-passport-cas').GatewayStrategy
+const i18n = require('../i18n')
 
 /**
  * Passport will maintain persistent login sessions. In order for persistent sessions to work, the authenticated
@@ -154,6 +155,7 @@ module.exports.requireRole = function () { // TODO:Different roles for selling t
   const roles = Array.prototype.slice.call(arguments)
 
   return async function _hasCourseAcceptedRoles (req, res, next) {
+    const language = req.query.l
     const ldapUser = req.session.authUser || {}
     const id = req.params.id
     const isPreview = req.params.preview && req.params.preview === 'preview'
@@ -179,15 +181,7 @@ module.exports.requireRole = function () { // TODO:Different roles for selling t
     const hasAuthorizedRole = roles.reduce((prev, curr) => prev || userCourseRoles[curr], false)
 
     if (!hasAuthorizedRole) {
-      let errorText = ''
-      if (req.params.preview) {
-        errorText = 'not a teacher'
-      } else {
-        errorText = 'Du har inte behörighet att redigera Kursinformationssidan eftersom du inte är inlagd i KOPPS som examinator eller kursansvarig för kursen. \
-        Se förteckning över KOPPS-administratörer som kan hjälpa dig att lägga in dig på rätt roll för din kurs. \
-        https://intra.kth.se/utbildning/utbildningsadministr/kopps/koppsanvandare-1.33459'
-      }
-      const error = new Error(errorText)
+      const error = new Error(i18n.messages[language && language === 'sv' ? 1 : 0].messages.error_auth)
       error.status = 403
       return next(error)
     }

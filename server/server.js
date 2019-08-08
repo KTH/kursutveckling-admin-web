@@ -188,6 +188,11 @@ server.use(excludeExpression, require('kth-node-web-common/lib/web/crawlerRedire
   hostUrl: config.hostUrl
 }))
 
+/* ********************************
+ * ******* FILE UPLOAD*******
+ * ********************************
+ */
+
 const fileUpload = require('express-fileupload')
 server.use(fileUpload())
 server.use(bodyParser.json({ limit: '50mb' }))
