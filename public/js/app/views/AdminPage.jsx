@@ -58,7 +58,6 @@ class AdminPage extends Component {
     this.getTempData = this.getTempData.bind(this)
     this.getMetadata = this.getMetadata.bind(this)
     //this.divTop = React.createRef() 
-    //this.fileInput = React.createRef()
     this.hanleUploadFile = this.hanleUploadFile.bind(this)
     this.handleRemoveFile = this.handleRemoveFile.bind(this)
     this.validateData = this.validateData.bind(this)
@@ -76,7 +75,7 @@ class AdminPage extends Component {
       const notValid = id === 'analysis' ? ['analysisFile'] : ['pmFile']
       this.setState({
         notValid: notValid,
-        alertError: 'MUST BE PDF!!!!!' //i18n.messages[this.props.routerStore.language].messages.alert_empty_fields
+        alertError: i18n.messages[this.props.routerStore.language].messages.alert_not_pdf
       })
     }
   }
@@ -127,7 +126,6 @@ class AdminPage extends Component {
       formData.append("file", e.target.files[0], e.target.files[0].name)
       formData.append('courseCode', data.courseCode)
       formData.append('analysis', data.analysis)
-      //formData.append('rounds', this.state.values._id.split('_')[])
       formData.append('status', data.status)
       req.open("POST", `${this.props.routerStore.browserConfig.hostUrl}${this.props.routerStore.paths.storage.saveFile.uri.split(':')[0]}${this.props.routerStore.analysisData._id}/${id}/${this.state.isPublished}`);
       req.send(formData)
@@ -229,7 +227,6 @@ class AdminPage extends Component {
 
     return routerStore.postRoundAnalysisData(postObject, postObject.changedDate.length === 0 )
       .then((data) => {
-        //console.log('postObject', data)
         if(this.state.isPreviewMode){
           window.location= encodeURI(`${routerStore.browserConfig.hostUrl}${SERVICE_URL[routerStore.service]}${routerStore.analysisData.courseCode}?serv=kutv&event=save&id=${routerStore.analysisId}&term=${routerStore.analysisData.semester}&name=${routerStore.analysisData.analysisName}`)// term=, name=
         }

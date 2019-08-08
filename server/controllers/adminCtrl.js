@@ -82,12 +82,6 @@ function * _postRoundAnalysis (req, res, next) {
       apiResponse = yield kursutvecklingAPI.updateRoundAnalysisData(roundAnalysisId, sendObject, language)
     }
 
-    /* if (apiResponse.statusCode !== 200) { // TODO: Handle with alert
-      res.status(apiResponse.statusCode)
-      res.statusCode = apiResponse.statusCode
-      res.send()
-    } */
-
     return httpResponse.json(res, apiResponse.body)
   } catch (err) {
     log.error('Exception from setRoundAnalysis ', { error: err })
@@ -101,11 +95,6 @@ function * _getRoundAnalysis (req, res, next) {
   log.info('_getRoundAnalysis id:' + req.params.id)
   try {
     const apiResponse = yield kursutvecklingAPI.getRoundAnalysisData(roundAnalysisId, language)
-    /* if (apiResponse.statusCode !== 200) {
-      res.status(apiResponse.statusCode)
-      res.statusCode = apiResponse.statusCode
-      res.send()
-    } */
     return httpResponse.json(res, apiResponse.body)
   } catch (err) {
     log.error('Exception from getRoundAnalysis ', { error: err })
@@ -116,8 +105,13 @@ function * _getRoundAnalysis (req, res, next) {
 function * _deleteRoundAnalysis (req, res, next) {
   const roundAnalysisId = req.params.id
   log.info('_deleteRoundAnalysis with id:' + req.params.id)
-  const apiResponse = yield kursutvecklingAPI.deleteRoundAnalysisData(roundAnalysisId)
-  return httpResponse.json(res, apiResponse)
+  try {
+    const apiResponse = yield kursutvecklingAPI.deleteRoundAnalysisData(roundAnalysisId)
+    return httpResponse.json(res, apiResponse)
+  } catch (err) {
+    log.error('Exception from _deleteRoundAnalysis ', { error: err })
+    next(err)
+  }
 }
 
 function * _getKoppsCourseData (req, res, next) {
@@ -126,12 +120,6 @@ function * _getKoppsCourseData (req, res, next) {
   log.info('_getKoppsCourseData with code:' + courseCode)
   try {
     const apiResponse = yield koppsCourseData.getKoppsCourseData(courseCode, language)
-    /* if (apiResponse.statusCode !== 200) {
-      res.status(apiResponse.statusCode)
-      res.statusCode = apiResponse.statusCode
-      res.send(courseCode)
-    } */
-
     return httpResponse.json(res, apiResponse.body)
   } catch (err) {
     log.error('Exception from koppsAPI ', { error: err })
@@ -146,9 +134,6 @@ function * _getUsedRounds (req, res, next) {
   try {
     const apiResponse = yield kursutvecklingAPI.getUsedRounds(courseCode, semester)
     log.debug('_getUsedRounds response: ', apiResponse.body)
-    if (apiResponse.message) {
-      throw new Error(apiResponse.message)
-    }
     return httpResponse.json(res, apiResponse.body)
   } catch (error) {
     log.error('Exception from _getUsedRounds ', { error: error })
@@ -223,7 +208,7 @@ async function getIndex (req, res, next) {
     renderProps.props.children.props.routerStore.setService(service)
     await renderProps.props.children.props.routerStore.getMemberOf(req.session.authUser.memberOf, req.params.id.toUpperCase(), req.session.authUser.username)
     if (req.params.id.length <= 7) {
-      /** ******** Got course code -> prepare for Page 1 depending on status (draft or published) ****** */
+    /** ******** Got course code -> prepare for Page 1 depending on status (draft or published) ****** */
 
       log.debug(' getIndex, get course data for : ' + req.params.id)
       const apiResponse = await koppsCourseData.getKoppsCourseData(req.params.id.toUpperCase(), lang)
@@ -234,7 +219,7 @@ async function getIndex (req, res, next) {
         await renderProps.props.children.props.routerStore.handleCourseData(apiResponse.body, req.params.id.toUpperCase(), ldapUser, lang)
       }
     } else {
-      /** ******** Got analysisId  ****** */
+    /** ******** Got analysisId  ****** */
 
       log.debug(' getIndex, get analysis data for : ' + req.params.id)
       const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(req.params.id.toUpperCase(), lang)

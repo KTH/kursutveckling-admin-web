@@ -272,7 +272,6 @@ class RouterStore {
         analysis.draftAnalysis[draft].hasAccess = memberString.indexOf(analysis.draftAnalysis[draft].ugKeys[key]) >= 0
         if(analysis.draftAnalysis[draft].hasAccess === true)
           break
-        //console.log(memberString.indexOf(key), memberString,key  )
       }
     }
 
@@ -306,7 +305,6 @@ class RouterStore {
         credits: courseObject.course.credits
       }
 
-      
       for(let semester = 0; semester < courseObject.termsWithCourseRounds.length; semester ++){
           this.courseData.semesterObjectList[courseObject.termsWithCourseRounds[semester].term]= {
           courseSyllabus: courseObject.termsWithCourseRounds[semester].courseSyllabus,
