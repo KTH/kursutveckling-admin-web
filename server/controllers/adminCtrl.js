@@ -176,6 +176,7 @@ function * _getCourseEmployees (req, res, next) {
       })
       .catch(function (err) {
         console.log('ugRedis - error:: ', err)
+        throw new Error(err)
       })
   } catch (err) {
     log.error('Exception from ugRedis - multi', { error: err })
@@ -184,9 +185,19 @@ function * _getCourseEmployees (req, res, next) {
 }
 
 async function getIndex (req, res, next) {
+  /** ******** CHECK OF CONNECTION TO API AND ugRedis ****** */
+
   if (api.kursutvecklingApi.connected === false) {
     log.error('No connection to kursutveckling-api', api.kursutvecklingApi)
     const error = new Error('API - ERR_CONNECTION_REFUSED')
+    error.status = 500
+    return next(error)
+  }
+  try {
+    await redis('ugRedis', serverConfig.cache.ugRedis.redis)
+  } catch (err) {
+    log.error('No connection to kursutveckling-api', api.kursutvecklingApi)
+    const error = new Error('No access to  ugRedis - ' + err)
     error.status = 500
     return next(error)
   }
@@ -203,33 +214,37 @@ async function getIndex (req, res, next) {
   let status = req.query.status
   const service = req.query.serv
 
-  // console.log('!!!!!!', req)
-
   try {
     const renderProps = staticFactory()
+    /* ********* Settings ****** */
+
     renderProps.props.children.props.routerStore.setBrowserConfig(browserConfig, paths, serverConfig.hostUrl, service)
     renderProps.props.children.props.routerStore.setLanguage(lang)
     renderProps.props.children.props.routerStore.setService(service)
     await renderProps.props.children.props.routerStore.getMemberOf(req.session.authUser.memberOf, req.params.id.toUpperCase(), req.session.authUser.username)
     if (req.params.id.length <= 7) {
-      // Just course code -> analysis menu depending on status
+      /** ******** Got course code -> prepare for Page 1 depending on status (draft or published) ****** */
+
       log.debug(' getIndex, get course data for : ' + req.params.id)
       const apiResponse = await koppsCourseData.getKoppsCourseData(req.params.id.toUpperCase(), lang)
       if (apiResponse.statusCode >= 400) {
-        renderProps.props.children.props.routerStore.errorMessage = apiResponse.statusMessage
+        renderProps.props.children.props.routerStore.errorMessage = apiResponse.statusMessage // TODO: ERROR?????
       } else {
         renderProps.props.children.props.routerStore.status = status === 'p' ? 'published' : 'new'
         await renderProps.props.children.props.routerStore.handleCourseData(apiResponse.body, req.params.id.toUpperCase(), ldapUser, lang)
       }
     } else {
+      /** ******** Got analysisId  ****** */
+
       log.debug(' getIndex, get analysis data for : ' + req.params.id)
       const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(req.params.id.toUpperCase(), lang)
       if (apiResponse.statusCode >= 400) {
-        renderProps.props.children.props.routerStore.errorMessage = apiResponse.statusMessage
+        renderProps.props.children.props.routerStore.errorMessage = apiResponse.statusMessage // TODO: ERROR?????
       } else {
         renderProps.props.children.props.routerStore.analysisId = req.params.id
         renderProps.props.children.props.routerStore.analysisData = apiResponse.body
 
+        /** ******** Setting status ****** */
         status = req.params.preview && req.params.preview === 'preview' ? 'preview' : status
         switch (status) {
           case 'p' : renderProps.props.children.props.routerStore.status = 'published'
@@ -241,24 +256,23 @@ async function getIndex (req, res, next) {
           default : renderProps.props.children.props.routerStore.status = 'draft'
         }
         log.debug(' getIndex, has status : ' + status)
+
+        /** ******** Creating title  ****** */
         renderProps.props.children.props.routerStore.setCourseTitle(courseTitle.length > 0 ? decodeURIComponent(courseTitle) : '')
-        if (apiResponse.body.message) {
-          renderProps.props.children.props.routerStore.errorMessage = apiResponse.body.message
-        }
       }
     }
     renderProps.props.children.props.routerStore.__SSR__setCookieHeader(req.headers.cookie)
 
-    const breadcrumDepartment = await renderProps.props.children.props.routerStore.getBreadcrumbs()
+    /* const breadcrumDepartment = await renderProps.props.children.props.routerStore.getBreadcrumbs()
     let breadcrumbs = [
       { url: '', label: i18n.message('page_course_programme', lang) }
     ]
-    breadcrumbs.push(breadcrumDepartment)
+    breadcrumbs.push(breadcrumDepartment) */
 
     const html = ReactDOMServer.renderToString(renderProps)
 
     res.render('admin/index', {
-      breadcrumbsPath: breadcrumbs,
+      // breadcrumbsPath: breadcrumbs,
       debug: 'debug' in req.query,
       html: html,
       title: i18n.messages[lang === 'en' ? 0 : 1].messages.title,
