@@ -104,6 +104,9 @@ padding-top: 10px;
           margin: 6px;
           max-height: 28px;
           overflow-y: hidden;
+          width: 100%;
+          text-align: left;
+
       }
       .caretholder {
           background-color: $kth-blue;
@@ -621,8 +624,8 @@ and also iPads specifically.
             padding: .5em;
             vertical-align: bottom;
             min-width: 100%;
-            max-width: 280px;
-            @media screen and (min-width: 400px){
+            max-width: 290px;
+            @media (min-width: 400px){
               max-width: 330px;
             }
             @media (max-width: 375px){
