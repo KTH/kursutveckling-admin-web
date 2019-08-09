@@ -536,6 +536,19 @@ class AdminPage extends Component {
                       handleRemoveFile ={this.handleRemoveFile}
                       type = 'analysisFile'
                       />
+                      { this.state.analysisFile.length > 0 
+                        ? <span>
+                         <FormLabel translate = {translate} header = {'header_upload_file_date'} id = {'info_upload_course_analysis_date'} />
+                         <Input id='pdfAnalysisDate' key='pdfAnalysisDate' type='date' 
+                           value={this.state.values.pdfAnalysisDate} 
+                           onChange={this.handleInputChange} 
+                           disabled={isPublished} 
+                           //className = {this.state.notValid.indexOf('responsibles') > -1 ? 'not-valid' : ''}
+                           />
+                           </span>
+                        : ''
+                      }
+
                     <br/>
                     {/**************/}
                     {/** PM UPLOAD */}
@@ -550,6 +563,18 @@ class AdminPage extends Component {
                       handleRemoveFile ={this.handleRemoveFile}
                       type = 'pmFile'
                       />
+                       { this.state.pmFile.length > 0 
+                        ? <span>
+                         <FormLabel translate = {translate} header = {'header_upload_file_pm_date'} id = {'info_upload_course_memo_date'} />
+                         <Input id='pdfPMDate' key='pdfPMDate' type='date' 
+                           value={this.state.values.pdfPMDate} 
+                           onChange={this.handleInputChange} 
+                           disabled={isPublished} 
+                           //className = {this.state.notValid.indexOf('responsibles') > -1 ? 'not-valid' : ''}
+                           />
+                           </span>
+                        : ''
+                      }
                   </Col>
 
 

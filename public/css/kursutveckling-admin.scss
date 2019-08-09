@@ -623,12 +623,11 @@ and also iPads specifically.
             margin: -.7em -2.5em .3em -.7em;
             padding: .5em;
             vertical-align: bottom;
-            min-width: 100%;
-            max-width: 290px;
+            width: 100%;
             @media (min-width: 400px){
               max-width: 330px;
             }
-            @media (max-width: 375px){
+            @media (max-width: 376px){
               max-width: 250px;
             }
             label {

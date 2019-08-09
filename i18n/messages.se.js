@@ -107,6 +107,8 @@ module.exports = {
     header_analysis_edit_comment: 'Kommentar till ändringar',
     header_upload_file: 'Kursanalys (endast i fil-formatet PDF)',
     header_upload_file_pm: 'Kurs-pm (endast i fil-formatet PDF)',
+    header_upload_file_date: 'Edit date for ....', // Semlan
+    header_upload_file_pm_date: 'Edit date for ....', // Semlan
     last_change_date: 'Senaste ändring:',
 
     link_syllabus: 'Kursplan',
@@ -209,6 +211,16 @@ module.exports = {
     info_upload_course_memo: {
       header: 'Info',
       body: 'Ladda upp den senaste versionen av kurs-pm för kursomgången.',
+      btnCancel: 'Close'
+    },
+    info_upload_course_analysis_date: { // Semlan
+      header: 'Info',
+      body: 'Date ....',
+      btnCancel: 'Close'
+    },
+    info_upload_course_memo_date: { // Semlan
+      header: 'Info',
+      body: 'Date ....',
       btnCancel: 'Close'
     },
     info_course_changes_comment: {

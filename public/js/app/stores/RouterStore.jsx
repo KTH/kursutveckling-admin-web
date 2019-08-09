@@ -386,7 +386,10 @@ class RouterStore {
         ugKeys: [...this.redisKeys.examiner, ...this.redisKeys.responsibles],
         ladokUID: '',
         syllabusStartTerm: courseSyllabus.validFromTerm,
-        changedAfterPublishedDate: ''
+        changedAfterPublishedDate: '',
+        examinationGradeFromLadok: false,
+        registeredStudentsFromLadok: false
+
       }
 
       this.analysisData.examiners = ''

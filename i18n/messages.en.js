@@ -96,6 +96,8 @@ module.exports = {
     header_analysis_edit_comment: 'Comments to changes in course data or course analysis after published.',
     header_upload_file: 'Course analysis (only as PDF file format)',
     header_upload_file_pm: 'Course memo (only as PDF file format)',
+    header_upload_file_date: 'Edit date for ....', // Semlan
+    header_upload_file_pm_date: 'Edit date for ....', // Semlan
     header_more_information: 'More information', // ?
     header_publish_dates: 'Date of published course analysis with course data', // ?
     header_results: 'Results', // ?
@@ -203,10 +205,19 @@ module.exports = {
       body: 'Upload the latest version of the course analysis for the course offering.',
       btnCancel: 'Close'
     },
-
     info_upload_course_memo: {
       header: 'Info',
       body: 'Upload the latest version of the course memo for the course offering.',
+      btnCancel: 'Close'
+    },
+    info_upload_course_analysis_date: { // Semlan
+      header: 'Info',
+      body: 'Date ....',
+      btnCancel: 'Close'
+    },
+    info_upload_course_memo_date: { // Semlan
+      header: 'Info',
+      body: 'Date ....',
       btnCancel: 'Close'
     },
 
