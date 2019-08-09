@@ -10,7 +10,7 @@ import InfoButton from './InfoButton'
 
 import i18n from '../../../../i18n/index'
 import { EMPTY, SERVICE_URL } from '../util/constants'
-import { getDateFormat } from '../util/helpers'
+import { getDateFormat, getValueFromObjectList } from '../util/helpers'
 
 @inject(['routerStore']) @observer
 class AnalysisMenu extends Component {
@@ -173,7 +173,8 @@ class AnalysisMenu extends Component {
         else{
             this.props.routerStore.deleteRoundAnalysis(id).then(result =>{
                 this.props.routerStore.deleteFileInStorage(id).then( result => {
-                window.location=`${SERVICE_URL[this.props.routerStore.service]}${this.props.routerStore.courseCode}?serv=kutv&event=delete`
+                const analysisName = getValueFromObjectList(this.state.draftAnalysis, id, 'analysisId', 'analysisName')
+                window.location=`${SERVICE_URL[this.props.routerStore.service]}${this.props.routerStore.courseCode}?serv=kutv&event=delete&id=${this.state.selectedRadio.draft}&term=${this.state.semester}&name=${analysisName}`
                 console.log(result)
                 this.getUsedRounds(this.state.semester)
 

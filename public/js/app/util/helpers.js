@@ -64,4 +64,15 @@ const getAccess = (memberOf, round, courseCode, semester) => {
   return false
 }
 
-export { getAccess, noAccessToRoundsList, formatDate, getLanguageToUse, getTodayDate, getDateFormat }
+const getValueFromObjectList = (objectList, value, key, returnKey) => {
+  let object
+  for (let index = 0; index < objectList.length; index++) {
+    object = objectList[index]
+    if (object[key] === value) {
+      return object[returnKey]
+    }
+  }
+  return null
+}
+
+export { getAccess, noAccessToRoundsList, formatDate, getLanguageToUse, getTodayDate, getDateFormat, getValueFromObjectList }
