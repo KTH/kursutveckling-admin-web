@@ -1,5 +1,6 @@
 'use strict'
-import 'react-app-polyfill/ie11';
+//import 'react-app-polyfill/ie11';
+import 'core-js/stable'
 
 import React from 'react'
 import  ReactDOM from 'react-dom'
