@@ -96,8 +96,9 @@ class AdminPage extends Component {
       req.onreadystatechange = function() {
         let values = thisInstance.state.values
         if (this.readyState == 4 && this.status == 200) {
-          values.pdfAnalysisDate = getTodayDate()
+          
           if(id === 'analysis'){
+            values.pdfAnalysisDate = getTodayDate()
             fileProgress.analysis = 0
             thisInstance.setState({
               analysisFile: this.responseText, 
