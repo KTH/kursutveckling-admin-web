@@ -12,8 +12,8 @@ import InfoButton from '../components/InfoButton'
 import UpLoad from '../components/UpLoad'
 
 //Helpers 
-import { EMPTY, SERVICE_URL } from '../util/constants'
-import { getTodayDate , getDateFormat } from '../util/helpers'
+import { SERVICE_URL } from '../util/constants'
+import { getTodayDate } from '../util/helpers'
 import i18n from '../../../../i18n/index'
 
 
@@ -164,6 +164,7 @@ class AdminPage extends Component {
         alertError: '',
         notValid: invalidList
       })
+      window.scrollTo(0, 300)
     }
   }
 
@@ -493,7 +494,15 @@ class AdminPage extends Component {
             {this.state.values && !this.state.isPreviewMode
               ? <Form className='admin-form'>
                   <p>{translate.intro_edit}</p>
-
+                {/* Semester and name of analysis */}
+                <h2>{translate.header_edit_content}</h2>
+                <h3>{translate.header_semester} {
+                  `${translate.course_short_semester[this.state.values.semester.toString().match(/.{1,4}/g)[1]]} 
+                                    ${this.state.values.semester.toString().match(/.{1,4}/g)[0]}`
+                  }</h3>
+                <h3>{translate.header_course_offering} {this.state.values.analysisName}</h3>
+              
+                {/* ALERTS */}
                 {this.state.alert.length > 0 
                   ? <Row>
                     <Alert color= 'info' className='margin-bottom-40'>{this.state.alert} </Alert>
@@ -502,23 +511,18 @@ class AdminPage extends Component {
                 }  
                 {this.state.alertSuccess.length > 0 
                   ? <Row>
-                    <Alert color= 'success' className='margin-bottom-40'>{this.state.alertSuccess} </Alert>
+                    <Alert color= 'success' >{this.state.alertSuccess} </Alert>
                   </Row>
                   : ''
                 }  
                 {this.state.alertError.length > 0 
                   ? <Row>
-                    <Alert color= 'danger' className='margin-bottom-40'>{this.state.alertError} </Alert>
+                    <Alert color= 'danger'>{this.state.alertError} </Alert>
                   </Row>
                   : ''
                 }  
-                <h2>{translate.header_edit_content}</h2>
-                <h3>{translate.header_semester} {
-                  `${translate.course_short_semester[this.state.values.semester.toString().match(/.{1,4}/g)[1]]} 
-                                    ${this.state.values.semester.toString().match(/.{1,4}/g)[0]}`
-                }</h3>
-                <h3>{translate.header_course_offering} {this.state.values.analysisName}</h3>
-              
+
+               {/* FORM - FIRST COLUMN */}
                 <Row className='form-group'>
                   <Col sm='4' className='col-form'>
                     <h4>{translate.header_upload}</h4>
@@ -577,7 +581,7 @@ class AdminPage extends Component {
                       }
                   </Col>
 
-
+                  {/* FORM - SECOND COLUMN */}
                   <Col sm='4' className='col-form'>
                     <h4>{translate.header_summarize}</h4>
 
@@ -588,34 +592,34 @@ class AdminPage extends Component {
                     />
                   </Col>  
 
-                    <Col sm='4' className='col-form'>
-                      <h4>{translate.header_check_data}</h4>
-                      <p>{translate.asterix_text}</p>
+                  {/* FORM - THIRD COLUMN */}
+                  <Col sm='4' className='col-form'>
+                    <h4>{translate.header_check_data}</h4>
+                    <p>{translate.asterix_text}</p>
 
-                      <FormLabel translate = {translate} header = {'header_registrated'} id = {'info_registrated'} />
-                      <Input id='registeredStudents' key='registeredStudents' type='number' 
-                        placeholder = '0' 
-                        value={this.state.values.registeredStudents} 
-                        onChange={this.handleInputChange} disabled={isPublished} 
-                        className = {this.state.notValid.indexOf('registeredStudents') > -1 ? 'not-valid' : ''}
-                      />
+                    <FormLabel translate = {translate} header = {'header_registrated'} id = {'info_registrated'} />
+                    <Input id='registeredStudents' key='registeredStudents' type='number' 
+                      placeholder = '0' 
+                      value={this.state.values.registeredStudents} 
+                      onChange={this.handleInputChange} disabled={isPublished} 
+                      className = {this.state.notValid.indexOf('registeredStudents') > -1 ? 'not-valid' : ''}
+                    />
                     
-                      <FormLabel translate = {translate} header = {'header_examination_grade'} id = {'info_examination_grade'} />
-                      <Input id='examinationGrade' key='examinationGrade' type='number' 
-                        placeholder = '0' 
-                        value={this.state.values.examinationGrade} 
-                        onChange={this.handleInputChange} disabled={isPublished} 
-                        className = {this.state.notValid.indexOf('examinationGrade') > -1 ? 'not-valid' : ''}
-                        />
+                    <FormLabel translate = {translate} header = {'header_examination_grade'} id = {'info_examination_grade'} />
+                    <Input id='examinationGrade' key='examinationGrade' type='number' 
+                      placeholder = '0' 
+                      value={this.state.values.examinationGrade} 
+                      onChange={this.handleInputChange} disabled={isPublished} 
+                      className = {this.state.notValid.indexOf('examinationGrade') > -1 ? 'not-valid' : ''}
+                    />
                       
-                      <FormLabel translate = {translate} header = {'header_examiners'} id = {'info_examiners'} />
-                      <Input id='examiners' key='examiners' type='text' 
-                        value={this.state.values.examiners} 
-                        onChange={this.handleInputChange} 
-                        disabled={isPublished}
-                        className = {this.state.notValid.indexOf('examiners') > -1 ? 'not-valid' : ''}
-
-                      />
+                    <FormLabel translate = {translate} header = {'header_examiners'} id = {'info_examiners'} />
+                    <Input id='examiners' key='examiners' type='text' 
+                      value={this.state.values.examiners} 
+                      onChange={this.handleInputChange} 
+                      disabled={isPublished}
+                      className = {this.state.notValid.indexOf('examiners') > -1 ? 'not-valid' : ''}
+                    />
                      
                      <FormLabel translate = {translate} header = {'header_responsibles'} id = {'info_responsibles'} />
                       <Input id='responsibles' key='responsibles' type='text' 
@@ -623,7 +627,7 @@ class AdminPage extends Component {
                         onChange={this.handleInputChange} 
                         disabled={isPublished} 
                         className = {this.state.notValid.indexOf('responsibles') > -1 ? 'not-valid' : ''}
-                        />
+                      />
 
                       { isPublished
                         ? <span>

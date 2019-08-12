@@ -74,7 +74,7 @@ const TableWithCourseData = ({translate, courseRoundObj}) => {
           </tr>
         </tbody>
       </Table>
-      <PopOverTextForTableHeaders columnsArr={orderedColumns} translate={translate} popOverId={popOverId} />
+      <PopOverTextForTableHeaders columnsArr={orderedColumns} translate={translate} popOverId={popOverId} key = {'headers_'+popOverId}/>
       <PopoverExamItem examShortAndLongStrArr={examShortAndLongStrArr} id={'examShortAndLongStrArr' + popOverId} />
     </span>
   )
