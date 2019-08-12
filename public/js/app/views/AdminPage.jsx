@@ -504,7 +504,11 @@ class AdminPage extends Component {
               
             {this.state.values && !this.state.isPreviewMode
               ? <Form className='admin-form'>
-                  <p>{translate.intro_edit}</p>
+                 {/* Intro text for Edit */}
+                  <div>
+                    <p>{translate.intro_edit}</p>
+                  </div>
+
                 {/* Semester and name of analysis */}
                 <h2>{translate.header_edit_content}</h2>
                 <h3>{translate.header_semester} {
