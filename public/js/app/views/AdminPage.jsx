@@ -557,7 +557,6 @@ class AdminPage extends Component {
                          <Input id='pdfAnalysisDate' key='pdfAnalysisDate' type='date' 
                            value={this.state.values.pdfAnalysisDate} 
                            onChange={this.handleInputChange} 
-                           disabled={isPublished} 
                            className = {this.state.notValid.indexOf('pdfAnalysisDate') > -1 ? 'not-valid' : ''}
     
                           />
@@ -585,7 +584,6 @@ class AdminPage extends Component {
                          <Input id='pdfPMDate' key='pdfPMDate' type='date' 
                            value={this.state.values.pdfPMDate} 
                            onChange={this.handleInputChange} 
-                           disabled={isPublished} 
                            className = {this.state.notValid.indexOf('pdfPMDate') > -1 ? 'not-valid' : ''}
                            />
                            </span>
