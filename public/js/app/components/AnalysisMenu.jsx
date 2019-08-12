@@ -38,7 +38,8 @@ class AnalysisMenu extends Component {
             },
             lastSelected: this.props.tempData ? 'new' : '',
             canOnlyPreview: '',
-            temporaryData: this.props.tempData
+            temporaryData: this.props.tempData,
+            newSemester: false
         }
 
         this.toggleDropdown = this.toggleDropdown.bind(this)
@@ -75,7 +76,8 @@ class AnalysisMenu extends Component {
             firstVisit: false,
             rounds:[],
             lastSelected:'',
-            selectedRadio: radios
+            selectedRadio: radios,
+            newSemester: true
         })
     }
 
@@ -267,11 +269,12 @@ class AnalysisMenu extends Component {
         if (routerStore.usedRounds.length === 0 || routerStore.hasChangedStatus){
             this.getUsedRounds(this.state.semester)
         } else {
-            if( analysisId && analysisId.length > 0){
+            if( analysisId && analysisId.length > 0 && !this.state.newSemester){
                 if(routerStore.status === 'draft' && routerStore.analysisData && routerStore.analysisData.isPublished !== true){
                     prevState.selectedRadio.draft = analysisId
                     prevState.lastSelected = 'draft'
                 } else {
+
                     prevState.selectedRadio.published = analysisId
                     prevState.lastSelected = 'published'
                 }
