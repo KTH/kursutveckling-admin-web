@@ -358,22 +358,25 @@ class AdminPage extends Component {
         invalidList.push(key)
       }
     }
+
     if(this.state.analysisFile.length === 0){
       invalidList.push('analysisFile')
-    }
-    else{
+    } else {
       if(!isValidDate(values.pdfAnalysisDate)){
         invalidList.push('pdfAnalysisDate')
       }
     }
-    if(this.state.isPublished && values.commentChange.length === 0){
-      invalidList.push('commentChange')
-    }
-    else{
+
+    if(this.state.pmFile.length > 0){
       if(!isValidDate(values.pdfPMDate)){
         invalidList.push('pdfPMDate')
       }
     }
+
+    if(this.state.isPublished && values.commentChange.length === 0){
+      invalidList.push('commentChange')
+    }
+    
     return invalidList
   }
 
