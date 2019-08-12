@@ -13,7 +13,7 @@ import UpLoad from '../components/UpLoad'
 
 //Helpers 
 import { SERVICE_URL } from '../util/constants'
-import { getTodayDate } from '../util/helpers'
+import { getTodayDate, isValidDate } from '../util/helpers'
 import i18n from '../../../../i18n/index'
 
 
@@ -360,8 +360,18 @@ class AdminPage extends Component {
     if(this.state.analysisFile.length === 0){
       invalidList.push('analysisFile')
     }
+    else{
+      if(!isValidDate(values.pdfAnalysisDate)){
+        invalidList.push('pdfAnalysisDate')
+      }
+    }
     if(this.state.isPublished && values.commentChange.length === 0){
       invalidList.push('commentChange')
+    }
+    else{
+      if(!isValidDate(values.pdfPMDate)){
+        invalidList.push('pdfPMDate')
+      }
     }
     return invalidList
   }
@@ -547,8 +557,9 @@ class AdminPage extends Component {
                            value={this.state.values.pdfAnalysisDate} 
                            onChange={this.handleInputChange} 
                            disabled={isPublished} 
-                           //className = {this.state.notValid.indexOf('responsibles') > -1 ? 'not-valid' : ''}
-                           />
+                           className = {this.state.notValid.indexOf('pdfAnalysisDate') > -1 ? 'not-valid' : ''}
+    
+                          />
                            </span>
                         : ''
                       }
@@ -574,7 +585,7 @@ class AdminPage extends Component {
                            value={this.state.values.pdfPMDate} 
                            onChange={this.handleInputChange} 
                            disabled={isPublished} 
-                           //className = {this.state.notValid.indexOf('responsibles') > -1 ? 'not-valid' : ''}
+                           className = {this.state.notValid.indexOf('pdfPMDate') > -1 ? 'not-valid' : ''}
                            />
                            </span>
                         : ''

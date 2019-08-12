@@ -43,6 +43,12 @@ const formatDate = (date, lang) => {
   return getDateFormat(thisDate, lang)
 }
 
+const isValidDate = (date) => {
+  let dateFormat = /^\d{4}-\d{2}-\d{2}$/
+  let regex = new RegExp(dateFormat)
+  return regex.test(date)
+}
+
 const noAccessToRoundsList = (memberOf, rounds, courseCode, semester) => {
   let roundIds = []
   if (memberOf.toString().indexOf(courseCode + '.examiner') > 0) { return roundIds }
@@ -75,4 +81,13 @@ const getValueFromObjectList = (objectList, value, key, returnKey) => {
   return null
 }
 
-export { getAccess, noAccessToRoundsList, formatDate, getLanguageToUse, getTodayDate, getDateFormat, getValueFromObjectList }
+export {
+  getAccess,
+  noAccessToRoundsList,
+  formatDate,
+  getLanguageToUse,
+  getTodayDate,
+  getDateFormat,
+  getValueFromObjectList,
+  isValidDate
+}
