@@ -33,7 +33,11 @@ const TableStandardCells = ({columnsArr, tableTitlesTranslation, popOverId, cour
       <MobileLabelForTableWithInfo translate={tableTitlesTranslation[apiColName]}
         id={'labelfor' + popOverId + apiColName}
       />
-      <p>{courseRoundData[apiColName]}</p>
+      <p>{courseRoundData[apiColName]} 
+      {apiColName === 'examinationGrade' ? ' %' : ''}
+      {apiColName === 'examinationGrade' && courseRoundData.examinationGradeFromLadok === false ? ' *' : ''}
+      {apiColName === 'registeredStudents' && courseRoundData.registeredStudentsFromLadok === false ? ' *' : ''}
+      </p>
     </td>
     )
 }

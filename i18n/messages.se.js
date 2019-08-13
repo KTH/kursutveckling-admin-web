@@ -267,11 +267,13 @@ module.exports = {
       registeredStudents: { header: 'Studenter', popoverText: 'Antal förstagångsregistrerade på de kurstillfällen som ingår i kursomgången. Studenter som antagits men som inte registrerats ska inte räknas in. Inte heller registrerade studenter som omregistrerats från ett annat kurstillfälle på samma kurs ska räknas in.' }
     },
     extra_kopps_info: {
+      no_added: 'Ingen information tillagd',
       commentExam: { header: 'Kommentar till examination', popoverText: 'Kommentar till form av examination vid gällande kursomgång.' },
       programmeCodes: { header: 'Obligatorisk inom program', popoverText: '' },
       analysisName: { header: 'Kurstillfällen som ingår i kursomgång', popoverText: 'Alla kurstillfällen som ingick i kursomgången. Studenter är antagna till ett kurstillfälle. Programstudenter, betalande studenter och fristående studenter antas till olika kurstillfällen men kan utbildas i samma kursomgång. Kurstillfällen ska alltså grupperas ihop till en kursomgång. Kursomgången är ett praktiskt genomförande av en kurs. Kursomgången har en gemensam starttidpunkt, gemensam kurstakt och normalt gemensam undervisning för en studentgrupp. Schemat läggs per kursomgång, kurs-PM utformas per kursomgång och kursanalys genomförs per kursomgång.' }
     },
     extra_dates_and_comments: {
+      no_added: 'Ingen information tillagd',
       header_publishing_dates: 'Datum för publicering',
       publishedDate: 'Publicerad första gången',
       changedAfterPublishedDate: 'Senaste ändrad',

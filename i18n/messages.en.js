@@ -271,11 +271,13 @@ module.exports = {
       registeredStudents: { header: 'Students', popoverText: 'Number of registered students are defined as the number of first registration students on all the administrative course instances that are included in the course offering. Admitted students that have not been registered shall not be counted. Neither shall registered students that have been re-registered from a previous administrative course instance counted. Number of registered students is calculated based on information fetched from Ladok.' }
     },
     extra_kopps_info: {
+      no_added: 'No information inserted',
       commentExam: { header: 'Examination comments', popoverText: 'Examination comments for the course offering examination.' },
       programmeCodes: { header: 'Compulsory within programme', popoverText: '' },
       analysisName: { header: 'Administrative course instances included in the course offering', popoverText: 'All the administrative course instances that was included in the course offering. Students are admitted to an administrative course instance. Degree program students and non-programme students are admitted to different administrative course instances but may be educated in the same course offering. A course offering is thereby the practical realisation of the course with a common start date, common pace, common timetable etc. for all students. Several administrative course instances are grouped to one course offering' }
     },
     extra_dates_and_comments: {
+      no_added: 'No information inserted',
       header_publishing_dates: 'Published date',
       // alt_alla: 'It is possible to upload new versions of course analysis and course memos and rewrite changes to this course offering. Look at comments about the purpose of the new versions in this field',
       publishedDate: 'Published first time',

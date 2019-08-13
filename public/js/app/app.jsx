@@ -16,19 +16,9 @@ import { StaticRouter } from 'react-router'
 import RouterStore from './stores/RouterStore'
 //import AdminForm from './views/AdminForm'
 import AdminPage from './views/AdminPage'
+import  '../../css/kursutveckling-web.scss'
 import  '../../css/kursutveckling-admin.scss'
-import { log } from 'util';
 
-/* const routerStore = new RouterStore()
-if (typeof window !== 'undefined') {
-  routerStore.initializeStore('routerStore')
-}
-createUtility({
-  implements: IMobxStore,
-  name: 'RouterStore',
-  store: routerStore
-}).registerWith(globalRegistry)
-//routerStore.initializeStore('routerStore') */
 
 function staticFactory () {
   return (
@@ -52,12 +42,6 @@ function appFactory() {
     routerStore.initializeStore('routerStore')
   }
 
-  /*createUtility({
-    implements: IMobxStore,
-    name: 'RouterStore',
-    store: routerStore
-  }).registerWith(globalRegistry)*/
-
   return (
     <Provider routerStore={routerStore}>
       <Switch>
@@ -76,20 +60,6 @@ function doAllAsyncBefore ({
   routes}) 
 {
   const queryParams = queryString.parse(query)
-
-  /*const matches = routes.map((route) => {
-    const { exact, leaf, path, asyncBefore} = route.props
-    return {
-      match: matchPath(pathname, { path, exact: leaf } ),
-      query: queryParams,
-      asyncBefore
-    }
-  })*/
-
-  /*if (asyncBefore) {
-    return asyncBefore(routerStore, match, query)
-  }*/
-  
   return Promise.resolve()
 }
 

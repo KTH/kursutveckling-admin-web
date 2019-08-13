@@ -1,3 +1,4 @@
+
 import React, { Component } from 'react'
 import { Collapse } from 'reactstrap'
 
@@ -11,7 +12,10 @@ const ExtraKoppsInfo = ({translate, courseRoundObj}) => {
         orderedColumns.map((apiName, index) =>
           <span key={index} className={apiName}>
             <p id={popOverId + index} key={'header-for-' + apiName}><b>{translate[apiName].header}</b></p>
-            <p className='textBlock' dangerouslySetInnerHTML={{__html: courseRoundObj[apiName]}}></p>
+            {courseRoundObj[apiName] === ''
+              ? <p className='textBlock'> <i>{translate.no_added}</i></p>
+              : <p className='textBlock' dangerouslySetInnerHTML={{__html: courseRoundObj[apiName]}}></p>
+            }
           </span>
         )
       }
@@ -23,18 +27,18 @@ const ExtraDatesAndComment = ({translate, courseRoundObj}) => {
     <span>
       <p><b>{translate.header_publishing_dates}</b></p>
       <p>{translate.publishedDate}:&nbsp;{courseRoundObj.publishedDate}</p>
-      <p>{translate.changedAfterPublishedDate}:&nbsp;
-      {courseRoundObj.changedAfterPublishedDate && courseRoundObj.changedAfterPublishedDate !== ''
-        ? courseRoundObj.changedAfterPublishedDate
-        : <i>{translate.no_date_last_changed}</i>
+      {courseRoundObj.commentChange !== ''
+        ? <span>
+          <p>{translate.changedAfterPublishedDate}:&nbsp;{courseRoundObj.changedAfterPublishedDate}</p>
+          <p>{translate.commentChange}:</p>
+          <p>{courseRoundObj.commentChange === ''
+              ? <i>{translate.no_added}</i>
+              : courseRoundObj.commentChange
+              }
+          </p>
+        </span>
+        : <p>{translate.changedAfterPublishedDate}:&nbsp;<i>{translate.no_date_last_changed}</i></p>
       }
-      </p>
-      <p>{translate.commentChange}:</p>
-      <p>{courseRoundObj.commentChange === ''
-          ? '  -  '
-          : courseRoundObj.commentChange
-          }
-      </p>
     </span>
   )
 }
