@@ -56,7 +56,7 @@ module.exports = {
 
     /* **** INTRO TEXT FOR ANALYSIS MENUE, EDIT, PREVIEW */
     intro_analysis_menu: 'Börja med att välja termin och kursomgång för den kursanalys som ska publiceras (steg 1 av 3). I nästa steg (2 av 3) kommer kursdata för kursen att hämtas automatiskt från Ladok och Kopps för den termin och kursomgång som valts. Det finns sedan möjlighet att redigera viss kursdata samt ladda upp kursanalysen. I sista steget (3 av 3) ges möjlighet att först granska och sedan publicera tabellen med kursanalys och all kursdata på sidan Kursens utveckling och historik.',
-    intro_edit: 'I detta steg (2 av 3) så laddas kursanalys och kurs-PM upp, förändringar för vald kursomgång summeras samt en del av kursdata kontrolleras och vid behov justeras när inte stämmer. I nästa steg granskas all kursdata innan publicering.',
+    intro_edit: 'I detta steg (2 av 3) ska kursanalys och kurs-PM laddas upp, förändringar för vald kursomgång summeras samt kursdata kontrolleras och vid behov justeras. I nästa steg granskas all kursdata innan publicering.',
     intro_preview: 'I detta steg (3 av 3) visas hur kursanalys och kursdata kommer att se ut på sidan Kursens utveckling och historik. Här finns möjlighet att gå tillbaka för att redigera ytterligare, spara som utkast eller publicera direkt.',
 
     /* **** INTRO SELECT NEW, DRAFT, PUBLISHED */
@@ -94,22 +94,24 @@ module.exports = {
     header_summarize: 'Summera förändringar', /** Visas i steg 2, rubrik för kolumn 2 */
     header_check_data: 'Kontrollera hämtat data', /** Visas i steg 2, rubrik för kolumn 3 */
 
+    header_mandatory_fields: '* Obligatoriska uppgifter',
     header_programs: 'Obligatorisk inom program',
     header_rounds: 'Kurstillfällen som ingår',
-    header_examiners: 'Examinator ',
+    header_examiners: 'Examinator *',
     header_employees: 'Kursansvarig, Examinator ',
-    header_responsibles: 'Kursansvarig',
-    header_registrated: 'Antal förstagångsregistrerade studenter',
+    header_responsibles: 'Kursansvarig *',
+    header_registrated: 'Antal förstagångsregistrerade studenter *',
     header_examination: 'Form av examination',
     header_examination_comment: 'Kommentar till examination',
-    header_examination_grade: 'Examinationsgrad',
+    header_examination_grade: 'Examinationsgrad *',
     header_course_changes_comment: 'Förändringar som har införts till den här kursomgången',
-    header_analysis_edit_comment: 'Kommentar till ändringar',
-    header_upload_file: 'Kursanalys (endast i fil-formatet PDF)',
+    header_analysis_edit_comment: 'Kommentar till ändringar av publicerad kursanalys eller kursdata *',
+    header_upload_file: 'Kursanalys (endast i fil-formatet PDF) *',
     header_upload_file_pm: 'Kurs-pm (endast i fil-formatet PDF)',
-    header_upload_file_date: 'Edit date for ....', // Semlan
-    header_upload_file_pm_date: 'Edit date for ....', // Semlan
+    header_upload_file_date: 'Publiceringsdatum för kursanalys',
+    header_upload_file_pm_date: 'Publiceringsdatum för kurs-pm',
     last_change_date: 'Senaste ändring:',
+    header_copy_link: 'Kopiera länk till senast sparat utkast',
 
     link_syllabus: 'Kursplan',
     link_analysis: 'Kursanalys',
@@ -120,7 +122,7 @@ module.exports = {
     alert_no_published: 'Det finns ingen publicerad kursanalys och kursdata denna termin',
     alert_saved_draft: 'Utkast för kursanalys och kursdata har sparats',
     alert_empty_fields: 'Du behöver fylla i obligatoriska fält för att gå vidare till Granska och publicera.',
-    alert_uploaded_file: 'Vald fil har laddatas upp',
+    alert_uploaded_file: 'Vald fil har laddatas upp och fått nytt namn',
     alert_not_pdf: 'Vald fil kunde inte laddas upp. Filen måste vara av typen PDF.',
 
     /** ************ MODALS ************** */
@@ -168,68 +170,68 @@ module.exports = {
     },
     /** **** INFO BUTTONS ***** */
     info_select_semester: {
-      header: 'Info',
+      header: 'Välj termin',
       body: 'Välj vilken termin kursomgången startade. Om kursomgången sträcker sig över flera terminer; välj kursomgångens starttermin.',
       btnCancel: 'Close'
     },
     info_choose_course_offering: {
-      header: 'Info',
+      header: 'Välj kursomgång',
       body: 'Välj alla kurstillfällen som ingick i kursomgången. Studenter är antagna till ett kurstillfälle. Programstudenter, betalande studenter och fristående studenter antas till olika kurstillfällen men kan utbildas i samma kursomgång. Kurstillfällen ska alltså grupperas ihop till en kursomgång. Kursomgången är ett praktiskt genomförande av en kurs. Kursomgången har en gemensam starttidpunkt, gemensam kurstakt och normalt gemensam undervisning för en studentgrupp. Schemat läggs per kursomgång, kurs-PM utformas per kursomgång och kursanalys genomförs per kursomgång.',
       btnCancel: 'Close'
     },
 
     info_examination_grade: {
-      header: 'Info',
+      header: 'Examinationsgrad',
       body: 'Examinationsgrad är antal förstagångsregistrerade studenter som godkänts på hela kursomgången efter första examinationstillfället efter kursomgångensslut dividerat med antal förstagångsregistrerade på kursomgången. Examinationsgrad redovisas inte för respektive delmoment i examinationen. Examinationsgrad beräknas inte heller om efter efterföljande omtentor.',
       btnCancel: 'Close'
     },
 
     info_examiners: {
-      header: 'Info',
+      header: 'Examinator',
       body: 'Examinator för kurs vid gällande kursomgång. Examinatorer administreras i Kopps.',
       btnCancel: 'Close'
     },
 
     info_responsibles: {
-      header: 'Info',
+      header: 'Kursansvarig',
       body: 'Samtliga kursansvariga för de kurstillfällen som ingår i kursomgången. Kursansvariga administreras i Kopps.',
       btn_close: 'Close'
     },
 
     info_edit_comments: {
-      header: 'Info',
+      header: 'Ändringar av publicerad kursanalys eller kursdata',
       body: 'Då det är möjligt att ladda upp nya versioner av kursanalys och kursdata är det viktigt att ange vilka förändringar som är gjorda och syftet med ändringarna.',
       btnCancel: 'Close'
     },
 
     info_upload_course_analysis: {
-      header: 'Info',
+      header: 'Ladda upp kursanalys',
       body: 'Ladda upp den senaste versionen av kursanalysen för kursomgången.',
       btnCancel: 'Close'
     },
 
     info_upload_course_memo: {
-      header: 'Info',
+      header: 'Ladda upp kurs-pm',
       body: 'Ladda upp den senaste versionen av kurs-pm för kursomgången.',
       btnCancel: 'Close'
     },
-    info_upload_course_analysis_date: { // Semlan
-      header: 'Info',
-      body: 'Date ....',
+    info_upload_course_analysis_date: {
+      header: 'Publiceringsdatum för kursanalys',
+      body: 'Ange datum för dagen då kursanalysen publiceras. Låt det automatiskt angivna datumet gälla om kursanalysen publiceras för en nyligen avslutad kursomgång. Om kursanalysen redan har varit publicerad, ange datumet då den ursprungligen blev publicerad.',
       btnCancel: 'Close'
     },
-    info_upload_course_memo_date: { // Semlan
-      header: 'Info',
-      body: 'Date ....',
+    info_upload_course_memo_date: {
+      header: 'Publiceringsdatum för kurs-pm',
+      body: 'Ange datum för dagen då kurs-pm:et publiceras. Låt det automatiskt angivna datumet gälla om kurs-pm:et publiceras för en nyligen avslutad kursomgång. Om kurs-pm:et redan har varit publicerad, ange datumet då den ursprungligen blev publicerad.',
       btnCancel: 'Close'
     },
     info_course_changes_comment: {
-      header: 'Info',
-      body: 'Summera förändringar som har införts till den här kursomgången',
+      header: 'Summera förändringar till kursen',
+      body: 'Summerade förändringar som har införts till den här kursomgången. Syftet med att publicera förändringar som infördes till kursen innan kursomgångens start är att visa på hur kursen förbättras och utvecklas över tid. Kursomgångarnas alla dokumenterade förändringar visar på vilka utvecklingssteg kursen har genomgått.',
       btnCancel: 'Close'
     },
     info_registrated: {
-      header: 'Info',
+      header: 'Antal förstagångsregistrerade studenter',
       body: 'Antal förstagångsregistrerade på de kurstillfällen som ingår i kursomgången. Studenter som antagits men som inte registrerats ska inte räknas in. Inte heller registrerade studenter som omregistrerats från ett annat kurstillfälle på samma kurs ska räknas in.',
       btnCancel: 'Close'
     },

@@ -513,7 +513,11 @@ class AnalysisMenu extends Component {
                 {/*                               MODALS FOR DELETE AND COPY                            */}
                 {/************************************************************************************* */}  
                 <InfoModal type = 'delete' toggle= {this.toggleModal} isOpen = {this.state.modalOpen.delete} id={this.state.selectedRadio.draft} handleConfirm={this.handleDelete} infoText={translate.info_delete}/>
-                <InfoModal type = 'copy' toggle= {this.toggleModal} isOpen = {this.state.modalOpen.copy} id={'copy'} url={`${routerStore.browserConfig.hostUrl}${routerStore.browserConfig.proxyPrefixPath.uri}/preview/${this.state.selectedRadio.draft}?title=${encodeURI(routerStore.courseTitle.name+'_'+routerStore.courseTitle.credits)}`} infoText={translate.info_copy_link}/>
+                <InfoModal type = 'copy' toggle= {this.toggleModal} isOpen = {this.state.modalOpen.copy} 
+                id={'copy'} 
+                url={`${routerStore.browserConfig.hostUrl}${routerStore.browserConfig.proxyPrefixPath.uri}/preview/${this.state.selectedRadio.draft}?title=${encodeURI(routerStore.courseTitle.name+'_'+routerStore.courseTitle.credits)}`} 
+                infoText={translate.info_copy_link}
+                copyHeader = {translate.header_copy_link}/>
             </div>
         )
     }

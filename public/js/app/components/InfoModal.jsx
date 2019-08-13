@@ -20,7 +20,7 @@ class InfoModal extends Component {
 
 
   render () {
-    const { fade, isOpen, toggle, className, type, infoText, id, url } = this.props
+    const { fade, isOpen, toggle, className, type, infoText, id, url, copyHeader } = this.props
     const fadeModal = (this.props.hasOwnProperty('fade') ? fade : true)
 
       return (
@@ -34,7 +34,7 @@ class InfoModal extends Component {
             <ModalHeader toggle={toggle}>{infoText.header}</ModalHeader>
             <ModalBody>
               {type=== 'copy'
-                ? <CopyText textToCopy={url} />
+                ? <CopyText textToCopy={url} header = {copyHeader} />
                 : <p dangerouslySetInnerHTML={{ __html:infoText.body}}/>
               }
             </ModalBody>

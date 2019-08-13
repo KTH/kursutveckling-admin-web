@@ -514,11 +514,13 @@ class AdminPage extends Component {
 
                 {/* Semester and name of analysis */}
                 <h2>{translate.header_edit_content}</h2>
-                <h3>{translate.header_semester} {
+                <p> <b>{translate.header_semester} </b>{
                   `${translate.course_short_semester[this.state.values.semester.toString().match(/.{1,4}/g)[1]]} 
                                     ${this.state.values.semester.toString().match(/.{1,4}/g)[0]}`
-                  }</h3>
-                <h3>{translate.header_course_offering} {this.state.values.analysisName}</h3>
+                  }
+                 <b> {translate.header_course_offering}</b> {this.state.values.analysisName}</p>
+
+                <p>{translate.header_mandatory_fields}</p>
               
                 {/* ALERTS */}
                 {this.state.alert.length > 0 
@@ -564,8 +566,8 @@ class AdminPage extends Component {
                          <Input id='pdfAnalysisDate' key='pdfAnalysisDate' type='date' 
                            value={this.state.values.pdfAnalysisDate} 
                            onChange={this.handleInputChange} 
-                           className = {this.state.notValid.indexOf('pdfAnalysisDate') > -1 ? 'not-valid' : ''}
-    
+                           className = {this.state.notValid.indexOf('pdfAnalysisDate') > -1 ? 'not-valid ' : ''}
+                           style = {{ maxWidth: '180px'}}
                           />
                            </span>
                         : ''
@@ -592,6 +594,7 @@ class AdminPage extends Component {
                            value={this.state.values.pdfPMDate} 
                            onChange={this.handleInputChange} 
                            className = {this.state.notValid.indexOf('pdfPMDate') > -1 ? 'not-valid' : ''}
+                           style = {{ maxWidth: '180px'}}
                            />
                            </span>
                         : ''
@@ -612,7 +615,6 @@ class AdminPage extends Component {
                   {/* FORM - THIRD COLUMN */}
                   <Col sm='4' className='col-form'>
                     <h4>{translate.header_check_data}</h4>
-                    <p>{translate.asterix_text}</p>
 
                     <FormLabel translate = {translate} header = {'header_registrated'} id = {'info_registrated'} />
                     <Input id='registeredStudents' key='registeredStudents' type='number' 
@@ -648,7 +650,10 @@ class AdminPage extends Component {
 
                       { isPublished
                         ? <span>
-                          <FormLabel translate = {translate} header = {'header_analysis_edit_comment'} id = {'info_edit_comments'} />
+                          <div className='inline-flex'>
+                                    <h4>{translate.header_analysis_edit_comment}</h4>
+                                    <InfoButton addClass = 'padding-top-30' id = 'info_edit_comments' textObj = {translate.info_edit_comments}/>
+                                </div>
                           <Input id='commentChange' key='commentChange' type="textarea" 
                             value={this.state.values.commentChange} 
                             onChange={this.handleInputChange} 
@@ -670,7 +675,10 @@ class AdminPage extends Component {
                                         routerStore.browserConfig.proxyPrefixPath.uri + '/preview/' +   
                                         routerStore.analysisId + '?title=' + encodeURI(routerStore.courseTitle.name+'_'+
                                         routerStore.courseTitle.credits)
-                                      } />
+                                           
+                                      } 
+                          header = {translate.header_copy_link}     
+                />
               : ''
             }
              
@@ -734,7 +742,7 @@ class AdminPage extends Component {
 const FormLabel = ({ translate, header, id }) => {
   return(
     <span className='inline-flex'>
-      <Label>{translate[header]} *</Label>
+      <Label>{translate[header]} </Label>
       <InfoButton id = {id} textObj = {translate[id]}/>
     </span>
   )

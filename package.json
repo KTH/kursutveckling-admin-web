@@ -122,14 +122,5 @@
     "hooks": {
       "pre-push": "npm run codecheck && npm run test"
     }
-  },
-  "browserslist": {
-    "production": [
-      "not dead",
-      "ie 11"
-    ],
-    "development": [
-      "ie 11"
-    ]
   }
 }

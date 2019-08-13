@@ -18,14 +18,17 @@ class CopyText extends Component {
     
     render(){
         return(
-            <InputGroup>
-                <Input type ="text" value = {this.props.textToCopy} readOnly={true} />
-                <InputGroupAddon addonType="append">
-                    <Button color="secondary" className = 'copy-btn' onClick={this.handleCopy}>
-                        <span className='icon-copy'></span>
-                    </Button>
-                </InputGroupAddon>
-            </InputGroup>
+            <div>
+                <h4> {this.props.header} </h4>
+                <InputGroup>
+                    <Input type ="text" value = {this.props.textToCopy} readOnly={true} />
+                    <InputGroupAddon addonType="append">
+                        <Button color="secondary" className = 'copy-btn' onClick={this.handleCopy}>
+                            <span className='icon-copy'></span>
+                        </Button>
+                    </InputGroupAddon>
+                </InputGroup>
+            </div>
         )
     }
 }

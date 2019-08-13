@@ -1,6 +1,6 @@
 'use strict'
-import 'react-app-polyfill/ie11'
-import 'react-app-polyfill/stable'
+//import 'react-app-polyfill/ie11'
+//import 'react-app-polyfill/stable'
 
 
 import React from 'react'

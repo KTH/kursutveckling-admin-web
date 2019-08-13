@@ -36,8 +36,8 @@ padding-top: 10px;
   & > .form-group {
     margin-bottom: 1rem;
     margin-top: 30px;
-    border: 1px solid #e6e6e6;
-    border-radius: 5px;
+    /*border: 1px solid #e6e6e6;
+    border-radius: 5px;*/
   }
 }
 
@@ -80,7 +80,8 @@ padding-top: 10px;
 
 #analysisMenuContainer{
   padding-top: 30px;
-  border-top: 1px solid #ddd;
+ // border-top: 1px solid #ddd;
+ padding-left:10px;
   margin-top: 20px;
   & > .collapse{
     padding-left: 15px;
@@ -92,7 +93,7 @@ padding-top: 10px;
 .select-semester{
   width: 100%;
   max-width: 370px;
-  padding-top: 30px;
+  margin-top: -30px;
   & > .btn{
       background-color: #f6f6f6;
       border: 1px solid $light-grey;
@@ -145,6 +146,10 @@ ul.no-padding-left{
 .form-control {
   margin-bottom: 10px;
 }
+.dateInput{
+  max-width: 170px;
+}
+
 
 
 .not-valid{

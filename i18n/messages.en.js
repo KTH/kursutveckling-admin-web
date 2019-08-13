@@ -15,7 +15,7 @@ module.exports = {
      * Message keys
      */
     service_name: 'kurs ',
-    title: 'Course analyses administration',
+    title: 'Course analysis administration',
 
     lang_block_id: '1.272446',
     locale_text: 'Course information in English',
@@ -44,7 +44,7 @@ module.exports = {
 
     //* **** INTRO TEXT FOR ANALYSIS MENUE, EDIT, PREVIEW */
     intro_analysis_menu: 'Choose a semester and a course offering for the course analysis to be published (step 1 of 3). In the next step (2 of 3), course data will be fetched automatically for the selected semester and course offering. It is there possible to edit some of the course data and upload a course analysis document. Preview the table with the course data and course analysis that are about to be published in the last step (3 of 3). The course data with the course analysis will then be published on the page Course development and history.',
-    intro_edit: 'In this step (2 of 3) course analysis and course memo are uploaded, changes to the chosen course offering is summarized and some of the course data are reviewed and adjusted if not correct.',
+    intro_edit: 'In this step (2 of 3) course analysis and course memo shall be uploaded, changes to the chosen course offering is summarized and some of the course data are reviewed and adjusted.',
     intro_preview: 'In this step (3 of 3) a preview of the course analysis with course data is presented as it will be published on the page Course development and history. It is possible to go back to make adjustments, to save a draft or publish the information.',
 
     //* **** INTRO SELECT NEW, DRAFT, PUBLISHED */
@@ -76,6 +76,7 @@ module.exports = {
 
     asterix_text: '* Data cannot be changed after published',
 
+    header_mandatory_fields: '* Mandatory fields',
     header_semester: 'Semester: ', /** Visas i steg 2, följt av kursomgångens starttermin */
     header_course_offering: 'Course offering:', /** Visas i steg 2, följt av kursomgångens namn */
     header_upload: 'Upload', /** Visas i steg 2, rubrik för kolumn 1 */
@@ -85,22 +86,23 @@ module.exports = {
     // header_course_offering: 'Upload course analysis and edit course data for:',
     header_programs: 'Compulsory within programme',
     header_rounds: 'Administrative course instances included in the course offering',
-    header_examiners: 'Examiner ',
+    header_examiners: 'Examiner *',
     // header_employees: 'Kursansvarig, Examinator ',
-    header_responsibles: 'Course responsible',
-    header_registrated: 'Number of first registered students',
+    header_responsibles: 'Course responsible *',
+    header_registrated: 'Number of first registered students *',
     header_examination: 'Examination',
     header_examination_comment: 'Examination comments',
-    header_examination_grade: 'Graduation rate',
+    header_examination_grade: 'Graduation rate *',
     header_course_changes_comment: 'Changes of the course before this course offering',
-    header_analysis_edit_comment: 'Comments to changes in course data or course analysis after published.',
-    header_upload_file: 'Course analysis (only as PDF file format)',
+    header_analysis_edit_comment: 'Comments to changes in course data or course analysis after published *',
+    header_upload_file: 'Course analysis (only as PDF file format) *',
     header_upload_file_pm: 'Course memo (only as PDF file format)',
-    header_upload_file_date: 'Edit date for ....', // Semlan
-    header_upload_file_pm_date: 'Edit date for ....', // Semlan
+    header_upload_file_date: 'Publish date of course analysis *',
+    header_upload_file_pm_date: 'Publish date of course memo *',
     header_more_information: 'More information', // ?
     header_publish_dates: 'Date of published course analysis with course data', // ?
     header_results: 'Results', // ?
+    header_copy_link: 'Copy link to last saved draft',
 
     last_change_date: 'Last time changed: ',
     no_changes: 'No changes since first published',
@@ -108,7 +110,7 @@ module.exports = {
 
     link_syllabus: 'Course syllabus ', /** Followed by ([giltighetstermin år] – [sista giltighetstermin år]) */
     link_pm: 'Course memo',
-    link_analysis: 'Course anlaysis ', /** Followed by [dd/mm/yyyy] */
+    link_analysis: 'Course analysis ', /** Followed by [dd/mm/yyyy] */
 
     /** draft_empty: 'Det finns inga sparade utkast för vald termin', */
     /** published_empty: 'There are no published course analysis and course data this semester.', */
@@ -120,7 +122,7 @@ module.exports = {
     alert_no_published: 'There are no published course analysis and course data this semester.',
     alert_saved_draft: 'A draft of course analysis and course data have been saved',
     alert_empty_fields: 'All mandatory fields must contain information before proceeding to Review and publish.',
-    alert_uploaded_file: 'Selected file has been uploaded',
+    alert_uploaded_file: 'Selected file has been uploaded and been given a new file name',
     alert_not_pdf: 'The specified file could not be uploaded. The file format must be PDF.',
 
     /** ************ MODALS ************** */
@@ -161,69 +163,69 @@ module.exports = {
 
     /** **** INFO BUTTONS ***** */
     info_select_semester: {
-      header: 'Info',
+      header: 'Choose semester',
       body: 'Choose what semester the course offering started. If the course offering stretched over several semesters then choose the first semester.',
       btnCancel: 'Close'
     },
     info_choose_course_offering: {
-      header: 'Info',
+      header: 'Choose course offering',
       body: 'Choose all the administrative course instances that was included in the course offering. Students are admitted to an administrative course instance. Degree program students and non-programme students are admitted to different administrative course instances but may be educated in the same course offering. A course offering is thereby the practical realisation of the course with a common start date, common pace, common timetable etc. for all students. Several administrative course instances are grouped to one course offering.',
       btnCancel: 'Close'
     },
 
     info_registrated: {
-      header: 'Info',
+      header: 'First time registered students',
       body: 'Number of registered students are defined as the number of first registration students on all the administrative course instances that are included in the course offering. Admitted students that have not been registered shall not be counted. Neither shall registered students that have been re-registered from a previous administrative course instance counted. Number of registered students is calculated based on information fetched from Ladok.',
       btnCancel: 'Close'
     },
 
     info_examination_grade: {
-      header: 'Info',
+      header: 'Examination grade',
       body: 'Graduation rate is defined as the number of passed first registration students on the whole course divided by the number of registered student (as defined above) after the first ordinary examination after the end date of the course offering. Graduation rate is not calculated for each examination session in the course examination set. Neither is it recalculated after each following re-examination. Graduation rate is calculated based on information fetched from Ladok.',
       btnCancel: 'Close'
     },
 
     info_examiners: {
-      header: 'Info',
+      header: 'Examiners',
       body: 'The examiners of the course at the time of the course offering. Examiners are administrated in Kopps.',
       btnCancel: 'Close'
     },
 
     info_responsibles: {
-      header: 'Info',
+      header: 'Course responsibles',
       body: 'All the course responsibles for all the administrative course instances that are included in the course offering. Course responsibles are administrated in Kopps.',
       btn_close: 'Close'
     },
 
     info_edit_comments: {
-      header: 'Info',
+      header: 'Comments to changes',
       body: 'It is possible to upload new versions of course analysis and course memos and rewrite changes to this course offering. Comment the purpose of the new versions in this field.',
       btnCancel: 'Close'
     },
     info_upload_course_analysis: {
-      header: 'Info',
+      header: 'Upload course analysis',
       body: 'Upload the latest version of the course analysis for the course offering.',
       btnCancel: 'Close'
     },
     info_upload_course_memo: {
-      header: 'Info',
+      header: 'Upload course memo',
       body: 'Upload the latest version of the course memo for the course offering.',
       btnCancel: 'Close'
     },
     info_upload_course_analysis_date: { // Semlan
-      header: 'Info',
-      body: 'Date ....',
+      header: 'Publish date of course analysis',
+      body: 'The date of when the course analysis is published. Leave the automatically proposed date if the course analysis is published for a recently finished course offering. If the course analysis has previously been published, use the date when it was originally published.',
       btnCancel: 'Close'
     },
     info_upload_course_memo_date: { // Semlan
-      header: 'Info',
-      body: 'Date ....',
+      header: 'Publish date of course memo',
+      body: 'The date of when the course memo is published. Leave the automatically proposed date if the course memo is published for a recently finished course offering. If the course memo has previously been published, use the date when it was originally published.',
       btnCancel: 'Close'
     },
 
     info_course_changes_comment: {
-      header: 'Info',
-      body: 'Summarize the changes made to the course before this particular course offering.',
+      header: 'Summarize changes to the course',
+      body: 'Summarized changes made to the course before this particular course offering. The purpose of publishing changes made to the course is to show the improvements of the course over time. All changes documented to the course offerings gives an overview of the improvement steps of the course.',
       btnCancel: 'Close'
     },
     info_registrated: {
@@ -282,12 +284,8 @@ module.exports = {
       no_date_last_changed: 'No changes since first published.'
     },
     header_more_info: 'More information',
-    no_course_analys: 'Course analyses with course data is not available yet.',
+    no_course_analys: 'Course analysis with course data is not available yet.',
     // no_pdf_document: 'not found',
-    popover_more_info: 'More information',
-    course_short_semester: {
-      1: 'Spring ',
-      2: 'Autumn '
-    }
+    popover_more_info: 'More information'
   }
 }
