@@ -215,8 +215,8 @@ server.use('/', systemRoute.getRouter())
 
 // App routes
 const appRoute = AppRouter()
-appRoute.get('system.index', config.proxyPrefixPath.uri + '/:id', serverLogin, requireRole('isCourseResponsible', 'isExaminator' , 'isSuperUser'), Admin.getIndex)
-appRoute.get('system.index', config.proxyPrefixPath.uri + '/:preview/:id', serverLogin, requireRole('isCourseResponsible', 'isExaminator', /* 'isSuperUser', */'isCourseTeacher'), Admin.getIndex)
+appRoute.get('system.index', config.proxyPrefixPath.uri + '/:id', serverLogin, requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser'), Admin.getIndex)
+appRoute.get('system.index', config.proxyPrefixPath.uri + '/:preview/:id', serverLogin, requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isCourseTeacher'), Admin.getIndex)
 appRoute.get('system.gateway', config.proxyPrefixPath.uri + '/gateway', getServerGatewayLogin('/'), requireRole('isAdmin'), Admin.getIndex)
 
 appRoute.get('api.kursutvecklingGetById', config.proxyPrefixPath.uri + '/apicall/getRoundAnalysisById/:id', Admin.getRoundAnalysis)

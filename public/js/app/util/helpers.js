@@ -1,5 +1,6 @@
 'use strict'
 import '@babel/polyfill'
+import { SUPERUSER_PART } from './constants'
 
 const getDateFormat = (date, language) => {
   if (language === 'Svenska' || language === 'Engelska' || language === 1 || language === 'sv') {
@@ -59,7 +60,7 @@ const noAccessToRoundsList = (memberOf, rounds, courseCode, semester) => {
 }
 
 const getAccess = (memberOf, round, courseCode, semester) => {
-  if (memberOf.toString().indexOf(courseCode.toUpperCase() + '.examiner') > -1 || memberOf.toString().indexOf('.kursinfo-admins') > -1) {
+  if (memberOf.toString().indexOf(courseCode.toUpperCase() + '.examiner') > -1 || memberOf.toString().indexOf(SUPERUSER_PART) > -1) {
     return true
   }
 

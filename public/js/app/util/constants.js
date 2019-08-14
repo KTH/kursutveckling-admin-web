@@ -23,3 +23,4 @@ export const LANGUAGE = {
     svenska: 'svenska'
   }
 }
+export const SUPERUSER_PART = 'kursinfo-admins'
