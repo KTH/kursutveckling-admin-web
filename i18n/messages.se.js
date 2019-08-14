@@ -85,7 +85,7 @@ module.exports = {
     btn_copy: 'Kopiera länk till utkast',
 
     /** ************ PAGE 2 FORM ************** */
-    asterix_text: '* Kommer inte att kunna ändras efter publicering',
+    asterix_text: 'Kommer inte att kunna ändras efter publicering',
 
     header_semester: 'Termin:', /** Visas i steg 2, följt av kursomgångens starttermin */
     header_course_offering: 'Kursomgång:', /** Visas i steg 2, följt av kursomgångens namn */

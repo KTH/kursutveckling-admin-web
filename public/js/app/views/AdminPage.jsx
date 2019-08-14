@@ -615,7 +615,7 @@ class AdminPage extends Component {
                   {/* FORM - THIRD COLUMN */}
                   <Col sm='4' className='col-form'>
                     <h4>{translate.header_check_data}</h4>
-
+                    <p>{translate.asterix_text}</p>
                     <FormLabel translate = {translate} header = {'header_registrated'} id = {'info_registrated'} />
                     <Input id='registeredStudents' key='registeredStudents' type='number' 
                       placeholder = '0' 

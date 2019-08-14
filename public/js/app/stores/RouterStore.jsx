@@ -1,12 +1,9 @@
 'use strict'
 import { observable, action } from 'mobx'
 import axios from 'axios'
-import { safeGet } from 'safe-utils'
 import { EMPTY, SEMESTER } from '../util/constants'
 import { getDateFormat, getLanguageToUse, getAccess } from '../util/helpers'
-//const log = require('kth-node-log')
-//import { createDynamicObservableObject } from 'mobx/lib/internal';
-//import i18n from '../../../../i18n'
+
 const paramRegex = /\/(:[^\/\s]*)/g
 
 function _paramReplace(path, params) {
@@ -45,6 +42,7 @@ class RouterStore {
   member = []
   roundAccess = {}
   user =''
+  
 
   buildApiUrl(path, params) {
     let host
@@ -302,7 +300,7 @@ class RouterStore {
       }
       this.courseTitle = {
         name: courseObject.course.title[this.language === 0 ? 'en' : 'sv'],
-        credits: courseObject.course.credits
+        credits: courseObject.course.credits.toString().indexOf('.') < 0 ? courseObject.course.credits + '.0' : courseObject.course.credits
       }
 
       for(let semester = 0; semester < courseObject.termsWithCourseRounds.length; semester ++){
@@ -404,7 +402,7 @@ class RouterStore {
 
 
   createAnalysisName(newName, roundList, selectedRounds, language) {
-    // Creates the analysis name based on shortname, semester, start date from selevted round(s)
+    // -- Creates the analysis name based on shortname, semester, start date from selected round(s) --//
     let addRounds = []
     let tempName = ''
     let thisRoundLanguage = ''
@@ -461,7 +459,7 @@ class RouterStore {
       let examString = []
       const language = roundLang === 'en' ? 0 : 1
       for (let exam of examObject) {
-        //* * Adding a decimal if it's missing in credits **/
+        // -- Adding a decimal if it's missing in credits -- /
         exam.credits = exam.credits !== EMPTY[language] && exam.credits.toString().length === 1 ? exam.credits + '.0' : exam.credits
 
         examString.push(`${exam.examCode};${exam.title[roundLang]};${language === 0 ? exam.credits : exam.credits.toString().replace('.', ',')};${language === 0 ? 'credits' : 'hp'};${language === 0 ? 'Grading scale' : 'Betygsskala'};${grades[exam.gradeScaleCode]}              
@@ -502,14 +500,14 @@ class RouterStore {
     return list
   }
 
-  getMemberOf(memberOf, id, ldapUsername){
+  getMemberOf(memberOf, id, ldapUsername, superUser){
     if (id.length > 7) {
       let splitId = id.split('_')
       this.courseCode = splitId[0].length > 12 ? id.slice(0, 7).toUpperCase() : id.slice(0, 6).toUpperCase()
     } else {
       this.courseCode = id.toUpperCase()
     }
-    this.member = memberOf.filter((member) => member.indexOf(this.courseCode) > -1)
+    this.member = memberOf.filter((member) => member.indexOf(this.courseCode) > -1 || member.indexOf(superUser) > -1)
     this.user = ldapUsername
   }
 

@@ -67,7 +67,7 @@ module.exports = {
 
   // Authentication
   auth: {
-    adminGroup: 'app.node.admin'
+    superuserGroup: 'app.kursinfo.kursinfo-admins'
   },
   cas: {
     ssoBaseURL: getEnv('CAS_SSO_URI', devSsoBaseURL)

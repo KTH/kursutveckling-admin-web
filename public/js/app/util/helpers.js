@@ -59,7 +59,7 @@ const noAccessToRoundsList = (memberOf, rounds, courseCode, semester) => {
 }
 
 const getAccess = (memberOf, round, courseCode, semester) => {
-  if (memberOf.toString().indexOf(courseCode.toUpperCase() + '.examiner') > -1) {
+  if (memberOf.toString().indexOf(courseCode.toUpperCase() + '.examiner') > -1 || memberOf.toString().indexOf('.kursinfo-admins') > -1) {
     return true
   }
 
