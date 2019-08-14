@@ -99,6 +99,7 @@ class AnalysisMenu extends Component {
         }
         else{
             prevState.rounds.splice(this.state.rounds.indexOf(event.target.id), 1)
+            prevState.temporaryData = undefined
             this.setState(prevState)
         }
     }
@@ -300,8 +301,8 @@ class AnalysisMenu extends Component {
         const showAllEmptyPublished = status === 'published' && this.state.publishedAnalysis.length === 0 
 
         if (routerStore.browserConfig.env === 'dev'){
-            console.log("this.props", this.props)
-            console.log("this.state", this.state)
+            console.log("this.props - AnalysisMenu" , this.props)
+            console.log("this.state - AnalysisMenu", this.state)
         }
         return (
             <div id="YearAndRounds">

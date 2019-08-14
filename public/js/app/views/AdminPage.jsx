@@ -427,8 +427,8 @@ class AdminPage extends Component {
     const translate = i18n.messages[routerStore.language].messages
  
     if (routerStore.browserConfig.env === 'dev'){
-      console.log("routerStore1", routerStore)
-      console.log("this.state1", this.state)
+      console.log("routerStore - AdminPage", routerStore)
+      console.log("this.state - AdminPage", this.state)
     }
     if (routerStore.analysisData === undefined || this.state.progress === 'back_new')
       return (
