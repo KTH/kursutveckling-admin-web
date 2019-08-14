@@ -477,7 +477,7 @@ class AnalysisMenu extends Component {
                     <Col sm="12" lg="4">
                         { this.state.selectedRadio.draft.length > 0 && !this.state.canOnlyPreview
                             ? <span>
-                                <Button color='danger' id='delete' key='delete' onClick={this.toggleModal} >
+                                <Button color='danger' id='delete' key='delete' onClick={this.toggleModal} style={{marginRight: '5px'}}>
                                     {translate.btn_delete}
                                 </Button>
                                 <Button color='secondary' id='copy' key='copy' onClick={this.toggleModal} >
