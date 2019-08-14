@@ -33,40 +33,7 @@ module.exports = {
   deleteFileInStorage: co.wrap(_deleteFileInStorage)
 }
 
-function * _saveFileToStorage (req, res, next) {
-  log.info('Saving uploaded file to storage ' + req.files.file)
-  let file = req.files.file
-  try {
-    const fileName = yield runBlobStorage(file, req.params.analysisid, req.params.type, req.params.published, req.body)
-    return httpResponse.json(res, fileName)
-  } catch (error) {
-    log.error('Exception from saveFileToStorage ', { error: error })
-    next(error)
-  }
-}
-
-function * _updateFileInStorage (req, res, next) {
-  log.info('_updateFileInStorage file name:' + req.params.fileName + ', metadata:' + req.body.params.metadata)
-  try {
-    const response = yield updateMetaData(req.params.fileName, req.body.params.metadata)
-    return httpResponse.json(res, response)
-  } catch (error) {
-    log.error('Exception from updateFileInStorage ', { error: error })
-    next(error)
-  }
-}
-
-function * _deleteFileInStorage (res, req, next) {
-  log.debug('_deleteFileInStorage, id:' + req.req.params.id)
-  try {
-    const response = yield deleteBlob(req.req.params.id)
-    log.debug('_deleteFileInStorage, id:', response)
-    return httpResponse.json(res.res)
-  } catch (error) {
-    log.error('Exception from _deleteFileInStorage ', { error: error })
-    next(error)
-  }
-}
+// ------- ANALYSES FROM KURSUTVECKLING-API: POST, GET, DELETE, GET USED ROUNDS ------- /
 
 function * _postRoundAnalysis (req, res, next) {
   const roundAnalysisId = req.params.id
@@ -114,19 +81,6 @@ function * _deleteRoundAnalysis (req, res, next) {
   }
 }
 
-function * _getKoppsCourseData (req, res, next) {
-  const courseCode = req.params.courseCode
-  const language = req.params.language || 'sv'
-  log.info('_getKoppsCourseData with code:' + courseCode)
-  try {
-    const apiResponse = yield koppsCourseData.getKoppsCourseData(courseCode, language)
-    return httpResponse.json(res, apiResponse.body)
-  } catch (err) {
-    log.error('Exception from koppsAPI ', { error: err })
-    next(err)
-  }
-}
-
 function * _getUsedRounds (req, res, next) {
   const courseCode = req.params.courseCode
   const semester = req.params.semester
@@ -141,6 +95,57 @@ function * _getUsedRounds (req, res, next) {
   }
 }
 
+// ------- COURSE DATA FROM KOPPS-API   ------- /
+function * _getKoppsCourseData (req, res, next) {
+  const courseCode = req.params.courseCode
+  const language = req.params.language || 'sv'
+  log.info('_getKoppsCourseData with code:' + courseCode)
+  try {
+    const apiResponse = yield koppsCourseData.getKoppsCourseData(courseCode, language)
+    return httpResponse.json(res, apiResponse.body)
+  } catch (err) {
+    log.error('Exception from koppsAPI ', { error: err })
+    next(err)
+  }
+}
+
+// ------- FILES IN BLOB STORAGE: SAVE, UPDATE, DELETE ------- /
+function * _saveFileToStorage (req, res, next) {
+  log.info('Saving uploaded file to storage ' + req.files.file)
+  let file = req.files.file
+  try {
+    const fileName = yield runBlobStorage(file, req.params.analysisid, req.params.type, req.params.published, req.body)
+    return httpResponse.json(res, fileName)
+  } catch (error) {
+    log.error('Exception from saveFileToStorage ', { error: error })
+    next(error)
+  }
+}
+
+function * _updateFileInStorage (req, res, next) {
+  log.info('_updateFileInStorage file name:' + req.params.fileName + ', metadata:' + req.body.params.metadata)
+  try {
+    const response = yield updateMetaData(req.params.fileName, req.body.params.metadata)
+    return httpResponse.json(res, response)
+  } catch (error) {
+    log.error('Exception from updateFileInStorage ', { error: error })
+    next(error)
+  }
+}
+
+function * _deleteFileInStorage (res, req, next) {
+  log.debug('_deleteFileInStorage, id:' + req.req.params.id)
+  try {
+    const response = yield deleteBlob(req.req.params.id)
+    log.debug('_deleteFileInStorage, id:', response)
+    return httpResponse.json(res.res)
+  } catch (error) {
+    log.error('Exception from _deleteFileInStorage ', { error: error })
+    next(error)
+  }
+}
+
+// ------- EXAMINATOR AND RESPONSIBLES FROM UG-REDIS: ------- /
 function * _getCourseEmployees (req, res, next) {
   let key = req.params.key
   key = key.replace(/_/g, '.')
@@ -170,8 +175,7 @@ function * _getCourseEmployees (req, res, next) {
 }
 
 async function getIndex (req, res, next) {
-  /** ******** CHECK OF CONNECTION TO API AND ugRedis ****** */
-
+  /** ------- CHECK OF CONNECTION TO API AND UG_REDIS ------- */
   if (api.kursutvecklingApi.connected === false) {
     log.error('No connection to kursutveckling-api', api.kursutvecklingApi)
     const error = new Error('API - ERR_CONNECTION_REFUSED')
@@ -201,15 +205,14 @@ async function getIndex (req, res, next) {
 
   try {
     const renderProps = staticFactory()
-    /* ********* Settings ****** */
+    /* ------- Settings ------- */
 
     renderProps.props.children.props.routerStore.setBrowserConfig(browserConfig, paths, serverConfig.hostUrl, service)
     renderProps.props.children.props.routerStore.setLanguage(lang)
     renderProps.props.children.props.routerStore.setService(service)
     await renderProps.props.children.props.routerStore.getMemberOf(req.session.authUser.memberOf, req.params.id.toUpperCase(), req.session.authUser.username, serverConfig.auth.superuserGroup)
     if (req.params.id.length <= 7) {
-    /** ******** Got course code -> prepare for Page 1 depending on status (draft or published) ****** */
-
+    /** ------- Got course code -> prepare for Page 1 depending on status (draft or published) ------- */
       log.debug(' getIndex, get course data for : ' + req.params.id)
       const apiResponse = await koppsCourseData.getKoppsCourseData(req.params.id.toUpperCase(), lang)
       if (apiResponse.statusCode >= 400) {
@@ -219,8 +222,7 @@ async function getIndex (req, res, next) {
         await renderProps.props.children.props.routerStore.handleCourseData(apiResponse.body, req.params.id.toUpperCase(), ldapUser, lang)
       }
     } else {
-    /** ******** Got analysisId  ****** */
-
+      /** ------- Got analysisId  -> request analysis data from api ------- */
       log.debug(' getIndex, get analysis data for : ' + req.params.id)
       const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(req.params.id.toUpperCase(), lang)
       if (apiResponse.statusCode >= 400) {
@@ -229,36 +231,28 @@ async function getIndex (req, res, next) {
         renderProps.props.children.props.routerStore.analysisId = req.params.id
         renderProps.props.children.props.routerStore.analysisData = apiResponse.body
 
-        /** ******** Setting status ****** */
+        /** ------- Setting status ------- */
         status = req.params.preview && req.params.preview === 'preview' ? 'preview' : status
         switch (status) {
           case 'p' : renderProps.props.children.props.routerStore.status = 'published'
             break
           case 'n' : renderProps.props.children.props.routerStore.status = 'draft'
             break
-          case 'preview' : renderProps.props.children.props.routerStore.status = 'preview'
-            break
           default : renderProps.props.children.props.routerStore.status = 'draft'
         }
-        log.debug(' getIndex, has status : ' + status)
+        log.debug(' getIndex, status set to: ' + status)
 
-        /** ******** Creating title  ****** */
+        /** ------- Creating title  ------- */
         renderProps.props.children.props.routerStore.setCourseTitle(courseTitle.length > 0 ? decodeURIComponent(courseTitle) : '')
       }
     }
     renderProps.props.children.props.routerStore.__SSR__setCookieHeader(req.headers.cookie)
 
-    /* const breadcrumDepartment = await renderProps.props.children.props.routerStore.getBreadcrumbs()
-    let breadcrumbs = [
-      { url: '', label: i18n.message('page_course_programme', lang) }
-    ]
-    breadcrumbs.push(breadcrumDepartment) */
-
     const html = ReactDOMServer.renderToString(renderProps)
 
     res.render('admin/index', {
-      // breadcrumbsPath: breadcrumbs,
       debug: 'debug' in req.query,
+      instrumentationKey: serverConfig.appInsights.instrumentationKey,
       html: html,
       title: i18n.messages[lang === 'en' ? 0 : 1].messages.title,
       initialState: JSON.stringify(hydrateStores(renderProps)),
