@@ -342,7 +342,7 @@ class AnalysisMenu extends Component {
                         )}
                     </DropdownMenu>
                 </Dropdown>
-                <br />
+              
                 {this.state.alert.length > 0
                     ? <Alert color='danger' className = 'margin-bottom-40'> {this.state.alert}</Alert>
                     : ''
@@ -364,13 +364,12 @@ class AnalysisMenu extends Component {
                                 </div>
                    
                                 {status === 'new' || status === 'draft' 
-                                    ? <span>
-                                        <FormGroup>
+                                    ? <div className= 'selectBlock'>
                                         {/************************************************************************************* */}
                                         {/*                              DRAFT ANALYSIS                                          */}
                                         {/************************************************************************************* */}
                                         {this.state.draftAnalysis.length > 0
-                                        ?<span>
+                                        ?<FormGroup id='drafts'>
                                             <p>{translate.intro_draft}</p>
                                             <ul className='no-padding-left'>
                                             {this.state.draftAnalysis.map(analysis =>
@@ -390,17 +389,17 @@ class AnalysisMenu extends Component {
                                                 </li>
                                             )}
                                             </ul>
-                                        </span> 
+                                        </FormGroup>
                                         : ''
                                     }
-                                    </FormGroup>
+                                    
                            
-                                    <FormGroup >
+                                    
                                     {/************************************************************************************* */}
                                     {/*                               NEW ANALYSIS                                          */}
                                     {/************************************************************************************* */}
                                         {roundList[this.state.semester].length > this.state.usedRounds.length
-                                            ?  <div className = 'padding-top-30'>
+                                            ? <FormGroup id='rounds'>
                                                 <p>{translate.intro_new}</p>
                                                 <ul className='no-padding-left'> 
                                                     {roundList[this.state.semester].map(round =>
@@ -431,12 +430,13 @@ class AnalysisMenu extends Component {
                                                         : ''
                                                     )}
                                                 </ul>
-                                            </div>
+                                            </FormGroup>
                                             : ''
                                         }
-                                    </FormGroup>
-                                </span>
-                                : <FormGroup >
+                                   
+                                </div>
+                                : <div className= 'selectBlock'>
+                                    <FormGroup >
                                     {/************************************************************************************* */}
                                     {/*                               PUBLISHED ANALYSIS                                    */}
                                     {/************************************************************************************* */}
@@ -466,6 +466,7 @@ class AnalysisMenu extends Component {
                                             : <p>{translate.published_empty}</p>
                                         }
                                     </FormGroup>
+                                </div>
                                 }
                             </Form>
                             }
