@@ -294,7 +294,7 @@ class AdminPage extends Component {
 
 
   //************************ OTHER **************************** */
-  //********************************************************************************** */
+  //*************************************************************/
 
   editMode(semester, rounds, analysisId, status, tempData) { 
     const thisAdminPage = this
@@ -507,12 +507,12 @@ class AdminPage extends Component {
               
             {this.state.values && !this.state.isPreviewMode
               ? <Form className='admin-form'>
-                 {/* Intro text for Edit */}
+                 {/* ----- Intro text for Edit ------- */}
                   <div>
                     <p>{translate.intro_edit}</p>
                   </div>
 
-                {/* Semester and name of analysis */}
+                {/* ---- Semester and name of analysis ---- */}
                 <h2>{translate.header_edit_content}</h2>
                 <p> <b>{translate.header_semester} </b>{
                   `${translate.course_short_semester[this.state.values.semester.toString().match(/.{1,4}/g)[1]]} 
@@ -522,7 +522,7 @@ class AdminPage extends Component {
 
                 <p>{translate.header_mandatory_fields}</p>
               
-                {/* ALERTS */}
+                {/* ----- ALERTS ----- */}
                 {this.state.alert.length > 0 
                   ? <Row>
                     <Alert color= 'info' className='margin-bottom-40'>{this.state.alert} </Alert>
@@ -546,10 +546,8 @@ class AdminPage extends Component {
                 <Row className='form-group'>
                   <Col sm='4' className='col-form'>
                     <h4>{translate.header_upload}</h4>
-                    {/*********************/}
-                    {/** ANALYSIS UPLOAD **/}
-                    {/*********************/}
-                    
+          
+                    {/** ------ ANALYSIS-FILE UPLOAD ------- **/}
                      <FormLabel translate = {translate} header = {'header_upload_file'} id = {'info_upload_course_analysis'} />
                      <UpLoad id="analysis" key="analysis" 
                       handleUpload = {this.hanleUploadFile} 
@@ -574,9 +572,8 @@ class AdminPage extends Component {
                       }
 
                     <br/>
-                    {/**************/}
-                    {/** PM UPLOAD */}
-                    {/**************/}
+                   
+                    {/** ------- PM-FILE UPLOAD --------- */}
                     <FormLabel translate = {translate} header = {'header_upload_file_pm'} id = {'info_upload_course_memo'} />
                     <UpLoad id="pm" key="pm" 
                       handleUpload = {this.hanleUploadFile} 
@@ -601,7 +598,7 @@ class AdminPage extends Component {
                       }
                   </Col>
 
-                  {/* FORM - SECOND COLUMN */}
+                  {/* ------ FORM - SECOND COLUMN ------ */}
                   <Col sm='4' className='col-form'>
                     <h4>{translate.header_summarize}</h4>
 
@@ -612,7 +609,7 @@ class AdminPage extends Component {
                     />
                   </Col>  
 
-                  {/* FORM - THIRD COLUMN */}
+                  {/* ------ FORM - THIRD COLUMN -------- */}
                   <Col sm='4' className='col-form'>
                     <h4>{translate.header_check_data}</h4>
                     <p>{translate.asterix_text}</p>

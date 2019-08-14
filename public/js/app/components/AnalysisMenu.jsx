@@ -121,12 +121,12 @@ class AnalysisMenu extends Component {
     }
 
     handleSelectedPublished(event) {
+        let prevState = this.state
         if(event.target.id.indexOf('_preview') >0 ){
-            prevState.selectedRadio.publish = event.target.id.split('_preview')[0]
+            prevState.selectedRadio.published = event.target.id.split('_preview')[0]
             prevState.canOnlyPreview = true
             this.setState(prevState)
         }else{
-            let prevState = this.state
             prevState.selectedRadio.published = event.target.id
             prevState.lastSelected = 'published'
             prevState.alert = ''

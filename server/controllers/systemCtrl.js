@@ -16,7 +16,7 @@ const co = require('co')
 const Promise = require('bluebird')
 const registry = require('component-registry').globalRegistry
 const { IHealthCheck } = require('kth-node-monitor').interfaces
-const redis = require('kth-node-redis')
+// const redis = require('kth-node-redis')
 
 /*
  * ----------------------------------------------------------------
@@ -123,7 +123,7 @@ function _about (req, res) {
  */
 async function _monitor (req, res) {
   const apiConfig = config.nodeApi
-  const ugRedis = config.cache.ugRedis.redis
+  // const ugRedis = config.cache.ugRedis.redis
 
   // Check APIs
   const subSystems = Object.keys(api).map((apiKey) => {
