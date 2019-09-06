@@ -221,7 +221,6 @@ appRoute.get('system.gateway', config.proxyPrefixPath.uri + '/gateway', getServe
 
 appRoute.get('api.kursutvecklingGetById', config.proxyPrefixPath.uri + '/apicall/getRoundAnalysisById/:id', Admin.getRoundAnalysis)
 appRoute.all('api.kursutvecklingPost', config.proxyPrefixPath.uri + '/apicall/postRoundAnalysisById/:id/:status', Admin.postRoundAnalysis)
-// appRoute.post('api.kursutvecklingPost', config.proxyPrefixPath.uri + '/apicall/postRoundAnalysisById/:id/:status', Admin.postRoundAnalysis)
 appRoute.delete('api.kursutvecklingDelete', config.proxyPrefixPath.uri + '/apicall/deleteRoundAnalysisById/:id', Admin.deleteRoundAnalysis)
 appRoute.get('api.kursutvecklingGetUsedRounds', config.proxyPrefixPath.uri + '/apicall/kursutvecklingGetUsedRounds/:courseCode/:semester', Admin.getUsedRounds)
 appRoute.get('api.koppsCourseData', config.proxyPrefixPath.uri + '/api/kursutveckling-admin/getKoppsCourseDataByCourse/:courseCode/:language', Admin.getKoppsCourseData)
@@ -230,6 +229,7 @@ appRoute.post('redis.ugCache', config.proxyPrefixPath.uri + '/redis/ugChache/:ke
 appRoute.post('storage.saveFile', config.proxyPrefixPath.uri + '/storage/saveFile/:analysisid/:type/:published', Admin.saveFileToStorage)
 appRoute.post('storage.updateFile', config.proxyPrefixPath.uri + '/storage/updateFile/:fileName/', Admin.updateFileInStorage)
 appRoute.post('storage.deleteFile', config.proxyPrefixPath.uri + '/storage/deleteFile/:id', Admin.deleteFileInStorage)
+appRoute.all('api.kursstatistik', config.proxyPrefixPath.uri + '/apicall/getStatisicsForRound/:roundEndDate', Admin.getStatisicsForRound)
 server.use('/', appRoute.getRouter())
 
 // Not found etc

@@ -39,7 +39,12 @@ class AnalysisMenu extends Component {
             lastSelected: this.props.tempData ? 'new' : '',
             canOnlyPreview: '',
             temporaryData: this.props.tempData,
-            newSemester: false
+            newSemester: false,
+            statisticsParams: {
+                endDate: this.props.tempData ? this.props.tempData.statisticsParams.endDate : '',
+                ladokId: this.props.tempData ? this.props.tempData.statisticsParams.ladokId : []
+            }
+        
         }
 
         this.toggleDropdown = this.toggleDropdown.bind(this)
@@ -69,6 +74,8 @@ class AnalysisMenu extends Component {
         let radios = this.state.selectedRadio
         radios.published = ''
         radios.draft = ''
+        this.state.statisticsParams.endDate = ''
+        this.state.statisticsParams.ladokId = []
         this.getUsedRounds(event.target.id)
         this.setState({
             semester: event.target.id,
@@ -85,20 +92,35 @@ class AnalysisMenu extends Component {
     //************************ CHECKBOXES AND RADIO BUTTONS **************************** */
     //********************************************************************************** */
     handleRoundCheckbox(event) {
+        event.persist()
+        let  endDate = event.target.getAttribute("data-enddate")
+        let ladokId = event.target.getAttribute("data-uid")
         let prevState = this.state
         prevState.canOnlyPreview = false
+
         if ( this.state.alert.length > 0 )
             prevState.alert = ''
 
         if ( event.target.checked ){
-            prevState.selectedRadio.draft = []
-            prevState.rounds.push(event.target.id)
-            prevState.lastSelected = 'new'
-            prevState.temporaryData = undefined
-            this.setState(prevState)
+            if(prevState.statisticsParams.endDate.length > 0 && prevState.statisticsParams.endDate !== endDate){
+                this.setState({alert: 'END DATE ERROR!!'})
+            }else{
+                prevState.selectedRadio.draft = []
+                prevState.rounds.push(event.target.id)
+                prevState.lastSelected = 'new'
+                prevState.temporaryData = undefined
+                prevState.statisticsParams.endDate = endDate
+                prevState.statisticsParams.ladokId.indexOf(ladokId) === -1 && ladokId.length > 0 ? prevState.statisticsParams.ladokId.push(ladokId) : ''
+                prevState.statisticsParams.endDate = endDate
+                this.setState(prevState)
+            }
         }
         else{
             prevState.rounds.splice(this.state.rounds.indexOf(event.target.id), 1)
+            prevState.statisticsParams.ladokId.splice( prevState.statisticsParams.ladokId.indexOf(ladokId), 1)
+            if(prevState.rounds.length === 0){
+                prevState.statisticsParams.endDate = ''
+            }
             prevState.temporaryData = undefined
             this.setState(prevState)
         }
@@ -107,11 +129,13 @@ class AnalysisMenu extends Component {
     handleSelectedDraft(event) {
         let prevState = this.state
         prevState.rounds =[]
+        prevState.statisticsParams.endDate = ''
+        prevState.statisticsParams.ladokId = []
         if(event.target.id.indexOf('_preview') >0 ){
             prevState.selectedRadio.draft = event.target.id.split('_preview')[0]
             prevState.canOnlyPreview = true
             this.setState(prevState)
-        }else{
+        } else {
             prevState.selectedRadio.draft = event.target.id
             prevState.lastSelected = 'draft'
             prevState.alert = ''
@@ -142,15 +166,18 @@ class AnalysisMenu extends Component {
 
     goToEditMode(event) {
         event.preventDefault()
-        if (this.state.rounds.length > 0 || this.state.selectedRadio.published.length > 0 || this.state.selectedRadio.draft.length > 0 )
-            if(this.state.lastSelected === 'new')
-                this.props.editMode(this.state.semester, this.state.rounds, null, this.state.lastSelected, this.state.temporaryData)
-            else
-                this.props.editMode(this.state.semester, null, this.state.selectedRadio[this.state.lastSelected],  this.state.lastSelected, this.state.temporaryData)
-        else
+        const {rounds, selectedRadio, semester, lastSelected, temporaryData, statisticsParams} = this.state
+        if (rounds.length > 0 || selectedRadio.published.length > 0 || selectedRadio.draft.length > 0 ){
+            if(lastSelected === 'new'){
+                this.props.editMode(semester, rounds, null, lastSelected, temporaryData, statisticsParams)
+            } else { 
+                this.props.editMode(semester, null, selectedRadio[this.state.lastSelected], lastSelected, temporaryData, statisticsParams)
+            }
+        } else {
             this.setState({
                 alert: i18n.messages[this.props.routerStore.language].messages.alert_no_rounds_selected
             })
+        }
     }
 
     handleCancel(event) {
@@ -245,22 +272,6 @@ class AnalysisMenu extends Component {
         )
     }
     
-    componentDidMount() {
-
-        /*  this._isMounted = true;
-         window.onpopstate = ()=> {
-           if(this._isMounted) {
-             console.log('this.super.state', this.super)
-            const { hash } = location;
-             if( this.state.value!==0)
-               this.setState({value: 0})
-             if(hash.indexOf('users')>-1 && this.state.value!==1)
-               this.setState({value: 1})
-             if(hash.indexOf('data')>-1 && this.state.value!==2)
-               this.setState({value: 2})*/
-          // }
-        // }
-       }
 
     componentWillMount() {
         const {routerStore , analysisId } = this.props
@@ -415,6 +426,8 @@ class AnalysisMenu extends Component {
                                                                         checked = {this.state.rounds.indexOf(round.roundId) > -1 }
                                                                         name={round.roundId}
                                                                         disabled = {!round.hasAccess}
+                                                                        data-uid={round.ladokUID}
+                                                                        data-enddate = {round.endDate}
                                                                     />
                                                                     {round.shortName 
                                                                         ? round.shortName + ' '

@@ -15,7 +15,8 @@ const { safeGet } = require('safe-utils')
 const devPort = devDefaults(3000)
 const devSsl = devDefaults(false)
 const devUrl = devDefaults('http://localhost:' + devPort)
-const devKursutvecklingApi = devDefaults('http://localhost:3001/api/kursutveckling?defaultTimeout=10000')
+const devKursutvecklingApi = devDefaults('http://localhost:3002/api/kursutveckling?defaultTimeout=10000')// 'http://localhost:3001/api/kursutveckling?defaultTimeout=10000')
+const devKursstatistikApi = devDefaults('http://localhost:3001/api/kursstatistik?defaultTimeout=90000')
 const devKoppsApi = devDefaults('https://api-r.referens.sys.kth.se/api/kopps/v2/')
 const devSessionKey = devDefaults('node-web.sid') // TODO ??
 const devSessionUseRedis = devDefaults(true)
@@ -62,7 +63,8 @@ module.exports = {
 
   // API keys
   apiKey: {
-    kursutvecklingApi: getEnv('API_KEY', devDefaults('9876'))
+    kursutvecklingApi: getEnv('API_KEY', devDefaults('9876')),
+    kursstatistikApi: getEnv('KURSSTATISTIK_API_KEY', devDefaults('1234'))
   },
 
   // Authentication
@@ -76,7 +78,8 @@ module.exports = {
 
   // Service API's
   nodeApi: {
-    kursutvecklingApi: unpackNodeApiConfig('API_URI', devKursutvecklingApi)
+    kursutvecklingApi: unpackNodeApiConfig('KURSUTVECKLING_API_URI', devKursutvecklingApi),
+    kursstatistikApi: unpackNodeApiConfig('KURSSTATISTIK_API_URI', devKursstatistikApi)
   },
 
   // Cortina

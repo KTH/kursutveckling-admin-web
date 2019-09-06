@@ -45,7 +45,11 @@ class AdminPage extends Component {
       fileProgress: {
         pm: 0,
         analysis: 0
-      }
+      },
+      statisticsParams: {
+        endDate: '',
+        ladokId: []
+    }
     }
     this.handlePreview = this.handlePreview.bind(this)
     this.editMode = this.editMode.bind(this)
@@ -296,11 +300,12 @@ class AdminPage extends Component {
   //************************ OTHER **************************** */
   //*************************************************************/
 
-  editMode(semester, rounds, analysisId, status, tempData) { 
+  editMode(semester, rounds, analysisId, status, tempData, statisticsParams ) { 
     const thisAdminPage = this
     
     if (status === 'new') {
-      return this.props.routerStore.createAnalysisData(semester, rounds).then( data => {
+      return this.props.routerStore.postLadokRoundIdListAndDateToGetStatistics(statisticsParams.ladokId, statisticsParams.endDate).then( ladokResponse =>{
+      this.props.routerStore.createAnalysisData(semester, rounds).then( data => {
         const valuesObject = this.handleTemporaryData(thisAdminPage.props.routerStore.analysisData, tempData)
         thisAdminPage.setState({
           progress: "edit",
@@ -310,9 +315,11 @@ class AdminPage extends Component {
           activeSemester: semester,
           analysisFile: valuesObject.files.analysisFile,
           pmFile:  valuesObject.files.pmFile,
-          alert: ''
+          alert: '',
+          statisticsParams
         })
     })
+  })
     } else {
       this.props.history.push(this.props.routerStore.browserConfig.proxyPrefixPath.uri + '/' + analysisId)
       return thisAdminPage.props.routerStore.getRoundAnalysis(analysisId).then(analysis => {
@@ -325,6 +332,7 @@ class AdminPage extends Component {
           analysisFile: valuesObject.files.analysisFile,
           pmFile:  valuesObject.files.pmFile,
           saved: true,
+          statisticsParams,
           alert: ''
         })
       })
@@ -382,9 +390,9 @@ class AdminPage extends Component {
 
   getTempData(){
     if( this.state.progress === 'back_new' ){
-      const { alterationText, examinationGrade, registeredStudents, roundIdList } = this.state.values
-      const { pmFile, analysisFile } = this.state
-      return { alterationText, examinationGrade, registeredStudents, roundIdList,  pmFile, analysisFile }
+      const { alterationText, examinationGrade, registeredStudents, roundIdList} = this.state.values
+      const { pmFile, analysisFile, statisticsParams } = this.state
+      return { alterationText, examinationGrade, registeredStudents, roundIdList,  pmFile, analysisFile, statisticsParams}
     }
     return null
   }

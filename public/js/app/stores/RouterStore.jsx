@@ -42,6 +42,7 @@ class RouterStore {
   member = []
   roundAccess = {}
   user =''
+  statistics = {}
   
 
   buildApiUrl(path, params) {
@@ -256,6 +257,31 @@ class RouterStore {
     })
   }
 
+   /** ***************************************************************************************************************************************** */
+  /*                                             GET ROUND STATISTICS ACTION (KURSSTATISTIK - API)                                                    */
+  /** ***************************************************************************************************************************************** */
+  @action postLadokRoundIdListAndDateToGetStatistics(ladokRoundIdList, endDate) { 
+    return axios.post(this.buildApiUrl(this.paths.api.kursstatistik.uri,
+      { roundEndDate: endDate}),
+      this._getOptions(ladokRoundIdList)
+    ).then(apiResponse => {
+      if (apiResponse.statusCode >= 400) {
+        this.errorMessage = result.statusText
+        return "ERROR-" + apiResponse.statusCode
+      }
+      console.log('apiResponse',apiResponse)
+      
+      this.statistics = apiResponse.data.responseObject ? apiResponse.data.responseObject : apiResponse.data
+      return apiResponse.body
+    }).catch(err => {
+      if (err.response) {
+        this.errorMessage = err.message
+        return err.message
+      }
+        //throw new Error(err.message
+      throw err
+    })
+  }
  /** ***************************************************************************************************************************************** */
   /*                                                     HANDLE DATA FROM API                                                                  */
   /** ***************************************************************************************************************************************** */
@@ -327,11 +353,13 @@ class RouterStore {
             language: round.language[language],
             shortName: round.shortName,
             startDate: round.firstTuitionDate,
+            endDate: round.lastTuitionDate,
             targetGroup: this.getTargetGroup(round),
             ladokUID: round.ladokUID,
             hasAccess: getAccess(this.member, round, this.courseCode, semester.term)
           }
         })
+        console.log(thisStore.roundData[semester.term])
       })
     } catch (err) {
       if (err.response) {
@@ -370,13 +398,13 @@ class RouterStore {
         courseCode: this.courseData.courseCode,
         examinationRounds: this.getExamObject( examinationRounds, this.courseData.gradeScale, roundLang),
         examiners: '',
-        examinationGrade: '',
+        examinationGrade: this.statistics.hasOwnProperty('examinationGrade') ? this.statistics.examinationGrade : '',
         isPublished: false,
         pdfAnalysisDate: '',
         pdfPMDate: '',
         programmeCodes: this.getAllTargetGroups(rounds, this.roundData[semester]).join(', '),
         publishedDate: '',
-        registeredStudents: '',
+        registeredStudents: this.statistics.hasOwnProperty('registeredStudents') ? this.statistics.registeredStudents : '',
         responsibles: '',
         analysisName: newName,
         semester: semester,
@@ -385,8 +413,8 @@ class RouterStore {
         ladokUID: '',
         syllabusStartTerm: courseSyllabus.validFromTerm,
         changedAfterPublishedDate: '',
-        examinationGradeFromLadok: false,
-        registeredStudentsFromLadok: false
+        examinationGradeFromLadok: this.statistics.hasOwnProperty('examinationGrade') && this.statistics.examinationGrade.length > 0,
+        registeredStudentsFromLadok: this.statistics.hasOwnProperty('registeredStudents') && this.statistics.registeredStudents.length > 0,
 
       }
 

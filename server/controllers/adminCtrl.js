@@ -16,6 +16,7 @@ const api = require('../api')
 const { runBlobStorage, updateMetaData, deleteBlob } = require('../blobStorage')
 const kursutvecklingAPI = require('../apiCalls/kursutvecklingAPI')
 const koppsCourseData = require('../apiCalls/koppsCourseData')
+const kursstatistikAPI = require('../apiCalls/kursstatistikAPI')
 const i18n = require('../../i18n')
 
 let { staticFactory } = require('../../dist/app.js')
@@ -30,7 +31,8 @@ module.exports = {
   getKoppsCourseData: co.wrap(_getKoppsCourseData),
   saveFileToStorage: co.wrap(_saveFileToStorage),
   updateFileInStorage: co.wrap(_updateFileInStorage),
-  deleteFileInStorage: co.wrap(_deleteFileInStorage)
+  deleteFileInStorage: co.wrap(_deleteFileInStorage),
+  getStatisicsForRound: co.wrap(_getStatisicsForRound)
 }
 
 // ------- ANALYSES FROM KURSUTVECKLING-API: POST, GET, DELETE, GET USED ROUNDS ------- /
@@ -174,6 +176,24 @@ function * _getCourseEmployees (req, res, next) {
   }
 }
 
+function * _getStatisicsForRound (req, res, next) {
+  console.log(req.params)
+  log.debug('_getStatisicsForRound : ', req.body.params, req.params.roundEndDate)
+  // Solution for rounds that missing ladokUID in kopps
+  if (req.body.params.length === 0) {
+    let reponseObject = { registeredStudents: '', examinationGrade: '' }
+    return httpResponse.json(res, reponseObject, 200)
+  }
+  try {
+    const apiResponse = yield kursstatistikAPI.getStatisicsForRound(req.params.roundEndDate, req.body.params)
+    log.debug('_getStatisicsForRound response: ', apiResponse.body)
+    return httpResponse.json(res, apiResponse.body)
+  } catch (error) {
+    log.error('Exception from _getUsedRounds ', { error: error })
+    next(error)
+  }
+}
+
 async function getIndex (req, res, next) {
   /** ------- CHECK OF CONNECTION TO API AND UG_REDIS ------- */
   if (api.kursutvecklingApi.connected === false) {
@@ -206,7 +226,6 @@ async function getIndex (req, res, next) {
   try {
     const renderProps = staticFactory()
     /* ------- Settings ------- */
-
     renderProps.props.children.props.routerStore.setBrowserConfig(browserConfig, paths, serverConfig.hostUrl, service)
     renderProps.props.children.props.routerStore.setLanguage(lang)
     renderProps.props.children.props.routerStore.setService(service)
