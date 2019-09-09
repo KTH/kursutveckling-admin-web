@@ -524,7 +524,7 @@ class AdminPage extends Component {
                 <h2>{translate.header_edit_content}</h2>
                 <p> <b>{translate.header_semester} </b>{
                   `${translate.course_short_semester[this.state.values.semester.toString().match(/.{1,4}/g)[1]]} 
-                                    ${this.state.values.semester.toString().match(/.{1,4}/g)[0]}`
+                  ${this.state.values.semester.toString().match(/.{1,4}/g)[0]}`
                   }
                  <b> {translate.header_course_offering}</b> {this.state.values.analysisName}</p>
 

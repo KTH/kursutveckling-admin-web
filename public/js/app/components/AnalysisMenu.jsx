@@ -11,6 +11,7 @@ import InfoButton from './InfoButton'
 import i18n from '../../../../i18n/index'
 import { EMPTY, SERVICE_URL } from '../util/constants'
 import { getDateFormat, getValueFromObjectList } from '../util/helpers'
+import loader from '../../../img/*.gif'
 
 @inject(['routerStore']) @observer
 class AnalysisMenu extends Component {
@@ -43,7 +44,8 @@ class AnalysisMenu extends Component {
             statisticsParams: {
                 endDate: this.props.tempData ? this.props.tempData.statisticsParams.endDate : '',
                 ladokId: this.props.tempData ? this.props.tempData.statisticsParams.ladokId : []
-            }
+            },
+            ladokLoading: false
         
         }
 
@@ -166,8 +168,9 @@ class AnalysisMenu extends Component {
 
     goToEditMode(event) {
         event.preventDefault()
-        const {rounds, selectedRadio, semester, lastSelected, temporaryData, statisticsParams} = this.state
+        const {rounds, selectedRadio, semester, lastSelected, temporaryData, statisticsParams, ladokLoading} = this.state
         if (rounds.length > 0 || selectedRadio.published.length > 0 || selectedRadio.draft.length > 0 ){
+            this.setState({ladokLoading:true})
             if(lastSelected === 'new'){
                 this.props.editMode(semester, rounds, null, lastSelected, temporaryData, statisticsParams)
             } else { 
@@ -509,10 +512,18 @@ class AnalysisMenu extends Component {
                     </Col>
                     <Col sm="12" lg="4">
                         { !this.state.firstVisit && this.showEditButton() && !this.state.canOnlyPreview
-                                ? <Button color='success' id='new' key='new' onClick={this.goToEditMode} disabled ={this.state.firstVisit}>
-                                    <div className="iconContainer arrow-forward" id='new' />  
-                                    {translate.btn_add_analysis}
-                            </Button>
+                                ?<div>
+                                    { this.state.ladokLoading && this.state.statisticsParams.ladokId.length > 0
+                                        ? <div className= 'ladok-loading-progress'>
+                                          Loding from ladok  <img title = 'loading file' src={routerStore.browserConfig.proxyPrefixPath.uri + '/static'+ loader['ajax-loader']}/>
+                                        </div>
+                                        :''
+                                    }               
+                                    <Button color='success' id='new' key='new' onClick={this.goToEditMode} disabled ={this.state.firstVisit}>
+                                        <div className="iconContainer arrow-forward" id='new' />  
+                                        {translate.btn_add_analysis}
+                                    </Button>                     
+                            </div>
                             : ''
                         }
                         { this.state.canOnlyPreview
