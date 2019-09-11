@@ -283,6 +283,8 @@ class AnalysisMenu extends Component {
        
         if (routerStore.usedRounds.length === 0 || routerStore.hasChangedStatus){
             this.getUsedRounds(this.state.semester)
+            prevState.statisticsParams.endDate = ''
+            prevState.statisticsParams.ladokId = []
         } else {
             if( analysisId && analysisId.length > 0 && !this.state.newSemester){
                 if(routerStore.status === 'draft' && routerStore.analysisData && routerStore.analysisData.isPublished !== true){
