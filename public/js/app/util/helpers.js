@@ -28,7 +28,7 @@ const getLanguageToUse = (roundList, roundIdlist, defaultLanguage) => {
     }
   }
 
-  let tempLang = roundIdlist[0].language
+  let tempLang = roundList[0].language
   for (let id = 0; id < roundIdlist.length; id++) {
     for (let round = 0; round < roundList.length; round++) {
       if (roundList[round].roundId === roundIdlist[id] && tempLang !== roundList[round].language) {
