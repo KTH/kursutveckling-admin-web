@@ -31,7 +31,8 @@ class AdminPage extends Component {
       changedStatus: false,
       modalOpen:{
         publish: false,
-        cancel: false
+        cancel: false,
+        recalculate: false
       },
       alert: '',
       alertSuccess: '',
@@ -65,6 +66,7 @@ class AdminPage extends Component {
     this.hanleUploadFile = this.hanleUploadFile.bind(this)
     this.handleRemoveFile = this.handleRemoveFile.bind(this)
     this.validateData = this.validateData.bind(this)
+    this.handleNewExaminationGrade = this.handleNewExaminationGrade.bind(this)
   }
 
 
@@ -296,6 +298,26 @@ class AdminPage extends Component {
       })  
   }
 
+  handleNewExaminationGrade(newEndDate){
+    const { values, statisticsParams, modalOpen } = this.state
+    modalOpen.recalculate = false
+    if(newEndDate.length > 0){
+      return this.props.routerStore.postLadokRoundIdListAndDateToGetStatistics(statisticsParams.ladokId, newEndDate).then( ladokResponse =>{
+        values.examinationGrade =  Math.round( Number(this.props.routerStore.statistics.examinationGrade) * 10 ) / 10 
+        values.examinationGradeFromLadok = false
+        this.setState({ 
+          values,
+          modalOpen
+        })
+      })
+    }else{
+      this.setState({ 
+        modalOpen
+      })
+    }
+   
+  }
+
 
   //************************ OTHER **************************** */
   //*************************************************************/
@@ -350,6 +372,9 @@ class AdminPage extends Component {
   handleInputChange(event) {
     let values = this.state.values
     values[event.target.id] = event.target.value
+    if(event.target.id === 'examinationGrade' || event.target.id === 'registeredStudents'){
+      values[event.target.id+'FromLadok'] = Number(values[event.target.id]) === values[event.target.id+'Ladok']
+    }
     this.setState({
       values: values,
       //saved: false,
@@ -549,7 +574,16 @@ class AdminPage extends Component {
                   </Row>
                   : ''
                 }  
-
+                { routerStore.canRecalculate 
+                  ? <Row>
+                    <Alert color= 'info'>{'translate.text_for_recalculate'} 
+                      <Button color='secondary' id='recalculate' key='recalculate' onClick={this.toggleModal} >
+                        {'translate.btn_recalculate'}
+                      </Button>
+                    </Alert>
+                  </Row>
+                  : ''
+                }  
                {/* FORM - FIRST COLUMN */}
                 <Row className='form-group'>
                   <Col sm='4' className='col-form'>
@@ -620,12 +654,12 @@ class AdminPage extends Component {
                   {/* ------ FORM - THIRD COLUMN -------- */}
                   <Col sm='4' className='col-form'>
                     <h4>{translate.header_check_data}</h4>
-                    <p>{translate.asterix_text}</p>
+                   
                     <FormLabel translate = {translate} header = {'header_registrated'} id = {'info_registrated'} />
                     <Input id='registeredStudents' key='registeredStudents' type='number' 
                       placeholder = '0' 
                       value={this.state.values.registeredStudents} 
-                      onChange={this.handleInputChange} disabled={isPublished} 
+                      onChange={this.handleInputChange} 
                       className = {this.state.notValid.indexOf('registeredStudents') > -1 ? 'not-valid' : ''}
                     />
                     
@@ -633,7 +667,7 @@ class AdminPage extends Component {
                     <Input id='examinationGrade' key='examinationGrade' type='number' 
                       placeholder = '0' 
                       value={this.state.values.examinationGrade} 
-                      onChange={this.handleInputChange} disabled={isPublished} 
+                      onChange={this.handleInputChange}
                       className = {this.state.notValid.indexOf('examinationGrade') > -1 ? 'not-valid' : ''}
                     />
                       
@@ -641,7 +675,6 @@ class AdminPage extends Component {
                     <Input id='examiners' key='examiners' type='text' 
                       value={this.state.values.examiners} 
                       onChange={this.handleInputChange} 
-                      disabled={isPublished}
                       className = {this.state.notValid.indexOf('examiners') > -1 ? 'not-valid' : ''}
                     />
                      
@@ -649,7 +682,6 @@ class AdminPage extends Component {
                       <Input id='responsibles' key='responsibles' type='text' 
                         value={this.state.values.responsibles} 
                         onChange={this.handleInputChange} 
-                        disabled={isPublished} 
                         className = {this.state.notValid.indexOf('responsibles') > -1 ? 'not-valid' : ''}
                       />
 
@@ -737,6 +769,7 @@ class AdminPage extends Component {
           {/************************************************************************************* */}  
           <InfoModal type = 'publish' toggle= {this.toggleModal} isOpen = {this.state.modalOpen.publish} id={this.props.routerStore.analysisId} handleConfirm={this.handlePublish} infoText={translate.info_publish}/>
           <InfoModal type = 'cancel' toggle= {this.toggleModal} isOpen = {this.state.modalOpen.cancel} id={this.props.routerStore.analysisId} handleConfirm={this.handleCancel} infoText={translate.info_cancel}/>
+          <InfoModal type = 'recalculate' toggle= {this.toggleModal} isOpen = {this.state.modalOpen.recalculate} id={this.props.routerStore.analysisId} handleConfirm={this.handleNewExaminationGrade} infoText={translate.info_recalculate} />
           </div>
          }
         </div>

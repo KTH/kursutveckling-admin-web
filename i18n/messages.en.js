@@ -120,7 +120,8 @@ module.exports = {
     alert_no_rounds_selected: 'Choose a course offering or administrative course instances below before you click on "Review" or "Edit, upload".',
     alert_no_rounds: 'Course analysis and course data are published for all course offerings this semester',
     alert_no_published: 'There are no published course analysis and course data this semester.',
-    alert_saved_draft: 'A draft of course analysis and course data have been saved',
+    alert_different_end_dates: 'Selected administrative course instances have different end dates. Select the instances that were included in the same course offering.', /* GRÄDDEN PÅ SEMLAN */
+	  alert_saved_draft: 'A draft of course analysis and course data have been saved',
     alert_empty_fields: 'All mandatory fields must contain information before proceeding to Review and publish.',
     alert_uploaded_file: 'Selected file has been uploaded and been given a new file name',
     alert_not_pdf: 'The specified file could not be uploaded. The file format must be PDF.',
@@ -160,6 +161,12 @@ module.exports = {
       btnCancel: 'No, go back',
       btnConfirm: 'Yes, delete'
     },
+    info_recalculate: {
+      header: 'Beräkna examinationsgrad med nytt datum......',
+      body: `fyll i nytt datum..... </br>`,
+      btnCancel: 'Nej, gå tillbaka',
+      btnConfirm: 'beräkna...'
+    },
 
     /** **** INFO BUTTONS ***** */
     info_select_semester: {
@@ -181,7 +188,7 @@ module.exports = {
 
     info_examination_grade: {
       header: 'Examination grade',
-      body: 'Graduation rate is defined as the number of passed first registration students on the whole course divided by the number of registered student (as defined above) after the first ordinary examination after the end date of the course offering. Graduation rate is not calculated for each examination session in the course examination set. Neither is it recalculated after each following re-examination. Graduation rate is calculated based on information fetched from Ladok.',
+      body: 'Graduation rate is defined as the number of passed first registration students on the whole course divided by the number of registered student (as defined above) by the end date of the course offering. The number is fetched automatically from Ladok for course offerings with a start semester from Spring 2017 and later. It is possible to enter graduation rate manually. Graduation rate is not calculated for each examination session in the course examination set. Neither is it recalculated after each following re-examination. Graduation rate is calculated based on information fetched from Ladok.',
       btnCancel: 'Close'
     },
 
@@ -226,11 +233,6 @@ module.exports = {
     info_course_changes_comment: {
       header: 'Summarize changes to the course',
       body: 'Summarized changes made to the course before this particular course offering. The purpose of publishing changes made to the course is to show the improvements of the course over time. All changes documented to the course offerings gives an overview of the improvement steps of the course.',
-      btnCancel: 'Close'
-    },
-    info_registrated: {
-      header: 'Info',
-      body: 'Number of first registration students are defined as the number of first registration students on all the administrative course instances that are included in the course offering. Admitted students that have not been registered shall not be counted. Neither shall registered students that have been re-registered from a previous administrative course instance be counted. Number of registered students is calculated based on information fetched from Ladok.',
       btnCancel: 'Close'
     },
 

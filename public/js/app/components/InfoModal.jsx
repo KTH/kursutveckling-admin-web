@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Modal, ModalBody, ModalHeader, ModalFooter, Button } from 'reactstrap'
+import { Modal, ModalBody, ModalHeader, ModalFooter, Button, Input } from 'reactstrap'
 
 //Custom components
 import CopyText from './CopyText'
@@ -8,14 +8,27 @@ class InfoModal extends Component {
   constructor (props) {
     super(props)
     this.state = {
-        modal: this.props.isOpen
+        modal: this.props.isOpen,
+        newEndDate: ''
       }
     this.handleConfirm = this.handleConfirm.bind(this)
+    this.handleDateChange = this.handleDateChange.bind(this)
   }
   
   handleConfirm(event){
     event.preventDefault()
-    this.props.handleConfirm(this.props.id, true)
+    const { type, handleConfirm } = this.props
+    if(type === 'recalculate'){
+      handleConfirm(this.state.newEndDate)
+    } else {
+      handleConfirm(this.props.id, true)
+    }
+  }
+  
+  handleDateChange(event){
+    event.persist()
+    this.state.newEndDate = event.target.value
+    console.log(this.state, event.target.value)
   }
 
 
@@ -25,8 +38,7 @@ class InfoModal extends Component {
 
       return (
         <div>
-          {
-            type === 'info'
+          {type === 'info'
             ? <Button id={type} type="button"  onClick={toggle} className='btn-info-modal btn btn-secondary info-inline'/>
             : ''
           }
@@ -36,6 +48,10 @@ class InfoModal extends Component {
               {type=== 'copy'
                 ? <CopyText textToCopy={url} header = {copyHeader} />
                 : <p dangerouslySetInnerHTML={{ __html:infoText.body}}/>
+              }
+              {type === 'recalculate'
+                ? <input type='date' onChange={this.handleDateChange}  />
+                : ''
               }
             </ModalBody>
             <ModalFooter>

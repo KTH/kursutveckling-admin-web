@@ -105,7 +105,7 @@ class AnalysisMenu extends Component {
 
         if ( event.target.checked ){
             if(prevState.statisticsParams.endDate.length > 0 && prevState.statisticsParams.endDate !== endDate){
-                this.setState({alert: 'END DATE ERROR!!'})
+                this.setState({alert: i18n.messages[this.props.routerStore.language].messages.alert_different_end_dates})
             }else{
                 prevState.selectedRadio.draft = []
                 prevState.rounds.push(event.target.id)

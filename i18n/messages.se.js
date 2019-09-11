@@ -120,6 +120,7 @@ module.exports = {
     alert_no_rounds_selected: 'Du måste välja en kursomgång/ kurstillfälle nedan, innan du klickar på knapp "Redigera, ladda upp".',
     alert_no_rounds: 'Den här kursen har inga opublicerade kursomgångar denna termin',
     alert_no_published: 'Det finns ingen publicerad kursanalys och kursdata denna termin',
+    alert_different_end_dates: 'Valda kurstillfällen har olika slutdatum. Kursanalys ska publiceras för kurstillfällen i samma kursomgång.', /* GRÄDDEN PÅ SEMLAN */
     alert_saved_draft: 'Utkast för kursanalys och kursdata har sparats',
     alert_empty_fields: 'Du behöver fylla i obligatoriska fält för att gå vidare till Granska och publicera.',
     alert_uploaded_file: 'Vald fil har laddatas upp och fått nytt namn',
@@ -168,6 +169,12 @@ module.exports = {
       btnCancel: 'Nej, gå tillbaka',
       btnConfirm: 'Ja, fortsätt radera'
     },
+    info_recalculate: {
+      header: 'Beräkna examinationsgrad med nytt datum......',
+      body: `fyll i nytt datum..... </br>`,
+      btnCancel: 'Nej, gå tillbaka',
+      btnConfirm: 'beräkna...'
+    },
     /** **** INFO BUTTONS ***** */
     info_select_semester: {
       header: 'Välj termin',
@@ -182,7 +189,7 @@ module.exports = {
 
     info_examination_grade: {
       header: 'Examinationsgrad',
-      body: 'Examinationsgrad är antal förstagångsregistrerade studenter som godkänts på hela kursomgången efter första examinationstillfället efter kursomgångensslut dividerat med antal förstagångsregistrerade på kursomgången. Examinationsgrad redovisas inte för respektive delmoment i examinationen. Examinationsgrad beräknas inte heller om efter efterföljande omtentor.',
+      body: 'Examinationsgrad är antal förstagångsregistrerade studenter som godkänts på hela kursomgången vid kursomgångens slutdatum dividerat med antal förstagångsregistrerade på kursomgången. Examinationsgrad hämtas automatiskt för kursomgångar med startdatum VT 2017 och senare. Det är möjligt att ange examinationsgrad manuellt. Examinationsgrad redovisas inte för respektive delmoment i examinationen. Examinationsgrad beräknas inte heller om efter efterföljande omtentor.',
       btnCancel: 'Close'
     },
 
@@ -232,27 +239,8 @@ module.exports = {
     },
     info_registrated: {
       header: 'Antal förstagångsregistrerade studenter',
-      body: 'Antal förstagångsregistrerade på de kurstillfällen som ingår i kursomgången. Studenter som antagits men som inte registrerats ska inte räknas in. Inte heller registrerade studenter som omregistrerats från ett annat kurstillfälle på samma kurs ska räknas in.',
+      body: 'Antal förstagångsregistrerade studenter på de kurstillfällen som ingår i kursomgången. Antal förstagångsregistrerade studenter hämtas automatiskt för kursomgångar med startdatum VT 2017 och senare. Det är möjligt att ange examinationsgrad manuellt. Studenter som antagits men som inte registrerats ska inte räknas in. Inte heller registrerade studenter som omregistrerats från ett annat kurstillfälle på samma kurs ska räknas in.',
       btnCancel: 'Close'
-    },
-
-    info_published: {
-	  header: 'Kursanalys och kursdata har publicerats',
-      /** semester: 'Termin:', /** Följt av kursomgångens starttermin */
-	  /** course_round: 'Kursomgång:', /** Följt av kursomgångens namn */
-	  body: 'Se resultat på sidan:' /** Följt av länk till sidan Kursens utveckling och historik */
-    },
-    info_draft_saved: {
-	  header: 'Utkast för kursanalys och kursdata har sparats',
-      /** semester: 'Termin:', /** Följt av kursomgångens starttermin */
-	  /** course_round: 'Kursomgång:', /** Följt av kursomgångens namn */
-	  body: 'Kopiera länk till utkast eller publicera från sidan:' /** Följt av länk till steg 1, Välj kursomgång */
-    },
-    info_draft_deleted: {
-	  header: 'Utkast för kursanalys och kursdata har raderats'
-      /** semester: 'Termin:', /** Följt av kursomgångens starttermin */
-	  /** course_round: 'Kursomgång:', /** Följt av kursomgångens namn */
-	  /** Länk till steg 1, Välj kursomgång */
     },
 
     // PREVIEW PAGE

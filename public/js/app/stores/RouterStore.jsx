@@ -21,28 +21,31 @@ function _webUsesSSL(url) {
 
 class RouterStore {
 
-  roundData = {}
+  roundData = {} //List of all rounds from Kopps API with access property
   analysisId = ''
-  courseData = {}
-  semesters = []
-  analysisData = undefined
-  redisKeys = {
+  courseData = {} 
+  semesters = [] // List of semesters that have rounds for dropdown
+  analysisData = undefined // Object for new analysis
+  redisKeys = { // Used to get examiners and responsibles from UG Rdedis
     examiner: [],
     responsibles: []
   }
   language = 1
-  status = ''
-  usedRounds = []
-  hasChangedStatus = false
+  status = '' // Is set in url param to get the right flow, create new analysis or change published 
+  usedRounds = [] //List of used rounds
+  hasChangedStatus = false //Is set to true when a analysis is saved 
   courseTitle = ''
   courseCode = ''
-  examCommentEmpty = true
-  errorMessage = ''
-  service = ''
-  member = []
+  errorMessage = '' // Error message from API calls
+  service = '' // Is set in url param to send back to right page
+  member = [] // List of grups in LDAP the user is member of
   roundAccess = {}
-  user =''
-  statistics = {}
+  user ='' //Logged in user name
+  statistics = { // Result from Ladok api 
+    examinationGrade: -1,
+    registeredStudents: -1
+  }
+  canRecalculate = false // If examinationGrade is 0 gives a new chans 
   
 
   buildApiUrl(path, params) {
@@ -272,6 +275,8 @@ class RouterStore {
       console.log('apiResponse',apiResponse)
       
       this.statistics = apiResponse.data.responseObject ? apiResponse.data.responseObject : apiResponse.data
+      this.statistics.examinationGrade = this.statistics.examinationGrade > 0 ?  Math.round( Number(this.statistics.examinationGrade) * 10 ) / 10 : 0
+      this.canRecalculate = this.statistics.registeredStudents > 0 && this.statistics.examinationGrade === 0
       return apiResponse.body
     }).catch(err => {
       if (err.response) {
@@ -286,9 +291,8 @@ class RouterStore {
   /*                                                     HANDLE DATA FROM API                                                                  */
   /** ***************************************************************************************************************************************** */
 
-  
+   //--- Loops through published and draft analyises for access check ---//
   analysisAccess(analysis){
-    // Loops thrue published and draft analyises for access check
     const memberString = this.member.toString()
     
     for(let draft=0; draft < analysis.draftAnalysis.length; draft ++){
@@ -310,20 +314,19 @@ class RouterStore {
   }
 
 
-
+ //--- Building up courseTitle, courseData, semesters and roundData and check access for rounds ---//
   @action handleCourseData(courseObject, courseCode, ldapUsername, language) {
-    // Building up courseTitle, courseData, semesters and roundData
     if(courseObject === undefined){
       this.errorMessage = 'Whoopsi daisy... kan just nu inte hämta data från kopps'
       return undefined
     }
     try {
-      console.log('courseObject', courseObject)
       this.courseData = {
         courseCode,
         gradeScale: courseObject.formattedGradeScales,
         semesterObjectList: {}
       }
+
       this.courseTitle = {
         name: courseObject.course.title[this.language === 0 ? 'en' : 'sv'],
         credits: courseObject.course.credits.toString().indexOf('.') < 0 ? courseObject.course.credits + '.0' : courseObject.course.credits
@@ -346,7 +349,7 @@ class RouterStore {
           thisStore.roundData[semester.term] = []
           thisStore.roundAccess[semester.term] = {}
         }
-      
+        
         thisStore.roundData[semester.term] = semester.rounds.map((round, index) => { 
           return round.ladokRoundId = {
             roundId: round.ladokRoundId,
@@ -359,7 +362,6 @@ class RouterStore {
             hasAccess: getAccess(this.member, round, this.courseCode, semester.term)
           }
         })
-        console.log(thisStore.roundData[semester.term])
       })
     } catch (err) {
       if (err.response) {
@@ -368,10 +370,8 @@ class RouterStore {
       throw err
     }
   }
-
+  //-- Creates a new analysis object with information from selected rounds --//
   @action createAnalysisData(semester, rounds) {
-    // Creates a new analysis object with information from selected rounds
-
     this.getEmployees(this.courseData.courseCode, semester, rounds)
     return this.getCourseEmployeesPost(this.redisKeys, 'multi', this.language).then(returnList => {
 
@@ -398,13 +398,13 @@ class RouterStore {
         courseCode: this.courseData.courseCode,
         examinationRounds: this.getExamObject( examinationRounds, this.courseData.gradeScale, roundLang),
         examiners: '',
-        examinationGrade: this.statistics.hasOwnProperty('examinationGrade') ? this.statistics.examinationGrade : '',
+        examinationGrade: this.statistics.hasOwnProperty('examinationGrade') && this.statistics.examinationGrade > -1 ? this.statistics.examinationGrade : '',
         isPublished: false,
         pdfAnalysisDate: '',
         pdfPMDate: '',
         programmeCodes: this.getAllTargetGroups(rounds, this.roundData[semester]).join(', '),
         publishedDate: '',
-        registeredStudents: this.statistics.hasOwnProperty('registeredStudents') ? this.statistics.registeredStudents : '',
+        registeredStudents: this.statistics.hasOwnProperty('registeredStudents') && this.statistics.registeredStudents > -1 ? this.statistics.registeredStudents : '',
         responsibles: '',
         analysisName: newName,
         semester: semester,
@@ -413,9 +413,10 @@ class RouterStore {
         ladokUID: '',
         syllabusStartTerm: courseSyllabus.validFromTerm,
         changedAfterPublishedDate: '',
-        examinationGradeFromLadok: this.statistics.hasOwnProperty('examinationGrade') && this.statistics.examinationGrade.length > 0,
-        registeredStudentsFromLadok: this.statistics.hasOwnProperty('registeredStudents') && this.statistics.registeredStudents.length > 0,
-
+        examinationGradeFromLadok: this.statistics.hasOwnProperty('examinationGrade') && this.statistics.examinationGrade > -1,
+        registeredStudentsFromLadok: this.statistics.hasOwnProperty('registeredStudents') && this.statistics.registeredStudents > -1,
+        examinationGradeLadok: this.statistics.examinationGrade, 
+        registeredStudentsLadok: this.statistics.registeredStudents
       }
 
       this.analysisData.examiners = ''
@@ -428,9 +429,8 @@ class RouterStore {
     })
   }
 
-
+  // -- Creates the analysis name based on shortname, semester, start date from selected round(s) --//
   createAnalysisName(newName, roundList, selectedRounds, language) {
-    // -- Creates the analysis name based on shortname, semester, start date from selected round(s) --//
     let addRounds = []
     let tempName = ''
     let thisRoundLanguage = ''
@@ -461,6 +461,7 @@ class RouterStore {
     return 'no comment'
   }
 
+  // -- Programs that is mandatory for round(s) --//
   getTargetGroup(round) {
     if (round.connectedProgrammes.length === 0)
       return []
@@ -493,8 +494,6 @@ class RouterStore {
         examString.push(`${exam.examCode};${exam.title[roundLang]};${language === 0 ? exam.credits : exam.credits.toString().replace('.', ',')};${language === 0 ? 'credits' : 'hp'};${language === 0 ? 'Grading scale' : 'Betygsskala'};${grades[exam.gradeScaleCode]}              
                          `)
       }
-    
-    //console.log('!!getExamObject !!!! is ok!!', examString)
     return examString
   }
 
@@ -551,8 +550,6 @@ class RouterStore {
   /** ***************************************************************************************************************************************** */
   @action getCourseEmployeesPost(key, type = 'multi', lang = 'sv') {
     return axios.post(this.buildApiUrl(this.paths.redis.ugCache.uri, { key: key, type: type }), this._getOptions(JSON.stringify(this.redisKeys))).then(result => {
-      //console.log('result.body', result.data)
-
       return result.data
     }).catch(err => {
       if (err.response) {
