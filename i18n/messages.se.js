@@ -125,7 +125,10 @@ module.exports = {
     alert_empty_fields: 'Du behöver fylla i obligatoriska fält för att gå vidare till Granska och publicera.',
     alert_uploaded_file: 'Vald fil har laddatas upp och fått nytt namn',
     alert_not_pdf: 'Vald fil kunde inte laddas upp. Filen måste vara av typen PDF.',
-
+    // For Ladok recalculate
+    alert_for_recalculate_for_date: 'Resultatet blev 0 för beräkning med senaste examinationstatum: ',
+    alert_recalculate_new_date: 'Här kan du göra en ny beräkning för ett senare examinationsdatum',
+    btn_recalculate: 'Ange nytt datum',
     /** ************ MODALS ************** */
     info_copy_link: {
       header: 'Kopiera länk till sparat utkast',

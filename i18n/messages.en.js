@@ -125,6 +125,10 @@ module.exports = {
     alert_empty_fields: 'All mandatory fields must contain information before proceeding to Review and publish.',
     alert_uploaded_file: 'Selected file has been uploaded and been given a new file name',
     alert_not_pdf: 'The specified file could not be uploaded. The file format must be PDF.',
+    // For Ladok recalculate
+    alert_for_recalculate_for_date: 'Resultatet blev 0 för beräkning med senaste examinationstatum: ',
+    alert_recalculate_new_date: 'Här kan du göra en ny beräkning för ett senare examinationsdatum',
+    btn_recalculate: 'Ange nytt datum',
 
     /** ************ MODALS ************** */
 

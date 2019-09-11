@@ -576,9 +576,11 @@ class AdminPage extends Component {
                 }  
                 { routerStore.canRecalculate 
                   ? <Row>
-                    <Alert color= 'info'>{'translate.text_for_recalculate'} 
+                    <Alert color= 'info'>
+                    <p>{translate.alert_for_recalculate_for_date} {this.state.statisticsParams.endDate} </p>
+                    <p> {translate.alert_recalculate_new_date}</p>
                       <Button color='secondary' id='recalculate' key='recalculate' onClick={this.toggleModal} >
-                        {'translate.btn_recalculate'}
+                        {translate.btn_recalculate}
                       </Button>
                     </Alert>
                   </Row>
