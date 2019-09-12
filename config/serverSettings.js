@@ -76,7 +76,7 @@ module.exports = {
 
   // Service API's
   nodeApi: {
-    kursutvecklingApi: unpackNodeApiConfig('API_URI', devKursutvecklingApi)
+    kursutvecklingApi: unpackNodeApiConfig('KURSUTVECKLING_API_URI', devKursutvecklingApi)
   },
 
   // Cortina
