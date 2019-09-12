@@ -348,7 +348,7 @@ class RouterStore {
     return this.getCourseEmployeesPost(this.redisKeys, 'multi', this.language).then(returnList => {
 
       const {courseSyllabus, examinationRounds } = this.courseData.semesterObjectList[semester]
-      onst language = getLanguageToUse( this.roundData[semester], rounds, this.language === 1 ? 'Engelska' : 'English' )
+      const language = getLanguageToUse( this.roundData[semester], rounds, this.language === 1 ? 'Engelska' : 'English' )
       const roundLang = language === 'English' || language === 'Engelska' ? 'en' : 'sv'
       this.analysisId = `${this.courseData.courseCode}${semester.toString().match(/.{1,4}/g)[1] === '1' ? 'VT' : 'HT'}${semester.toString().match(/.{1,4}/g)[0]}_${rounds.sort().join('_')}`
       this.status = 'new'
