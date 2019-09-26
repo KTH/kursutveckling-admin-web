@@ -21,7 +21,7 @@
     "build-dev": "NODE_ENV=development rm -rf dist && parcel build --no-minify ./public/js/app/app.jsx && npm run vendor && parcel watch ./public/js/app/app.jsx",
     "build-dev-old": "cross-env NODE_ENV=development rm -rf dist && parcel build ./public/js/vendor.js && parcel watch ./public/js/app/app.jsx",
     "start": "NODE_ENV=production node app.js",
-    "start-dev": "cross-env NODE_ENV=development rm -rf ./dist && npm run pack && npm run babel && cross-env NODE_ENV=development concurrently --kill-others \"nodemon --ignore dist/ app.js\" \"webpack --watch\""
+    "start-dev": "cross-env NODE_ENV=development concurrently --kill-others \"npm run build-dev\" \"nodemon --ignore dist/ --ignore public/ app.js\""
   },
   "dependencies": {
     "@azure/storage-blob": "^10.0.0-preview",

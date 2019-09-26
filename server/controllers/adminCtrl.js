@@ -19,8 +19,13 @@ const koppsCourseData = require('../apiCalls/koppsCourseData')
 const kursstatistikAPI = require('../apiCalls/kursstatistikAPI')
 const i18n = require('../../i18n')
 
-let { staticFactory } = require('../../dist/app.js')
-
+function _staticFactory (context, location) {
+  if (process.env.NODE_ENV === 'development') {
+    delete require.cache[require.resolve('../../dist/app.js')]
+  }
+  const { staticFactory } = require('../../dist/app.js')
+  return staticFactory(context, location)
+}
 module.exports = {
   getIndex: getIndex,
   getRoundAnalysis: co.wrap(_getRoundAnalysis),
@@ -211,12 +216,6 @@ async function getIndex (req, res, next) {
     return next(error)
   }
 
-  if (process.env['NODE_ENV'] === 'development') {
-    delete require.cache[require.resolve('../../dist/app.js')]
-    const tmp = require('../../dist/app.js')
-    staticFactory = tmp.staticFactory
-  }
-
   let lang = language.getLanguage(res) || 'sv'
   const ldapUser = req.session.authUser ? req.session.authUser.username : 'null'
   const courseTitle = req.query.title || ''
@@ -224,7 +223,7 @@ async function getIndex (req, res, next) {
   const service = req.query.serv
 
   try {
-    const renderProps = staticFactory()
+    const renderProps = _staticFactory()
     /* ------- Settings ------- */
     renderProps.props.children.props.routerStore.setBrowserConfig(browserConfig, paths, serverConfig.hostUrl, service)
     renderProps.props.children.props.routerStore.setLanguage(lang)
