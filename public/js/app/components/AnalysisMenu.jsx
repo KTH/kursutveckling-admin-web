@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
 import { Alert, Form, Dropdown, FormGroup, Label, 
         Input, Collapse, DropdownToggle, DropdownItem, 
-        DropdownMenu, Button, Row, Col } from 'reactstrap'
+        DropdownMenu, Button, Row, Col, Spinner } from 'reactstrap'
 
 //Custom components
 import InfoModal from './InfoModal'
@@ -528,16 +528,11 @@ class AnalysisMenu extends Component {
                     <Col sm="12" lg="4">
                         { !this.state.firstVisit && this.showEditButton() && !this.state.canOnlyPreview
                                 ?<div>
-                                    { this.state.ladokLoading && this.state.statisticsParams.ladokId.length > 0
-                                        ? <div className= 'ladok-loading-progress'>
-                                          Loading <img title = 'loading file' src={routerStore.browserConfig.proxyPrefixPath.uri + '/static'+ loader['ajax-loader']}/>
-                                        </div>
-                                        :''
-                                    }               
-                                    <Button color='success' id='new' key='new' onClick={this.goToEditMode} disabled ={this.state.firstVisit}>
-                                        <div className="iconContainer arrow-forward" id='new' />  
-                                        {translate.btn_add_analysis}
-                                    </Button>                     
+                                    <Button className='loading-button' color='success' id='new' key='new' onClick={this.goToEditMode} disabled ={this.state.firstVisit}>
+                                        <Spinner size='sm' className={this.state.ladokLoading && this.state.statisticsParams.ladokId.length ? 'loading-button-spinner-loading' : 'loading-button-spinner'} />
+                                        <div>{translate.btn_add_analysis}</div>
+                                        <div className="iconContainer arrow-forward" id='new' />
+                                    </Button>
                             </div>
                             : ''
                         }
