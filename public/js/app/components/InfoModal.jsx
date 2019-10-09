@@ -18,11 +18,7 @@ class InfoModal extends Component {
   handleConfirm(event){
     event.preventDefault()
     const { type, handleConfirm } = this.props
-    if(type === 'recalculate'){
-      handleConfirm(this.state.newEndDate)
-    } else {
-      handleConfirm(this.props.id, true)
-    }
+    handleConfirm(this.props.id, true)
   }
   
   handleDateChange(event){
@@ -48,10 +44,6 @@ class InfoModal extends Component {
               {type=== 'copy'
                 ? <CopyText textToCopy={url} header = {copyHeader} />
                 : <p dangerouslySetInnerHTML={{ __html:infoText.body}}/>
-              }
-              {type === 'recalculate'
-                ? <input type='date' onChange={this.handleDateChange}  />
-                : ''
               }
             </ModalBody>
             <ModalFooter>

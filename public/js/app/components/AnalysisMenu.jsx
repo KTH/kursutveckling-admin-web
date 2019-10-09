@@ -169,6 +169,19 @@ class AnalysisMenu extends Component {
     goToEditMode(event) {
         event.preventDefault()
         const {rounds, selectedRadio, semester, lastSelected, temporaryData, statisticsParams, ladokLoading} = this.state
+
+        if (this.state.usedRounds &&
+            this.props.routerStore.courseData &&
+            this.props.routerStore.courseData.semesterObjectList &&
+            this.props.routerStore.courseData.semesterObjectList[semester] &&
+            this.props.routerStore.courseData.semesterObjectList[semester].rounds) { // TODO: Clean up if statement
+                this.props.routerStore.courseData.semesterObjectList[semester].rounds.forEach((round) => {
+                    if (round.ladokRoundId && this.state.usedRounds.includes(round.ladokRoundId.roundId)) {
+                        statisticsParams.ladokId.push(round.ladokUID)
+                    }
+                })
+        }
+
         if (rounds.length > 0 || selectedRadio.published.length > 0 || selectedRadio.draft.length > 0 ){
             this.setState({ladokLoading:true})
             if(lastSelected === 'new'){
@@ -517,7 +530,7 @@ class AnalysisMenu extends Component {
                                 ?<div>
                                     { this.state.ladokLoading && this.state.statisticsParams.ladokId.length > 0
                                         ? <div className= 'ladok-loading-progress'>
-                                          Loding from ladok  <img title = 'loading file' src={routerStore.browserConfig.proxyPrefixPath.uri + '/static'+ loader['ajax-loader']}/>
+                                          Loading <img title = 'loading file' src={routerStore.browserConfig.proxyPrefixPath.uri + '/static'+ loader['ajax-loader']}/>
                                         </div>
                                         :''
                                     }               

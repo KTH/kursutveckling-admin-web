@@ -103,6 +103,8 @@ module.exports = {
     header_publish_dates: 'Date of published course analysis with course data', // ?
     header_results: 'Results', // ?
     header_copy_link: 'Copy link to last saved draft',
+    header_end_date: 'Per end date',
+    header_result: 'Result',
 
     last_change_date: 'Last time changed: ',
     no_changes: 'No changes since first published',
@@ -111,6 +113,9 @@ module.exports = {
     link_syllabus: 'Course syllabus ', /** Followed by ([giltighetstermin år] – [sista giltighetstermin år]) */
     link_pm: 'Course memo',
     link_analysis: 'Course analysis ', /** Followed by [dd/mm/yyyy] */
+
+    original_values_are: 'The original values are',
+    and: 'and',
 
     /** draft_empty: 'Det finns inga sparade utkast för vald termin', */
     /** published_empty: 'There are no published course analysis and course data this semester.', */
@@ -125,11 +130,7 @@ module.exports = {
     alert_empty_fields: 'All mandatory fields must contain information before proceeding to Review and publish.',
     alert_uploaded_file: 'Selected file has been uploaded and been given a new file name',
     alert_not_pdf: 'The specified file could not be uploaded. The file format must be PDF.',
-    // For Ladok recalculate
-    alert_for_recalculate_for_date: 'Resultatet blev 0 för beräkning med senaste examinationstatum: ',
-    alert_recalculate_new_date: 'Här kan du göra en ny beräkning för ett senare examinationsdatum',
-    btn_recalculate: 'Ange nytt datum',
-
+    alert_graduation_rate_fields_updated: 'One or both of the graduation rate fields have been manually updated.',
     /** ************ MODALS ************** */
 
     info_publish: {
@@ -165,12 +166,6 @@ module.exports = {
       btnCancel: 'No, go back',
       btnConfirm: 'Yes, delete'
     },
-    info_recalculate: {
-      header: 'Beräkna examinationsgrad med nytt datum......',
-      body: `fyll i nytt datum..... </br>`,
-      btnCancel: 'Nej, gå tillbaka',
-      btnConfirm: 'beräkna...'
-    },
 
     /** **** INFO BUTTONS ***** */
     info_select_semester: {
@@ -186,13 +181,13 @@ module.exports = {
 
     info_registrated: {
       header: 'First time registered students',
-      body: 'Number of registered students are defined as the number of first registration students on all the administrative course instances that are included in the course offering. Admitted students that have not been registered shall not be counted. Neither shall registered students that have been re-registered from a previous administrative course instance counted. Number of registered students is calculated based on information fetched from Ladok.',
+      body: 'Number of first registration students are defined as the number of first registration students on all the administrative course instances that are included in the course offering. The number is fetched automatically from Ladok for course offerings with a start semester from Spring 2017 and later. It is possible to enter number of first registration students manually. Admitted students that have not been registered shall not be counted. Neither shall registered students that have been re-registered from a previous administrative course instance be counted. Number of registered students is counted on the start semester of the course offering.',
       btnCancel: 'Close'
     },
 
     info_examination_grade: {
-      header: 'Examination grade',
-      body: 'Graduation rate is defined as the number of passed first registration students on the whole course divided by the number of registered student (as defined above) by the end date of the course offering. The number is fetched automatically from Ladok for course offerings with a start semester from Spring 2017 and later. It is possible to enter graduation rate manually. Graduation rate is not calculated for each examination session in the course examination set. Neither is it recalculated after each following re-examination. Graduation rate is calculated based on information fetched from Ladok.',
+      header: 'Graduation rate',
+      body: 'Graduation rate is defined as the number of passed first registration students on the whole course by entered end date divided by the number of registered students (as defined above) on the course offering. The number is fetched automatically from Ladok for course offerings with a start semester from Spring 2017 and later based on the end date of the course offering. It is possible to recalculate graduation rate based on a manually entered end date. It is also possible to enter graduation rate manually. In that case end date is not relevant. Graduation rate is not calculated for each examination session in the course examination set. Neither is it recalculated after each following re-examination. Graduation rate is calculated based on information fetched from Ladok.',
       btnCancel: 'Close'
     },
 
@@ -206,6 +201,12 @@ module.exports = {
       header: 'Course responsibles',
       body: 'All the course responsibles for all the administrative course instances that are included in the course offering. Course responsibles are administrated in Kopps.',
       btn_close: 'Close'
+    },
+
+    info_end_date: {
+      header: 'End Date',
+      body: 'End date used for the calculated examination grade.',
+      btnCancel: 'Close'
     },
 
     info_edit_comments: {

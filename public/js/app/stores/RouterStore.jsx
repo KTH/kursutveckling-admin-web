@@ -43,11 +43,10 @@ class RouterStore {
   user ='' //Logged in user name
   statistics = { // Result from Ladok api 
     examinationGrade: -1,
+    endDate: null,
     registeredStudents: -1
   }
-  canRecalculate = false // If examinationGrade is 0 gives a new chans 
   
-
   buildApiUrl(path, params) {
     let host
     if (typeof window !== 'undefined') {
@@ -276,7 +275,7 @@ class RouterStore {
       
       this.statistics = apiResponse.data.responseObject ? apiResponse.data.responseObject : apiResponse.data
       this.statistics.examinationGrade = this.statistics.examinationGrade > 0 ?  Math.round( Number(this.statistics.examinationGrade) * 10 ) / 10 : 0
-      this.canRecalculate = this.statistics.registeredStudents > 0 && this.statistics.examinationGrade === 0
+      this.statistics.endDate = endDate
       return apiResponse.body
     }).catch(err => {
       if (err.response) {
@@ -399,6 +398,7 @@ class RouterStore {
         examinationRounds: this.getExamObject( examinationRounds, this.courseData.gradeScale, roundLang),
         examiners: '',
         examinationGrade: this.statistics.hasOwnProperty('examinationGrade') && this.statistics.examinationGrade > -1 ? this.statistics.examinationGrade : '',
+        endDate: this.statistics.endDate,
         isPublished: false,
         pdfAnalysisDate: '',
         pdfPMDate: '',
@@ -416,7 +416,9 @@ class RouterStore {
         examinationGradeFromLadok: this.statistics.hasOwnProperty('examinationGrade') && this.statistics.examinationGrade > -1,
         registeredStudentsFromLadok: this.statistics.hasOwnProperty('registeredStudents') && this.statistics.registeredStudents > -1,
         examinationGradeLadok: this.statistics.examinationGrade, 
-        registeredStudentsLadok: this.statistics.registeredStudents
+        registeredStudentsLadok: this.statistics.registeredStudents,
+        endDateFromLadok: true,
+        endDateLadok: this.statistics.endDate
       }
 
       this.analysisData.examiners = ''

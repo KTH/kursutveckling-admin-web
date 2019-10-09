@@ -112,10 +112,15 @@ module.exports = {
     header_upload_file_pm_date: 'Publiceringsdatum för kurs-pm',
     last_change_date: 'Senaste ändring:',
     header_copy_link: 'Kopiera länk till senast sparat utkast',
+    header_end_date: 'För slutdatum',
+    header_result: 'Resultat',
 
     link_syllabus: 'Kursplan',
     link_analysis: 'Kursanalys',
     link_pm: 'Kurs-PM',
+
+    original_values_are: 'De ursprungliga värdena är',
+    and: 'och',
 
     alert_no_rounds_selected: 'Du måste välja en kursomgång/ kurstillfälle nedan, innan du klickar på knapp "Redigera, ladda upp".',
     alert_no_rounds: 'Den här kursen har inga opublicerade kursomgångar denna termin',
@@ -125,10 +130,8 @@ module.exports = {
     alert_empty_fields: 'Du behöver fylla i obligatoriska fält för att gå vidare till Granska och publicera.',
     alert_uploaded_file: 'Vald fil har laddatas upp och fått nytt namn',
     alert_not_pdf: 'Vald fil kunde inte laddas upp. Filen måste vara av typen PDF.',
-    // For Ladok recalculate
-    alert_for_recalculate_for_date: 'Resultatet blev 0 för beräkning med senaste examinationstatum: ',
-    alert_recalculate_new_date: 'Här kan du göra en ny beräkning för ett senare examinationsdatum',
-    btn_recalculate: 'Ange nytt datum',
+    alert_graduation_rate_fields_updated: 'Ett eller båda fälten för examinationsgrad har manuellt uppdaterats.',
+
     /** ************ MODALS ************** */
     info_copy_link: {
       header: 'Kopiera länk till sparat utkast',
@@ -172,12 +175,6 @@ module.exports = {
       btnCancel: 'Nej, gå tillbaka',
       btnConfirm: 'Ja, fortsätt radera'
     },
-    info_recalculate: {
-      header: 'Beräkna examinationsgrad med nytt datum......',
-      body: `fyll i nytt datum..... </br>`,
-      btnCancel: 'Nej, gå tillbaka',
-      btnConfirm: 'beräkna...'
-    },
     /** **** INFO BUTTONS ***** */
     info_select_semester: {
       header: 'Välj termin',
@@ -192,7 +189,13 @@ module.exports = {
 
     info_examination_grade: {
       header: 'Examinationsgrad',
-      body: 'Examinationsgrad är antal förstagångsregistrerade studenter som godkänts på hela kursomgången vid kursomgångens slutdatum dividerat med antal förstagångsregistrerade på kursomgången. Examinationsgrad hämtas automatiskt för kursomgångar med startdatum VT 2017 och senare. Det är möjligt att ange examinationsgrad manuellt. Examinationsgrad redovisas inte för respektive delmoment i examinationen. Examinationsgrad beräknas inte heller om efter efterföljande omtentor.',
+      body: 'Examinationsgrad är antal förstagångsregistrerade studenter som godkänts på hela kursomgången vid valt slutdatum dividerat med antal förstagångsregistrerade på kursomgången. Examinationsgrad hämtas automatiskt från Ladok för kursomgångar med starttermin VT 2017 och senare baserat på kursomgångens slutdatum. Det är möjligt att beräkna om examinationsgrad baserat på ett eget valt slutdatum. Det är också möjligt att ange examinationsgrad manuellt. I det fallet är slutdatum inte relevant. Examinationsgrad redovisas inte för respektive delmoment i examinationen. Examinationsgrad beräknas inte heller om efter efterföljande omtentor.',
+      btnCancel: 'Close'
+    },
+
+    info_end_date: {
+      header: 'Sludatum',
+      body: 'Slutdatum som låg till grund för beräknad examinationsgrad.',
       btnCancel: 'Close'
     },
 
@@ -242,7 +245,7 @@ module.exports = {
     },
     info_registrated: {
       header: 'Antal förstagångsregistrerade studenter',
-      body: 'Antal förstagångsregistrerade studenter på de kurstillfällen som ingår i kursomgången. Antal förstagångsregistrerade studenter hämtas automatiskt för kursomgångar med startdatum VT 2017 och senare. Det är möjligt att ange examinationsgrad manuellt. Studenter som antagits men som inte registrerats ska inte räknas in. Inte heller registrerade studenter som omregistrerats från ett annat kurstillfälle på samma kurs ska räknas in.',
+      body: 'Siffran avser antal förstagångsregistrerade studenter på de kurstillfällen som ingår i kursomgången. Antal förstagångsregistrerade studenter hämtas automatiskt från Ladok för kursomgångar med startdatum VT 2017 och senare. Det är möjligt att ange examinationsgrad manuellt. Studenter som antagits men som inte registrerats ska inte räknas in. Inte heller registrerade studenter som omregistrerats från ett annat kurstillfälle på samma kurs ska räknas in. Beräkningen görs på kursomgångens starttermin.',
       btnCancel: 'Close'
     },
 

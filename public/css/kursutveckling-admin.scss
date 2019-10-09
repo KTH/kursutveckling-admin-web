@@ -106,10 +106,20 @@ ul.no-padding-left{
   font-size: 12px;
 }
 
+.ladok-loading-progress-inline {
+  color: #007fae;
+  margin-top: -20px;
+  line-height: 1;
+  font-size: 12px;
+  img {
+    position: absolute;
+    margin: 1em 0 0 1em;
+  }
+}
 
 // ----- PAGE 2: FORM ------- //
 .form-control {
-  margin-bottom: 10px;
+  margin-bottom: 1em;
 }
 
 .admin-form{
@@ -408,4 +418,27 @@ input[type=date] {
   font-size: .875rem;
   height: 38px;
   padding: 6px 10px;
+}
+
+h5 {
+  font-size: .875rem;
+  margin-bottom: 0;
+}
+
+.calculate-examination-grade {
+  display: flex;
+  flex-direction: row;
+  padding-top: 0.375rem;
+  div {
+    flex-grow: 1;
+    &:first-of-type {
+      margin-right: 15px;
+    }
+    &:last-of-type {
+      margin-left: 15px;
+    }
+    input:disabled {
+      color: transparent;
+    }
+  }
 }

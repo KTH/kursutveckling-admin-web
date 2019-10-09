@@ -16,6 +16,7 @@ import { SERVICE_URL } from '../util/constants'
 import { getTodayDate, isValidDate } from '../util/helpers'
 import i18n from '../../../../i18n/index'
 
+import loader from '../../../img/*.gif'
 
 @inject(['routerStore']) @observer
 class AdminPage extends Component {
@@ -32,7 +33,6 @@ class AdminPage extends Component {
       modalOpen:{
         publish: false,
         cancel: false,
-        recalculate: false
       },
       alert: '',
       alertSuccess: '',
@@ -50,7 +50,11 @@ class AdminPage extends Component {
       statisticsParams: {
         endDate: '',
         ladokId: []
-    }
+      },
+      endDateInputEnabled: true,
+      examinationGradeInputEnabled: true,
+      ladokLoading: false,
+      multiLineAlert: []
     }
     this.handlePreview = this.handlePreview.bind(this)
     this.editMode = this.editMode.bind(this)
@@ -197,7 +201,11 @@ class AdminPage extends Component {
         isPreviewMode: false,
         progress: 'back_new',
         activeSemester: routerStore.analysisData.semester,
-        alert: ''
+        alert: '',
+        endDateInputEnabled: true,
+        examinationGradeInputEnabled: true,
+        endDateLadok: '',
+        examinationGradeLadok: '-1'
       })
     }
     if (this.state.isPreviewMode) { 
@@ -293,31 +301,37 @@ class AdminPage extends Component {
             modalOpen: modal,
             values: response
           })
-          // window.location= encodeURI(`${routerStore.browserConfig.hostUrl}${SERVICE_URL[routerStore.service]}${routerStore.analysisData.courseCode}?serv=kutv&event=pub&id=${routerStore.analysisId}&term=${routerStore.analysisData.semester}&name=${routerStore.analysisData.analysisName}`)
+          window.location= encodeURI(`${routerStore.browserConfig.hostUrl}${SERVICE_URL[routerStore.service]}${routerStore.analysisData.courseCode}?serv=kutv&event=pub&id=${routerStore.analysisId}&term=${routerStore.analysisData.semester}&name=${routerStore.analysisData.analysisName}`)
         }
       })  
   }
 
   handleNewExaminationGrade(newEndDate){
+    this.setState({ladokLoading: true})
     const { values, statisticsParams, modalOpen } = this.state
-    modalOpen.recalculate = false
-    if(newEndDate.length > 0){
+    if (newEndDate.length > 0) {
       return this.props.routerStore.postLadokRoundIdListAndDateToGetStatistics(statisticsParams.ladokId, newEndDate).then( ladokResponse =>{
         values.examinationGrade =  Math.round( Number(this.props.routerStore.statistics.examinationGrade) * 10 ) / 10 
-        values.examinationGradeFromLadok = false
-        this.setState({ 
-          values,
-          modalOpen
+        values.examinationGradeFromLadok = values['endDate'] === values['endDateLadok'] && Number(values['examinationGrade']) === values['examinationGradeLadok']
+        this.setState(state => {
+          return {
+            values,
+            examinationGradeInputEnabled: true,
+            ladokLoading: false,
+            alert: values.examinationGradeFromLadok ? '' : state.alert
+          }
         })
       })
-    }else{
+    } else {
+      values.examinationGrade = -1      
+      values.examinationGradeFromLadok = false
       this.setState({ 
-        modalOpen
+        values,
+        ladokLoading: false
       })
     }
-   
-  }
 
+  }
 
   //************************ OTHER **************************** */
   //*************************************************************/
@@ -371,25 +385,68 @@ class AdminPage extends Component {
 
   handleInputChange(event) {
     let values = this.state.values
+    let endDateInputEnabled = this.state.endDateInputEnabled
+    let examinationGradeInputEnabled = this.state.examinationGradeInputEnabled
+    let multiLineAlert = []
     values[event.target.id] = event.target.value
-    if(event.target.id === 'examinationGrade' || event.target.id === 'registeredStudents'){
+    if(event.target.id === 'examinationGrade' || event.target.id === 'registeredStudents' || event.target.id === 'endDate'){
       values[event.target.id+'FromLadok'] = Number(values[event.target.id]) === values[event.target.id+'Ladok']
     }
+
+    if (event.target.id === 'examinationGrade') {
+      if (Number(values['examinationGrade']) === values['examinationGradeLadok']) {
+        values['endDate'] = values['endDateLadok']
+        endDateInputEnabled = true
+      } else {
+        values['endDate'] = '' 
+        endDateInputEnabled = false
+        multiLineAlert.push(i18n.messages[this.props.routerStore.language].messages.alert_graduation_rate_fields_updated)
+        multiLineAlert.push(i18n.messages[this.props.routerStore.language].messages.original_values_are +
+        ' ' +
+        values['endDateLadok'] +
+        ' ' +
+        i18n.messages[this.props.routerStore.language].messages.and +
+        ' ' +
+        values['examinationGradeLadok'] +
+        '.')
+        }
+    } else if (event.target.id === 'endDate') {
+      this.handleNewExaminationGrade(values['endDate'])
+      examinationGradeInputEnabled = false
+      multiLineAlert.push(i18n.messages[this.props.routerStore.language].messages.alert_graduation_rate_fields_updated)
+      multiLineAlert.push(i18n.messages[this.props.routerStore.language].messages.original_values_are +
+      ' ' +
+      values['endDateLadok'] +
+      ' ' +
+      i18n.messages[this.props.routerStore.language].messages.and +
+      ' ' +
+      values['examinationGradeLadok'] +
+      '.')
+  }
+
     this.setState({
+      endDateInputEnabled: endDateInputEnabled,
+      examinationGradeInputEnabled: examinationGradeInputEnabled,
       values: values,
       //saved: false,
       notValid: [],
-      alertError:''
+      alertError: '',
+      multiLineAlert: multiLineAlert
     })
   }
 
   validateData(values){
     let invalidList = []
-    const toValidate = ['registeredStudents', 'examinationGrade', 'examiners', 'responsibles']
+    const toValidate = ['registeredStudents', 'examiners', 'responsibles']
     for (let key of toValidate) {
       if( values[key].length === 0){
         invalidList.push(key)
       }
+    }
+
+    const examinationGradeValue = values['examinationGrade'];
+    if (examinationGradeValue.length === 0 || examinationGradeValue === '-1') {
+      invalidList.push('examinationGrade')
     }
 
     if(this.state.analysisFile.length === 0){
@@ -561,7 +618,15 @@ class AdminPage extends Component {
                     <Alert color= 'info' className='margin-bottom-40'>{this.state.alert} </Alert>
                   </Row>
                   : ''
-                }  
+                }
+                {this.state.multiLineAlert.length > 0
+                  ? <Row>
+                    <Alert color='info' className='margin-bottom-40'>
+                      {this.state.multiLineAlert.map((text, index) => <p key={"alert-p-" + index}>{text}</p>)}
+                    </Alert>
+                  </Row>
+                  : ''
+                }
                 {this.state.alertSuccess.length > 0 
                   ? <Row>
                     <Alert color= 'success' >{this.state.alertSuccess} </Alert>
@@ -573,19 +638,7 @@ class AdminPage extends Component {
                     <Alert color= 'danger'>{this.state.alertError} </Alert>
                   </Row>
                   : ''
-                }  
-                { routerStore.canRecalculate 
-                  ? <Row>
-                    <Alert color= 'info'>
-                    <p>{translate.alert_for_recalculate_for_date} {this.state.statisticsParams.endDate} </p>
-                    <p> {translate.alert_recalculate_new_date}</p>
-                      <Button color='secondary' id='recalculate' key='recalculate' onClick={this.toggleModal} >
-                        {translate.btn_recalculate}
-                      </Button>
-                    </Alert>
-                  </Row>
-                  : ''
-                }  
+                }
                {/* FORM - FIRST COLUMN */}
                 <Row className='form-group'>
                   <Col sm='4' className='col-form'>
@@ -631,7 +684,7 @@ class AdminPage extends Component {
                        { this.state.pmFile.length > 0 
                         ? <span>
                          <FormLabel translate = {translate} header = {'header_upload_file_pm_date'} id = {'info_upload_course_memo_date'} />
-                         <Input id='pdfPMDate' key='pdfPMDate' type='date' 
+                         <Input id='pdfPMDate' key='pdfPMDate' type='date'
                            value={this.state.values.pdfPMDate} 
                            onChange={this.handleInputChange} 
                            className = {this.state.notValid.indexOf('pdfPMDate') > -1 ? 'not-valid' : ''}
@@ -657,22 +710,6 @@ class AdminPage extends Component {
                   <Col sm='4' className='col-form'>
                     <h4>{translate.header_check_data}</h4>
                    
-                    <FormLabel translate = {translate} header = {'header_registrated'} id = {'info_registrated'} />
-                    <Input id='registeredStudents' key='registeredStudents' type='number' 
-                      placeholder = '0' 
-                      value={this.state.values.registeredStudents} 
-                      onChange={this.handleInputChange} 
-                      className = {this.state.notValid.indexOf('registeredStudents') > -1 ? 'not-valid' : ''}
-                    />
-                    
-                    <FormLabel translate = {translate} header = {'header_examination_grade'} id = {'info_examination_grade'} />
-                    <Input id='examinationGrade' key='examinationGrade' type='number' 
-                      placeholder = '0' 
-                      value={this.state.values.examinationGrade} 
-                      onChange={this.handleInputChange}
-                      className = {this.state.notValid.indexOf('examinationGrade') > -1 ? 'not-valid' : ''}
-                    />
-                      
                     <FormLabel translate = {translate} header = {'header_examiners'} id = {'info_examiners'} />
                     <Input id='examiners' key='examiners' type='text' 
                       value={this.state.values.examiners} 
@@ -680,13 +717,53 @@ class AdminPage extends Component {
                       className = {this.state.notValid.indexOf('examiners') > -1 ? 'not-valid' : ''}
                     />
                      
-                     <FormLabel translate = {translate} header = {'header_responsibles'} id = {'info_responsibles'} />
-                      <Input id='responsibles' key='responsibles' type='text' 
-                        value={this.state.values.responsibles} 
-                        onChange={this.handleInputChange} 
-                        className = {this.state.notValid.indexOf('responsibles') > -1 ? 'not-valid' : ''}
-                      />
+                    <FormLabel translate = {translate} header = {'header_responsibles'} id = {'info_responsibles'} />
+                    <Input id='responsibles' key='responsibles' type='text' 
+                      value={this.state.values.responsibles} 
+                      onChange={this.handleInputChange} 
+                      className = {this.state.notValid.indexOf('responsibles') > -1 ? 'not-valid' : ''}
+                    />
 
+                    <FormLabel translate = {translate} header = {'header_registrated'} id = {'info_registrated'} />
+                    <Input id='registeredStudents' key='registeredStudents' type='number' 
+                      placeholder = '0' 
+                      value={this.state.values.registeredStudents} 
+                      onChange={this.handleInputChange} 
+                      className = {this.state.notValid.indexOf('registeredStudents') > -1 ? 'not-valid' : ''}
+                    />
+
+                    <FormLabel translate = {translate} header = {'header_examination_grade'} id = {'info_examination_grade'} />
+                    <div className="calculate-examination-grade">
+                      <div>
+                        <h5>{translate.header_end_date}</h5>
+                        <Input id='endDate' key='endDate' type='date'
+                          value= {this.state.values.endDate}
+                          onChange={this.handleInputChange}
+                          className = {this.state.notValid.indexOf('endDate') > -1 ? 'not-valid' : ''}
+                          disabled={this.state.endDateInputEnabled ? '' : 'disabled'}
+                          
+                          />
+                      </div>
+                      <div>
+                        <h5>{translate.header_result}</h5>
+                        <span>
+                          { this.state.ladokLoading === true
+                              ? <span className= 'ladok-loading-progress-inline'>
+                                  <img title = 'loading file' src={routerStore.browserConfig.proxyPrefixPath.uri + '/static'+ loader['ajax-loader']}/>
+                                </span>
+                              :''
+                          }  
+                          <Input id='examinationGrade' key='examinationGrade' type='number' 
+                            placeholder = '0' 
+                            value={this.state.values.examinationGrade} 
+                            onChange={this.handleInputChange}
+                            className = {this.state.notValid.indexOf('examinationGrade') > -1 ? 'not-valid' : ''}
+                            disabled={this.state.examinationGradeInputEnabled ? '' : 'disabled'}
+                          />
+                        </span>
+                      </div>
+                    </div>
+                      
                       { isPublished
                         ? <span>
                           <div className='inline-flex'>
@@ -771,7 +848,6 @@ class AdminPage extends Component {
           {/************************************************************************************* */}  
           <InfoModal type = 'publish' toggle= {this.toggleModal} isOpen = {this.state.modalOpen.publish} id={this.props.routerStore.analysisId} handleConfirm={this.handlePublish} infoText={translate.info_publish}/>
           <InfoModal type = 'cancel' toggle= {this.toggleModal} isOpen = {this.state.modalOpen.cancel} id={this.props.routerStore.analysisId} handleConfirm={this.handleCancel} infoText={translate.info_cancel}/>
-          <InfoModal type = 'recalculate' toggle= {this.toggleModal} isOpen = {this.state.modalOpen.recalculate} id={this.props.routerStore.analysisId} handleConfirm={this.handleNewExaminationGrade} infoText={translate.info_recalculate} />
           </div>
          }
         </div>
