@@ -170,18 +170,6 @@ class AnalysisMenu extends Component {
         event.preventDefault()
         const {rounds, selectedRadio, semester, lastSelected, temporaryData, statisticsParams, ladokLoading} = this.state
 
-        if (this.state.usedRounds &&
-            this.props.routerStore.courseData &&
-            this.props.routerStore.courseData.semesterObjectList &&
-            this.props.routerStore.courseData.semesterObjectList[semester] &&
-            this.props.routerStore.courseData.semesterObjectList[semester].rounds) { // TODO: Clean up if statement
-                this.props.routerStore.courseData.semesterObjectList[semester].rounds.forEach((round) => {
-                    if (round.ladokRoundId && this.state.usedRounds.includes(round.ladokRoundId.roundId)) {
-                        statisticsParams.ladokId.push(round.ladokUID)
-                    }
-                })
-        }
-
         if (rounds.length > 0 || selectedRadio.published.length > 0 || selectedRadio.draft.length > 0 ){
             this.setState({ladokLoading:true})
             if(lastSelected === 'new'){

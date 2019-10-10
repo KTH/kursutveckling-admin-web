@@ -49,7 +49,7 @@ class AdminPage extends Component {
       },
       statisticsParams: {
         endDate: '',
-        ladokId: []
+        ladokId: this.props.routerStore.analysisData ? this.props.routerStore.analysisData.ladokUIDs : []
       },
       endDateInputEnabled: true,
       examinationGradeInputEnabled: true,
@@ -240,6 +240,10 @@ class AdminPage extends Component {
       routerStore.updateFileInStorage(this.state.analysisFile, this.getMetadata('draft'))
     }
 
+    if (this.state.statisticsParams && this.state.statisticsParams.ladokId) {
+      postObject.ladokUIDs = this.state.statisticsParams.ladokId
+    }
+
     return routerStore.postRoundAnalysisData(postObject, postObject.changedDate.length === 0 )
       .then((data) => {
         if(this.state.isPreviewMode){
@@ -360,6 +364,9 @@ class AdminPage extends Component {
       this.props.history.push(this.props.routerStore.browserConfig.proxyPrefixPath.uri + '/' + analysisId)
       return thisAdminPage.props.routerStore.getRoundAnalysis(analysisId).then(analysis => {
         const valuesObject = this.handleTemporaryData(thisAdminPage.props.routerStore.analysisData, tempData)
+        if (!statisticsParams.ladokId || !statisticsParams.ladokId.length) {
+          statisticsParams.ladokId = valuesObject.values.ladokUIDs
+        }
         thisAdminPage.setState({
           progress: 'edit',
           isPreviewMode: false,
