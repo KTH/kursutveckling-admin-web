@@ -440,6 +440,20 @@ h5 {
     input:disabled {
       color: transparent;
     }
+    input[type="number"] {
+      &::-webkit-input-placeholder {
+        color: transparent;
+      }
+      &::-moz-placeholder {
+        color: transparent;
+      }
+      &:-ms-input-placeholder {
+        color: transparent;
+      }
+      &:-moz-placeholder {
+        color: transparent;
+      }
+    }
   }
 }
 
