@@ -748,7 +748,7 @@ class AdminPage extends Component {
                           onChange={this.handleInputChange}
                           className = {this.state.notValid.indexOf('endDate') > -1 ? 'not-valid' : ''}
                           disabled={this.state.endDateInputEnabled ? '' : 'disabled'}
-                          
+                          max='2099-12-31'
                           />
                       </div>
                       <div>
