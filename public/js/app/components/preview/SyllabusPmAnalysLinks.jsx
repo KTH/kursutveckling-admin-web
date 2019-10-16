@@ -26,7 +26,7 @@ const SyllabusPmAnalysLinks = ({translate, courseRoundObj, storageUri, analysisF
 
   return (
     <span className='right-links' >
-      <p className='pdf-link'>{translate.link_syllabus}: - </p>
+      <p className='pdf-link'>{translate.link_syllabus}: {translate.link_syllabus_empty}</p>
       <ActiveOrDisavledLink 
         href={pmLink} 
         linkTitle={translate.link_pm}  

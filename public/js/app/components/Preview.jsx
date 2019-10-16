@@ -148,10 +148,10 @@ class TableForCourse extends Component {
           <span className="right-links" >
            <a>{translate.link_syllabus}</a>
             <a key='pmLink' id='pmLink' href={routerStore.browserConfig.storageUri + linksFileNames.analysis} target='_blank' > 
-              {translate.link_pm}: {values.pdfPMDate.length > 0 ? ': '+ getDateFormat(values.pdfPMDate, routerStore.language) : '' }
+              {translate.link_pm}: {values.pdfPMDate.length > 0 ? ': '+ getDateFormat(values.pdfPMDate, routerStore.language) : {translate.link_syllabus_empty} }
             </a> 
             <a key='analysisLink'  id='analysisLink' href={routerStore.browserConfig.storageUri + linksFileNames.pm} target='_blank' >  
-                {translate.link_analysis} {values.pdfAnalysisDate.length > 0 ? ': '+ getDateFormat(values.pdfAnalysisDate, routerStore.language) : '' }
+                {translate.link_analysis} {values.pdfAnalysisDate.length > 0 ? ': '+ getDateFormat(values.pdfAnalysisDate, routerStore.language) : {translate.link_syllabus_empty} }
             </a>
           </span>
           <Table responsive>

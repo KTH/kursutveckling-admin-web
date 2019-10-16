@@ -116,6 +116,7 @@ module.exports = {
     header_result: 'Resultat',
 
     link_syllabus: 'Kursplan',
+    link_syllabus_empty: 'Länk syns inte vid granskning',
     link_analysis: 'Kursanalys',
     link_pm: 'Kurs-PM',
 
