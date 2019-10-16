@@ -23,8 +23,8 @@ const ExtraKoppsInfo = ({translate, courseRoundObj}) => {
   )
 }
 const ExtraDatesAndComment = ({translate, courseRoundObj}) => {
-  return (
-    <span>
+  return courseRoundObj.publishedDate ? (
+  <span>
       <p><b>{translate.header_publishing_dates}</b></p>
       <p>{translate.publishedDate}:&nbsp;{courseRoundObj.publishedDate}</p>
       {courseRoundObj.commentChange !== ''
@@ -40,7 +40,7 @@ const ExtraDatesAndComment = ({translate, courseRoundObj}) => {
         : <p>{translate.changedAfterPublishedDate}:&nbsp;<i>{translate.no_date_last_changed}</i></p>
       }
     </span>
-  )
+  ) : (<span/>)
 }
 class CollapseExtraInfo extends Component {
   constructor (props) {
