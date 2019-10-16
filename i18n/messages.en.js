@@ -131,6 +131,7 @@ module.exports = {
     alert_uploaded_file: 'Selected file has been uploaded and been given a new file name',
     alert_not_pdf: 'The specified file could not be uploaded. The file format must be PDF.',
     alert_graduation_rate_fields_updated: 'One or both of the graduation rate fields have been manually updated.',
+    alert_graduation_rate_cant_be_calculated: 'Graduation rate can’t be automatically calculated.',
     /** ************ MODALS ************** */
 
     info_publish: {

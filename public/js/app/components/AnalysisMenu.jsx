@@ -113,7 +113,6 @@ class AnalysisMenu extends Component {
                 prevState.temporaryData = undefined
                 prevState.statisticsParams.endDate = endDate
                 prevState.statisticsParams.ladokId.indexOf(ladokId) === -1 && ladokId.length > 0 ? prevState.statisticsParams.ladokId.push(ladokId) : ''
-                prevState.statisticsParams.endDate = endDate
                 this.setState(prevState)
             }
         }

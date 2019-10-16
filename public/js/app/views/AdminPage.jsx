@@ -48,13 +48,21 @@ class AdminPage extends Component {
         analysis: 0
       },
       statisticsParams: {
-        endDate: '',
-        ladokId: this.props.routerStore.analysisData ? this.props.routerStore.analysisData.ladokUIDs : []
+        endDate: (this.props.routerStore.analysisData && this.props.routerStore.analysisData.endDate) ? this.props.routerStore.analysisData.endDate : '',
+        ladokId: (this.props.routerStore.analysisData && this.props.routerStore.analysisData.ladokUIDs) ? this.props.routerStore.analysisData.ladokUIDs : []
       },
       endDateInputEnabled: true,
       examinationGradeInputEnabled: true,
       ladokLoading: false,
-      multiLineAlert: []
+      multiLineAlert: handleMultiLineAlert({
+        init: true,
+        messages: i18n.messages[props.routerStore.language].messages,
+        ladokId: (this.props.routerStore.analysisData && this.props.routerStore.analysisData.ladokUIDs) ? this.props.routerStore.analysisData.ladokUIDs : [],
+        endDate: (this.props.routerStore.analysisData && this.props.routerStore.analysisData.endDate) ? this.props.routerStore.analysisData.endDate : '',
+        examinationGrade: (this.props.routerStore.analysisData && this.props.routerStore.analysisData.examinationGrade) ? this.props.routerStore.analysisData.examinationGrade : -1,
+        endDateLadok: (this.props.routerStore.analysisData && this.props.routerStore.analysisData.endDateLadok) ? this.props.routerStore.analysisData.endDateLadok : '',
+        examinationGradeLadok: (this.props.routerStore.analysisData && this.props.routerStore.analysisData.examinationGradeLadok >= 0) ? this.props.routerStore.analysisData.examinationGradeLadok : -1
+      })
     }
     this.handlePreview = this.handlePreview.bind(this)
     this.editMode = this.editMode.bind(this)
@@ -71,6 +79,7 @@ class AdminPage extends Component {
     this.handleRemoveFile = this.handleRemoveFile.bind(this)
     this.validateData = this.validateData.bind(this)
     this.handleNewExaminationGrade = this.handleNewExaminationGrade.bind(this)
+    this.resolveMultiLineAlert = this.resolveMultiLineAlert.bind(this)
   }
 
 
@@ -193,7 +202,8 @@ class AdminPage extends Component {
               progress: 'back_new',
               activeSemester: routerStore.analysisData.semester,
               analysisFile:'',
-              alert: ''
+              alert: '',
+              multiLineAlert: []
             })
           })
       }
@@ -202,6 +212,7 @@ class AdminPage extends Component {
         progress: 'back_new',
         activeSemester: routerStore.analysisData.semester,
         alert: '',
+        multiLineAlert: [],
         endDateInputEnabled: true,
         examinationGradeInputEnabled: true,
         endDateLadok: '',
@@ -212,7 +223,8 @@ class AdminPage extends Component {
       this.setState({
         isPreviewMode: false,
         progress: 'edit',
-        alert: ''
+        alert: '',
+        multiLineAlert: []
       })
     }
   }
@@ -241,7 +253,7 @@ class AdminPage extends Component {
     }
 
     if (this.state.statisticsParams && this.state.statisticsParams.ladokId) {
-      postObject.ladokUIDs = this.state.statisticsParams.ladokId
+      postObject.ladokUIDs = this.state.statisticsParams.ladokId ? this.state.statisticsParams.ladokId : []
     }
 
     return routerStore.postRoundAnalysisData(postObject, postObject.changedDate.length === 0 )
@@ -280,10 +292,12 @@ class AdminPage extends Component {
       postObject.pmFileName = this.state.pmFile
     }
 
-    if(postObject.isPublished){
+    if (postObject.isPublished) {
       postObject.changedAfterPublishedDate = getTodayDate()
-    }else{
-      routerStore.updateFileInStorage(this.state.analysisFile, this.getMetadata('published'))
+    } else {
+      if (this.state.statisticsParams && this.state.statisticsParams.ladokId) {
+        postObject.ladokUIDs = this.state.statisticsParams.ladokId ? this.state.statisticsParams.ladokId : []
+      }
       postObject.publishedDate = getTodayDate()
       postObject.isPublished = true
     }
@@ -317,12 +331,21 @@ class AdminPage extends Component {
       return this.props.routerStore.postLadokRoundIdListAndDateToGetStatistics(statisticsParams.ladokId, newEndDate).then( ladokResponse =>{
         values.examinationGrade =  Math.round( Number(this.props.routerStore.statistics.examinationGrade) * 10 ) / 10 
         values.examinationGradeFromLadok = values['endDate'] === values['endDateLadok'] && Number(values['examinationGrade']) === values['examinationGradeLadok']
+        const multiLineAlert = handleMultiLineAlert({
+          messages: i18n.messages[this.props.routerStore.language].messages,
+          ladokId: values.ladokUIDs,
+          endDate: values.endDate,
+          examinationGrade: values.examinationGrade,
+          endDateLadok: values.endDateLadok,
+          examinationGradeLadok: values.examinationGradeLadok
+        })
         this.setState(state => {
           return {
             values,
             examinationGradeInputEnabled: true,
             ladokLoading: false,
-            alert: values.examinationGradeFromLadok ? '' : state.alert
+            alert: values.examinationGradeFromLadok ? '' : state.alert,
+            multiLineAlert
           }
         })
       })
@@ -364,9 +387,18 @@ class AdminPage extends Component {
       this.props.history.push(this.props.routerStore.browserConfig.proxyPrefixPath.uri + '/' + analysisId)
       return thisAdminPage.props.routerStore.getRoundAnalysis(analysisId).then(analysis => {
         const valuesObject = this.handleTemporaryData(thisAdminPage.props.routerStore.analysisData, tempData)
-        if (!statisticsParams.ladokId || !statisticsParams.ladokId.length) {
-          statisticsParams.ladokId = valuesObject.values.ladokUIDs
-        }
+        const statisticsParams = {}
+        statisticsParams.endDate = valuesObject.values.endDate
+        statisticsParams.ladokId = valuesObject.values.ladokUIDs ? valuesObject.values.ladokUIDs : []
+        const multiLineAlert = handleMultiLineAlert({
+          messages: i18n.messages[this.props.routerStore.language].messages,
+          ladokId: valuesObject.values.ladokUIDs,
+          endDate: valuesObject.values.endDate,
+          examinationGrade: valuesObject.values.examinationGrade,
+          endDateLadok: valuesObject.values.endDateLadok,
+          examinationGradeLadok: valuesObject.values.examinationGradeLadok
+        })
+        const endDateInputEnabled = !!valuesObject.values.endDate
         thisAdminPage.setState({
           progress: 'edit',
           isPreviewMode: false,
@@ -376,7 +408,9 @@ class AdminPage extends Component {
           pmFile:  valuesObject.files.pmFile,
           saved: true,
           statisticsParams,
-          alert: ''
+          alert: '',
+          multiLineAlert,
+          endDateInputEnabled
         })
       })
     }
@@ -394,42 +428,34 @@ class AdminPage extends Component {
     let values = this.state.values
     let endDateInputEnabled = this.state.endDateInputEnabled
     let examinationGradeInputEnabled = this.state.examinationGradeInputEnabled
-    let multiLineAlert = []
     values[event.target.id] = event.target.value
-    if(event.target.id === 'examinationGrade' || event.target.id === 'registeredStudents' || event.target.id === 'endDate'){
-      values[event.target.id+'FromLadok'] = Number(values[event.target.id]) === values[event.target.id+'Ladok']
+    if (event.target.id === 'examinationGrade' || event.target.id === 'registeredStudents' || event.target.id === 'endDate') {
+      if (this.state.values[event.target.id + 'FromLadok']) {
+        values[event.target.id + 'FromLadok'] = Number(values[event.target.id]) === values[event.target.id + 'Ladok']
+      } 
     }
-
-    if (event.target.id === 'examinationGrade') {
+    
+    if (event.target.id === 'examinationGrade' && this.state.statisticsParams.ladokId.length > 0) {
       if (Number(values['examinationGrade']) === values['examinationGradeLadok']) {
         values['endDate'] = values['endDateLadok']
         endDateInputEnabled = true
       } else {
         values['endDate'] = '' 
         endDateInputEnabled = false
-        multiLineAlert.push(i18n.messages[this.props.routerStore.language].messages.alert_graduation_rate_fields_updated)
-        multiLineAlert.push(i18n.messages[this.props.routerStore.language].messages.original_values_are +
-        ' ' +
-        values['endDateLadok'] +
-        ' ' +
-        i18n.messages[this.props.routerStore.language].messages.and +
-        ' ' +
-        values['examinationGradeLadok'] +
-        '.')
-        }
-    } else if (event.target.id === 'endDate') {
+      }
+    } else if (event.target.id === 'endDate' && this.state.statisticsParams.ladokId.length > 0) {
       this.handleNewExaminationGrade(values['endDate'])
       examinationGradeInputEnabled = false
-      multiLineAlert.push(i18n.messages[this.props.routerStore.language].messages.alert_graduation_rate_fields_updated)
-      multiLineAlert.push(i18n.messages[this.props.routerStore.language].messages.original_values_are +
-      ' ' +
-      values['endDateLadok'] +
-      ' ' +
-      i18n.messages[this.props.routerStore.language].messages.and +
-      ' ' +
-      values['examinationGradeLadok'] +
-      '.')
-  }
+    } 
+    
+    const multiLineAlert = handleMultiLineAlert({
+      messages: i18n.messages[this.props.routerStore.language].messages,
+      ladokId: values.ladokUIDs,
+      endDate: values.endDate,
+      examinationGrade: values.examinationGrade,
+      endDateLadok: values.endDateLadok,
+      examinationGradeLadok: values.examinationGradeLadok
+    })
 
     this.setState({
       endDateInputEnabled: endDateInputEnabled,
@@ -507,6 +533,26 @@ class AdminPage extends Component {
       }
     }
     return returnObject
+  }
+
+  resolveMultiLineAlert() {
+    const language = this.props.routerStore.language
+    const messages = i18n.messages[language].messages
+    
+    const ladokId = this.state.statisticsParams.ladokId
+    const endDate = this.state.values.endDate
+    const examinationGrade = this.state.values.examinationGrade
+    const endDateLadok = this.state.values.endDateLadok
+    const examinationGradeLadok = this.state.values.examinationGradeLadok
+    
+    return handleMultiLineAlert({
+        messages,
+        ladokId,
+        endDate,
+        examinationGrade,
+        endDateLadok,
+        examinationGradeLadok
+      })
   }
 
   componentDidUpdate() {
@@ -862,6 +908,30 @@ class AdminPage extends Component {
   }
 }
 
+const handleMultiLineAlert = (alertVariables) => {
+  const {init, messages, ladokId, endDate, examinationGrade, endDateLadok, examinationGradeLadok} = alertVariables
+  const multiLineAlert = []
+
+  // Automatic calculation of examination rate is possible
+  if (ladokId && ladokId.length) {
+    if (!(endDate === endDateLadok && Number(examinationGrade) === examinationGradeLadok)) {
+      multiLineAlert.push(messages.alert_graduation_rate_fields_updated)
+      multiLineAlert.push(messages.original_values_are +
+        ' ' +
+        endDateLadok +
+        ' ' +
+        messages.and +
+        ' ' +
+        examinationGradeLadok +
+        '.')
+    }
+  // Round is chosen, but automatic calculation of examination rate is not possible
+  } else if (!init){
+    multiLineAlert.push(messages.alert_graduation_rate_cant_be_calculated)
+  }
+  return multiLineAlert
+}
+
 const FormLabel = ({ translate, header, id }) => {
   return(
     <span className='inline-flex'>
@@ -870,7 +940,5 @@ const FormLabel = ({ translate, header, id }) => {
     </span>
   )
 }
-
-
 
 export default AdminPage
