@@ -252,6 +252,7 @@ module.exports = {
     },
 
     // PREVIEW PAGE
+    info_manually_edited: '* Kursdata har registrerats manuellt',
     header_more_info: 'Mer information',
     header_course_round: 'Kursomgång',
     table_headers_with_popup: {

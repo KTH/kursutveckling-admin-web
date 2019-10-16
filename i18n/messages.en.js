@@ -270,6 +270,7 @@ module.exports = {
 
     },
     //* **** PREVIEW **********
+    info_manually_edited: '* Course data has been registered manually',
     header_course_round: 'Course round ',
     table_headers_with_popup: {
       examiners: { header: 'Examiners', popoverText: 'The examiners of the course at the time for the course offering. Examiners are administrated in Kopps.' },
