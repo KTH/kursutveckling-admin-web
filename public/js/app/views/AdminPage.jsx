@@ -55,7 +55,7 @@ class AdminPage extends Component {
       examinationGradeInputEnabled: true,
       ladokLoading: false,
       multiLineAlert: handleMultiLineAlert({
-        init: true,
+        init: !this.props.routerStore.analysisData,
         messages: i18n.messages[props.routerStore.language].messages,
         ladokId: (this.props.routerStore.analysisData && this.props.routerStore.analysisData.ladokUIDs) ? this.props.routerStore.analysisData.ladokUIDs : [],
         endDate: (this.props.routerStore.analysisData && this.props.routerStore.analysisData.endDate) ? this.props.routerStore.analysisData.endDate : '',
@@ -333,7 +333,7 @@ class AdminPage extends Component {
         values.examinationGradeFromLadok = values['endDate'] === values['endDateLadok'] && Number(values['examinationGrade']) === values['examinationGradeLadok']
         const multiLineAlert = handleMultiLineAlert({
           messages: i18n.messages[this.props.routerStore.language].messages,
-          ladokId: values.ladokUIDs,
+          ladokId: statisticsParams.ladokId,
           endDate: values.endDate,
           examinationGrade: values.examinationGrade,
           endDateLadok: values.endDateLadok,
@@ -370,6 +370,14 @@ class AdminPage extends Component {
       return this.props.routerStore.postLadokRoundIdListAndDateToGetStatistics(statisticsParams.ladokId, statisticsParams.endDate).then( ladokResponse =>{
       this.props.routerStore.createAnalysisData(semester, rounds).then( data => {
         const valuesObject = this.handleTemporaryData(thisAdminPage.props.routerStore.analysisData, tempData)
+        const multiLineAlert = handleMultiLineAlert({
+          messages: i18n.messages[this.props.routerStore.language].messages,
+          ladokId: statisticsParams.ladokId,
+          endDate: valuesObject.values.endDate,
+          examinationGrade: valuesObject.values.examinationGrade,
+          endDateLadok: valuesObject.values.endDateLadok,
+          examinationGradeLadok: valuesObject.values.examinationGradeLadok
+        })
         thisAdminPage.setState({
           progress: "edit",
           isPreviewMode: false,
@@ -379,7 +387,8 @@ class AdminPage extends Component {
           analysisFile: valuesObject.files.analysisFile,
           pmFile:  valuesObject.files.pmFile,
           alert: '',
-          statisticsParams
+          statisticsParams,
+          multiLineAlert
         })
     })
   })
@@ -450,7 +459,7 @@ class AdminPage extends Component {
     
     const multiLineAlert = handleMultiLineAlert({
       messages: i18n.messages[this.props.routerStore.language].messages,
-      ladokId: values.ladokUIDs,
+      ladokId: this.state.statisticsParams.ladokId,
       endDate: values.endDate,
       examinationGrade: values.examinationGrade,
       endDateLadok: values.endDateLadok,
