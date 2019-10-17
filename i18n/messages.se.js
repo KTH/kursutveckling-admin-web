@@ -132,7 +132,7 @@ module.exports = {
     alert_uploaded_file: 'Vald fil har laddatas upp och fått nytt namn',
     alert_not_pdf: 'Vald fil kunde inte laddas upp. Filen måste vara av typen PDF.',
     alert_graduation_rate_fields_updated: 'Ett eller båda fälten för examinationsgrad har manuellt uppdaterats.',
-    alert_graduation_rate_cant_be_calculated: 'Examinationsgrad kan inte räknas ut automatiskt.',
+    alert_graduation_rate_cant_be_calculated: 'Antal förstagångsregistrerade studenter och examinationsgrad kan inte räknas ut automatiskt för denna kursomgång.',
 
     /** ************ MODALS ************** */
     info_copy_link: {
@@ -190,8 +190,8 @@ module.exports = {
     },
 
     info_examination_grade: {
-      header: 'Examinationsgrad',
-      body: 'Examinationsgrad är antal förstagångsregistrerade studenter som godkänts på hela kursomgången vid valt slutdatum dividerat med antal förstagångsregistrerade på kursomgången. Examinationsgrad hämtas automatiskt från Ladok för kursomgångar med starttermin VT 2017 och senare baserat på kursomgångens slutdatum. Det är möjligt att beräkna om examinationsgrad baserat på ett eget valt slutdatum. Det är också möjligt att ange examinationsgrad manuellt. I det fallet är slutdatum inte relevant. Examinationsgrad redovisas inte för respektive delmoment i examinationen. Examinationsgrad beräknas inte heller om efter efterföljande omtentor.',
+      header: 'Examinationsgrad i procent (%)',
+      body: 'Examinationsgrad är antal förstagångsregistrerade studenter som godkänts på hela kursomgången vid valt slutdatum dividerat med antal förstagångsregistrerade på kursomgången i procent (%). Examinationsgrad hämtas automatiskt från Ladok för kursomgångar med starttermin VT 2017 och senare baserat på kursomgångens slutdatum. Det är möjligt att beräkna om examinationsgrad baserat på ett eget valt slutdatum. Det är också möjligt att ange examinationsgrad manuellt. I det fallet är slutdatum inte relevant. Examinationsgrad redovisas inte för respektive delmoment i examinationen. Examinationsgrad beräknas inte heller om efter efterföljande omtentor.',
       btnCancel: 'Close'
     },
 

@@ -132,7 +132,7 @@ module.exports = {
     alert_uploaded_file: 'Selected file has been uploaded and been given a new file name',
     alert_not_pdf: 'The specified file could not be uploaded. The file format must be PDF.',
     alert_graduation_rate_fields_updated: 'One or both of the graduation rate fields have been manually updated.',
-    alert_graduation_rate_cant_be_calculated: 'Graduation rate can’t be automatically calculated.',
+    alert_graduation_rate_cant_be_calculated: 'Number of first registered students and graduation rate can’t be automatically calculated for this course offering.',
     /** ************ MODALS ************** */
 
     info_publish: {
@@ -188,8 +188,8 @@ module.exports = {
     },
 
     info_examination_grade: {
-      header: 'Graduation rate',
-      body: 'Graduation rate is defined as the number of passed first registration students on the whole course by entered end date divided by the number of registered students (as defined above) on the course offering. The number is fetched automatically from Ladok for course offerings with a start semester from Spring 2017 and later based on the end date of the course offering. It is possible to recalculate graduation rate based on a manually entered end date. It is also possible to enter graduation rate manually. In that case end date is not relevant. Graduation rate is not calculated for each examination session in the course examination set. Neither is it recalculated after each following re-examination. Graduation rate is calculated based on information fetched from Ladok.',
+      header: 'Graduation rate in percent (%)',
+      body: 'Graduation rate is defined as the number of passed first registration students on the whole course by entered end date divided by the number of registered students (as defined above) on the course offering in percent (%). The number is fetched automatically from Ladok for course offerings with a start semester from Spring 2017 and later based on the end date of the course offering. It is possible to recalculate graduation rate based on a manually entered end date. It is also possible to enter graduation rate manually. In that case end date is not relevant. Graduation rate is not calculated for each examination session in the course examination set. Neither is it recalculated after each following re-examination. Graduation rate is calculated based on information fetched from Ladok.',
       btnCancel: 'Close'
     },
 
