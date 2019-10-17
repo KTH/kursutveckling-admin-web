@@ -407,7 +407,7 @@ class AdminPage extends Component {
           endDateLadok: valuesObject.values.endDateLadok,
           examinationGradeLadok: valuesObject.values.examinationGradeLadok
         })
-        const endDateInputEnabled = !!valuesObject.values.endDate
+        const endDateInputEnabled = !valuesObject.values.ladokUIDs || !!valuesObject.values.endDate
         thisAdminPage.setState({
           progress: 'edit',
           isPreviewMode: false,
