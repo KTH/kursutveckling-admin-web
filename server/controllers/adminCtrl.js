@@ -42,7 +42,7 @@ module.exports = {
 
 // ------- ANALYSES FROM KURSUTVECKLING-API: POST, GET, DELETE, GET USED ROUNDS ------- /
 
-function * _postRoundAnalysis (req, res, next) {
+async function _postRoundAnalysis (req, res, next) {
   const roundAnalysisId = req.params.id
   const isNewAnalysis = req.params.status
   const language = req.params.language || 'sv'
@@ -51,9 +51,9 @@ function * _postRoundAnalysis (req, res, next) {
   try {
     let apiResponse = {}
     if (isNewAnalysis === 'true') {
-      apiResponse = yield kursutvecklingAPI.setRoundAnalysisData(roundAnalysisId, sendObject, language)
+      apiResponse = await kursutvecklingAPI.setRoundAnalysisData(roundAnalysisId, sendObject, language)
     } else {
-      apiResponse = yield kursutvecklingAPI.updateRoundAnalysisData(roundAnalysisId, sendObject, language)
+      apiResponse = await kursutvecklingAPI.updateRoundAnalysisData(roundAnalysisId, sendObject, language)
     }
 
     return httpResponse.json(res, apiResponse.body)
@@ -63,12 +63,12 @@ function * _postRoundAnalysis (req, res, next) {
   }
 }
 
-function * _getRoundAnalysis (req, res, next) {
+asyn function _getRoundAnalysis (req, res, next) {
   const roundAnalysisId = req.params.id || ''
   const language = req.params.language || 'sv'
   log.debug('_getRoundAnalysis id:' + req.params.id)
   try {
-    const apiResponse = yield kursutvecklingAPI.getRoundAnalysisData(roundAnalysisId, language)
+    const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(roundAnalysisId, language)
     return httpResponse.json(res, apiResponse.body)
   } catch (err) {
     log.error('Exception from getRoundAnalysis ', { error: err })
@@ -76,11 +76,11 @@ function * _getRoundAnalysis (req, res, next) {
   }
 }
 
-function * _deleteRoundAnalysis (req, res, next) {
+async function _deleteRoundAnalysis (req, res, next) {
   const roundAnalysisId = req.params.id
   log.info('_deleteRoundAnalysis with id:' + req.params.id)
   try {
-    const apiResponse = yield kursutvecklingAPI.deleteRoundAnalysisData(roundAnalysisId)
+    const apiResponse = await kursutvecklingAPI.deleteRoundAnalysisData(roundAnalysisId)
     return httpResponse.json(res, apiResponse)
   } catch (err) {
     log.error('Exception from _deleteRoundAnalysis ', { error: err })
@@ -88,12 +88,12 @@ function * _deleteRoundAnalysis (req, res, next) {
   }
 }
 
-function * _getUsedRounds (req, res, next) {
+async function _getUsedRounds (req, res, next) {
   const courseCode = req.params.courseCode
   const semester = req.params.semester
   log.debug('_getUsedRounds with course code: ' + courseCode + 'and semester: ' + semester)
   try {
-    const apiResponse = yield kursutvecklingAPI.getUsedRounds(courseCode, semester)
+    const apiResponse = await kursutvecklingAPI.getUsedRounds(courseCode, semester)
     log.debug('_getUsedRounds response: ', apiResponse.body)
     return httpResponse.json(res, apiResponse.body)
   } catch (error) {
@@ -103,12 +103,12 @@ function * _getUsedRounds (req, res, next) {
 }
 
 // ------- COURSE DATA FROM KOPPS-API   ------- /
-function * _getKoppsCourseData (req, res, next) {
+async function _getKoppsCourseData (req, res, next) {
   const courseCode = req.params.courseCode
   const language = req.params.language || 'sv'
   log.info('_getKoppsCourseData with code:' + courseCode)
   try {
-    const apiResponse = yield koppsCourseData.getKoppsCourseData(courseCode, language)
+    const apiResponse = await koppsCourseData.getKoppsCourseData(courseCode, language)
     return httpResponse.json(res, apiResponse.body)
   } catch (err) {
     log.error('Exception from koppsAPI ', { error: err })
@@ -117,11 +117,11 @@ function * _getKoppsCourseData (req, res, next) {
 }
 
 // ------- FILES IN BLOB STORAGE: SAVE, UPDATE, DELETE ------- /
-function * _saveFileToStorage (req, res, next) {
+async function _saveFileToStorage (req, res, next) {
   log.info('Saving uploaded file to storage ' + req.files.file)
   let file = req.files.file
   try {
-    const fileName = yield runBlobStorage(file, req.params.analysisid, req.params.type, req.params.published, req.body)
+    const fileName = await runBlobStorage(file, req.params.analysisid, req.params.type, req.params.published, req.body)
     return httpResponse.json(res, fileName)
   } catch (error) {
     log.error('Exception from saveFileToStorage ', { error: error })
@@ -129,10 +129,10 @@ function * _saveFileToStorage (req, res, next) {
   }
 }
 
-function * _updateFileInStorage (req, res, next) {
+async function _updateFileInStorage (req, res, next) {
   log.info('_updateFileInStorage file name:' + req.params.fileName + ', metadata:' + req.body.params.metadata)
   try {
-    const response = yield updateMetaData(req.params.fileName, req.body.params.metadata)
+    const response = await updateMetaData(req.params.fileName, req.body.params.metadata)
     return httpResponse.json(res, response)
   } catch (error) {
     log.error('Exception from updateFileInStorage ', { error: error })
@@ -140,10 +140,10 @@ function * _updateFileInStorage (req, res, next) {
   }
 }
 
-function * _deleteFileInStorage (res, req, next) {
+async function _deleteFileInStorage (res, req, next) {
   log.debug('_deleteFileInStorage, id:' + req.req.params.id)
   try {
-    const response = yield deleteBlob(req.req.params.id)
+    const response = await deleteBlob(req.req.params.id)
     log.debug('_deleteFileInStorage, id:', response)
     return httpResponse.json(res.res)
   } catch (error) {
@@ -153,14 +153,14 @@ function * _deleteFileInStorage (res, req, next) {
 }
 
 // ------- EXAMINATOR AND RESPONSIBLES FROM UG-REDIS: ------- /
-function * _getCourseEmployees (req, res, next) {
+async function _getCourseEmployees (req, res, next) {
   let key = req.params.key
   key = key.replace(/_/g, '.')
 
   try {
     const roundsKeys = JSON.parse(req.body.params)
     log.info('_getCourseEmployees with keys: ' + roundsKeys.examiner, roundsKeys.responsibles)
-    yield redis('ugRedis', serverConfig.cache.ugRedis.redis)
+    await redis('ugRedis', serverConfig.cache.ugRedis.redis)
       .then(function (ugClient) {
         return ugClient.multi()
           .mget(roundsKeys.examiner)
@@ -181,7 +181,7 @@ function * _getCourseEmployees (req, res, next) {
   }
 }
 
-function * _getStatisicsForRound (req, res, next) {
+async function _getStatisicsForRound (req, res, next) {
   console.log(req.params)
   log.debug('_getStatisicsForRound : ', req.body.params, req.params.roundEndDate)
   // Solution for rounds that missing ladokUID in kopps
@@ -190,7 +190,7 @@ function * _getStatisicsForRound (req, res, next) {
     return httpResponse.json(res, reponseObject, 200)
   }
   try {
-    const apiResponse = yield kursstatistikAPI.getStatisicsForRound(req.params.roundEndDate, req.body.params)
+    const apiResponse = await kursstatistikAPI.getStatisicsForRound(req.params.roundEndDate, req.body.params)
     log.debug('_getStatisicsForRound response: ', apiResponse.body)
     return httpResponse.json(res, apiResponse.body)
   } catch (error) {
