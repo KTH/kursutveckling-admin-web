@@ -66,7 +66,7 @@ function * _postRoundAnalysis (req, res, next) {
 function * _getRoundAnalysis (req, res, next) {
   const roundAnalysisId = req.params.id || ''
   const language = req.params.language || 'sv'
-  log.info('_getRoundAnalysis id:' + req.params.id)
+  log.debug('_getRoundAnalysis id:' + req.params.id)
   try {
     const apiResponse = yield kursutvecklingAPI.getRoundAnalysisData(roundAnalysisId, language)
     return httpResponse.json(res, apiResponse.body)
