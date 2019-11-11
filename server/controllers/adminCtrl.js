@@ -63,7 +63,7 @@ async function _postRoundAnalysis (req, res, next) {
   }
 }
 
-asyn function _getRoundAnalysis (req, res, next) {
+async function _getRoundAnalysis (req, res, next) {
   const roundAnalysisId = req.params.id || ''
   const language = req.params.language || 'sv'
   log.debug('_getRoundAnalysis id:' + req.params.id)
