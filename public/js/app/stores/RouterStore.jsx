@@ -244,7 +244,6 @@ class RouterStore {
       { courseCode: courseCode, language: lang }),
       this._getOptions()
     ).then((result) => {
-      //log.info('getCourseInformation: ' + result)
       if (result.status >= 400) {
         this.errorMessage = result.statusText
         return "ERROR-" + result.status
