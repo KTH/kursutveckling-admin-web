@@ -78,7 +78,6 @@ async function uploadBlob (aborter, containerURL, blobName, content, fileType, m
       aborter,
       metadata
     )
-    // console.log('blockBlobURL', blockBlobURL)
     return uploadBlobResponse
   } catch (error) {
     log.error('Error when uploading file in blobStorage: ' + blobName, { error: error })

@@ -172,7 +172,6 @@ async function _getCourseEmployees (req, res, next) {
         return httpResponse.json(res, returnValue)
       })
       .catch(function (err) {
-        console.log('ugRedis - error:: ', err)
         throw new Error(err)
       })
   } catch (err) {
@@ -182,7 +181,6 @@ async function _getCourseEmployees (req, res, next) {
 }
 
 async function _getStatisicsForRound (req, res, next) {
-  console.log(req.params)
   log.debug('_getStatisicsForRound : ', req.body.params, req.params.roundEndDate)
   // Solution for rounds that missing ladokUID in kopps
   if (req.body.params.length === 0) {

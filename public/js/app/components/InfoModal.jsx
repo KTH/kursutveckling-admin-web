@@ -24,7 +24,6 @@ class InfoModal extends Component {
   handleDateChange(event){
     event.persist()
     this.state.newEndDate = event.target.value
-    console.log(this.state, event.target.value)
   }
 
 

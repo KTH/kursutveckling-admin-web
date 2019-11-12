@@ -87,7 +87,6 @@ class AdminPage extends Component {
 //********************************************************************************** */
 
   async hanleUploadFile(id, file, e){
-    console.log('file', file)
     if(e.target.files[0].type === 'application/pdf'){
      response = await this.sendRequest(id, file, e)
     } else {
@@ -107,7 +106,6 @@ class AdminPage extends Component {
       req.upload.addEventListener("progress", event => {
         if (event.lengthComputable) {
           fileProgress[id] = (event.loaded / event.total) * 100
-         //console.log(fileProgress[id])
           this.setState({ fileProgress: fileProgress })
         }
        })
@@ -305,7 +303,6 @@ class AdminPage extends Component {
     postObject.analysisFileName = this.state.analysisFile
     return this.props.routerStore.postRoundAnalysisData(postObject, this.props.routerStore.status === 'new' )
       .then((response) => {
-        //console.log('handlePublish!!!!!', response)
         modal.publish = false
         if(response === undefined || response.message){
           this.setState({

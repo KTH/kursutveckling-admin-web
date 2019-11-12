@@ -135,7 +135,6 @@ class RouterStore {
       { id: id }),
       this._getOptions()
     ).then(result => {
-      //console.log("!!!!getRoundAnalysis", result.data)
       if (result.statusCode >= 400) {
         this.errorMessage = result.statusText
         return "ERROR-" + result.statusCode
@@ -182,7 +181,6 @@ class RouterStore {
       { id: postObject._id, status: status/*, lang: lang*/ }),
       this._getOptions(JSON.stringify(postObject))
     ).then(apiResponse => {
-      //console.log('putRoundAnalysisData', apiResponse)
       if (apiResponse.statusCode >= 400) {
         this.errorMessage = result.statusText
         return "ERROR-" + apiResponse.statusCode
@@ -270,7 +268,6 @@ class RouterStore {
         this.errorMessage = result.statusText
         return "ERROR-" + apiResponse.statusCode
       }
-      console.log('apiResponse',apiResponse)
       
       this.statistics = apiResponse.data.responseObject ? apiResponse.data.responseObject : apiResponse.data
       this.statistics.examinationGrade = this.statistics.examinationGrade > 0 ?  Math.round( Number(this.statistics.examinationGrade) * 10 ) / 10 : 0

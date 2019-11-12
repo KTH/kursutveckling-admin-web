@@ -129,7 +129,6 @@ doCancelNavigation() {
 }
 
 render ({ routerStore }) {
- //console.log("this.props",this.props)
   return (
     <div>
       {this.props.children}
