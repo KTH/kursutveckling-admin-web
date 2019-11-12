@@ -78,7 +78,7 @@ async function _getRoundAnalysis (req, res, next) {
 
 async function _deleteRoundAnalysis (req, res, next) {
   const roundAnalysisId = req.params.id
-  log.info('_deleteRoundAnalysis with id:' + req.params.id)
+  log.debug('_deleteRoundAnalysis with id:' + req.params.id)
   try {
     const apiResponse = await kursutvecklingAPI.deleteRoundAnalysisData(roundAnalysisId)
     return httpResponse.json(res, apiResponse)
@@ -106,7 +106,7 @@ async function _getUsedRounds (req, res, next) {
 async function _getKoppsCourseData (req, res, next) {
   const courseCode = req.params.courseCode
   const language = req.params.language || 'sv'
-  log.info('_getKoppsCourseData with code:' + courseCode)
+  log.debug('_getKoppsCourseData with code:' + courseCode)
   try {
     const apiResponse = await koppsCourseData.getKoppsCourseData(courseCode, language)
     return httpResponse.json(res, apiResponse.body)
@@ -118,7 +118,7 @@ async function _getKoppsCourseData (req, res, next) {
 
 // ------- FILES IN BLOB STORAGE: SAVE, UPDATE, DELETE ------- /
 async function _saveFileToStorage (req, res, next) {
-  log.info('Saving uploaded file to storage ' + req.files.file)
+  log.debug('Saving uploaded file to storage ' + req.files.file)
   let file = req.files.file
   try {
     const fileName = await runBlobStorage(file, req.params.analysisid, req.params.type, req.params.published, req.body)
@@ -130,7 +130,7 @@ async function _saveFileToStorage (req, res, next) {
 }
 
 async function _updateFileInStorage (req, res, next) {
-  log.info('_updateFileInStorage file name:' + req.params.fileName + ', metadata:' + req.body.params.metadata)
+  log.debug('_updateFileInStorage file name:' + req.params.fileName + ', metadata:' + req.body.params.metadata)
   try {
     const response = await updateMetaData(req.params.fileName, req.body.params.metadata)
     return httpResponse.json(res, response)
@@ -159,7 +159,7 @@ async function _getCourseEmployees (req, res, next) {
 
   try {
     const roundsKeys = JSON.parse(req.body.params)
-    log.info('_getCourseEmployees with keys: ' + roundsKeys.examiner, roundsKeys.responsibles)
+    log.debug('_getCourseEmployees with keys: ' + roundsKeys.examiner, roundsKeys.responsibles)
     await redis('ugRedis', serverConfig.cache.ugRedis.redis)
       .then(function (ugClient) {
         return ugClient.multi()
