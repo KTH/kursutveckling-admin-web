@@ -282,10 +282,6 @@ class AdminPage extends Component {
     let postObject = this.state.values
     let modal = this.state.modalOpen
     
-    if( this.state.hasNewUploadedFileAnalysis ){
-      postObject.pdfAnalysisDate = getTodayDate()
-    }
-
     if(this.state.pmFile !== postObject.pmFileName){
       postObject.pmFileName = this.state.pmFile
     }
