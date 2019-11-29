@@ -30,7 +30,7 @@ const ExtraDatesAndComment = ({translate, courseRoundObj, language}) => {
       <p>{translate.publishedDate}:&nbsp;{formatISODate(courseRoundObj.publishedDate, language)}</p>
       {courseRoundObj.commentChange !== ''
         ? <span>
-          <p>{translate.changedAfterPublishedDate}:&nbsp;{courseRoundObj.changedAfterPublishedDate}</p>
+          <p>{translate.changedAfterPublishedDate}:&nbsp;{formatISODate(courseRoundObj.changedAfterPublishedDate, language)}</p>
           <p>{translate.commentChange}:</p>
           <p>{courseRoundObj.commentChange === ''
               ? <i>{translate.no_added}</i>

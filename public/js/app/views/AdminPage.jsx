@@ -287,7 +287,7 @@ class AdminPage extends Component {
     }
 
     if (postObject.isPublished) {
-      postObject.changedAfterPublishedDate = getTodayDate()
+      postObject.changedAfterPublishedDate = new Date().toISOString()
     } else {
       if (this.state.statisticsParams && this.state.statisticsParams.ladokId) {
         postObject.ladokUIDs = this.state.statisticsParams.ladokId ? this.state.statisticsParams.ladokId : []
