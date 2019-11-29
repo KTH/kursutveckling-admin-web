@@ -45,6 +45,7 @@ const formatDate = (date, lang) => {
 }
 
 const formatISODate = (date, lang) => {
+  if (date === '') return null
   const timestamp = Date.parse(date)
   const parsedDate = new Date(timestamp)
   let languageTag // BCP 47 language tag
