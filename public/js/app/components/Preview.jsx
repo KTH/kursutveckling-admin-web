@@ -71,6 +71,7 @@ class Preview extends Component {
             <CollapseExtraInfo translate={translate}
               courseRoundObj={courseRoundObj}
               label={courseRoundObj._id}
+              language={routerStore.language}
           />
           </Collapse>
         </div>

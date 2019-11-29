@@ -292,7 +292,7 @@ class AdminPage extends Component {
       if (this.state.statisticsParams && this.state.statisticsParams.ladokId) {
         postObject.ladokUIDs = this.state.statisticsParams.ladokId ? this.state.statisticsParams.ladokId : []
       }
-      postObject.publishedDate = getTodayDate()
+      postObject.publishedDate = new Date().toISOString()
       postObject.isPublished = true
     }
     

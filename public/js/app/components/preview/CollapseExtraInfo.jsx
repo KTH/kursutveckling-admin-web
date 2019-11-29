@@ -2,6 +2,7 @@
 import React, { Component } from 'react'
 import { Collapse } from 'reactstrap'
 
+import {formatISODate} from '../../util/helpers'
 
 const ExtraKoppsInfo = ({translate, courseRoundObj}) => {
   const popOverId = courseRoundObj._id
@@ -22,11 +23,11 @@ const ExtraKoppsInfo = ({translate, courseRoundObj}) => {
     </span>
   )
 }
-const ExtraDatesAndComment = ({translate, courseRoundObj}) => {
+const ExtraDatesAndComment = ({translate, courseRoundObj, language}) => {
   return courseRoundObj.publishedDate ? (
   <span>
       <p><b>{translate.header_publishing_dates}</b></p>
-      <p>{translate.publishedDate}:&nbsp;{courseRoundObj.publishedDate}</p>
+      <p>{translate.publishedDate}:&nbsp;{formatISODate(courseRoundObj.publishedDate, language)}</p>
       {courseRoundObj.commentChange !== ''
         ? <span>
           <p>{translate.changedAfterPublishedDate}:&nbsp;{courseRoundObj.changedAfterPublishedDate}</p>
@@ -52,7 +53,7 @@ class CollapseExtraInfo extends Component {
     this.setState(state => ({collapseExtraInfo: !state.collapseExtraInfo}))
   }
   render () {
-    const { courseRoundObj, label, translate } = this.props
+    const { courseRoundObj, label, translate, language } = this.props
     return (
       <div className='card collapsible rubric-list white' >
         <span className='card-header info-rubric' role='tab' tabIndex='0' onClick={this.toggleHeader}>
@@ -61,7 +62,7 @@ class CollapseExtraInfo extends Component {
         <Collapse color='white' isOpen={this.state.collapseExtraInfo} toggler={label}>
           <div className='card-body col extra-info'>
             <ExtraKoppsInfo translate={translate.extra_kopps_info} courseRoundObj={courseRoundObj} />
-            <ExtraDatesAndComment translate={translate.extra_dates_and_comments} courseRoundObj={courseRoundObj} />
+            <ExtraDatesAndComment translate={translate.extra_dates_and_comments} courseRoundObj={courseRoundObj} language={language} />
           </div>
         </Collapse>
       </div>

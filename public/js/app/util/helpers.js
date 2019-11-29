@@ -44,6 +44,24 @@ const formatDate = (date, lang) => {
   return getDateFormat(thisDate, lang)
 }
 
+const formatISODate = (date, lang) => {
+  const timestamp = Date.parse(date)
+  const parsedDate = new Date(timestamp)
+  let languageTag // BCP 47 language tag
+  switch (lang) {
+    case 'Svenska':
+    case 'Engelska':
+    case 1:
+    case 'sv':
+      languageTag = 'sv-SE'
+      break
+    default:
+      languageTag = 'en-US'
+      break
+  }
+  return parsedDate.toLocaleDateString(languageTag)
+}
+
 const isValidDate = (date) => {
   let dateFormat = /^\d{4}-\d{2}-\d{2}$/
   let regex = new RegExp(dateFormat)
@@ -86,6 +104,7 @@ export {
   getAccess,
   noAccessToRoundsList,
   formatDate,
+  formatISODate,
   getLanguageToUse,
   getTodayDate,
   getDateFormat,
