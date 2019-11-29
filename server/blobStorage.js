@@ -35,23 +35,11 @@ const serviceURL = new ServiceURL(`https://${STORAGE_ACCOUNT_NAME}.blob.core.win
 
 async function runBlobStorage (file, id, type, saveCopyOfFile, metadata) {
   const containerName = 'kursutveckling-blob-container'
-  let blobName = ''
+  const blobName = `${type}-${id}-${getTodayDate()}.${file.name.split('.')[1]}`
   const content = file.data
   const fileType = file.mimetype
   const containerURL = ContainerURL.fromServiceURL(serviceURL, containerName)
   const aborter = Aborter.timeout(30 * ONE_MINUTE)
-
-  if (type === 'analysis') {
-    const draftFileName = `${type}-${id}.${file.name.split('.')[1]}`
-    const newFileName = `${type}-${id}-${getTodayDate()}.${file.name.split('.')[1]}`
-    if (saveCopyOfFile === 'true') {
-      blobName = newFileName
-    } else {
-      blobName = draftFileName
-    }
-  } else {
-    blobName = `${type}-${id}.${file.name.split('.')[1]}`
-  }
 
   const uploadResponse = await uploadBlob(aborter, containerURL, blobName, content, fileType, metadata)
   log.debug(' Blobstorage - uploaded file response ', uploadResponse)
