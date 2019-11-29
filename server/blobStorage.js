@@ -61,7 +61,7 @@ async function uploadBlob (aborter, containerURL, blobName, content, fileType, m
     log.debug(`Blobstorage - Upload block blob ${blobName} `)
 
     await blockBlobURL.setHTTPHeaders(aborter, { blobContentType: fileType })
-    metadata['date'] = getTodayDate(false)
+    metadata['datetime'] = new Date().toISOString()
     await blockBlobURL.setMetadata(
       aborter,
       metadata
@@ -80,7 +80,7 @@ async function updateMetaData (blobName, metadata) {
   const blobURL = BlobURL.fromContainerURL(containerURL, blobName)
   const blockBlobURL = BlockBlobURL.fromBlobURL(blobURL)
 
-  metadata['date'] = getTodayDate(false)
+  metadata['datetime'] = new Date().toISOString()
 
   log.debug(`Update metadata for ${blobName}`)
   try {
@@ -137,7 +137,7 @@ async function deleteBlob (analysisId) {
   }
 }
 
-const getTodayDate = (fileDate = true) => {
+const getTodayDate = () => {
   let today = new Date()
   let dd = String(today.getDate()).padStart(2, '0')
   let mm = String(today.getMonth() + 1).padStart(2, '0') // January is 0!
@@ -145,5 +145,5 @@ const getTodayDate = (fileDate = true) => {
   let hh = today.getHours()
   let min = today.getMinutes()
 
-  return fileDate ? yyyy + mm + dd + '-' + hh + '-' + min : yyyy + mm + dd + '-' + hh + ':' + min
+  return yyyy + mm + dd + '-' + hh + ':' + min
 }
