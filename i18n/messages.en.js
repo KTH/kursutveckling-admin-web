@@ -127,7 +127,7 @@ module.exports = {
     alert_no_rounds: 'Course analysis and course data are published for all course offerings this semester',
     alert_no_published: 'There are no published course analysis and course data this semester.',
     alert_different_end_dates: 'Selected administrative course instances have different end dates. Select the instances that were included in the same course offering.', /* GRÄDDEN PÅ SEMLAN */
-	  alert_saved_draft: 'A draft of course analysis and course data have been saved',
+    alert_saved_draft: 'A draft of course analysis and course data have been saved',
     alert_empty_fields: 'All mandatory fields must contain information before proceeding to Review and publish.',
     alert_uploaded_file: 'Selected file has been uploaded and been given a new file name',
     alert_not_pdf: 'The specified file could not be uploaded. The file format must be PDF.',
@@ -137,14 +137,7 @@ module.exports = {
 
     info_publish: {
       header: 'To be aware of before publishing!',
-	    body: `The following fields cannot be changed after the information is published: <br/>
-        <li> Examiner</li>
-        <li> Course responsible</li>
-        <li> Number of first registered students</li>
-        <li> Graduation rate</li>
-        <br/>  
-        <br/> 
-          The information will be published on the page Course development and history
+      body: `The information will be published on the page Course development and history
         <br/> 
         <br/> 
         Do you want to publish?`,
@@ -153,12 +146,12 @@ module.exports = {
     },
     info_copy_link: {
       header: 'Copy link to saved draft',
-	    body: 'Copy link below, paste it and send the link to the person you want to review the draft.',
+      body: 'Copy link below, paste it and send the link to the person you want to review the draft.',
       btnCancel: 'Close'
     },
     info_cancel: {
       header: 'To be aware of before cancelling!',
-	    body: 'Unsaved changes will be lost if you cancel the publishing of course analysis <br/>  <br/> Do you want to cancel?',
+      body: 'Unsaved changes will be lost if you cancel the publishing of course analysis <br/>  <br/> Do you want to cancel?',
       btnCancel: 'No, go back',
       btnConfirm: 'Yes, cancel'
     },

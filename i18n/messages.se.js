@@ -142,14 +142,7 @@ module.exports = {
     },
     info_publish: {
       header: 'Att tänka på innan du publicerar!',
-      body: `Följande fält kommer inte att kunna ändras efter publicering: <br/>
-        <li> Examinator</li>
-        <li> Kursansvarig</li>
-        <li> Antal förstagångsregistrerade studenter</li>
-        <li> Examinationsgrad</li>
-        <br/>  
-        <br/> 
-        Publicering kommer att ske på sidan Kursens utveckling och historik.
+      body: `Publicering kommer att ske på sidan Kursens utveckling och historik.
         <br/>
         <br/>
         Vill du fortsätta att publicera?`,
