@@ -17,11 +17,12 @@
     "test": "mocha test/unit/*.js",
     "codecheck": "standard",
     "docker": "npm install --development && npm run build && npm prune --production",
-    "build": "NODE_ENV=production gulp build && rm -rf dist && parcel build ./public/js/app/app.jsx && npm run vendor --preserve-comments",
-    "build-dev": "NODE_ENV=development rm -rf dist && parcel build --no-minify ./public/js/app/app.jsx && npm run vendor && parcel watch ./public/js/app/app.jsx",
+    "build": "NODE_ENV=production npm run move-handlebar-pages && rm -rf dist && parcel build ./public/js/app/app.jsx && npm run vendor --preserve-comments",
+    "build-dev": "NODE_ENV=development npm run move-handlebar-pages && rm -rf dist && parcel build --no-minify ./public/js/app/app.jsx && npm run vendor && parcel watch ./public/js/app/app.jsx",
     "build-dev-old": "cross-env NODE_ENV=development rm -rf dist && parcel build ./public/js/vendor.js && parcel watch ./public/js/app/app.jsx",
     "start": "NODE_ENV=production node app.js",
-    "start-dev": "cross-env NODE_ENV=development concurrently --kill-others \"npm run build-dev\" \"nodemon --ignore dist/ --ignore public/ app.js\""
+    "start-dev": "cross-env NODE_ENV=development concurrently --kill-others \"npm run build-dev\" \"nodemon --ignore dist/ --ignore public/ app.js\"",
+    "move-handlebar-pages": "cp ./node_modules/kth-node-web-common/lib/handlebars/pages/views/error.handlebars ./server/views/system/error.handlebars && cp ./node_modules/kth-node-web-common/lib/handlebars/pages/layouts/errorLayout.handlebars ./server/views/layouts/errorLayout.handlebars"
   },
   "dependencies": {
     "@azure/storage-blob": "^10.5.0",
