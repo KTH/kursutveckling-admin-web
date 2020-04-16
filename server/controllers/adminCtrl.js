@@ -52,6 +52,7 @@ async function _postRoundAnalysis (req, res, next) {
     let apiResponse = {}
     if (isNewAnalysis === 'true') {
       apiResponse = await kursutvecklingAPI.setRoundAnalysisData(roundAnalysisId, sendObject, language)
+      await _setArchiveFragment(sendObject)
     } else {
       apiResponse = await kursutvecklingAPI.updateRoundAnalysisData(roundAnalysisId, sendObject, language)
     }
@@ -194,6 +195,36 @@ async function _getStatisicsForRound (req, res, next) {
   } catch (error) {
     log.error('Exception from _getUsedRounds ', { error: error })
     next(error)
+  }
+}
+
+async function _setArchiveFragment (sendObject) {
+  const archiveFragment = {
+    courseCode: sendObject.courseCode,
+    courseName: 'Kursbenämning',
+    courseRound: sendObject._id,
+    semester: sendObject.semester,
+    analysisName: sendObject.analysisName,
+    responsibles: sendObject.responsibles,
+    examiners: sendObject.examiners,
+    description: 'Kursanalys',
+    publishedDate: sendObject.publishedDate,
+    preserve: 1,
+    attachments: [{
+      fileName: sendObject.analysisFileName,
+      remarks: sendObject.alterationText || ' ',
+      fileDate: sendObject.pdfAnalysisDate,
+      publishedDate: sendObject.publishedDate
+    }]
+  }
+
+  try {
+    log.debug('setArchiveFragment called with', archiveFragment)
+    const apiResponse = await kursutvecklingAPI.setArchiveFragment(archiveFragment)
+    log.debug('setArchiveFragment response code from API', apiResponse.statusCode)
+    return apiResponse.statusCode
+  } catch (err) {
+    log.error('Exception from setArchiveFragment', err)
   }
 }
 
