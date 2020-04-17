@@ -52,7 +52,7 @@ async function _postRoundAnalysis (req, res, next) {
     let apiResponse = {}
     if (isNewAnalysis === 'true') {
       apiResponse = await kursutvecklingAPI.setRoundAnalysisData(roundAnalysisId, sendObject, language)
-      await _setArchiveFragment(sendObject)
+      await _postArchiveFragment(sendObject)
     } else {
       apiResponse = await kursutvecklingAPI.updateRoundAnalysisData(roundAnalysisId, sendObject, language)
     }
@@ -198,7 +198,7 @@ async function _getStatisicsForRound (req, res, next) {
   }
 }
 
-async function _setArchiveFragment (sendObject) {
+async function _postArchiveFragment (sendObject) {
   const archiveFragment = {
     courseCode: sendObject.courseCode,
     courseName: 'Kursbenämning',
@@ -219,12 +219,12 @@ async function _setArchiveFragment (sendObject) {
   }
 
   try {
-    log.debug('setArchiveFragment called with', archiveFragment)
-    const apiResponse = await kursutvecklingAPI.setArchiveFragment(archiveFragment)
-    log.debug('setArchiveFragment response code from API', apiResponse.statusCode)
+    log.debug('postArchiveFragment called with', archiveFragment)
+    const apiResponse = await kursutvecklingAPI.postArchiveFragment(archiveFragment)
+    log.debug('postArchiveFragment response code from API', apiResponse.statusCode)
     return apiResponse.statusCode
   } catch (err) {
-    log.error('Exception from setArchiveFragment', err)
+    log.error('Exception from postArchiveFragment', err)
   }
 }
 
