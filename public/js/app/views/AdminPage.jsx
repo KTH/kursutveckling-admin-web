@@ -254,6 +254,8 @@ class AdminPage extends Component {
       postObject.ladokUIDs = this.state.statisticsParams.ladokId ? this.state.statisticsParams.ladokId : []
     }
 
+    postObject.courseName = routerStore.courseTitle.name
+
     return routerStore.postRoundAnalysisData(postObject, postObject.changedDate.length === 0 )
       .then((data) => {
         if(this.state.isPreviewMode){
@@ -281,7 +283,7 @@ class AdminPage extends Component {
     const thisInstance = this
     let postObject = this.state.values
     let modal = this.state.modalOpen
-    
+
     if(this.state.pmFile !== postObject.pmFileName){
       postObject.pmFileName = this.state.pmFile
     }
@@ -295,8 +297,10 @@ class AdminPage extends Component {
       postObject.publishedDate = new Date().toISOString()
       postObject.isPublished = true
     }
-    
+
+    postObject.courseName = routerStore.courseTitle.name
     postObject.analysisFileName = this.state.analysisFile
+
     return this.props.routerStore.postRoundAnalysisData(postObject, this.props.routerStore.status === 'new' )
       .then((response) => {
         modal.publish = false
