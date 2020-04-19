@@ -8,7 +8,8 @@ module.exports = {
   updateRoundAnalysisData: _putAnalysisData,
   deleteRoundAnalysisData: _deleteAnalysisData,
   getUsedRounds: _getUsedRounds,
-  setArchiveFragment: _setArchiveFragment
+  postArchiveFragment: _postArchiveFragment,
+  putArchiveFragment: _putArchiveFragment
 }
 
 async function _getAnalysisData (id) {
@@ -50,9 +51,16 @@ async function _getUsedRounds (courseCode, semester) {
   }
 }
 
-async function _setArchiveFragment (sendObject) {
+async function _postArchiveFragment (sendObject) {
   const paths = api.kursutvecklingApi.paths
   const client = api.kursutvecklingApi.client
   const uri = client.resolve(paths.postArchiveFragment.uri)
   return client.postAsync({ uri: uri, body: sendObject })
+}
+
+async function _putArchiveFragment (sendObject) {
+  const paths = api.kursutvecklingApi.paths
+  const client = api.kursutvecklingApi.client
+  const uri = client.resolve(paths.putArchiveFragment.uri)
+  return client.putAsync({ uri: uri, body: sendObject })
 }

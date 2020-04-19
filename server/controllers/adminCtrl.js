@@ -52,9 +52,10 @@ async function _postRoundAnalysis (req, res, next) {
     let apiResponse = {}
     if (isNewAnalysis === 'true') {
       apiResponse = await kursutvecklingAPI.setRoundAnalysisData(roundAnalysisId, sendObject, language)
-      await _setArchiveFragment(sendObject)
+      await _postArchiveFragment(sendObject)
     } else {
       apiResponse = await kursutvecklingAPI.updateRoundAnalysisData(roundAnalysisId, sendObject, language)
+      await _putArchiveFragment(sendObject)
     }
 
     return httpResponse.json(res, apiResponse.body)
@@ -198,10 +199,10 @@ async function _getStatisicsForRound (req, res, next) {
   }
 }
 
-async function _setArchiveFragment (sendObject) {
+async function _postArchiveFragment (sendObject) {
   const archiveFragment = {
     courseCode: sendObject.courseCode,
-    courseName: 'Kursbenämning',
+    courseName: sendObject.courseName,
     courseRound: sendObject._id,
     semester: sendObject.semester,
     analysisName: sendObject.analysisName,
@@ -212,19 +213,49 @@ async function _setArchiveFragment (sendObject) {
     preserve: 1,
     attachments: [{
       fileName: sendObject.analysisFileName,
-      remarks: sendObject.alterationText || ' ',
+      remarks: 'Förändringar från föregående kursomgång: ' + sendObject.alterationText,
       fileDate: sendObject.pdfAnalysisDate,
       publishedDate: sendObject.publishedDate
     }]
   }
 
   try {
-    log.debug('setArchiveFragment called with', archiveFragment)
-    const apiResponse = await kursutvecklingAPI.setArchiveFragment(archiveFragment)
-    log.debug('setArchiveFragment response code from API', apiResponse.statusCode)
+    log.debug('postArchiveFragment called with', archiveFragment)
+    const apiResponse = await kursutvecklingAPI.postArchiveFragment(archiveFragment)
+    log.debug('postArchiveFragment response code from API', apiResponse.statusCode)
     return apiResponse.statusCode
   } catch (err) {
-    log.error('Exception from setArchiveFragment', err)
+    log.error('Exception from postArchiveFragment', err)
+  }
+}
+
+async function _putArchiveFragment (sendObject) {
+  const archiveFragment = {
+    courseCode: sendObject.courseCode,
+    courseName: sendObject.courseName,
+    courseRound: sendObject._id,
+    semester: sendObject.semester,
+    analysisName: sendObject.analysisName,
+    responsibles: sendObject.responsibles,
+    examiners: sendObject.examiners,
+    description: 'Kursanalys',
+    publishedDate: sendObject.publishedDate,
+    preserve: 1,
+    attachments: [{
+      fileName: sendObject.analysisFileName,
+      remarks: 'Förändringar från föregående kursomgång: ' + sendObject.alterationText,
+      fileDate: sendObject.pdfAnalysisDate,
+      publishedDate: sendObject.changedAfterPublishedDate
+    }]
+  }
+
+  try {
+    log.debug('putArchiveFragment called with', archiveFragment)
+    const apiResponse = await kursutvecklingAPI.putArchiveFragment(archiveFragment)
+    log.debug('putArchiveFragment response code from API', apiResponse.statusCode)
+    return apiResponse.statusCode
+  } catch (err) {
+    log.error('Exception from putArchiveFragment', err)
   }
 }
 
