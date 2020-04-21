@@ -14,7 +14,9 @@ import queryString from 'query-string'
 import { IMobxStore } from './interfaces/utils'
 import { StaticRouter } from 'react-router'
 import RouterStore from './stores/RouterStore'
+import ArchiveStore from './stores/ArchiveStore'
 import AdminPage from './views/AdminPage'
+import ArchivePage from './views/ArchivePage'
 import  '../../css/kursutveckling-web.scss'
 import  '../../css/kursutveckling-admin.scss'
 
@@ -36,19 +38,21 @@ function appFactory() {
   }
 
   const routerStore = new RouterStore()
+  const archiveStore = new ArchiveStore()
 
   if (typeof window !== 'undefined') {
     routerStore.initializeStore('routerStore')
+    archiveStore.initializeStore('archiveStore')
   }
 
   return (
-    <Provider routerStore={routerStore}>
+    <Provider routerStore={routerStore} archiveStore={archiveStore}>
       <Switch>
+        <Route exact path='/kursinfoadmin/kursutveckling/archive' component={ArchivePage} />
         <Route path='/kursinfoadmin/kursutveckling' component={AdminPage} asyncBefore={AdminPage.fetchData} />
         <Route path='/kursinfoadmin/kursutveckling/preview' component={AdminPage} />
       </Switch>
     </Provider>
-
   )
 }
 
