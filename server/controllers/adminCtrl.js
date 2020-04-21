@@ -52,10 +52,14 @@ async function _postRoundAnalysis (req, res, next) {
     let apiResponse = {}
     if (isNewAnalysis === 'true') {
       apiResponse = await kursutvecklingAPI.setRoundAnalysisData(roundAnalysisId, sendObject, language)
-      await _postArchiveFragment(sendObject)
+      if (sendObject.isPublished) {
+        await _postArchiveFragment(sendObject)
+      }
     } else {
       apiResponse = await kursutvecklingAPI.updateRoundAnalysisData(roundAnalysisId, sendObject, language)
-      await _putArchiveFragment(sendObject)
+      if (sendObject.isPublished) {
+        await _putArchiveFragment(sendObject)
+      }
     }
 
     return httpResponse.json(res, apiResponse.body)
@@ -245,7 +249,7 @@ async function _putArchiveFragment (sendObject) {
       fileName: sendObject.analysisFileName,
       remarks: 'Förändringar från föregående kursomgång: ' + sendObject.alterationText,
       fileDate: sendObject.pdfAnalysisDate,
-      publishedDate: sendObject.changedAfterPublishedDate
+      publishedDate: sendObject.changedAfterPublishedDate || sendObject.publishedDate
     }]
   }
 
