@@ -9,7 +9,8 @@ module.exports = {
   deleteRoundAnalysisData: _deleteAnalysisData,
   getUsedRounds: _getUsedRounds,
   postArchiveFragment: _postArchiveFragment,
-  putArchiveFragment: _putArchiveFragment
+  putArchiveFragment: _putArchiveFragment,
+  getArchiveFragments: _getArchiveFragments
 }
 
 async function _getAnalysisData (id) {
@@ -63,4 +64,11 @@ async function _putArchiveFragment (sendObject) {
   const client = api.kursutvecklingApi.client
   const uri = client.resolve(paths.putArchiveFragment.uri)
   return client.putAsync({ uri: uri, body: sendObject })
+}
+
+async function _getArchiveFragments () {
+  const paths = api.kursutvecklingApi.paths
+  const client = api.kursutvecklingApi.client
+  const uri = client.resolve(paths.getArchiveFragments.uri)
+  return client.getAsync({ uri: uri })
 }

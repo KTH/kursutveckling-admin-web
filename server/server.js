@@ -202,7 +202,7 @@ server.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
  * ******* APPLICATION ROUTES *******
  * **********************************
  */
-const { System, Admin } = require('./controllers')
+const { System, Admin, Archive } = require('./controllers')
 const { requireRole } = require('./authentication')
 
 // System routes
@@ -215,6 +215,7 @@ server.use('/', systemRoute.getRouter())
 
 // App routes
 const appRoute = AppRouter()
+appRoute.get('system.index', config.proxyPrefixPath.uri + '/archive', Archive.getIndex)
 appRoute.get('system.index', config.proxyPrefixPath.uri + '/:id', serverLogin, requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser'), Admin.getIndex)
 appRoute.get('system.index', config.proxyPrefixPath.uri + '/:preview/:id', serverLogin, requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isCourseTeacher'), Admin.getIndex)
 appRoute.get('system.gateway', config.proxyPrefixPath.uri + '/gateway', getServerGatewayLogin('/'), requireRole('isAdmin'), Admin.getIndex)
@@ -230,6 +231,7 @@ appRoute.post('storage.saveFile', config.proxyPrefixPath.uri + '/storage/saveFil
 appRoute.post('storage.updateFile', config.proxyPrefixPath.uri + '/storage/updateFile/:fileName/', Admin.updateFileInStorage)
 appRoute.post('storage.deleteFile', config.proxyPrefixPath.uri + '/storage/deleteFile/:id', Admin.deleteFileInStorage)
 appRoute.all('api.kursstatistik', config.proxyPrefixPath.uri + '/apicall/getStatisicsForRound/:roundEndDate', Admin.getStatisicsForRound)
+
 server.use('/', appRoute.getRouter())
 
 // Not found etc
