@@ -40,6 +40,10 @@ module.exports = {
   getStatisicsForRound: co.wrap(_getStatisicsForRound)
 }
 
+function _formatSemesterArchive (semester) {
+  return `${semester.toString().match(/.{1,4}/g)[1] === '1' ? 'VT' : 'HT'}${semester.toString().match(/.{1,4}/g)[0]}`
+}
+
 // ------- ANALYSES FROM KURSUTVECKLING-API: POST, GET, DELETE, GET USED ROUNDS ------- /
 
 async function _postRoundAnalysis (req, res, next) {
@@ -208,7 +212,7 @@ async function _postArchiveFragment (sendObject) {
     courseCode: sendObject.courseCode,
     courseName: sendObject.courseName,
     courseRound: sendObject._id,
-    semester: sendObject.semester,
+    semester: _formatSemesterArchive(sendObject.semester),
     analysisName: sendObject.analysisName,
     responsibles: sendObject.responsibles,
     examiners: sendObject.examiners,
@@ -238,7 +242,7 @@ async function _putArchiveFragment (sendObject) {
     courseCode: sendObject.courseCode,
     courseName: sendObject.courseName,
     courseRound: sendObject._id,
-    semester: sendObject.semester,
+    semester: _formatSemesterArchive(sendObject.semester),
     analysisName: sendObject.analysisName,
     responsibles: sendObject.responsibles,
     examiners: sendObject.examiners,
