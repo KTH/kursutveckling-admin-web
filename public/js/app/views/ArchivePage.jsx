@@ -39,7 +39,7 @@ class ArchivePage extends Component {
                 <tr key={archiveFragment.courseCode + '-' + archiveFragment.courseRound}>
                   <td>{archiveFragment.courseCode}</td>
                   <td>{archiveFragment.courseRound}</td>
-                  <td>{archiveFragment.publishedDate}</td>
+                  <td>{archiveFragment.attachments[0] ? archiveFragment.attachments[0].publishedDate : null}</td>
                 </tr>
               ))
             }
