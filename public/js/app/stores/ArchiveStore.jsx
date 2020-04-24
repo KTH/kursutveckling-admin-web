@@ -12,7 +12,6 @@ class ArchiveStore {
     this.paths = paths
     this.apiHost = apiHost
     this.profileBaseUrl = profileBaseUrl
-    console.log('setBrowserConfig', config, paths, apiHost, profileBaseUrl)
   }
 
   @action __SSR__setCookieHeader(cookieHeader) {

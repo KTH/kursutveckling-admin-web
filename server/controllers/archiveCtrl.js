@@ -11,7 +11,7 @@ const { browser, server } = require('../configuration')
 
 const i18n = require('../../i18n')
 
-const { getArchiveFragments } = require('../apiCalls/kursutvecklingAPI')
+const { getAllArchiveFragments } = require('../apiCalls/kursutvecklingAPI')
 
 function hydrateStores (renderProps) {
   // This assumes that all stores are specified in a root element called Provider
@@ -45,7 +45,7 @@ async function getIndex (req, res, next) {
     archiveStore.setBrowserConfig(browser, serverPaths, apis, server.hostUrl)
     archiveStore.__SSR__setCookieHeader(req.headers.cookie)
 
-    const archiveFragments = await getArchiveFragments()
+    const archiveFragments = await getAllArchiveFragments()
     archiveStore.archiveFragments = archiveFragments.body
 
     const html = ReactDOMServer.renderToString(renderProps)
