@@ -31,6 +31,7 @@ class ArchivePage extends Component {
                 <th>Course Code</th>
                 <th>Course Round</th>
                 <th>Published Date</th>
+                <th>Exported</th>
               </tr>
             </thead>
             <tbody>
@@ -40,6 +41,7 @@ class ArchivePage extends Component {
                   <td>{archiveFragment.courseCode}</td>
                   <td>{archiveFragment.courseRound}</td>
                   <td>{archiveFragment.attachments[0] ? archiveFragment.attachments[0].publishedDate : null}</td>
+                  <td>{`${archiveFragment.exported}`}</td>
                 </tr>
               ))
             }
