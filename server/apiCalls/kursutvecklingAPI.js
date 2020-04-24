@@ -10,7 +10,7 @@ module.exports = {
   getUsedRounds: _getUsedRounds,
   postArchiveFragment: _postArchiveFragment,
   putArchiveFragment: _putArchiveFragment,
-  getArchiveFragments: _getArchiveFragments
+  getAllArchiveFragments: _getAllArchiveFragments
 }
 
 async function _getAnalysisData (id) {
@@ -66,9 +66,9 @@ async function _putArchiveFragment (sendObject) {
   return client.putAsync({ uri: uri, body: sendObject })
 }
 
-async function _getArchiveFragments () {
+async function _getAllArchiveFragments () {
   const paths = api.kursutvecklingApi.paths
   const client = api.kursutvecklingApi.client
-  const uri = client.resolve(paths.getArchiveFragments.uri)
+  const uri = client.resolve(paths.getAllArchiveFragments.uri)
   return client.getAsync({ uri: uri })
 }
