@@ -24,6 +24,10 @@ class ArchiveStore {
     this.language = lang
   }
 
+  @action downloadArchivePackage(selected) {
+    console.log('ArchiveStore downloadArchivePackage called with', selected)
+  }
+
   initializeStore(storeName) {
     const store = this
 
