@@ -68,7 +68,11 @@ class ArchivePage extends Component {
             </tbody>
           </table>
         </Row>
-        <Row className="py-4"><Button disabled={this.state.selected.length === 0} onClick={this.downloadArchivePackage}>Download Archive Package</Button></Row>
+        <Row className="py-4">
+          <Col>
+          <Button disabled={this.state.selected.length === 0} onClick={this.downloadArchivePackage}>Create Archive Package</Button>
+        </Col>
+        </Row>
       </Container>
     )
   }

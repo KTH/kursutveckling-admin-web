@@ -11,7 +11,7 @@ const { browser, server } = require('../configuration')
 
 const i18n = require('../../i18n')
 
-const { getAllArchiveFragments } = require('../apiCalls/kursutvecklingAPI')
+const { getAllArchiveFragments, createArchivePackage } = require('../apiCalls/kursutvecklingAPI')
 
 function hydrateStores (renderProps) {
   // This assumes that all stores are specified in a root element called Provider
@@ -31,6 +31,19 @@ function _staticRender (context, location) {
   }
   const { staticFactory } = require('../../dist/app.js')
   return staticFactory(context, location)
+}
+
+async function _createArchivePackage (req, res, next) {
+  const selected = req.body.selected
+  log.debug('createArchivePackage called with:', selected)
+
+  try {
+    const apiResponse = await createArchivePackage(selected)
+    res.send(apiResponse)
+  } catch (err) {
+    log.error('Exception from createArchivePackage', { error: err })
+    next(err)
+  }
 }
 
 async function getIndex (req, res, next) {
@@ -64,5 +77,6 @@ async function getIndex (req, res, next) {
 }
 
 module.exports = {
-  getIndex: getIndex
+  getIndex: getIndex,
+  createArchivePackage: _createArchivePackage
 }
