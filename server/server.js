@@ -231,6 +231,7 @@ appRoute.post('storage.saveFile', config.proxyPrefixPath.uri + '/storage/saveFil
 appRoute.post('storage.updateFile', config.proxyPrefixPath.uri + '/storage/updateFile/:fileName/', Admin.updateFileInStorage)
 appRoute.post('storage.deleteFile', config.proxyPrefixPath.uri + '/storage/deleteFile/:id', Admin.deleteFileInStorage)
 appRoute.all('api.kursstatistik', config.proxyPrefixPath.uri + '/apicall/getStatisicsForRound/:roundEndDate', Admin.getStatisicsForRound)
+appRoute.post('api.createArchivePackage', config.proxyPrefixPath.uri + '/apicall/createArchivePackage/', Archive.createArchivePackage)
 
 server.use('/', appRoute.getRouter())
 

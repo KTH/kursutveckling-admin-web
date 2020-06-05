@@ -1,5 +1,7 @@
 'use strict'
 
+const axios = require('axios')
+const { getEnv, devDefaults } = require('kth-node-configuration')
 const api = require('../api')
 
 module.exports = {
@@ -10,7 +12,8 @@ module.exports = {
   getUsedRounds: _getUsedRounds,
   postArchiveFragment: _postArchiveFragment,
   putArchiveFragment: _putArchiveFragment,
-  getAllArchiveFragments: _getAllArchiveFragments
+  getAllArchiveFragments: _getAllArchiveFragments,
+  createArchivePackage: _createArchivePackage
 }
 
 async function _getAnalysisData (id) {
@@ -71,4 +74,27 @@ async function _getAllArchiveFragments () {
   const client = api.kursutvecklingApi.client
   const uri = client.resolve(paths.getAllArchiveFragments.uri)
   return client.getAsync({ uri: uri })
+}
+
+async function _createArchivePackage (sendObject) {
+  const paths = api.kursutvecklingApi.paths
+  const client = api.kursutvecklingApi.client
+  const path = client.resolve(paths.createArchivePackage.uri)
+  const { https, host, port } = api.kursutvecklingApi.config
+  const url = `${https ? 'https' : 'http'}://${host}:${port}${path}`
+  const response = await axios({
+    method: 'post',
+    url: url,
+    data: sendObject,
+    headers: { 'api_key': getEnv('API_KEY', devDefaults('9876')) },
+    responseType: 'arraybuffer'
+  })
+    .then(function (response) {
+      return response.data
+    })
+    .catch(function (error) {
+      console.log(error)
+      return {}
+    })
+  return response
 }
