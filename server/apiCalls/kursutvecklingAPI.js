@@ -81,7 +81,7 @@ async function _createArchivePackage (sendObject) {
   const client = api.kursutvecklingApi.client
   const path = client.resolve(paths.createArchivePackage.uri)
   const { https, host, port } = api.kursutvecklingApi.config
-  const url = `${https ? 'https' : 'http'}://${host}:${port}${path}`
+  const url = `${https ? 'https' : 'http'}://${host}${port ? (':' + port) : ''}${path}`
   const response = await axios({
     method: 'post',
     url: url,
