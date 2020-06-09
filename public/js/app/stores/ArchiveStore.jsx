@@ -9,6 +9,20 @@ class ArchiveStore {
 
   @observable archiveFragments = []
 
+  @observable fromDateTime = null
+
+  @observable toDateTime = null
+
+  @observable hideExported = true
+
+  @computed get filteredArchiveFragments() {
+    return this.archiveFragments.filter(archiveFragment => {
+      const publishedDateTime = Date.parse(archiveFragment.publishedDate)
+      const exported = !!archiveFragment.exported
+      return (this.hideExported ? exported !== this.hideExported : true) && (this.fromDateTime ? publishedDateTime >= this.fromDateTime : true) && (this.toDateTime ? publishedDateTime <= this.toDateTime : true)
+    })
+  }
+
   @observable selectedArchiveFragments = []
 
   @action setBrowserConfig(config, paths, apiHost, profileBaseUrl) {
@@ -26,6 +40,10 @@ class ArchiveStore {
 
   @action doSetLanguage(lang) {
     this.language = lang
+  }
+
+  @action toggleHideExported() {
+    this.hideExported = !this.hideExported
   }
 
   @action toggleSelectedArchiveFragment(id) {
