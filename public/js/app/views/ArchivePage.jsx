@@ -92,7 +92,9 @@ class ArchivePage extends Component {
 										<td>{archiveFragment.courseRound}</td>
 										<td>
 											{archiveFragment.attachments[0] ? (
-												archiveFragment.attachments[0].publishedDate
+												new Date(
+													archiveFragment.attachments[0].publishedDate
+												).toLocaleDateString('sv-SE')
 											) : null}
 										</td>
 										{archiveStore.hideExported ? null : !!archiveFragment.exported ? (
