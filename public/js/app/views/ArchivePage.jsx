@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
-import { Container, Row, Col, Button } from 'reactstrap'
+import { Container, Row, Col, Table, Button, Form, FormGroup, Label, Input } from 'reactstrap'
+import { FaCheck } from 'react-icons/fa'
 
 //Components
 
@@ -30,35 +31,47 @@ class ArchivePage extends Component {
           </Col>
         </Row>
         <Row>
-          <table>
-            <thead>
-              <tr>
-                <th>Include</th>
-                <th>Course Code</th>
-                <th>Course Round</th>
-                <th>Published Date</th>
-                <th>Exported</th>
-              </tr>
-            </thead>
-            <tbody>
-            {
-              archiveStore.archiveFragments.map(archiveFragment => (
-                <tr key={archiveFragment.courseCode + '-' + archiveFragment.courseRound}>
-                  <td><input type="checkbox" onChange={() => this.toggleSelected(archiveFragment._id)} checked={archiveStore.isSelectedArchiveFragment(archiveFragment._id)}/></td>
-                  <td>{archiveFragment.courseCode}</td>
-                  <td>{archiveFragment.courseRound}</td>
-                  <td>{archiveFragment.attachments[0] ? archiveFragment.attachments[0].publishedDate : null}</td>
-                  <td>{`${!!archiveFragment.exported}`}</td>
+          <Col>
+            <Form>
+              <FormGroup className="form-check">
+                <Input type="checkbox" id="checkbox" checked={!archiveStore.hideExported} onChange={() => archiveStore.toggleHideExported()}/>
+                <Label for="checkbox">Show Exported</Label>
+              </FormGroup>
+          </Form>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Table className="archive-page-table">
+              <thead>
+                <tr>
+                  <th>Include</th>
+                  <th>Course Code</th>
+                  <th>Course Round</th>
+                  <th>Published Date</th>
+                  {archiveStore.hideExported ? null : <th>Exported</th>}
                 </tr>
-              ))
-            }
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+              {
+                archiveStore.filteredArchiveFragments.map(archiveFragment => (
+                  <tr key={archiveFragment.courseCode + '-' + archiveFragment.courseRound}>
+                    <td><input type="checkbox" onChange={() => this.toggleSelected(archiveFragment._id)} checked={archiveStore.isSelectedArchiveFragment(archiveFragment._id)}/></td>
+                    <td>{archiveFragment.courseCode}</td>
+                    <td>{archiveFragment.courseRound}</td>
+                    <td>{archiveFragment.attachments[0] ? archiveFragment.attachments[0].publishedDate : null}</td>
+                    {archiveStore.hideExported ? null : (!!archiveFragment.exported ? <td><FaCheck/></td> : <td/>)}
+                  </tr>
+                ))
+              }
+              </tbody>
+            </Table>
+          </Col>
         </Row>
         <Row className="py-4">
           <Col>
-          <Button disabled={archiveStore.selectedArchiveFragments.length === 0} onClick={this.downloadArchivePackage}>Create Archive Package</Button>
-        </Col>
+            <Button disabled={archiveStore.selectedArchiveFragments.length === 0} onClick={this.downloadArchivePackage}>Create Archive Package</Button>
+          </Col>
         </Row>
       </Container>
     )
