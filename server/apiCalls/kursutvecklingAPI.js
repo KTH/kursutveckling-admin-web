@@ -13,7 +13,8 @@ module.exports = {
   postArchiveFragment: _postArchiveFragment,
   putArchiveFragment: _putArchiveFragment,
   getAllArchiveFragments: _getAllArchiveFragments,
-  createArchivePackage: _createArchivePackage
+  createArchivePackage: _createArchivePackage,
+  setExportedArchiveFragments: _setExportedArchiveFragments
 }
 
 async function _getAnalysisData (id) {
@@ -97,4 +98,11 @@ async function _createArchivePackage (sendObject) {
       return {}
     })
   return response
+}
+
+async function _setExportedArchiveFragments (sendObject) {
+  const paths = api.kursutvecklingApi.paths
+  const client = api.kursutvecklingApi.client
+  const uri = client.resolve(paths.putExportedArchiveFragments.uri)
+  return client.putAsync({ uri: uri, body: sendObject })
 }
