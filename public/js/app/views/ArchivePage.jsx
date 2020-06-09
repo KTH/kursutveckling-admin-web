@@ -10,26 +10,13 @@ import i18n from '../../../../i18n/index'
 @inject(['archiveStore'])
 @observer
 class ArchivePage extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      selected: []
-    }
-  }
 
   toggleSelected = id => {
-    const selected = [...this.state.selected]
-    if (this.state.selected.includes(id)) {
-      const index = selected.indexOf(id)
-      selected.splice(index, 1)
-    } else {
-      selected.push(id)
-    }
-    this.setState({selected})
+    this.props.archiveStore.toggleSelectedArchiveFragment(id)
   }
 
   downloadArchivePackage = () => {
-    this.props.archiveStore.downloadArchivePackage(this.state.selected)
+    this.props.archiveStore.downloadArchivePackage(this.props.archiveStore.selectedArchiveFragments)
   }
 
   render() {
@@ -57,7 +44,7 @@ class ArchivePage extends Component {
             {
               archiveStore.archiveFragments.map(archiveFragment => (
                 <tr key={archiveFragment.courseCode + '-' + archiveFragment.courseRound}>
-                  <td><input type="checkbox" onClick={() => this.toggleSelected(archiveFragment._id)}/></td>
+                  <td><input type="checkbox" onChange={() => this.toggleSelected(archiveFragment._id)} checked={archiveStore.isSelectedArchiveFragment(archiveFragment._id)}/></td>
                   <td>{archiveFragment.courseCode}</td>
                   <td>{archiveFragment.courseRound}</td>
                   <td>{archiveFragment.attachments[0] ? archiveFragment.attachments[0].publishedDate : null}</td>
@@ -70,7 +57,7 @@ class ArchivePage extends Component {
         </Row>
         <Row className="py-4">
           <Col>
-          <Button disabled={this.state.selected.length === 0} onClick={this.downloadArchivePackage}>Create Archive Package</Button>
+          <Button disabled={archiveStore.selectedArchiveFragments.length === 0} onClick={this.downloadArchivePackage}>Create Archive Package</Button>
         </Col>
         </Row>
       </Container>

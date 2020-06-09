@@ -11,7 +11,7 @@ const { browser, server } = require('../configuration')
 
 const i18n = require('../../i18n')
 
-const { getAllArchiveFragments, createArchivePackage } = require('../apiCalls/kursutvecklingAPI')
+const { getAllArchiveFragments, createArchivePackage, setExportedArchiveFragments } = require('../apiCalls/kursutvecklingAPI')
 
 function hydrateStores (renderProps) {
   // This assumes that all stores are specified in a root element called Provider
@@ -34,7 +34,7 @@ function _staticRender (context, location) {
 }
 
 async function _createArchivePackage (req, res, next) {
-  const selected = req.body.selected
+  const selected = req.body
   log.debug('createArchivePackage called with:', selected)
 
   try {
@@ -42,6 +42,19 @@ async function _createArchivePackage (req, res, next) {
     res.send(apiResponse)
   } catch (err) {
     log.error('Exception from createArchivePackage', { error: err })
+    next(err)
+  }
+}
+
+async function _setExportedArchiveFragments (req, res, next) {
+  const selected = req.body
+  log.debug('setExportedArchiveFragments called with:', selected)
+
+  try {
+    const apiResponse = await setExportedArchiveFragments(selected)
+    res.send(apiResponse)
+  } catch (err) {
+    log.error('Exception from setExportedArchiveFragments', { error: err })
     next(err)
   }
 }
@@ -78,5 +91,6 @@ async function getIndex (req, res, next) {
 
 module.exports = {
   getIndex: getIndex,
-  createArchivePackage: _createArchivePackage
+  createArchivePackage: _createArchivePackage,
+  setExportedArchiveFragments: _setExportedArchiveFragments
 }

@@ -1,5 +1,6 @@
 'use strict'
-import { observable, action } from 'mobx'
+import { observable, action, computed, toJS } from 'mobx'
+import { computedFn } from "mobx-utils"
 import axios from 'axios'
 
 class ArchiveStore {
@@ -8,8 +9,8 @@ class ArchiveStore {
 
   @observable archiveFragments = []
 
-  @observable archivePackage
-  
+  @observable selectedArchiveFragments = []
+
   @action setBrowserConfig(config, paths, apiHost, profileBaseUrl) {
     this.browserConfig = config
     this.paths = paths
@@ -27,15 +28,28 @@ class ArchiveStore {
     this.language = lang
   }
 
-  @action setArchivePackage(archivePackage) {
-    this.archivePackage = archivePackage
+  @action toggleSelectedArchiveFragment(id) {
+    if (this.selectedArchiveFragments.includes(id)) {
+      const index = this.selectedArchiveFragments.indexOf(id)
+      this.selectedArchiveFragments.splice(index, 1)
+    } else {
+      this.selectedArchiveFragments.push(id)
+    }
   }
 
-  @action downloadArchivePackage(selected) {
+  @action clearSelectedArchiveFragments() {
+      this.selectedArchiveFragments.clear()
+  }
+
+  isSelectedArchiveFragment = computedFn(function(id) {
+    return this.selectedArchiveFragments.includes(id)
+  })
+
+  downloadArchivePackage() {
     axios({
       url: this.paths.api.createArchivePackage.uri,
       method: 'POST',
-      data: {selected},
+      data: this.selectedArchiveFragments,
       responseType: 'blob'
     }).then((response) => {
       let blob = (response.data instanceof Blob) ? response.data : new Blob([response.data], {type: 'application/zip'})
@@ -45,12 +59,44 @@ class ArchiveStore {
       link.setAttribute('download', 'archive.zip')
       document.body.appendChild(link)
       link.click()
+    }).then(() => {
+      this.setRecievedAsExported()
+    }).then(() => {
+      this.clearSelectedArchiveFragments()
+    }
+    ).catch(err => {
+      if (err.response) {
+        this.errorMessage = err.message
+        return err.message
+      }
+      throw err
+    })
+  }
+  
+  setRecievedAsExported() {
+    const selected = toJS(this.selectedArchiveFragments)
+    axios({
+      url: this.paths.api.setExportedArchiveFragments.uri,
+      method: 'PUT',
+      data: selected
+    }).then((response) => {
+      console.log('selected', selected)
+      selected.forEach(s => this.setArchiveFragmentAsExported(s))
     }).catch(err => {
       if (err.response) {
         this.errorMessage = err.message
         return err.message
       }
       throw err
+    })
+  }
+
+  setArchiveFragmentAsExported(id) {
+    this.archiveFragments.forEach(archiveFragment => {
+      if (archiveFragment._id === id) {
+        console.log('Set archiveFragment to exported', id)
+        archiveFragment.exported = true
+      }
     })
   }
 
