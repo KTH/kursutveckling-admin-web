@@ -1,139 +1,171 @@
-'use strict'
-import { observable, action, computed, toJS } from 'mobx'
-import { computedFn } from "mobx-utils"
-import axios from 'axios'
+'use strict';
+import { observable, action, computed, toJS } from 'mobx';
+import { computedFn } from 'mobx-utils';
+import axios from 'axios';
 
 class ArchiveStore {
+	@observable language = 1;
 
-  @observable language = 1
+	@observable archiveFragments = [];
 
-  @observable archiveFragments = []
+	@observable fromDate = '';
 
-  @observable fromDateTime = null
+	@observable toDate = '';
 
-  @observable toDateTime = null
+	@observable hideExported = true;
 
-  @observable hideExported = true
+	@observable selectedArchiveFragments = [];
 
-  @computed get filteredArchiveFragments() {
-    return this.archiveFragments.filter(archiveFragment => {
-      const publishedDateTime = Date.parse(archiveFragment.publishedDate)
-      const exported = !!archiveFragment.exported
-      return (this.hideExported ? exported !== this.hideExported : true) && (this.fromDateTime ? publishedDateTime >= this.fromDateTime : true) && (this.toDateTime ? publishedDateTime <= this.toDateTime : true)
-    })
-  }
+	@computed
+	get filteredArchiveFragments() {
+		return this.archiveFragments.filter((archiveFragment) => {
+			const publishedDateTime = Date.parse(archiveFragment.publishedDate);
+			const exported = !!archiveFragment.exported;
+			return (
+				(this.hideExported ? exported !== this.hideExported : true) &&
+				this.laterThanFromDate(publishedDateTime) &&
+				this.beforeToDate(publishedDateTime)
+			);
+		});
+	}
 
-  @observable selectedArchiveFragments = []
+	laterThanFromDate(date) {
+		const fromDateSplit = this.fromDate.split('-');
+		const fromDateTime = fromDateSplit
+			? new Date(fromDateSplit[0], fromDateSplit[1] - 1, fromDateSplit[2]).getTime()
+			: null;
+		return Number.isInteger(fromDateTime) ? date >= fromDateTime : true;
+	}
 
-  @action setBrowserConfig(config, paths, apiHost, profileBaseUrl) {
-    this.browserConfig = config
-    this.paths = paths
-    this.apiHost = apiHost
-    this.profileBaseUrl = profileBaseUrl
-  }
+	beforeToDate(date) {
+		const toDateSplit = this.toDate.split('-');
+		const toDateTime = toDateSplit ? new Date(toDateSplit[0], toDateSplit[1] - 1, toDateSplit[2]).getTime() : null;
+		return Number.isInteger(toDateTime) ? date <= toDateTime : true;
+	}
 
-  @action __SSR__setCookieHeader(cookieHeader) {
-    if (typeof window === 'undefined') {
-      this.cookieHeader = cookieHeader || ''
-    }
-  }
+	@action
+	setBrowserConfig(config, paths, apiHost, profileBaseUrl) {
+		this.browserConfig = config;
+		this.paths = paths;
+		this.apiHost = apiHost;
+		this.profileBaseUrl = profileBaseUrl;
+	}
 
-  @action doSetLanguage(lang) {
-    this.language = lang
-  }
+	@action
+	__SSR__setCookieHeader(cookieHeader) {
+		if (typeof window === 'undefined') {
+			this.cookieHeader = cookieHeader || '';
+		}
+	}
 
-  @action toggleHideExported() {
-    this.hideExported = !this.hideExported
-  }
+	@action
+	doSetLanguage(lang) {
+		this.language = lang;
+	}
 
-  @action toggleSelectedArchiveFragment(id) {
-    if (this.selectedArchiveFragments.includes(id)) {
-      const index = this.selectedArchiveFragments.indexOf(id)
-      this.selectedArchiveFragments.splice(index, 1)
-    } else {
-      this.selectedArchiveFragments.push(id)
-    }
-  }
+	@action
+	toggleHideExported() {
+		this.hideExported = !this.hideExported;
+	}
 
-  @action clearSelectedArchiveFragments() {
-      this.selectedArchiveFragments.clear()
-  }
+	@action
+	toggleSelectedArchiveFragment(id) {
+		if (this.selectedArchiveFragments.includes(id)) {
+			const index = this.selectedArchiveFragments.indexOf(id);
+			this.selectedArchiveFragments.splice(index, 1);
+		} else {
+			this.selectedArchiveFragments.push(id);
+		}
+	}
 
-  isSelectedArchiveFragment = computedFn(function(id) {
-    return this.selectedArchiveFragments.includes(id)
-  })
+	@action
+	clearSelectedArchiveFragments() {
+		this.selectedArchiveFragments.clear();
+	}
 
-  downloadArchivePackage() {
-    axios({
-      url: this.paths.api.createArchivePackage.uri,
-      method: 'POST',
-      data: this.selectedArchiveFragments,
-      responseType: 'blob'
-    }).then((response) => {
-      let blob = (response.data instanceof Blob) ? response.data : new Blob([response.data], {type: 'application/zip'})
-      const url = window.URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.setAttribute('download', 'archive.zip')
-      document.body.appendChild(link)
-      link.click()
-    }).then(() => {
-      this.setRecievedAsExported()
-    }).then(() => {
-      this.clearSelectedArchiveFragments()
-    }
-    ).catch(err => {
-      if (err.response) {
-        this.errorMessage = err.message
-        return err.message
-      }
-      throw err
-    })
-  }
-  
-  setRecievedAsExported() {
-    const selected = toJS(this.selectedArchiveFragments)
-    axios({
-      url: this.paths.api.setExportedArchiveFragments.uri,
-      method: 'PUT',
-      data: selected
-    }).then((response) => {
-      console.log('selected', selected)
-      selected.forEach(s => this.setArchiveFragmentAsExported(s))
-    }).catch(err => {
-      if (err.response) {
-        this.errorMessage = err.message
-        return err.message
-      }
-      throw err
-    })
-  }
+	isSelectedArchiveFragment = computedFn(function(id) {
+		return this.selectedArchiveFragments.includes(id);
+	});
 
-  setArchiveFragmentAsExported(id) {
-    this.archiveFragments.forEach(archiveFragment => {
-      if (archiveFragment._id === id) {
-        console.log('Set archiveFragment to exported', id)
-        archiveFragment.exported = true
-      }
-    })
-  }
+	downloadArchivePackage() {
+		axios({
+			url: this.paths.api.createArchivePackage.uri,
+			method: 'POST',
+			data: this.selectedArchiveFragments,
+			responseType: 'blob'
+		})
+			.then((response) => {
+				let blob =
+					response.data instanceof Blob
+						? response.data
+						: new Blob([ response.data ], { type: 'application/zip' });
+				const url = window.URL.createObjectURL(blob);
+				const link = document.createElement('a');
+				link.href = url;
+				link.setAttribute('download', 'archive.zip');
+				document.body.appendChild(link);
+				link.click();
+			})
+			.then(() => {
+				this.setRecievedAsExported();
+			})
+			.then(() => {
+				this.clearSelectedArchiveFragments();
+			})
+			.catch((err) => {
+				if (err.response) {
+					this.errorMessage = err.message;
+					return err.message;
+				}
+				throw err;
+			});
+	}
 
-  initializeStore(storeName) {
-    const store = this
+	setRecievedAsExported() {
+		const selected = toJS(this.selectedArchiveFragments);
+		axios({
+			url: this.paths.api.setExportedArchiveFragments.uri,
+			method: 'PUT',
+			data: selected
+		})
+			.then((response) => {
+				console.log('selected', selected);
+				selected.forEach((s) => this.setArchiveFragmentAsExported(s));
+			})
+			.catch((err) => {
+				if (err.response) {
+					this.errorMessage = err.message;
+					return err.message;
+				}
+				throw err;
+			});
+	}
 
-    if (typeof window !== 'undefined' && window.__initialState__ && window.__initialState__[storeName]) {
-      const tmp = JSON.parse(decodeURIComponent(window.__initialState__[storeName]))
-      for (let key in tmp) {
-        store[key] = tmp[key]
-        delete tmp[key]
-      }
+	setArchiveFragmentAsExported(id) {
+		this.archiveFragments.forEach((archiveFragment) => {
+			if (archiveFragment._id === id) {
+				console.log('Set archiveFragment to exported', id);
+				archiveFragment.exported = true;
+			}
+		});
+	}
 
-      // Just a nice helper message
-      if (Object.keys(window.__initialState__).length === 0) {
-        window.__initialState__ = 'Mobx store state initialized'
-      }
-    }
-  }
+	initializeStore(storeName) {
+		const store = this;
+
+		if (typeof window !== 'undefined' && window.__initialState__ && window.__initialState__[storeName]) {
+			const tmp = JSON.parse(decodeURIComponent(window.__initialState__[storeName]));
+			for (let key in tmp) {
+				store[key] = tmp[key];
+				delete tmp[key];
+			}
+
+			// Just a nice helper message
+			if (Object.keys(window.__initialState__).length === 0) {
+				window.__initialState__ = 'Mobx store state initialized';
+			}
+		}
+	}
 }
 
-export default ArchiveStore
+export default ArchiveStore;
