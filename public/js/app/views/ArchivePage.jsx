@@ -117,7 +117,7 @@ class ArchivePage extends Component {
 						</Table>
 					</Col>
 				</Row>
-				<Row className="py-4">
+				<Row className="py-2">
 					<Col>
 						<Button
 							disabled={archiveStore.selectedArchiveFragments.length === 0}
