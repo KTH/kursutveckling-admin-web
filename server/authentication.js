@@ -150,6 +150,12 @@ function _hasCourseTeacherGroup (courseCode, courseInitials, ldapUser, rounds, r
   return false // OBS!!!! TODO!!/
 }
 
+function _hasArchiveUserGroup (ldapUser) {
+  const groups = ldapUser.memberOf
+  console.log('_hasArchiveUserGroup', groups)
+  return Array.isArray(groups) && groups.includes('pa.anstallda.V.VDC')
+}
+
 module.exports.requireRole = function () { // TODO:Different roles for selling text and course development
   const roles = Array.prototype.slice.call(arguments)
 
@@ -160,7 +166,10 @@ module.exports.requireRole = function () { // TODO:Different roles for selling t
     const isPreview = req.params.preview && req.params.preview === 'preview'
     let courseCode = ''
     let rounds = []
-    if (id.length > 7) {
+    if (!id) {
+      // Archive route
+      courseCode = ''
+    } else if (id.length > 7) {
       let splitId = req.params.id.split('_')
       courseCode = splitId[0].length > 12 ? id.slice(0, 7).toUpperCase() : id.slice(0, 6).toUpperCase()
       rounds = splitId[1]
@@ -173,6 +182,7 @@ module.exports.requireRole = function () { // TODO:Different roles for selling t
       isExaminator: hasGroup(`edu.courses.${courseInitials}.${courseCode}.examiner`, ldapUser),
       isCourseResponsible: _hasCourseResponsibleGroup(courseCode, courseInitials, ldapUser, rounds, 'courseresponsible', isPreview),
       isCourseTeacher: _hasCourseTeacherGroup(courseCode, courseInitials, ldapUser, rounds, 'teachers'),
+      isArchiveUser: _hasArchiveUserGroup(ldapUser),
       isSuperUser: ldapUser.isSuperUser
     }
 
