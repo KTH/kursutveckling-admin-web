@@ -26,56 +26,63 @@ class ArchivePage extends Component {
 			<Container>
 				<Row>
 					<Col>
-						<h1>Archive</h1>
+						<h1>Skapa arkivpaket av publicerade kursanalyser</h1>
 					</Col>
 				</Row>
 				<Row>
-					<Form>
-						<Col>
-							<FormGroup className="form-check">
-								<Input
-									type="checkbox"
-									id="checkbox"
-									checked={!archiveStore.hideExported}
-									onChange={() => archiveStore.toggleHideExported()}
-								/>
-								<Label for="checkbox">Show Exported</Label>
-							</FormGroup>
-						</Col>
-						<Col>
-							<FormGroup className="form-date">
-								<Label for="checkbox">From Date</Label>
-								<Input
-									type="date"
-									id="fromDate"
-									value={archiveStore.fromDate}
-									onChange={(event) => {
-										archiveStore.fromDate = event.target.value;
-									}}
-								/>
-								<Label for="checkbox">To Date</Label>
-								<Input
-									type="date"
-									id="toDate"
-									value={archiveStore.toDate}
-									onChange={(event) => {
-										archiveStore.toDate = event.target.value;
-									}}
-								/>
-							</FormGroup>
-						</Col>
-					</Form>
+          <Col lg="9">
+            <p>
+              På denna sida laddar du ner en ZIP-fil som innehåller publicerade kursanalyser som ska bevaras i e-arkivet genom ett manuellt handhavande. ZIP-filen innehåller förutom valda kursanalyser filen sip.xml som specificerar ZIP-filens innehåll med metadata. Som exempel innehåller sip.xml uppgifter om vilken kursomgång kursanalysen publicerats för, vilken tidpunkt den publicerats m.m.
+            </p>
+            <p>
+              Välj de publicerade kursanalyser som du vill ta ut för att bevara i e-arkivet och klicka på knappen &rdquo;Skapa arkivpaket&rdquo;. Systemet kommer då att skapa en ZIP-fil med valda kursanalyser och specifikationen sip.xml. Ladda ned ZIP-filen och extrahera för att hantera ZIP-filens innehåll.
+            </p>
+          </Col>
+          <Col lg="3">
+            <div className="roundArchiveFilter">
+              <FormGroup className="form-check">
+                <Input
+                  type="checkbox"
+                  id="checkbox"
+                  checked={!archiveStore.hideExported}
+                  onChange={() => archiveStore.toggleHideExported()}
+                />
+                <Label for="checkbox">Visa exporterade</Label>
+              </FormGroup>
+              <FormGroup className="form-date">
+                <h4>Kursanalysens publiceringsdatum</h4>
+                <Label for="checkbox">Från datum</Label>
+                <Input
+                  type="date"
+                  id="fromDate"
+                  value={archiveStore.fromDate}
+                  onChange={(event) => {
+                    archiveStore.fromDate = event.target.value;
+                  }}
+                />
+                <Label for="checkbox">Till datum</Label>
+                <Input
+                  type="date"
+                  id="toDate"
+                  value={archiveStore.toDate}
+                  onChange={(event) => {
+                    archiveStore.toDate = event.target.value;
+                  }}
+                />
+              </FormGroup>
+            </div>
+          </Col>
 				</Row>
 				<Row>
 					<Col>
 						<Table className="archive-page-table">
 							<thead>
 								<tr>
-									<th>Include</th>
-									<th>Course Code</th>
-									<th>Course Offering</th>
-									<th>Published Date</th>
-									{archiveStore.hideExported ? null : <th>Exported</th>}
+									<th>Inkludera i arkivpaket</th>
+									<th>Kurskod</th>
+									<th>Kursomgång</th>
+									<th>Kursanalysens publiceringsdatum</th>
+									{archiveStore.hideExported ? null : <th>Exporterad</th>}
 								</tr>
 							</thead>
 							<tbody>
@@ -116,7 +123,7 @@ class ArchivePage extends Component {
 							disabled={archiveStore.selectedArchiveFragments.length === 0}
 							onClick={this.downloadArchivePackage}
 						>
-							Create Archive Package
+							Skapa arkivpaket
 						</Button>
 					</Col>
 				</Row>
