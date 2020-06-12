@@ -122,7 +122,14 @@ class ArchiveStore {
 	}
 
 	setRecievedAsExported() {
-		const selected = toJS(this.selectedArchiveFragments);
+		const selectedIds = toJS(this.selectedArchiveFragments);
+		const selected = selectedIds.map(selectedId => {
+			const archiveFragment = this.archiveFragments.find(f => f._id === selectedId)
+			return {
+				id: selectedId,
+				courseCode: archiveFragment.courseCode
+			}
+		})
 		axios({
 			url: this.paths.api.setExportedArchiveFragments.uri,
 			method: 'PUT',
@@ -130,7 +137,9 @@ class ArchiveStore {
 		})
 			.then((response) => {
 				console.log('selected', selected);
-				selected.forEach((s) => this.setArchiveFragmentAsExported(s));
+				this.selectedArchiveFragments = []
+				selected.forEach((s) => this.setArchiveFragmentAsExported(s.id));
+				console.log(this.filteredArchiveFragments)
 			})
 			.catch((err) => {
 				if (err.response) {
