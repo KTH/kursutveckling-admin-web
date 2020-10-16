@@ -226,20 +226,6 @@ span.right-links {
     text-align: right;
   }
 }
-
-//Kursplan, kurspm, kursanalys links
-.pdf-link {
-  &:before {
-    background: url(https://app.kth.se/style/kth-style/img/kth-style/icons/file-pdf-fa-regular.svg) no-repeat;
-    content: '';
-    display: inline-block;
-    height: 1.3em;
-    width: 1.3em;
-    margin: 0.5em 0.4em 0.6em 0.4em;
-    vertical-align: middle;
-  }
-}
-
 // ------- HELPERS ------- //
 .inline-flex {
   display: inline-flex;
