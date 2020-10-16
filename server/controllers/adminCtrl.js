@@ -19,34 +19,21 @@ const koppsCourseData = require('../apiCalls/koppsCourseData')
 const kursstatistikAPI = require('../apiCalls/kursstatistikAPI')
 const i18n = require('../../i18n')
 
-function _staticFactory (context, location) {
+function _staticFactory(context, location) {
   if (process.env.NODE_ENV === 'development') {
     delete require.cache[require.resolve('../../dist/app.js')]
   }
   const { staticFactory } = require('../../dist/app.js')
   return staticFactory(context, location)
 }
-module.exports = {
-  getIndex: getIndex,
-  getRoundAnalysis: co.wrap(_getRoundAnalysis),
-  postRoundAnalysis: co.wrap(_postRoundAnalysis),
-  deleteRoundAnalysis: co.wrap(_deleteRoundAnalysis),
-  getCourseEmployees: co.wrap(_getCourseEmployees),
-  getUsedRounds: co.wrap(_getUsedRounds),
-  getKoppsCourseData: co.wrap(_getKoppsCourseData),
-  saveFileToStorage: co.wrap(_saveFileToStorage),
-  updateFileInStorage: co.wrap(_updateFileInStorage),
-  deleteFileInStorage: co.wrap(_deleteFileInStorage),
-  getStatisicsForRound: co.wrap(_getStatisicsForRound)
-}
 
-function _formatSemesterArchive (semester) {
+function _formatSemesterArchive(semester) {
   return `${semester.toString().match(/.{1,4}/g)[1] === '1' ? 'VT' : 'HT'}${semester.toString().match(/.{1,4}/g)[0]}`
 }
 
 // ------- ANALYSES FROM KURSUTVECKLING-API: POST, GET, DELETE, GET USED ROUNDS ------- /
 
-async function _postRoundAnalysis (req, res, next) {
+async function _postRoundAnalysis(req, res, next) {
   const roundAnalysisId = req.params.id
   const isNewAnalysis = req.params.status
   const language = req.params.language || 'sv'
@@ -73,7 +60,7 @@ async function _postRoundAnalysis (req, res, next) {
   }
 }
 
-async function _getRoundAnalysis (req, res, next) {
+async function _getRoundAnalysis(req, res, next) {
   const roundAnalysisId = req.params.id || ''
   const language = req.params.language || 'sv'
   log.debug('_getRoundAnalysis id:' + req.params.id)
@@ -86,7 +73,7 @@ async function _getRoundAnalysis (req, res, next) {
   }
 }
 
-async function _deleteRoundAnalysis (req, res, next) {
+async function _deleteRoundAnalysis(req, res, next) {
   const roundAnalysisId = req.params.id
   log.debug('_deleteRoundAnalysis with id:' + req.params.id)
   try {
@@ -98,7 +85,7 @@ async function _deleteRoundAnalysis (req, res, next) {
   }
 }
 
-async function _getUsedRounds (req, res, next) {
+async function _getUsedRounds(req, res, next) {
   const courseCode = req.params.courseCode
   const semester = req.params.semester
   log.debug('_getUsedRounds with course code: ' + courseCode + 'and semester: ' + semester)
@@ -113,7 +100,7 @@ async function _getUsedRounds (req, res, next) {
 }
 
 // ------- COURSE DATA FROM KOPPS-API   ------- /
-async function _getKoppsCourseData (req, res, next) {
+async function _getKoppsCourseData(req, res, next) {
   const courseCode = req.params.courseCode
   const language = req.params.language || 'sv'
   log.debug('_getKoppsCourseData with code:' + courseCode)
@@ -127,7 +114,7 @@ async function _getKoppsCourseData (req, res, next) {
 }
 
 // ------- FILES IN BLOB STORAGE: SAVE, UPDATE, DELETE ------- /
-async function _saveFileToStorage (req, res, next) {
+async function _saveFileToStorage(req, res, next) {
   log.debug('Saving uploaded file to storage ' + req.files.file)
   let file = req.files.file
   try {
@@ -139,31 +126,19 @@ async function _saveFileToStorage (req, res, next) {
   }
 }
 
-async function _updateFileInStorage (req, res, next) {
-  log.debug('_updateFileInStorage file name:' + req.params.fileName + ', metadata:' + req.body.params.metadata)
+async function updateFileInStorage(req, res, next) {
+  log.debug('updateFileInStorage file name:' + req.params.fileName + ', metadata:' + req.body.params.metadata)
   try {
     const response = await updateMetaData(req.params.fileName, req.body.params.metadata)
     return httpResponse.json(res, response)
   } catch (error) {
-    log.error('Exception from updateFileInStorage ', { error: error })
-    next(error)
-  }
-}
-
-async function _deleteFileInStorage (res, req, next) {
-  log.debug('_deleteFileInStorage, id:' + req.req.params.id)
-  try {
-    const response = await deleteBlob(req.req.params.id)
-    log.debug('_deleteFileInStorage, id:', response)
-    return httpResponse.json(res.res)
-  } catch (error) {
-    log.error('Exception from _deleteFileInStorage ', { error: error })
+    log.error('Exception from updateFileInStorage ', { error })
     next(error)
   }
 }
 
 // ------- EXAMINATOR AND RESPONSIBLES FROM UG-REDIS: ------- /
-async function _getCourseEmployees (req, res, next) {
+async function _getCourseEmployees(req, res, next) {
   let key = req.params.key
   key = key.replace(/_/g, '.')
 
@@ -172,10 +147,7 @@ async function _getCourseEmployees (req, res, next) {
     log.debug('_getCourseEmployees with keys: ' + roundsKeys.examiner, roundsKeys.responsibles)
     await redis('ugRedis', serverConfig.cache.ugRedis.redis)
       .then(function (ugClient) {
-        return ugClient.multi()
-          .mget(roundsKeys.examiner)
-          .mget(roundsKeys.responsibles)
-          .execAsync()
+        return ugClient.multi().mget(roundsKeys.examiner).mget(roundsKeys.responsibles).execAsync()
       })
       .then(function (returnValue) {
         log.debug('ugRedis - return:', returnValue)
@@ -190,7 +162,7 @@ async function _getCourseEmployees (req, res, next) {
   }
 }
 
-async function _getStatisicsForRound (req, res, next) {
+async function _getStatisicsForRound(req, res, next) {
   log.debug('_getStatisicsForRound : ', req.body.params, req.params.roundEndDate)
   // Solution for rounds that missing ladokUID in kopps
   if (req.body.params.length === 0) {
@@ -207,7 +179,7 @@ async function _getStatisicsForRound (req, res, next) {
   }
 }
 
-async function _postArchiveFragment (sendObject) {
+async function _postArchiveFragment(sendObject) {
   const archiveFragment = {
     courseCode: sendObject.courseCode,
     courseName: sendObject.courseName,
@@ -219,12 +191,14 @@ async function _postArchiveFragment (sendObject) {
     description: 'Kursanalys',
     publishedDate: sendObject.publishedDate,
     preserve: 1,
-    attachments: [{
-      fileName: sendObject.analysisFileName,
-      remarks: 'Förändringar från föregående kursomgång: ' + sendObject.alterationText,
-      fileDate: sendObject.pdfAnalysisDate,
-      publishedDate: sendObject.publishedDate
-    }]
+    attachments: [
+      {
+        fileName: sendObject.analysisFileName,
+        remarks: 'Förändringar från föregående kursomgång: ' + sendObject.alterationText,
+        fileDate: sendObject.pdfAnalysisDate,
+        publishedDate: sendObject.publishedDate,
+      },
+    ],
   }
 
   try {
@@ -237,7 +211,7 @@ async function _postArchiveFragment (sendObject) {
   }
 }
 
-async function _putArchiveFragment (sendObject) {
+async function _putArchiveFragment(sendObject) {
   const archiveFragment = {
     courseCode: sendObject.courseCode,
     courseName: sendObject.courseName,
@@ -249,12 +223,14 @@ async function _putArchiveFragment (sendObject) {
     description: 'Kursanalys',
     publishedDate: sendObject.publishedDate,
     preserve: 1,
-    attachments: [{
-      fileName: sendObject.analysisFileName,
-      remarks: 'Förändringar från föregående kursomgång: ' + sendObject.alterationText,
-      fileDate: sendObject.pdfAnalysisDate,
-      publishedDate: sendObject.changedAfterPublishedDate || sendObject.publishedDate
-    }]
+    attachments: [
+      {
+        fileName: sendObject.analysisFileName,
+        remarks: 'Förändringar från föregående kursomgång: ' + sendObject.alterationText,
+        fileDate: sendObject.pdfAnalysisDate,
+        publishedDate: sendObject.changedAfterPublishedDate || sendObject.publishedDate,
+      },
+    ],
   }
 
   try {
@@ -267,7 +243,7 @@ async function _putArchiveFragment (sendObject) {
   }
 }
 
-async function getIndex (req, res, next) {
+async function getIndex(req, res, next) {
   /** ------- CHECK OF CONNECTION TO API AND UG_REDIS ------- */
   if (api.kursutvecklingApi.connected === false) {
     log.error('No connection to kursutveckling-api', api.kursutvecklingApi)
@@ -296,16 +272,26 @@ async function getIndex (req, res, next) {
     renderProps.props.children.props.routerStore.setBrowserConfig(browserConfig, paths, serverConfig.hostUrl, service)
     renderProps.props.children.props.routerStore.setLanguage(lang)
     renderProps.props.children.props.routerStore.setService(service)
-    await renderProps.props.children.props.routerStore.getMemberOf(req.session.authUser.memberOf, req.params.id.toUpperCase(), req.session.authUser.username, serverConfig.auth.superuserGroup)
+    await renderProps.props.children.props.routerStore.getMemberOf(
+      req.session.authUser.memberOf,
+      req.params.id.toUpperCase(),
+      req.session.authUser.username,
+      serverConfig.auth.superuserGroup
+    )
     if (req.params.id.length <= 7) {
-    /** ------- Got course code -> prepare for Page 1 depending on status (draft or published) ------- */
+      /** ------- Got course code -> prepare for Page 1 depending on status (draft or published) ------- */
       log.debug(' getIndex, get course data for : ' + req.params.id)
       const apiResponse = await koppsCourseData.getKoppsCourseData(req.params.id.toUpperCase(), lang)
       if (apiResponse.statusCode >= 400) {
         renderProps.props.children.props.routerStore.errorMessage = apiResponse.statusMessage // TODO: ERROR?????
       } else {
         renderProps.props.children.props.routerStore.status = status === 'p' ? 'published' : 'new'
-        await renderProps.props.children.props.routerStore.handleCourseData(apiResponse.body, req.params.id.toUpperCase(), ldapUser, lang)
+        await renderProps.props.children.props.routerStore.handleCourseData(
+          apiResponse.body,
+          req.params.id.toUpperCase(),
+          ldapUser,
+          lang
+        )
       }
     } else {
       /** ------- Got analysisId  -> request analysis data from api ------- */
@@ -320,16 +306,21 @@ async function getIndex (req, res, next) {
         /** ------- Setting status ------- */
         status = req.params.preview && req.params.preview === 'preview' ? 'preview' : status
         switch (status) {
-          case 'p' : renderProps.props.children.props.routerStore.status = 'published'
+          case 'p':
+            renderProps.props.children.props.routerStore.status = 'published'
             break
-          case 'n' : renderProps.props.children.props.routerStore.status = 'draft'
+          case 'n':
+            renderProps.props.children.props.routerStore.status = 'draft'
             break
-          default : renderProps.props.children.props.routerStore.status = 'draft'
+          default:
+            renderProps.props.children.props.routerStore.status = 'draft'
         }
         log.debug(' getIndex, status set to: ' + status)
 
         /** ------- Creating title  ------- */
-        renderProps.props.children.props.routerStore.setCourseTitle(courseTitle.length > 0 ? decodeURIComponent(courseTitle) : '')
+        renderProps.props.children.props.routerStore.setCourseTitle(
+          courseTitle.length > 0 ? decodeURIComponent(courseTitle) : ''
+        )
       }
     }
     renderProps.props.children.props.routerStore.__SSR__setCookieHeader(req.headers.cookie)
@@ -343,7 +334,7 @@ async function getIndex (req, res, next) {
       title: i18n.messages[lang === 'en' ? 0 : 1].messages.title,
       initialState: JSON.stringify(hydrateStores(renderProps)),
       lang: lang,
-      description: i18n.messages[lang === 'en' ? 0 : 1].messages.title
+      description: i18n.messages[lang === 'en' ? 0 : 1].messages.title,
     })
   } catch (err) {
     log.error('Error in getIndex', { error: err })
@@ -351,7 +342,7 @@ async function getIndex (req, res, next) {
   }
 }
 
-function hydrateStores (renderProps) {
+function hydrateStores(renderProps) {
   // This assumes that all stores are specified in a root element called Provider
   const props = renderProps.props.children.props
   const outp = {}
@@ -361,4 +352,17 @@ function hydrateStores (renderProps) {
     }
   }
   return outp
+}
+
+module.exports = {
+  getIndex,
+  getRoundAnalysis: _getRoundAnalysis,
+  postRoundAnalysis: _postRoundAnalysis,
+  deleteRoundAnalysis: _deleteRoundAnalysis,
+  getCourseEmployees: _getCourseEmployees,
+  getUsedRounds: _getUsedRounds,
+  getKoppsCourseData: _getKoppsCourseData,
+  saveFileToStorage: _saveFileToStorage,
+  updateFileInStorage,
+  getStatisicsForRound: _getStatisicsForRound,
 }
