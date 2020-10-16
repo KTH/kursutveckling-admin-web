@@ -15,13 +15,18 @@ function _getListOfExamRounds(rawExamRoundsStrArr) {
 }
 
 const TableWithCourseData = ({ translate, thisAnalysisObj }) => {
-  const { examinationRounds: rawExamsData, _id: analysisId } = thisAnalysisObj
+  const {
+    examinationGradeFromLadok,
+    registeredStudentsFromLadok,
+    examinationRounds: rawExamsData,
+    _id: analysisId,
+  } = thisAnalysisObj
   const listOfExamRounds = _getListOfExamRounds(rawExamsData)
   const orderedColumns = [
     'responsibles',
     'examiners',
     'registeredStudents',
-    'examShortAndLongStrArr',
+    'examRounds',
     'examinationGrade',
     'alterationText',
   ]
@@ -51,7 +56,11 @@ const TableWithCourseData = ({ translate, thisAnalysisObj }) => {
               <td className={colName} id={cellId} key={index}>
                 <ControlledPopover cellId={cellId} header={header} popoverText={popoverText} popType="mobile" />
                 {(colName === 'examRounds' && listOfExamRounds.map((exam, index) => <p key={index}>{exam}</p>)) || (
-                  <p>{thisAnalysisObj[colName]}</p>
+                  <p>
+                    {`${thisAnalysisObj[colName]}${
+                      (colName === 'examinationGrade' && (!examinationGradeFromLadok ? ' % *' : ' %')) || ''
+                    }${(colName === 'registeredStudents' && (!registeredStudentsFromLadok ? ' *' : '')) || ''}`}
+                  </p>
                 )}
               </td>
             )

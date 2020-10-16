@@ -276,7 +276,7 @@ module.exports = {
         header: 'Examinator',
         popoverText: 'Examinator för kurs vid gällande kursomgång. Examinatorer administreras i Kopps.',
       },
-      examShortAndLongStrArr: { header: 'Examination', popoverText: 'Form av examination vid gällande kursomgång.' },
+      examRounds: { header: 'Examination', popoverText: 'Form av examination vid gällande kursomgång.' },
       alterationText: {
         header: 'Förändringar som har införts till den här kursomgången',
         popoverText: 'Summerade förändringar som har införts till den här kursomgången.',

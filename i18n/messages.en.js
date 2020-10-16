@@ -297,7 +297,7 @@ module.exports = {
         popoverText:
           'The examiners of the course at the time for the course offering. Examiners are administrated in Kopps.',
       },
-      examShortAndLongStrArr: { header: 'Examination', popoverText: 'Form of examinataion for the course offering.' },
+      examRounds: { header: 'Examination', popoverText: 'Form of examinataion for the course offering.' },
       alterationText: {
         header: 'Changes of the course before this course offering',
         popoverText: 'Summarized changes made to the course before this particular course offering.',
