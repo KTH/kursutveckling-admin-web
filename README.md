@@ -22,12 +22,12 @@ Firstly, the app has only one function. It is to upload a course memo pdf file t
 Later this files can be found on public pages 'About course memo' served by `kurs-pm-web` and for a short time on pages served by `kursinfo-web`.
 User can choose several course offerings and upload the same course memo file. It will be upload once in blob storage while in a database data about file and course offering will be saved per course offering. User can delete uploaded course memo or replace by a new one. The history of uploaded course-memos will be saved in api data.
 
-The app consists of two pages which is used to upload a new memo or to change a published one. To do it user will go through three step: Choose a course offering(s), write data, upload a course analyses pdf file, course memo pdf file (history), review it, save it as a draft or publish it.
+- The app consists of two pages which is used to upload a new memo or to change a published one. To do it user will go through three step: Choose a course offering(s), write data, upload a course analyses pdf file, course memo pdf file (history), review it, save it as a draft or publish it.
 
 ```
 localhost:3000/kursinfoadmin/kursutveckling/:courseCode
 ```
-
+- There is a page is called Preview, which is used to show a draft data to a person who gets a link and has other type of teacher rights to access this course, only read rights
 
 ### API:s
 
@@ -50,11 +50,21 @@ Application is fetching data from KURSSTATISTIK-API for:
 
 - [https://github.com/KTH/kursstatistik-api](https://github.com/KTH/kursstatistik-api)
 
+Application is fetching data from UG-REDIS cache:
+
+- Fetch data about course staff (because some information missing in Kopps, f.e., examinators)
+
+- Base authorization who can see which pages
+
+- [https://gita.sys.kth.se/Infosys/ugcache](https://gita.sys.kth.se/Infosys/ugcache)
+
+
 ### Related projects
 
 - [https://github.com/KTH/kursutveckling-web](https://github.com/KTH/kursutveckling-web)
 - [https://github.com/KTH/kursutveckling-api](https://github.com/KTH/kursutveckling-api)
 - [https://github.com/KTH/kursstatistik-api](https://github.com/KTH/kursstatistik-api)
+- [https://gita.sys.kth.se/Infosys/ugcache](https://gita.sys.kth.se/Infosys/ugcache)
 
 
 We must try to make changes that affect the template projects in the template projects themselves.
