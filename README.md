@@ -27,7 +27,11 @@ User can choose several course offerings and upload the same course memo file. I
 ```
 localhost:3000/kursinfoadmin/kursutveckling/:courseCode
 ```
-- There is a page is called Preview, which is used to show a draft data to a person who gets a link and has other type of teacher rights to access this course, only read rights
+- There is a page called Preview, which is used to show a draft data to a person who gets a link and has other type of teacher rights to access this course, only read rights
+
+```
+localhost:3000/kursinfoadmin/kursutveckling/:preview/:id
+```
 
 ### API:s
 
