@@ -18,11 +18,16 @@ The app is based on [https://github.com/KTH/node-web](https://github.com/KTH/nod
 
 ## Overview
 
-Firstly, the app has only one function. It is to upload a course memo pdf file to a blob storage and send data about it to `kurs-pm-api`.
-Later this files can be found on public pages 'About course memo' served by `kurs-pm-web` and for a short time on pages served by `kursinfo-web`.
-User can choose several course offerings and upload the same course memo file. It will be upload once in blob storage while in a database data about file and course offering will be saved per course offering. User can delete uploaded course memo or replace by a new one. The history of uploaded course-memos will be saved in api data.
+Firstly, the app has two functions:
+- to upload a course analysis and historic course memo pdf files to a blob storage and send course data about it to `kursutveckling-api`.
+- to change a published course data analysis
+- automatic fill in data about course development fetching from kopps-api, ug redis cache and kursstatistik api (reading from ladok db)
 
-- The app consists of two pages which is used to upload a new memo or to change a published one. To do it user will go through three step: Choose a course offering(s), write data, upload a course analyses pdf file, course memo pdf file (history), review it, save it as a draft or publish it.
+Later this files and course development data can be found on public pages 'Course development' served by `kursutveckling-web`.
+
+User can choose several course offerings and edit fetched course data it will be noted that data were changed manually. Pdf files upload to a blob storage while in a database data about file and course offering will be saved with a list of course offerings. 
+
+- The app consists of two pages which is used to create a new course development data and to change a published one. To do it user will go through three step: Choose a course offering(s), write data, upload a course analysis pdf file, optionally course memo pdf file (history), review it, save it as a draft or publish it.
 
 ```
 localhost:3000/kursinfoadmin/kursutveckling/:courseCode
