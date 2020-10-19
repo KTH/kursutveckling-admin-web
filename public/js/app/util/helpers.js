@@ -1,9 +1,8 @@
 'use strict'
-import '@babel/polyfill'
 import { SUPERUSER_PART } from './constants'
 
 const getDateFormat = (date, language) => {
-  if (language === 'Svenska' || language === 'Engelska' || language === 1 || language === 'sv') {
+  if (language === 'Svenska' || language === 'Engelska' || language === 'sv' || language === 1 || language === 'sv') {
     return date
   }
   const splitDate = date.split('-')
@@ -63,7 +62,7 @@ const formatISODate = (date, lang) => {
   return parsedDate.toLocaleDateString(languageTag)
 }
 
-const isValidDate = (date) => {
+const isValidDate = date => {
   let dateFormat = /^\d{4}-\d{2}-\d{2}$/
   let regex = new RegExp(dateFormat)
   return regex.test(date)
@@ -71,19 +70,28 @@ const isValidDate = (date) => {
 
 const noAccessToRoundsList = (memberOf, rounds, courseCode, semester) => {
   let roundIds = []
-  if (memberOf.toString().indexOf(courseCode + '.examiner') > 0) { return roundIds }
+  if (memberOf.toString().indexOf(courseCode + '.examiner') > 0) {
+    return roundIds
+  }
   roundIds = rounds.filter(round => {
-    if (memberOf.toString().indexOf(`${courseCode}.${semester}.${round.roundId}.courseresponsible`) < 0) { return round.roundId }
+    if (memberOf.toString().indexOf(`${courseCode}.${semester}.${round.roundId}.courseresponsible`) < 0) {
+      return round.roundId
+    }
   })
   return roundIds
 }
 
 const getAccess = (memberOf, round, courseCode, semester) => {
-  if (memberOf.toString().indexOf(courseCode.toUpperCase() + '.examiner') > -1 || memberOf.toString().indexOf(SUPERUSER_PART) > -1) {
+  if (
+    memberOf.toString().indexOf(courseCode.toUpperCase() + '.examiner') > -1 ||
+    memberOf.toString().indexOf(SUPERUSER_PART) > -1
+  ) {
     return true
   }
 
-  if (memberOf.toString().indexOf(`${courseCode.toUpperCase()}.${semester}.${round.ladokRoundId}.courseresponsible`) > -1) {
+  if (
+    memberOf.toString().indexOf(`${courseCode.toUpperCase()}.${semester}.${round.ladokRoundId}.courseresponsible`) > -1
+  ) {
     return true
   }
 
@@ -110,5 +118,5 @@ export {
   getTodayDate,
   getDateFormat,
   getValueFromObjectList,
-  isValidDate
+  isValidDate,
 }

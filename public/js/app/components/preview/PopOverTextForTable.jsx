@@ -1,31 +1,91 @@
-import React from 'react'
-import { UncontrolledPopover, PopoverHeader, PopoverBody } from 'reactstrap'
+import React, { Component } from 'react'
+import { Button, Popover, PopoverHeader, PopoverBody } from 'reactstrap'
+import i18n from '../../../../../i18n/index'
 
-export const PopoverExamItem = ({examShortAndLongStrArr, id}) => {
+const OnlyMobileVisiblePopup = ({ ariaLabel, ariaPressed, popUpHeader, id, onClick }) => {
+  const mobilePopoverId = 'mobile-table-header' + popUpHeader + id
   return (
-    <UncontrolledPopover trigger='hover' placement='left-start' target={id} key={id}>
-      <PopoverBody>
-        {examShortAndLongStrArr.map((shortAndLongTextStr, index) => <p className='popOver' key={index}>{shortAndLongTextStr[1]}</p>)}
-      </PopoverBody>
-    </UncontrolledPopover>
+    <span
+      className="mobile-header-popovers"
+      key={'onlyForMobileView' + popUpHeader + id}
+      role="info icon button"
+      aria-labelledby={mobilePopoverId}
+    >
+      <label id={mobilePopoverId} className="d-none d-sm-block d-md-nonee">
+        {popUpHeader}
+      </label>{' '}
+      <Button
+        id={id}
+        type="button"
+        className="mobile btn-info-modal"
+        onClick={onClick}
+        aria-label={ariaLabel}
+        aria-pressed={ariaPressed}
+      >
+        <span className="sr-only">{ariaLabel}</span>
+      </Button>
+    </span>
   )
 }
+class ControlledPopover extends Component {
+  constructor(props) {
+    super(props)
+    this.state = { popoverOpen: false }
+    this.toggle = this.toggle.bind(this)
+  }
 
-export const PopOverTextForTableHeaders = ({translate, columnsArr, popOverId}) => {
-  return columnsArr.map((apiColName, index) =>
-    <span key = {index+apiColName}>
-      <UncontrolledPopover trigger='legacy' placement='auto' target={popOverId + apiColName} key={popOverId+index} className='header-popup'>
-        <PopoverHeader>{translate[apiColName].header}</PopoverHeader>
-        <PopoverBody>
-          {translate[apiColName].popoverText}
-        </PopoverBody>
-      </UncontrolledPopover>
-      <UncontrolledPopover trigger='legacy' placement='auto' target={'labelfor' + popOverId + apiColName} key={index + popOverId} className='header-popup'>
-        <PopoverHeader>{translate[apiColName].header}</PopoverHeader>
-        <PopoverBody>
-          {translate[apiColName].popoverText}
-        </PopoverBody>
-      </UncontrolledPopover>
-    </span>
+  toggle() {
+    this.setState(state => ({ popoverOpen: !state.popoverOpen }))
+  }
+
+  render() {
+    const { cellId, describesId, header, popoverText, popType } = this.props
+    const { popoverOpen } = this.state
+    const triggerId = `${popType}-popover-${cellId}`
+    const dialogHeaderId = `${popType}-dialog-header-${cellId}`
+    const dialogBodyId = `${popType}-dialog-header-${cellId}`
+    const tableLang = i18n.isSwedish() ? 1 : 0
+    const { header_more_information: ariaLabel, aria_label_close_icon: closeAria } = i18n.messages[tableLang].messages
+
+    return (
+      <span role="dialog" aria-labelledby={dialogHeaderId} aria-describedby={dialogBodyId}>
+        {(popType === 'mobile' && (
+          <OnlyMobileVisiblePopup
+            popUpHeader={header}
+            id={triggerId}
+            onClick={this.toggle}
+            ariaLabel={ariaLabel}
+            ariaPressed={popoverOpen}
+          />
+        )) || (
+          <Button
+            id={triggerId}
+            type="button"
+            className="desktop btn-info-modal"
+            onClick={this.toggle}
+            aria-label={ariaLabel}
+            aria-pressed={popoverOpen}
+          >
+            <span className="sr-only">{ariaLabel}</span>
+          </Button>
+        )}
+        <Popover
+          isOpen={popoverOpen}
+          placement={popType === 'mobile' ? 'left' : 'top'}
+          target={triggerId}
+          key={triggerId}
+        >
+          <PopoverHeader id={dialogHeaderId}>
+            {header}{' '}
+            <Button className="close" onClick={this.toggle} aria-label={closeAria}>
+              &times;
+            </Button>
+          </PopoverHeader>
+          <PopoverBody id={dialogBodyId}>{popoverText}</PopoverBody>
+        </Popover>
+      </span>
     )
+  }
 }
+
+export default ControlledPopover

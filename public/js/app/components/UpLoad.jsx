@@ -5,7 +5,7 @@ const styles = {
   fontFamily: 'sans-serif',
   textAlign: 'center',
   display: 'flex',
-};
+}
 
 class UpLoad extends React.Component {
   constructor() {
@@ -20,36 +20,36 @@ class UpLoad extends React.Component {
   onChange(event) {
     this.props.handleUpload(event.target.id, event.target.files, event)
   }
-  
+
   removeFile(event) {
-       this.props.handleRemoveFile(event)
+    this.props.handleRemoveFile(event)
   }
 
   render() {
-    const {id, path, progress, file, notValid, type} = this.props
+    const { id, path, progress, file, notValid, type } = this.props
     return (
       <div className={notValid.indexOf(type) > -1 ? 'not-valid' : ''}>
-       { file && file.length > 0
-        ? <span>
-          <br/>
-          <div className='inline-flex'>
-            <p className='upload-text'> {file} </p>
-            <div className="iconContainer icon-trash-can" id={'remove_'+id} onClick={this.removeFile}></div>
-          </div>
-        </span>
-        : <label className="custom-file-upload">
-          <input type="file" id={id} onChange={this.onChange} />
-          {progress > 0 
-            ? <span>
-              <img title = 'loading file' src={path + '/static/'+ loader['ajax-loader']}/>
-              <div className='file-progress-bar'>
-                <div className = 'file-progress' style={{width: progress + '%'}}></div>
-              </div>
+        {file && file.length > 0 ? (
+          <span>
+            <br />
+            <div className="inline-flex">
+              <p className="upload-text"> {file} </p>
+              <div className="iconContainer icon-trash-can" id={'remove_' + id} onClick={this.removeFile}></div>
+            </div>
+          </span>
+        ) : (
+          <label className="custom-file-upload">
+            <input type="file" id={id} onChange={this.onChange} />
+            {progress > 0 && (
+              <span>
+                <img title="loading file" src={loader['ajax-loader']} />
+                <div className="file-progress-bar">
+                  <div className="file-progress" style={{ width: progress + '%' }}></div>
+                </div>
               </span>
-            : ''
-          }
-        </label>
-       }
+            )}
+          </label>
+        )}
       </div>
     )
   }

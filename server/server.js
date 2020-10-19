@@ -8,7 +8,8 @@ const getPaths = require('kth-node-express-routing').getPaths
 
 if (config.appInsights && config.appInsights.instrumentationKey) {
   let appInsights = require('applicationinsights')
-  appInsights.setup(config.appInsights.instrumentationKey)
+  appInsights
+    .setup(config.appInsights.instrumentationKey)
     .setAutoDependencyCorrelation(true)
     .setAutoCollectRequests(true)
     .setAutoCollectPerformance(true)
@@ -37,7 +38,7 @@ let logConfiguration = {
   level: config.logging.log.level,
   console: config.logging.console,
   stdout: config.logging.stdout,
-  src: config.logging.src
+  src: config.logging.src,
 }
 log.init(logConfiguration)
 
@@ -50,11 +51,14 @@ const path = require('path')
 server.set('views', path.join(__dirname, '/views'))
 server.set('layouts', path.join(__dirname, '/views/layouts'))
 server.set('partials', path.join(__dirname, '/views/partials'))
-server.engine('handlebars', exphbs({
-  defaultLayout: 'publicLayout',
-  layoutsDir: server.settings.layouts,
-  partialsDir: server.settings.partials
-}))
+server.engine(
+  'handlebars',
+  exphbs({
+    defaultLayout: 'publicLayout',
+    layoutsDir: server.settings.layouts,
+    partialsDir: server.settings.partials,
+  })
+)
 server.set('view engine', 'handlebars')
 // Register handlebar helpers
 require('./views/helpers')
@@ -82,7 +86,7 @@ const express = require('express')
 // server.use(minify())
 
 // helper
-function setCustomCacheControl (res, path) {
+function setCustomCacheControl(res, path) {
   if (express.static.mime.lookup(path) === 'text/html') {
     // Custom Cache-Control for HTML files
     res.setHeader('Cache-Control', 'no-cache')
@@ -91,7 +95,10 @@ function setCustomCacheControl (res, path) {
 
 // Files/statics routes--
 // Map components HTML files as static content, but set custom cache control header, currently no-cache to force If-modified-since/Etag check.
-server.use(config.proxyPrefixPath.uri + '/static/js/components', express.static('./dist/js/components', { setHeaders: setCustomCacheControl }))
+server.use(
+  config.proxyPrefixPath.uri + '/static/js/components',
+  express.static('./dist/js/components', { setHeaders: setCustomCacheControl })
+)
 // Expose browser configurations
 server.use(config.proxyPrefixPath.uri + '/static/browserConfig', browserConfigHandler)
 // Map Bootstrap.
@@ -145,11 +152,18 @@ server.use(config.proxyPrefixPath.uri, languageHandler)
  */
 const passport = require('passport')
 // const ldapClient = require('./adldapClient')
-const { authLoginHandler, authCheckHandler, logoutHandler, pgtCallbackHandler, serverLogin, getServerGatewayLogin } = require('kth-node-passport-cas').routeHandlers({
+const {
+  authLoginHandler,
+  authCheckHandler,
+  logoutHandler,
+  pgtCallbackHandler,
+  serverLogin,
+  getServerGatewayLogin,
+} = require('kth-node-passport-cas').routeHandlers({
   casLoginUri: config.proxyPrefixPath.uri + '/login',
   casGatewayUri: config.proxyPrefixPath.uri + '/loginGateway',
   proxyPrefixPath: config.proxyPrefixPath.uri,
-  server: server
+  server: server,
 })
 const { redirectAuthenticatedUserHandler } = require('./authentication')
 server.use(passport.initialize())
@@ -157,7 +171,12 @@ server.use(passport.session())
 
 const authRoute = AppRouter()
 authRoute.get('cas.login', config.proxyPrefixPath.uri + '/login', authLoginHandler, redirectAuthenticatedUserHandler)
-authRoute.get('cas.gateway', config.proxyPrefixPath.uri + '/loginGateway', authCheckHandler, redirectAuthenticatedUserHandler)
+authRoute.get(
+  'cas.gateway',
+  config.proxyPrefixPath.uri + '/loginGateway',
+  authCheckHandler,
+  redirectAuthenticatedUserHandler
+)
 authRoute.get('cas.logout', config.proxyPrefixPath.uri + '/logout', logoutHandler)
 // Optional pgtCallback (use config.cas.pgtUrl?)
 authRoute.get('cas.pgtCallback', config.proxyPrefixPath.uri + '/pgtCallback', pgtCallbackHandler)
@@ -171,12 +190,15 @@ server.gatewayLogin = getServerGatewayLogin
  * ******* CORTINA BLOCKS *******
  * ******************************
  */
-server.use(config.proxyPrefixPath.uri, require('kth-node-web-common/lib/web/cortina')({
-  blockUrl: config.blockApi.blockUrl,
-  proxyPrefixPath: config.proxyPrefixPath.uri,
-  hostUrl: config.hostUrl,
-  redisConfig: config.cache.cortinaBlock.redis
-}))
+server.use(
+  config.proxyPrefixPath.uri,
+  require('kth-node-web-common/lib/web/cortina')({
+    blockUrl: config.blockApi.blockUrl,
+    proxyPrefixPath: config.proxyPrefixPath.uri,
+    hostUrl: config.hostUrl,
+    redisConfig: config.cache.cortinaBlock.redis,
+  })
+)
 
 /* ********************************
  * ******* CRAWLER REDIRECT *******
@@ -184,9 +206,12 @@ server.use(config.proxyPrefixPath.uri, require('kth-node-web-common/lib/web/cort
  */
 const excludePath = config.proxyPrefixPath.uri + '(?!/static).*'
 const excludeExpression = new RegExp(excludePath)
-server.use(excludeExpression, require('kth-node-web-common/lib/web/crawlerRedirect')({
-  hostUrl: config.hostUrl
-}))
+server.use(
+  excludeExpression,
+  require('kth-node-web-common/lib/web/crawlerRedirect')({
+    hostUrl: config.hostUrl,
+  })
+)
 
 /* ********************************
  * ******* FILE UPLOAD*******
@@ -215,24 +240,88 @@ server.use('/', systemRoute.getRouter())
 
 // App routes
 const appRoute = AppRouter()
-appRoute.get('system.index', config.proxyPrefixPath.uri + '/archive', serverLogin, requireRole('isArchiveUser', 'isSuperUser'), Archive.getIndex)
-appRoute.get('system.index', config.proxyPrefixPath.uri + '/:id', serverLogin, requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser'), Admin.getIndex)
-appRoute.get('system.index', config.proxyPrefixPath.uri + '/:preview/:id', serverLogin, requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isCourseTeacher'), Admin.getIndex)
-appRoute.get('system.gateway', config.proxyPrefixPath.uri + '/gateway', getServerGatewayLogin('/'), requireRole('isAdmin'), Admin.getIndex)
+appRoute.get(
+  'system.index',
+  config.proxyPrefixPath.uri + '/archive',
+  serverLogin,
+  requireRole('isArchiveUser', 'isSuperUser'),
+  Archive.getIndex
+)
+appRoute.get(
+  'system.index',
+  config.proxyPrefixPath.uri + '/:id',
+  serverLogin,
+  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser'),
+  Admin.getIndex
+)
+appRoute.get(
+  'system.index',
+  config.proxyPrefixPath.uri + '/:preview/:id',
+  serverLogin,
+  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isCourseTeacher'),
+  Admin.getIndex
+)
+appRoute.get(
+  'system.gateway',
+  config.proxyPrefixPath.uri + '/gateway',
+  getServerGatewayLogin('/'),
+  requireRole('isAdmin'),
+  Admin.getIndex
+)
 
-appRoute.get('api.kursutvecklingGetById', config.proxyPrefixPath.uri + '/apicall/getRoundAnalysisById/:id', Admin.getRoundAnalysis)
-appRoute.all('api.kursutvecklingPost', config.proxyPrefixPath.uri + '/apicall/postRoundAnalysisById/:id/:status', Admin.postRoundAnalysis)
-appRoute.delete('api.kursutvecklingDelete', config.proxyPrefixPath.uri + '/apicall/deleteRoundAnalysisById/:id', Admin.deleteRoundAnalysis)
-appRoute.get('api.kursutvecklingGetUsedRounds', config.proxyPrefixPath.uri + '/apicall/kursutvecklingGetUsedRounds/:courseCode/:semester', Admin.getUsedRounds)
-appRoute.get('api.koppsCourseData', config.proxyPrefixPath.uri + '/api/kursutveckling-admin/getKoppsCourseDataByCourse/:courseCode/:language', Admin.getKoppsCourseData)
+appRoute.get(
+  'api.kursutvecklingGetById',
+  config.proxyPrefixPath.uri + '/apicall/getRoundAnalysisById/:id',
+  Admin.getRoundAnalysis
+)
+appRoute.all(
+  'api.kursutvecklingPost',
+  config.proxyPrefixPath.uri + '/apicall/postRoundAnalysisById/:id/:status',
+  Admin.postRoundAnalysis
+)
+appRoute.delete(
+  'api.kursutvecklingDelete',
+  config.proxyPrefixPath.uri + '/apicall/deleteRoundAnalysisById/:id',
+  Admin.deleteRoundAnalysis
+)
+appRoute.get(
+  'api.kursutvecklingGetUsedRounds',
+  config.proxyPrefixPath.uri + '/apicall/kursutvecklingGetUsedRounds/:courseCode/:semester',
+  Admin.getUsedRounds
+)
+appRoute.get(
+  'api.koppsCourseData',
+  config.proxyPrefixPath.uri + '/api/kursutveckling-admin/getKoppsCourseDataByCourse/:courseCode/:language',
+  Admin.getKoppsCourseData
+)
 appRoute.get('redis.ugCache', config.proxyPrefixPath.uri + '/redis/ugChache/:key/:type', Admin.getCourseEmployees)
 appRoute.post('redis.ugCache', config.proxyPrefixPath.uri + '/redis/ugChache/:key/:type', Admin.getCourseEmployees)
-appRoute.post('storage.saveFile', config.proxyPrefixPath.uri + '/storage/saveFile/:analysisid/:type/:published', Admin.saveFileToStorage)
-appRoute.post('storage.updateFile', config.proxyPrefixPath.uri + '/storage/updateFile/:fileName/', Admin.updateFileInStorage)
-appRoute.post('storage.deleteFile', config.proxyPrefixPath.uri + '/storage/deleteFile/:id', Admin.deleteFileInStorage)
-appRoute.all('api.kursstatistik', config.proxyPrefixPath.uri + '/apicall/getStatisicsForRound/:roundEndDate', Admin.getStatisicsForRound)
-appRoute.post('api.createArchivePackage', config.proxyPrefixPath.uri + '/apicall/createArchivePackage/', Archive.createArchivePackage)
-appRoute.put('api.setExportedArchiveFragments', config.proxyPrefixPath.uri + '/apicall/setExportedArchiveFragments/', Archive.setExportedArchiveFragments)
+appRoute.post(
+  'storage.saveFile',
+  config.proxyPrefixPath.uri + '/storage/saveFile/:analysisid/:type/:published',
+  Admin.saveFileToStorage
+)
+appRoute.post(
+  'storage.updateFile',
+  config.proxyPrefixPath.uri + '/storage/updateFile/:fileName/',
+  Admin.updateFileInStorage
+)
+
+appRoute.all(
+  'api.kursstatistik',
+  config.proxyPrefixPath.uri + '/apicall/getStatisicsForRound/:roundEndDate',
+  Admin.getStatisicsForRound
+)
+appRoute.post(
+  'api.createArchivePackage',
+  config.proxyPrefixPath.uri + '/apicall/createArchivePackage/',
+  Archive.createArchivePackage
+)
+appRoute.put(
+  'api.setExportedArchiveFragments',
+  config.proxyPrefixPath.uri + '/apicall/setExportedArchiveFragments/',
+  Archive.setExportedArchiveFragments
+)
 
 server.use('/', appRoute.getRouter())
 

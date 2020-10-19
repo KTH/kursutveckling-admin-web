@@ -1,86 +1,73 @@
 import React from 'react'
-import { Table, Button } from 'reactstrap'
-import { PopOverTextForTableHeaders, PopoverExamItem } from './PopOverTextForTable'
+import { Table } from 'reactstrap'
+// import { PopOverTextForTableHeaders, PopoverExamItem } from './PopOverTextForTable'
+import ControlledPopover from './PopOverTextForTable'
 
-
-function _getShortAndLongStrForEachExam (examinationRoundsArr) {
-  let shortAndLongExamStrArr = []
-  if (examinationRoundsArr && examinationRoundsArr.length > 0) {
-    shortAndLongExamStrArr = examinationRoundsArr.map(row => {
-      let examInfoArr = row.trim().split(';')
-      let shortStr = `${examInfoArr[0]} (${examInfoArr[2]}) ${examInfoArr[5]}` || ''
-      let longStr = `${examInfoArr[0]} - ${examInfoArr[1]},  ${examInfoArr[2]} ${examInfoArr[3]}, ${examInfoArr[4]}: ${examInfoArr[5]}` || ''
-      return [shortStr, longStr]
+function _getListOfExamRounds(rawExamRoundsStrArr) {
+  let listOfShortStrForExamRounds = []
+  if (rawExamRoundsStrArr && rawExamRoundsStrArr.length > 0) {
+    listOfShortStrForExamRounds = rawExamRoundsStrArr.map(row => {
+      const examInfoArr = row.trim().split(';')
+      return `${examInfoArr[0]} (${examInfoArr[2]}) ${examInfoArr[5]}` || ''
     })
   }
-  return shortAndLongExamStrArr
+  return listOfShortStrForExamRounds
 }
 
-const MobileLabelForTableWithInfo = ({translate, id}) => {
+const TableWithCourseData = ({ translate, thisAnalysisObj }) => {
+  const {
+    examinationGradeFromLadok,
+    registeredStudentsFromLadok,
+    examinationRounds: rawExamsData,
+    _id: analysisId,
+  } = thisAnalysisObj
+  const listOfExamRounds = _getListOfExamRounds(rawExamsData)
+  const orderedColumns = [
+    'responsibles',
+    'examiners',
+    'registeredStudents',
+    'examRounds',
+    'examinationGrade',
+    'alterationText',
+  ]
   return (
-    <span className='mobile-header-popovers'>
-      <label>{translate.header}</label>
-      {' '}
-      <Button id={id} type='button' className='mobile btn-info-modal' />
-      {' '}
-    </span>
-  )
-}
-
-const TableStandardCells = ({columnsArr, tableTitlesTranslation, popOverId, courseRoundData}) => {
-  return columnsArr.map((apiColName, index) =>
-    <td className={apiColName} id={apiColName + popOverId} key={index}>
-      <MobileLabelForTableWithInfo translate={tableTitlesTranslation[apiColName]}
-        id={'labelfor' + popOverId + apiColName}
-      />
-      <p>{courseRoundData[apiColName]} 
-      {apiColName === 'examinationGrade' ? ' %' : ''}
-      {apiColName === 'examinationGrade' && courseRoundData.examinationGradeFromLadok === false ? ' *' : ''}
-      {apiColName === 'registeredStudents' && courseRoundData.registeredStudentsFromLadok === false ? ' *' : ''}
-      </p>
-    </td>
-    )
-}
-
-const TableWithCourseData = ({translate, courseRoundObj}) => {
-  const orderedColumns = ['responsibles', 'examiners', 'registeredStudents', 'examShortAndLongStrArr', 'examinationGrade', 'alterationText']
-  const examShortAndLongStrArr = _getShortAndLongStrForEachExam(courseRoundObj.examinationRounds)
-  const popOverId = courseRoundObj._id
-  return (
-    <span className='table-for-each-round' key={popOverId}>
-      <Table>
-        <thead>
-          <tr>
-            {orderedColumns.map((apiColName, index) =>
-               <th key={index} className={apiColName}>
-                {translate[apiColName].header}
-                {' '}
-                <Button id={popOverId + apiColName} type='button' className='desktop btn-info-modal' />
-                {' '}
+    <Table className="table-for-each-course-offering" key={analysisId}>
+      <thead>
+        <tr>
+          {orderedColumns.map((colName, index) => {
+            const cellId = analysisId + colName
+            const ariaDescribedBy = 'header-description' + cellId
+            const { header, popoverText } = translate[colName]
+            return (
+              <th key={index} className={colName}>
+                {header}{' '}
+                <ControlledPopover cellId={cellId} header={header} popoverText={popoverText} popType="desktop" />{' '}
               </th>
-            )}
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <TableStandardCells columnsArr={orderedColumns.slice(0, 3)}
-              tableTitlesTranslation={translate}
-              popOverId={popOverId} courseRoundData={courseRoundObj} />
-             <td className='examShortAndLongStrArr' id={'examShortAndLongStrArr' + popOverId}>
-              <MobileLabelForTableWithInfo translate={translate.examShortAndLongStrArr}
-                id={'labelfor' + popOverId + 'examShortAndLongStrArr'}
-              />
-              {examShortAndLongStrArr.map((shortAndLongTextStr, index) => <p key={index}>{shortAndLongTextStr[0]}</p>)}
-            </td>
-            <TableStandardCells columnsArr={orderedColumns.slice(4)}
-              tableTitlesTranslation={translate}
-              popOverId={popOverId} courseRoundData={courseRoundObj} />
-          </tr>
-        </tbody>
-      </Table>
-      <PopOverTextForTableHeaders columnsArr={orderedColumns} translate={translate} popOverId={popOverId} key = {'headers_'+popOverId}/>
-      <PopoverExamItem examShortAndLongStrArr={examShortAndLongStrArr} id={'examShortAndLongStrArr' + popOverId} />
-    </span>
+            )
+          })}
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          {orderedColumns.map((colName, index) => {
+            const { header, popoverText } = translate[colName]
+            const cellId = analysisId + colName
+            return (
+              <td className={colName} id={cellId} key={index}>
+                <ControlledPopover cellId={cellId} header={header} popoverText={popoverText} popType="mobile" />
+                {(colName === 'examRounds' && listOfExamRounds.map((exam, index) => <p key={index}>{exam}</p>)) || (
+                  <p>
+                    {`${thisAnalysisObj[colName]}${
+                      (colName === 'examinationGrade' && (!examinationGradeFromLadok ? ' % *' : ' %')) || ''
+                    }${(colName === 'registeredStudents' && (!registeredStudentsFromLadok ? ' *' : '')) || ''}`}
+                  </p>
+                )}
+              </td>
+            )
+          })}
+        </tr>
+      </tbody>
+    </Table>
   )
 }
 export default TableWithCourseData

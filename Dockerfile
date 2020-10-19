@@ -1,4 +1,4 @@
-FROM kthse/kth-nodejs:10.14.0
+FROM kthse/kth-nodejs:12.0.0
 
 RUN mkdir -p /npm && \
     mkdir -p /application
@@ -22,7 +22,6 @@ COPY ["public", "public"]
 COPY ["i18n", "i18n"]
 COPY [".babelrc", ".babelrc"]
 COPY [".eslintrc", ".eslintrc"]
-COPY ["webpack.config.js", "webpack.config.js"]
 COPY ["package.json", "package.json"]
 COPY ["gulpfile.js", "gulpfile.js"]
 RUN npm run docker
