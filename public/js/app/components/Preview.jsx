@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
-import { Alert, Collapse, Table } from 'reactstrap'
+import { Alert, Table } from 'reactstrap'
 
 // Custom components
 import TableWithCourseData from './preview/TableWithCourseData'
@@ -19,14 +19,7 @@ class Preview extends Component {
       isPublished: this.props.routerStore.roundAnalysis === 'published',
       isNew: this.props.routerStore.roundAnalysis === 'new',
       values: this.props.values,
-      collapse: true,
     }
-  }
-
-  componentWillMount() {
-    this.setState({
-      values: this.props.values,
-    })
   }
 
   render() {
@@ -54,7 +47,13 @@ class Preview extends Component {
             <div className="h3-and-link">
               <h3 id={'h3' + courseAnalysDataId}>{analysisName}</h3>
             </div>
-            <PdfLinksNav lang={routerStore.language} translate={translate} thisAnalysisObj={courseRoundObj} />
+            <PdfLinksNav
+              analysisFile={analysisFile}
+              pmFile={pmFile}
+              lang={routerStore.language}
+              translate={translate}
+              thisAnalysisObj={courseRoundObj}
+            />
 
             <TableWithCourseData
               translate={translate.table_headers_with_popup}

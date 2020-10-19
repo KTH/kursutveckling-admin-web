@@ -40,15 +40,15 @@ class PdfLinksNav extends Component {
   }
 
   render() {
-    const { translate, thisAnalysisObj, lang } = this.props
+    const { translate, analysisFile, pmFile, thisAnalysisObj, lang } = this.props
     const { storageUri } = this.props.routerStore.browserConfig
 
     const {
-      analysisFileName,
+      // analysisFileName,
       analysisName,
       courseCode,
       pdfAnalysisDate,
-      pmFileName,
+      // pmFileName,
       pdfPMDate,
       syllabusStartTerm,
     } = thisAnalysisObj
@@ -57,7 +57,7 @@ class PdfLinksNav extends Component {
       <span className="right-block-of-links">
         <LinkToValidSyllabusPdf startDate={syllabusStartTerm} lang={lang} key={syllabusStartTerm} />
         <ActiveOrDisabledLink
-          fileName={pmFileName}
+          fileName={pmFile}
           storageUri={storageUri}
           linkTitle={translate.link_pm}
           roundName={analysisName}
@@ -65,7 +65,7 @@ class PdfLinksNav extends Component {
           validFrom={getDateFormat(pdfPMDate, lang)}
         />
         <ActiveOrDisabledLink
-          fileName={analysisFileName}
+          fileName={analysisFile}
           storageUri={storageUri}
           linkTitle={translate.link_analysis}
           roundName={analysisName}
