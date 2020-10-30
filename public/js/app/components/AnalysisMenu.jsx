@@ -24,7 +24,6 @@ import InfoButton from './InfoButton'
 import i18n from '../../../../i18n/index'
 import { EMPTY, SERVICE_URL } from '../util/constants'
 import { getDateFormat, getValueFromObjectList } from '../util/helpers'
-import loader from '../../../img/*.gif'
 
 @inject(['routerStore'])
 @observer
@@ -489,12 +488,7 @@ class AnalysisMenu extends Component {
                                         translate.course_short_semester[
                                           this.state.semester.toString().match(/.{1,4}/g)[1]
                                         ]
-                                      } 
-                                                                        ${
-                                                                          this.state.semester
-                                                                            .toString()
-                                                                            .match(/.{1,4}/g)[0]
-                                                                        }-${round.roundId} `}
+                                      } ${this.state.semester.toString().match(/.{1,4}/g)[0]}-${round.roundId} `}
                                   ( {translate.label_start_date} {getDateFormat(round.startDate, round.language)},{' '}
                                   {round.language} )
                                   <span className="no-access">
