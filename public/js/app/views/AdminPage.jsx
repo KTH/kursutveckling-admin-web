@@ -638,10 +638,6 @@ class AdminPage extends Component {
     const { isPublished, fileProgress } = this.state
     const translate = i18n.messages[routerStore.language].messages
 
-    if (routerStore.browserConfig.env === 'dev') {
-      console.log('routerStore - AdminPage', routerStore)
-      console.log('this.state - AdminPage', this.state)
-    }
     if (routerStore.analysisData === undefined || this.state.progress === 'back_new')
       return (
         <div ref={this.divTop}>
