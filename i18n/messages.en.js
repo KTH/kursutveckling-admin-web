@@ -63,8 +63,8 @@ module.exports = {
     published_empty: 'There are no published course analysis and course data this semester.',
 
     not_authorized_course_offering:
-      'You can only preview this draft since you are not course responsible for this course offering.',
-    not_authorized_publish_new: 'You are not course responsible for this instance and cannot select it.',
+      'You can only preview this draft since you are not course coordinator for this course offering.',
+    not_authorized_publish_new: 'You are not course coordinator for this instance and cannot select it.',
 
     /** ************ BUTTONS ****************** */
     btn_preview: 'Preview ',
@@ -94,7 +94,7 @@ module.exports = {
     header_rounds: 'Administrative course instances included in the course offering',
     header_examiners: 'Examiner *',
     // header_employees: 'Kursansvarig, Examinator ',
-    header_responsibles: 'Course responsible *',
+    header_responsibles: 'Course coordinator *',
     header_registrated: 'Number of first registered students *',
     header_examination: 'Examination',
     header_examination_comment: 'Examination comments',
@@ -209,9 +209,9 @@ module.exports = {
     },
 
     info_responsibles: {
-      header: 'Course responsibles',
+      header: 'Course coordinators',
       body:
-        'All the course responsibles for all the administrative course instances that are included in the course offering. Course responsibles are administrated in Kopps.',
+        'All the course coordinators for all the administrative course instances that are included in the course offering. Course coordinators are administrated in Kopps.',
       btn_close: 'Close',
     },
 
@@ -310,7 +310,7 @@ module.exports = {
       responsibles: {
         header: 'Responsible',
         popoverText:
-          'All the course responsibles for the all the administrative course instances that are included in the course offering. Course responsibles are administrated in Kopps.',
+          'All the course coordinators for the all the administrative course instances that are included in the course offering. Course coordinators are administrated in Kopps.',
       },
       registeredStudents: {
         header: 'Students',
