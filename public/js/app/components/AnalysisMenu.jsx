@@ -356,10 +356,6 @@ class AnalysisMenu extends Component {
       roundList[this.state.semester].length === this.state.usedRounds.length
     const showAllEmptyPublished = status === 'published' && this.state.publishedAnalysis.length === 0
 
-    if (routerStore.browserConfig.env === 'dev') {
-      console.log('this.props - AnalysisMenu', this.props)
-      console.log('this.state - AnalysisMenu', this.state)
-    }
     return (
       <div id="YearAndRounds">
         <p>{translate.intro_analysis_menu}</p>
