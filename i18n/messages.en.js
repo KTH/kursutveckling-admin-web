@@ -308,7 +308,7 @@ module.exports = {
           'Graduation rate is defined as the number of passed first registration students on the whole course divided by the number of registered student (as defined above) after the first ordinary examination after the end date of the course offering. Graduation rate is not calculated for each examination session in the course examination set. Neither is it recalculated after each following re-examination. Graduation rate is calculated based on information fetched from Ladok.',
       },
       responsibles: {
-        header: 'Responsible',
+        header: 'Coordinator',
         popoverText:
           'All the course coordinators for the all the administrative course instances that are included in the course offering. Course coordinators are administrated in Kopps.',
       },
