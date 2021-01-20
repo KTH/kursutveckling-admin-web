@@ -147,7 +147,7 @@ module.exports = {
 
     info_publish: {
       header: 'To be aware of before publishing!',
-      body: `The information will be published on the page Course development and history
+      body: `The information will be published on the page Course development
         <br/> 
         <br/> 
         Do you want to publish?`,
@@ -271,7 +271,7 @@ module.exports = {
       header: 'Course analysis and course data have been published',
       /** semester: 'Semester:', /** Följt av kursomgångens starttermin */
       /** course_round: 'Course offering:', /** Följt av kursomgångens namn */
-      body: 'View results on the page:' /** Följt av länk till sidan "Course development and history */,
+      body: 'View results on the page:' /** Följt av länk till sidan "Course development*/,
     },
     info_draft_saved: {
       header: 'A draft of course analysis and course data have been saved',

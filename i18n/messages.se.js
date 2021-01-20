@@ -76,7 +76,7 @@ module.exports = {
     draft_empty: 'Det finns inga sparade utkast för vald termin',
     published_empty: 'Det finns ingen publicerad kursutveckling för vald termin',
     new_empty:
-      'Kursanalys och kursdata har publicerats för samtliga kursomgångar den valda terminen. Kontrollera publicerad kursanalys på sidan Kursens utveckling och historik',
+      'Kursanalys och kursdata har publicerats för samtliga kursomgångar den valda terminen. Kontrollera publicerad kursanalys på sidan Kursens utveckling',
 
     not_authorized_course_offering: 'Du kan endast granska detta utkast då du inte kursansvarig för kursomgången.',
     not_authorized_publish_new: 'Du är inte kursansvarig för detta kurstillfälle och kan därför inte välja det.',
@@ -156,7 +156,7 @@ module.exports = {
     },
     info_publish: {
       header: 'Att tänka på innan du publicerar!',
-      body: `Publicering kommer att ske på sidan Kursens utveckling och historik.
+      body: `Publicering kommer att ske på sidan Kursens utveckling.
         <br/>
         <br/>
         Vill du fortsätta att publicera?`,
