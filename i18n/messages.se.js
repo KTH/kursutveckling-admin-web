@@ -59,11 +59,11 @@ module.exports = {
 
     /* **** INTRO TEXT FOR ANALYSIS MENUE, EDIT, PREVIEW */
     intro_analysis_menu:
-      'Börja med att välja termin och kursomgång för den kursanalys som ska publiceras (steg 1 av 3). I nästa steg (2 av 3) kommer kursdata för kursen att hämtas automatiskt från Ladok och Kopps för den termin och kursomgång som valts. Det finns sedan möjlighet att redigera viss kursdata samt ladda upp kursanalysen. I sista steget (3 av 3) ges möjlighet att först granska och sedan publicera tabellen med kursanalys och all kursdata på sidan Kursens utveckling och historik.',
+      'Börja med att välja termin och kursomgång för den kursanalys som ska publiceras (steg 1 av 3). I nästa steg (2 av 3) kommer kursdata för kursen att hämtas automatiskt från Ladok och Kopps för den termin och kursomgång som valts. Det finns sedan möjlighet att redigera viss kursdata samt ladda upp kursanalysen. I sista steget (3 av 3) ges möjlighet att först granska och sedan publicera tabellen med kursanalys och all kursdata på sidan Kursens utveckling.',
     intro_edit:
       'I detta steg (2 av 3) ska kursanalys och kurs-PM laddas upp, förändringar för vald kursomgång summeras samt kursdata kontrolleras och vid behov justeras. I nästa steg granskas all kursdata innan publicering.',
     intro_preview:
-      'I detta steg (3 av 3) visas hur kursanalys och kursdata kommer att se ut på sidan Kursens utveckling och historik. Här finns möjlighet att gå tillbaka för att redigera ytterligare, spara som utkast eller publicera direkt.',
+      'I detta steg (3 av 3) visas hur kursanalys och kursdata kommer att se ut på sidan Kursens utveckling. Här finns möjlighet att gå tillbaka för att redigera ytterligare, spara som utkast eller publicera direkt.',
 
     /* **** INTRO SELECT NEW, DRAFT, PUBLISHED */
     intro_new:

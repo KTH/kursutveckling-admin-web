@@ -10,7 +10,7 @@ The course information project (KIP) is an initiative at KTH that was launched i
 
 **Kursutveckling-admin-web** is
 
-> En app som ger stöd för att publicera information om kursens utveckling och historik i Kurs- och programkatalogen. Sidan innehåller tjänster för att publicera kursanalyser med kursdata för en specifik kurs.
+> En app som ger stöd för att publicera information om kursens utveckling i Kurs- och programkatalogen. Sidan innehåller tjänster för att publicera kursanalyser med kursdata för en specifik kurs.
 
 The app is based on [https://github.com/KTH/node-web](https://github.com/KTH/node-web).
 
