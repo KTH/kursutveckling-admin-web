@@ -81,7 +81,7 @@ class RouterStore {
   /** ***************************************************************************************************************************************** */
   @action updateFileInStorage(fileName, metadata) {
     return axios
-      .post(this.buildApiUrl(this.paths.storage.updateFile.uri, { fileName }), this._getOptions({ metadata }))
+      .post(this.buildApiUrl(this.paths.storage.updateFile.uri, { fileName }), { params: metadata })
       .then(apiResponse => {
         if (apiResponse.statusCode >= 400) {
           return 'ERROR-' + apiResponse.statusCode
@@ -102,7 +102,7 @@ class RouterStore {
 
   @action getRoundAnalysis(id, lang = 'sv') {
     return axios
-      .get(this.buildApiUrl(this.paths.api.kursutvecklingGetById.uri, { id: id }), this._getOptions())
+      .get(this.buildApiUrl(this.paths.api.kursutvecklingGetById.uri, { id: id }))
       .then(result => {
         if (result.statusCode >= 400) {
           this.errorMessage = result.statusText
@@ -128,7 +128,7 @@ class RouterStore {
           id: postObject._id,
           status: status /*, lang: lang*/,
         }),
-        this._getOptions(JSON.stringify(postObject))
+        { params: JSON.stringify(postObject) }
       )
       .then(apiResponse => {
         if (apiResponse.statusCode >= 400) {
@@ -158,7 +158,7 @@ class RouterStore {
           id: postObject._id,
           status: status /*, lang: lang*/,
         }),
-        this._getOptions(JSON.stringify(postObject))
+        { params: JSON.stringify(postObject) }
       )
       .then(apiResponse => {
         if (apiResponse.statusCode >= 400) {
@@ -184,7 +184,7 @@ class RouterStore {
 
   @action deleteRoundAnalysis(id, lang = 'sv') {
     return axios
-      .delete(this.buildApiUrl(this.paths.api.kursutvecklingDelete.uri, { id: id }), this._getOptions())
+      .delete(this.buildApiUrl(this.paths.api.kursutvecklingDelete.uri, { id: id }))
       .then(result => {
         return result.data
       })
@@ -203,8 +203,7 @@ class RouterStore {
         this.buildApiUrl(this.paths.api.kursutvecklingGetUsedRounds.uri, {
           courseCode: courseCode,
           semester: semester,
-        }),
-        this._getOptions()
+        })
       )
       .then(result => {
         if (result.status >= 400) {
@@ -225,10 +224,7 @@ class RouterStore {
   @action getCourseInformation(courseCode, ldapUsername, lang = 'sv') {
     this.courseCode = courseCode
     return axios
-      .get(
-        this.buildApiUrl(this.paths.api.koppsCourseData.uri, { courseCode: courseCode, language: lang }),
-        this._getOptions()
-      )
+      .get(this.buildApiUrl(this.paths.api.koppsCourseData.uri, { courseCode: courseCode, language: lang }))
       .then(result => {
         if (result.status >= 400) {
           this.errorMessage = result.statusText
@@ -250,10 +246,7 @@ class RouterStore {
   /** ***************************************************************************************************************************************** */
   @action postLadokRoundIdListAndDateToGetStatistics(ladokRoundIdList, endDate) {
     return axios
-      .post(
-        this.buildApiUrl(this.paths.api.kursstatistik.uri, { roundEndDate: endDate }),
-        this._getOptions(ladokRoundIdList)
-      )
+      .post(this.buildApiUrl(this.paths.api.kursstatistik.uri, { roundEndDate: endDate }), { params: ladokRoundIdList })
       .then(apiResponse => {
         if (apiResponse.statusCode >= 400) {
           this.errorMessage = result.statusText
@@ -566,10 +559,9 @@ class RouterStore {
   /** ***************************************************************************************************************************************** */
   @action getCourseEmployeesPost(key, type = 'multi', lang = 'sv') {
     return axios
-      .post(
-        this.buildApiUrl(this.paths.redis.ugCache.uri, { key: key, type: type }),
-        this._getOptions(JSON.stringify(this.redisKeys))
-      )
+      .post(this.buildApiUrl(this.paths.redis.ugCache.uri, { key: key, type: type }), {
+        params: JSON.stringify(this.redisKeys),
+      })
       .then(result => {
         return result.data
       })
@@ -585,7 +577,7 @@ class RouterStore {
 
   @action getLdapUserByUsername(params) {
     return axios
-      .get(this.buildApiUrl(this.paths.api.searchLdapUser.uri, params), this._getOptions())
+      .get(this.buildApiUrl(this.paths.api.searchLdapUser.uri, params))
       .then(res => {
         return res.data
       })
