@@ -63,27 +63,6 @@ class RouterStore {
     return [host, newPath].join('')
   }
 
-  _getOptions(params) {
-    // Pass Cookie header on SSR-calls
-    let options
-    if (typeof window === 'undefined') {
-      options = {
-        headers: {
-          Cookie: this.cookieHeader,
-          Accept: 'application/json',
-          'X-Forwarded-Proto': _webUsesSSL(this.apiHost) ? 'https' : 'http',
-        },
-        timeout: 10000,
-        params: params,
-      }
-    } else {
-      options = {
-        params: params,
-      }
-    }
-    return options
-  }
-
   /** ***************************************************************************************************************************************** */
   /*                                                       COLLECTED ROUND INFORMATION                                                        */
   /** ***************************************************************************************************************************************** */
@@ -630,12 +609,6 @@ class RouterStore {
     this.paths = paths
     this.apiHost = apiHost
     this.profileBaseUrl = profileBaseUrl
-  }
-
-  @action __SSR__setCookieHeader(cookieHeader) {
-    if (typeof window === 'undefined') {
-      this.cookieHeader = cookieHeader || ''
-    }
   }
 
   @action doSetLanguage(lang) {

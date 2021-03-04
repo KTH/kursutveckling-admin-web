@@ -323,7 +323,6 @@ async function getIndex(req, res, next) {
         )
       }
     }
-    renderProps.props.children.props.routerStore.__SSR__setCookieHeader(req.headers.cookie)
 
     const html = ReactDOMServer.renderToString(renderProps)
 

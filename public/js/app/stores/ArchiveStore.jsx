@@ -52,13 +52,6 @@ class ArchiveStore {
   }
 
   @action
-  __SSR__setCookieHeader(cookieHeader) {
-    if (typeof window === 'undefined') {
-      this.cookieHeader = cookieHeader || ''
-    }
-  }
-
-  @action
   doSetLanguage(lang) {
     this.language = lang
   }
