@@ -39,7 +39,6 @@
     "jquery-hoverintent": "1.9.0",
     "kth-node-access-log": "^0.2.0",
     "kth-node-api-call": "^3.0.11",
-    "kth-node-build-commons": "^4.1.5",
     "kth-node-configuration": "^2.0.1",
     "kth-node-express-routing": "^2.0.3",
     "kth-node-i18n": "^1.0.2",
