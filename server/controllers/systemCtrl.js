@@ -12,7 +12,6 @@ const getPaths = require('kth-node-express-routing').getPaths
 const language = require('kth-node-web-common/lib/language')
 const i18n = require('../../i18n')
 const api = require('../api')
-const co = require('co')
 const Promise = require('bluebird')
 const registry = require('component-registry').globalRegistry
 const { IHealthCheck } = require('kth-node-monitor').interfaces
