@@ -1,6 +1,5 @@
 'use strict'
 
-const co = require('co')
 const log = require('kth-node-log')
 const redis = require('kth-node-redis')
 const language = require('kth-node-web-common/lib/language')
