@@ -168,7 +168,9 @@ docker-compose up
 
 ### Handlebar Templates
 
-Paths in the app have been altered, so the use of _Handlebar_ templates has been customized. The files `errorLayout.handlebars` and `error.handlebars` were copied from `kth-node-build-commons`. This meant that the script `move-handlebars` could be removed from `package.json`. In `errorLayout.handlebars` the path for `vendor.js` was customized, and in `error.handlebars` the reference to `errorModule.js` was removed altogether.
+*Update 2021-03-12: Dependency to `kth-node-build-commons` has since been removed altogether.*
+
+> Paths in the app have been altered, so the use of _Handlebar_ templates has been customized. The files `errorLayout.handlebars` and `error.handlebars` were copied from `kth-node-build-commons`. This meant that the script `move-handlebars` could be removed from `package.json`. In `errorLayout.handlebars` the path for `vendor.js` was customized, and in `error.handlebars` the reference to `errorModule.js` was removed altogether.
 
 ## Author
 
