@@ -144,30 +144,30 @@ server.use(_addProxy(), languageHandler)
  ***** AUTHENTICATION - OIDC ****
  ****************************** */
 
- const passport = require('passport')
+const passport = require('passport')
 
- server.use(passport.initialize())
- server.use(passport.session())
- 
- passport.serializeUser((user, done) => {
-   if (user) {
-     done(null, user)
-   } else {
-     done()
-   }
- })
- 
- passport.deserializeUser((user, done) => {
-   if (user) {
-     done(null, user)
-   } else {
-     done()
-   }
- })
- 
- const { OpenIDConnect, hasGroup } = require('@kth/kth-node-passport-oidc')
- 
- const oidc = new OpenIDConnect(server, passport, {
+server.use(passport.initialize())
+server.use(passport.session())
+
+passport.serializeUser((user, done) => {
+  if (user) {
+    done(null, user)
+  } else {
+    done()
+  }
+})
+
+passport.deserializeUser((user, done) => {
+  if (user) {
+    done(null, user)
+  } else {
+    done()
+  }
+})
+
+const { OpenIDConnect, hasGroup } = require('@kth/kth-node-passport-oidc')
+
+const oidc = new OpenIDConnect(server, passport, {
   ...config.oidc,
   callbackLoginRoute: _addProxy('/auth/login/callback'),
   callbackLogoutRoute: _addProxy('/auth/logout/callback'),
@@ -184,12 +184,12 @@ server.use(_addProxy(), languageHandler)
     user.memberOf = memberOf
   },
 })
- 
- // eslint-disable-next-line no-unused-vars
- server.get(_addProxy('/login'), oidc.login, (req, res, next) => res.redirect(_addProxy('')))
- 
- // eslint-disable-next-line no-unused-vars
- server.get(_addProxy('/logout'), oidc.logout)
+
+// eslint-disable-next-line no-unused-vars
+server.get(_addProxy('/login'), oidc.login, (req, res, next) => res.redirect(_addProxy('')))
+
+// eslint-disable-next-line no-unused-vars
+server.get(_addProxy('/logout'), oidc.logout)
 
 /* ******************************
  * ******* CORTINA BLOCKS *******
@@ -232,7 +232,7 @@ server.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
  * ******* APPLICATION ROUTES *******
  * **********************************
  */
-const { System, Admin, Archive } = require('./controllers')
+const { System, Admin } = require('./controllers')
 const { requireRole } = require('./requireRole')
 
 // System routes
@@ -245,13 +245,6 @@ server.use('/', systemRoute.getRouter())
 
 // App routes
 const appRoute = AppRouter()
-appRoute.get(
-  'app.archive',
-  _addProxy('/archive'),
-  oidc.login,
-  requireRole('isArchiveUser', 'isSuperUser'),
-  Archive.getIndex
-)
 appRoute.get(
   'app.index',
   _addProxy('/:id'),
@@ -266,24 +259,10 @@ appRoute.get(
   requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isCourseTeacher'),
   Admin.getIndex
 )
-appRoute.get(
-  'system.gateway',
-  _addProxy('/gateway'),
-  oidc.silentLogin,
-  requireRole('isAdmin'),
-  Admin.getIndex
-)
+appRoute.get('system.gateway', _addProxy('/gateway'), oidc.silentLogin, requireRole('isAdmin'), Admin.getIndex)
 
-appRoute.get(
-  'api.kursutvecklingGetById',
-  _addProxy('/apicall/getRoundAnalysisById/:id'),
-  Admin.getRoundAnalysis
-)
-appRoute.all(
-  'api.kursutvecklingPost',
-  _addProxy('/apicall/postRoundAnalysisById/:id/:status'),
-  Admin.postRoundAnalysis
-)
+appRoute.get('api.kursutvecklingGetById', _addProxy('/apicall/getRoundAnalysisById/:id'), Admin.getRoundAnalysis)
+appRoute.all('api.kursutvecklingPost', _addProxy('/apicall/postRoundAnalysisById/:id/:status'), Admin.postRoundAnalysis)
 appRoute.delete(
   'api.kursutvecklingDelete',
   _addProxy('/apicall/deleteRoundAnalysisById/:id'),
@@ -301,32 +280,10 @@ appRoute.get(
 )
 appRoute.get('redis.ugCache', _addProxy('/redis/ugChache/:key/:type'), Admin.getCourseEmployees)
 appRoute.post('redis.ugCache', _addProxy('/redis/ugChache/:key/:type'), Admin.getCourseEmployees)
-appRoute.post(
-  'storage.saveFile',
-  _addProxy('/storage/saveFile/:analysisid/:type/:published'),
-  Admin.saveFileToStorage
-)
-appRoute.post(
-  'storage.updateFile',
-  _addProxy('/storage/updateFile/:fileName/'),
-  Admin.updateFileInStorage
-)
+appRoute.post('storage.saveFile', _addProxy('/storage/saveFile/:analysisid/:type/:published'), Admin.saveFileToStorage)
+appRoute.post('storage.updateFile', _addProxy('/storage/updateFile/:fileName/'), Admin.updateFileInStorage)
 
-appRoute.all(
-  'api.kursstatistik',
-  _addProxy('/apicall/getStatisicsForRound/:roundEndDate'),
-  Admin.getStatisicsForRound
-)
-appRoute.post(
-  'api.createArchivePackage',
-  _addProxy('/apicall/createArchivePackage/'),
-  Archive.createArchivePackage
-)
-appRoute.put(
-  'api.setExportedArchiveFragments',
-  _addProxy('/apicall/setExportedArchiveFragments/'),
-  Archive.setExportedArchiveFragments
-)
+appRoute.all('api.kursstatistik', _addProxy('/apicall/getStatisicsForRound/:roundEndDate'), Admin.getStatisicsForRound)
 
 server.use('/', appRoute.getRouter())
 

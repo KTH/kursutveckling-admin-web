@@ -35,7 +35,6 @@ module.exports.requireRole = (...roles) =>
       isCourseResponsible: _hasThisTypeGroup(courseCode, courseInitials, user, 'courseresponsible'),
       isSuperUser: user.isSuperUser,
       isCourseTeacher: _hasThisTypeGroup(courseCode, courseInitials, user, 'teachers'),
-      isArchiveUser: _hasThisTypeGroup(courseCode, courseInitials, user, 'pa.anstallda.V.VDC'),
     }
 
     // If we don't have one of these then access is forbidden

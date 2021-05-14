@@ -7,5 +7,4 @@
 module.exports = {
   System: require('./systemCtrl'),
   Admin: require('./adminCtrl'),
-  Archive: require('./archiveCtrl')
 }
