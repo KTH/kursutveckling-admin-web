@@ -24,6 +24,8 @@ server.locals.secret = new Map()
 module.exports = server
 module.exports.getPaths = () => getPaths()
 
+const _addProxy = uri => `${config.proxyPrefixPath.uri}${uri}`
+
 /* ***********************
  * ******* LOGGING *******
  * ***********************
@@ -89,21 +91,20 @@ function setCustomCacheControl(res, path) {
 // Files/statics routes--
 // Map components HTML files as static content, but set custom cache control header, currently no-cache to force If-modified-since/Etag check.
 server.use(
-  config.proxyPrefixPath.uri + '/static/js/components',
+  _addProxy('/static/js/components'),
   express.static('./dist/js/components', { setHeaders: setCustomCacheControl })
 )
 // Expose browser configurations
-server.use(config.proxyPrefixPath.uri + '/static/browserConfig', browserConfigHandler)
+server.use(_addProxy('/static/browserConfig'), browserConfigHandler)
 // Map Bootstrap.
-server.use(config.proxyPrefixPath.uri + '/static/bootstrap', express.static('./node_modules/bootstrap/dist'))
+server.use(_addProxy('/static/bootstrap'), express.static('./node_modules/bootstrap/dist'))
 // Map kth-style.
-server.use(config.proxyPrefixPath.uri + '/static/kth-style', express.static('./node_modules/kth-style/dist'))
+server.use(_addProxy('/static/kth-style'), express.static('./node_modules/kth-style/dist'))
 
-// server.use(config.proxyPrefixPath.uri + '/static/js/app.js', express.static('./dist/js/app.js'))
 // Map static content like images, css and js.
-server.use(config.proxyPrefixPath.uri + '/static', express.static('./dist'))
+server.use(_addProxy('/static'), express.static('./dist'))
 // Return 404 if static file isn't found so we don't go through the rest of the pipeline
-server.use(config.proxyPrefixPath.uri + '/static', function (req, res, next) {
+server.use(_addProxy('/static'), function (req, res, next) {
   var error = new Error('File not found: ' + req.originalUrl)
   error.statusCode = 404
   next(error)
@@ -137,47 +138,58 @@ server.use(session(options))
  * ************************
  */
 const { languageHandler } = require('kth-node-web-common/lib/language')
-server.use(config.proxyPrefixPath.uri, languageHandler)
+server.use(_addProxy(), languageHandler)
 
 /* ******************************
- * ******* AUTHENTICATION *******
- * ******************************
- */
-const passport = require('passport')
-// const ldapClient = require('./adldapClient')
-const {
-  authLoginHandler,
-  authCheckHandler,
-  logoutHandler,
-  pgtCallbackHandler,
-  serverLogin,
-  getServerGatewayLogin,
-} = require('kth-node-passport-cas').routeHandlers({
-  casLoginUri: config.proxyPrefixPath.uri + '/login',
-  casGatewayUri: config.proxyPrefixPath.uri + '/loginGateway',
-  proxyPrefixPath: config.proxyPrefixPath.uri,
-  server: server,
+ ***** AUTHENTICATION - OIDC ****
+ ****************************** */
+
+ const passport = require('passport')
+
+ server.use(passport.initialize())
+ server.use(passport.session())
+ 
+ passport.serializeUser((user, done) => {
+   if (user) {
+     done(null, user)
+   } else {
+     done()
+   }
+ })
+ 
+ passport.deserializeUser((user, done) => {
+   if (user) {
+     done(null, user)
+   } else {
+     done()
+   }
+ })
+ 
+ const { OpenIDConnect, hasGroup } = require('@kth/kth-node-passport-oidc')
+ 
+ const oidc = new OpenIDConnect(server, passport, {
+  ...config.oidc,
+  callbackLoginRoute: _addProxy('/auth/login/callback'),
+  callbackLogoutRoute: _addProxy('/auth/logout/callback'),
+  callbackSilentLoginRoute: _addProxy('/auth/silent/callback'),
+  defaultRedirect: _addProxy(''),
+  failureRedirect: _addProxy(''),
+  // eslint-disable-next-line no-unused-vars
+  extendUser: (user, claims) => {
+    const { memberOf } = claims
+
+    // eslint-disable-next-line no-param-reassign
+    user.isSuperUser = hasGroup(config.auth.superuserGroup, user)
+    // eslint-disable-next-line no-param-reassign
+    user.memberOf = memberOf
+  },
 })
-const { redirectAuthenticatedUserHandler } = require('./authentication')
-server.use(passport.initialize())
-server.use(passport.session())
-
-const authRoute = AppRouter()
-authRoute.get('cas.login', config.proxyPrefixPath.uri + '/login', authLoginHandler, redirectAuthenticatedUserHandler)
-authRoute.get(
-  'cas.gateway',
-  config.proxyPrefixPath.uri + '/loginGateway',
-  authCheckHandler,
-  redirectAuthenticatedUserHandler
-)
-authRoute.get('cas.logout', config.proxyPrefixPath.uri + '/logout', logoutHandler)
-// Optional pgtCallback (use config.cas.pgtUrl?)
-authRoute.get('cas.pgtCallback', config.proxyPrefixPath.uri + '/pgtCallback', pgtCallbackHandler)
-server.use('/', authRoute.getRouter())
-
-// Convenience methods that should really be removed
-server.login = serverLogin
-server.gatewayLogin = getServerGatewayLogin
+ 
+ // eslint-disable-next-line no-unused-vars
+ server.get(_addProxy('/login'), oidc.login, (req, res, next) => res.redirect(_addProxy('')))
+ 
+ // eslint-disable-next-line no-unused-vars
+ server.get(_addProxy('/logout'), oidc.logout)
 
 /* ******************************
  * ******* CORTINA BLOCKS *******
@@ -197,7 +209,7 @@ server.use(
  * ******* CRAWLER REDIRECT *******
  * ********************************
  */
-const excludePath = config.proxyPrefixPath.uri + '(?!/static).*'
+const excludePath = _addProxy('(?!/static).*')
 const excludeExpression = new RegExp(excludePath)
 server.use(
   excludeExpression,
@@ -221,98 +233,98 @@ server.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
  * **********************************
  */
 const { System, Admin, Archive } = require('./controllers')
-const { requireRole } = require('./authentication')
+const { requireRole } = require('./requireRole')
 
 // System routes
 const systemRoute = AppRouter()
-systemRoute.get('system.monitor', config.proxyPrefixPath.uri + '/_monitor', System.monitor)
-systemRoute.get('system.about', config.proxyPrefixPath.uri + '/_about', System.about)
-systemRoute.get('system.paths', config.proxyPrefixPath.uri + '/_paths', System.paths)
+systemRoute.get('system.monitor', _addProxy('/_monitor'), System.monitor)
+systemRoute.get('system.about', _addProxy('/_about'), System.about)
+systemRoute.get('system.paths', _addProxy('/_paths'), System.paths)
 systemRoute.get('system.robots', '/robots.txt', System.robotsTxt)
 server.use('/', systemRoute.getRouter())
 
 // App routes
 const appRoute = AppRouter()
 appRoute.get(
-  'system.index',
-  config.proxyPrefixPath.uri + '/archive',
-  serverLogin,
+  'app.archive',
+  _addProxy('/archive'),
+  oidc.login,
   requireRole('isArchiveUser', 'isSuperUser'),
   Archive.getIndex
 )
 appRoute.get(
-  'system.index',
-  config.proxyPrefixPath.uri + '/:id',
-  serverLogin,
+  'app.index',
+  _addProxy('/:id'),
+  oidc.login,
   requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser'),
   Admin.getIndex
 )
 appRoute.get(
-  'system.index',
-  config.proxyPrefixPath.uri + '/:preview/:id',
-  serverLogin,
+  'app.preview',
+  _addProxy('/:preview/:id'),
+  oidc.login,
   requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isCourseTeacher'),
   Admin.getIndex
 )
 appRoute.get(
   'system.gateway',
-  config.proxyPrefixPath.uri + '/gateway',
-  getServerGatewayLogin('/'),
+  _addProxy('/gateway'),
+  oidc.silentLogin,
   requireRole('isAdmin'),
   Admin.getIndex
 )
 
 appRoute.get(
   'api.kursutvecklingGetById',
-  config.proxyPrefixPath.uri + '/apicall/getRoundAnalysisById/:id',
+  _addProxy('/apicall/getRoundAnalysisById/:id'),
   Admin.getRoundAnalysis
 )
 appRoute.all(
   'api.kursutvecklingPost',
-  config.proxyPrefixPath.uri + '/apicall/postRoundAnalysisById/:id/:status',
+  _addProxy('/apicall/postRoundAnalysisById/:id/:status'),
   Admin.postRoundAnalysis
 )
 appRoute.delete(
   'api.kursutvecklingDelete',
-  config.proxyPrefixPath.uri + '/apicall/deleteRoundAnalysisById/:id',
+  _addProxy('/apicall/deleteRoundAnalysisById/:id'),
   Admin.deleteRoundAnalysis
 )
 appRoute.get(
   'api.kursutvecklingGetUsedRounds',
-  config.proxyPrefixPath.uri + '/apicall/kursutvecklingGetUsedRounds/:courseCode/:semester',
+  _addProxy('/apicall/kursutvecklingGetUsedRounds/:courseCode/:semester'),
   Admin.getUsedRounds
 )
 appRoute.get(
   'api.koppsCourseData',
-  config.proxyPrefixPath.uri + '/api/kursutveckling-admin/getKoppsCourseDataByCourse/:courseCode/:language',
+  _addProxy('/api/kursutveckling-admin/getKoppsCourseDataByCourse/:courseCode/:language'),
   Admin.getKoppsCourseData
 )
-appRoute.get('redis.ugCache', config.proxyPrefixPath.uri + '/redis/ugChache/:key/:type', Admin.getCourseEmployees)
-appRoute.post('redis.ugCache', config.proxyPrefixPath.uri + '/redis/ugChache/:key/:type', Admin.getCourseEmployees)
+appRoute.get('redis.ugCache', _addProxy('/redis/ugChache/:key/:type'), Admin.getCourseEmployees)
+appRoute.post('redis.ugCache', _addProxy('/redis/ugChache/:key/:type'), Admin.getCourseEmployees)
 appRoute.post(
   'storage.saveFile',
-  config.proxyPrefixPath.uri + '/storage/saveFile/:analysisid/:type/:published',
+  _addProxy('/storage/saveFile/:analysisid/:type/:published'),
   Admin.saveFileToStorage
 )
 appRoute.post(
   'storage.updateFile',
-  config.proxyPrefixPath.uri + '/storage/updateFile/:fileName/',
+  _addProxy('/storage/updateFile/:fileName/'),
   Admin.updateFileInStorage
 )
 
 appRoute.all(
   'api.kursstatistik',
-  config.proxyPrefixPath.uri + '/apicall/getStatisicsForRound/:roundEndDate',
+  _addProxy('/apicall/getStatisicsForRound/:roundEndDate'),
   Admin.getStatisicsForRound
 )
 appRoute.post(
   'api.createArchivePackage',
-  config.proxyPrefixPath.uri + '/apicall/createArchivePackage/',
+  _addProxy('/apicall/createArchivePackage/'),
   Archive.createArchivePackage
 )
 appRoute.put(
   'api.setExportedArchiveFragments',
-  config.proxyPrefixPath.uri + '/apicall/setExportedArchiveFragments/',
+  _addProxy('/apicall/setExportedArchiveFragments/'),
   Archive.setExportedArchiveFragments
 )
 

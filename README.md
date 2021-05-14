@@ -111,7 +111,7 @@ Later you will use it as a _BLOB_SERVICE_SAS_URL_ in secrets together with a nam
 
 ### Secrets for Development
 
-Secrets during local development are ALWAYS stored in a `.env`-file in the root of your project. This file should be in .gitignore. It needs to contain at least ldap connection URI and password in order for authentication to work properly.
+Secrets during local development are ALWAYS stored in a `.env`-file in the root of your project. This file should be in .gitignore.
 
 IMPORTANT: In Prod env, save URL:s in docker file but secrets in secrets.env
 
@@ -123,9 +123,9 @@ KURSSTATISTIK_API_URI=https://localhost:[api port]/api/kursstatistik?defaultTime
 KURSSTATISTIK_API_KEY=[secret key to connect to kursstatistik-api]
 SESSION_SECRET=[something random]
 SESSION_KEY=kursutveckling-admin-web.pid
-LDAP_BASE=OU=UG,DC=ref,DC=ug,DC=kth,DC=se
-LDAP_URI=ldaps://[find in gsv-key vault]@[ref].ug.kth.se@ldap.[ref].ug.kth.se
-LDAP_PASSWORD=[password]
+OIDC_APPLICATION_ID=<FROM ADFS>
+OIDC_CLIENT_SECRET=<FROM ADFS>
+OIDC_TOKEN_SECRET=<Random string>
 REDIS_URI=[connection string to redis, for cache]
 UG_REDIS_URI=[connection string to UG redis, in key vault, for authorization, and fetching names of course staff]
 BLOB_SERVICE_SAS_URL=[f.e., https://kursinfostoragestage.blob.core.windows.net/[params]&spr=https&sig=[generated signature]]
@@ -168,7 +168,7 @@ docker-compose up
 
 ### Handlebar Templates
 
-*Update 2021-03-12: Dependency to `kth-node-build-commons` has since been removed altogether.*
+_Update 2021-03-12: Dependency to `kth-node-build-commons` has since been removed altogether._
 
 > Paths in the app have been altered, so the use of _Handlebar_ templates has been customized. The files `errorLayout.handlebars` and `error.handlebars` were copied from `kth-node-build-commons`. This meant that the script `move-handlebars` could be removed from `package.json`. In `errorLayout.handlebars` the path for `vendor.js` was customized, and in `error.handlebars` the reference to `errorModule.js` was removed altogether.
 

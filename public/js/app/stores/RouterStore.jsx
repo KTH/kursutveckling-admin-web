@@ -39,7 +39,7 @@ class RouterStore {
   courseCode = ''
   errorMessage = '' // Error message from API calls
   service = '' // Is set in url param to send back to right page
-  member = [] // List of grups in LDAP the user is member of
+  member = [] // List of grups the user is member of
   roundAccess = {}
   user = '' //Logged in user name
   statistics = {
@@ -221,7 +221,7 @@ class RouterStore {
   /** ***************************************************************************************************************************************** */
   /*                                             GET COURSE INFORMATION ACTION (KOPPS - API)                                                    */
   /** ***************************************************************************************************************************************** */
-  @action getCourseInformation(courseCode, ldapUsername, lang = 'sv') {
+  @action getCourseInformation(courseCode, userName, lang = 'sv') {
     this.courseCode = courseCode
     return axios
       .get(this.buildApiUrl(this.paths.api.koppsCourseData.uri, { courseCode: courseCode, language: lang }))
@@ -230,7 +230,7 @@ class RouterStore {
           this.errorMessage = result.statusText
           return 'ERROR-' + result.status
         }
-        this.handleCourseData(result.data, courseCode, ldapUsername, lang)
+        this.handleCourseData(result.data, courseCode, userName, lang)
         return result.body
       })
       .catch(err => {
@@ -296,7 +296,7 @@ class RouterStore {
   }
 
   //--- Building up courseTitle, courseData, semesters and roundData and check access for rounds ---//
-  @action handleCourseData(courseObject, courseCode, ldapUsername, language) {
+  @action handleCourseData(courseObject, courseCode, userName, language) {
     if (courseObject === undefined) {
       this.errorMessage = 'Whoopsi daisy... kan just nu inte hämta data från kopps'
       return undefined
@@ -536,7 +536,7 @@ class RouterStore {
     return list
   }
 
-  getMemberOf(memberOf, id, ldapUsername, superUser) {
+  getMemberOf(memberOf, id, user, superUser) {
     if (id.length > 7) {
       let splitId = id.split('_')
       this.courseCode = splitId[0].length > 12 ? id.slice(0, 7).toUpperCase() : id.slice(0, 6).toUpperCase()
@@ -544,7 +544,7 @@ class RouterStore {
       this.courseCode = id.toUpperCase()
     }
     this.member = memberOf.filter(member => member.indexOf(this.courseCode) > -1 || member.indexOf(superUser) > -1)
-    this.user = ldapUsername
+    this.user = user
   }
 
   setLanguage(lang = 'sv') {
@@ -574,20 +574,6 @@ class RouterStore {
   }
 
   /** ***********************************************************************************************************************/
-
-  @action getLdapUserByUsername(params) {
-    return axios
-      .get(this.buildApiUrl(this.paths.api.searchLdapUser.uri, params))
-      .then(res => {
-        return res.data
-      })
-      .catch(err => {
-        if (err.response) {
-          throw new Error(err.message, err.response.data)
-        }
-        throw err
-      })
-  }
 
   @action getBreadcrumbs() {
     return {

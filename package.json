@@ -1,7 +1,7 @@
 {
   "//": "JSHint configuration - http://jshint.com/docs/options/",
   "name": "kursutveckling-admin-web",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Course development admin page to upload course analyses/memo as pdf and fetch data from ladok, kopps, and push it to kurutveckling-api",
   "main": "app.js",
   "license": "MIT",
@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@azure/storage-blob": "^12.4.0",
+    "@kth/kth-node-passport-oidc": "^1.0.40",
     "applicationinsights": "^1.8.9",
     "axios": "^0.21.1",
     "bluebird": "^3.7.2",
@@ -39,10 +40,8 @@
     "kth-node-configuration": "^2.0.1",
     "kth-node-express-routing": "^2.0.3",
     "kth-node-i18n": "^1.0.2",
-    "kth-node-ldap": "^4.0.1",
     "kth-node-log": "^3.1.0",
     "kth-node-monitor": "^1.1.3",
-    "kth-node-passport-cas": "^3.1.11",
     "kth-node-redis": "^3.1.18",
     "kth-node-response": "https://github.com/KTH/kth-node-response#v1.0.0",
     "kth-node-server": "^3.1.2",
@@ -101,7 +100,7 @@
     "node-forge": "0.10.0"
   },
   "engines": {
-    "node": "14.0.0"
+    "node": "14.17.0"
   },
   "jshintConfig": {
     "maxerr": 5
