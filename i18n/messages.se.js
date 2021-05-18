@@ -13,9 +13,12 @@ module.exports = {
      */
 
     error_not_found: 'Tyvärr kunde vi inte hitta sidan du efterfrågade',
-    error_course_not_found: 'Tyvärr så finns det ingen kurs med kurskod ',
     error_generic: 'Något gick fel på servern, var god försök igen senare',
-    error_auth: 'Du har inte behörighet att se sidan.',
+    contact_support: 'Kontakta',
+    for_questions: 'vid frågor',
+    friendly_message_have_not_rights: 'Du saknar behörighet att använda Om kursens administrationsverktyg',
+    look_at_list_of_kopps_admin: 'Vill du veta vem som är Kopps-administratör på din skola, se förteckning här:',
+    message_have_not_rights: `Du saknar behörighet att använda Om kursens administrationsverktyg. Behörighet ges per automatik till de som är inlagda i KOPPS som examinator, kursansvarig eller lärare för kursen. `,
 
     /**
      * Message keys
@@ -187,21 +190,18 @@ module.exports = {
     /** **** INFO BUTTONS ***** */
     info_select_semester: {
       header: 'Välj termin',
-      body:
-        'Välj vilken termin kursomgången startade. Om kursomgången sträcker sig över flera terminer; välj kursomgångens starttermin.',
+      body: 'Välj vilken termin kursomgången startade. Om kursomgången sträcker sig över flera terminer; välj kursomgångens starttermin.',
       btnCancel: 'Close',
     },
     info_choose_course_offering: {
       header: 'Välj kursomgång',
-      body:
-        'Välj alla kurstillfällen som ingick i kursomgången. Studenter är antagna till ett kurstillfälle. Programstudenter, betalande studenter och fristående studenter antas till olika kurstillfällen men kan utbildas i samma kursomgång. Kurstillfällen ska alltså grupperas ihop till en kursomgång. Kursomgången är ett praktiskt genomförande av en kurs. Kursomgången har en gemensam starttidpunkt, gemensam kurstakt och normalt gemensam undervisning för en studentgrupp. Schemat läggs per kursomgång, kurs-PM utformas per kursomgång och kursanalys genomförs per kursomgång.',
+      body: 'Välj alla kurstillfällen som ingick i kursomgången. Studenter är antagna till ett kurstillfälle. Programstudenter, betalande studenter och fristående studenter antas till olika kurstillfällen men kan utbildas i samma kursomgång. Kurstillfällen ska alltså grupperas ihop till en kursomgång. Kursomgången är ett praktiskt genomförande av en kurs. Kursomgången har en gemensam starttidpunkt, gemensam kurstakt och normalt gemensam undervisning för en studentgrupp. Schemat läggs per kursomgång, kurs-PM utformas per kursomgång och kursanalys genomförs per kursomgång.',
       btnCancel: 'Close',
     },
 
     info_examination_grade: {
       header: 'Examinationsgrad i procent (%)',
-      body:
-        'Examinationsgrad är antal förstagångsregistrerade studenter som godkänts på hela kursomgången vid valt slutdatum dividerat med antal förstagångsregistrerade på kursomgången i procent (%). Examinationsgrad hämtas automatiskt från Ladok för kursomgångar med starttermin VT 2017 och senare baserat på kursomgångens slutdatum. Det är möjligt att beräkna om examinationsgrad baserat på ett eget valt slutdatum. Det är också möjligt att ange examinationsgrad manuellt. I det fallet är slutdatum inte relevant. Examinationsgrad redovisas inte för respektive delmoment i examinationen. Examinationsgrad beräknas inte heller om efter efterföljande omtentor.',
+      body: 'Examinationsgrad är antal förstagångsregistrerade studenter som godkänts på hela kursomgången vid valt slutdatum dividerat med antal förstagångsregistrerade på kursomgången i procent (%). Examinationsgrad hämtas automatiskt från Ladok för kursomgångar med starttermin VT 2017 och senare baserat på kursomgångens slutdatum. Det är möjligt att beräkna om examinationsgrad baserat på ett eget valt slutdatum. Det är också möjligt att ange examinationsgrad manuellt. I det fallet är slutdatum inte relevant. Examinationsgrad redovisas inte för respektive delmoment i examinationen. Examinationsgrad beräknas inte heller om efter efterföljande omtentor.',
       btnCancel: 'Close',
     },
 
@@ -219,15 +219,13 @@ module.exports = {
 
     info_responsibles: {
       header: 'Kursansvarig',
-      body:
-        'Samtliga kursansvariga för de kurstillfällen som ingår i kursomgången. Kursansvariga administreras i Kopps.',
+      body: 'Samtliga kursansvariga för de kurstillfällen som ingår i kursomgången. Kursansvariga administreras i Kopps.',
       btn_close: 'Close',
     },
 
     info_edit_comments: {
       header: 'Ändringar av publicerad kursanalys eller kursdata',
-      body:
-        'Då det är möjligt att ladda upp nya versioner av kursanalys och kursdata är det viktigt att ange vilka förändringar som är gjorda och syftet med ändringarna.',
+      body: 'Då det är möjligt att ladda upp nya versioner av kursanalys och kursdata är det viktigt att ange vilka förändringar som är gjorda och syftet med ändringarna.',
       btnCancel: 'Close',
     },
 
@@ -244,26 +242,22 @@ module.exports = {
     },
     info_upload_course_analysis_date: {
       header: 'Publiceringsdatum för kursanalys',
-      body:
-        'Ange datum för dagen då kursanalysen publiceras. Låt det automatiskt angivna datumet gälla om kursanalysen publiceras för en nyligen avslutad kursomgång. Om kursanalysen redan har varit publicerad, ange datumet då den ursprungligen blev publicerad.',
+      body: 'Ange datum för dagen då kursanalysen publiceras. Låt det automatiskt angivna datumet gälla om kursanalysen publiceras för en nyligen avslutad kursomgång. Om kursanalysen redan har varit publicerad, ange datumet då den ursprungligen blev publicerad.',
       btnCancel: 'Close',
     },
     info_upload_course_memo_date: {
       header: 'Publiceringsdatum för kurs-pm',
-      body:
-        'Ange datum för dagen då kurs-pm:et publiceras. Låt det automatiskt angivna datumet gälla om kurs-pm:et publiceras för en nyligen avslutad kursomgång. Om kurs-pm:et redan har varit publicerad, ange datumet då den ursprungligen blev publicerad.',
+      body: 'Ange datum för dagen då kurs-pm:et publiceras. Låt det automatiskt angivna datumet gälla om kurs-pm:et publiceras för en nyligen avslutad kursomgång. Om kurs-pm:et redan har varit publicerad, ange datumet då den ursprungligen blev publicerad.',
       btnCancel: 'Close',
     },
     info_course_changes_comment: {
       header: 'Summera förändringar till kursen',
-      body:
-        'Summerade förändringar som har införts till den här kursomgången. Syftet med att publicera förändringar som infördes till kursen innan kursomgångens start är att visa på hur kursen förbättras och utvecklas över tid. Kursomgångarnas alla dokumenterade förändringar visar på vilka utvecklingssteg kursen har genomgått.',
+      body: 'Summerade förändringar som har införts till den här kursomgången. Syftet med att publicera förändringar som infördes till kursen innan kursomgångens start är att visa på hur kursen förbättras och utvecklas över tid. Kursomgångarnas alla dokumenterade förändringar visar på vilka utvecklingssteg kursen har genomgått.',
       btnCancel: 'Close',
     },
     info_registrated: {
       header: 'Antal förstagångsregistrerade studenter',
-      body:
-        'Siffran avser antal förstagångsregistrerade studenter på de kurstillfällen som ingår i kursomgången. Antal förstagångsregistrerade studenter hämtas automatiskt från Ladok för kursomgångar med startdatum VT 2017 och senare. Det är möjligt att ange examinationsgrad manuellt. Studenter som antagits men som inte registrerats ska inte räknas in. Inte heller registrerade studenter som omregistrerats från ett annat kurstillfälle på samma kurs ska räknas in. Beräkningen görs på kursomgångens starttermin.',
+      body: 'Siffran avser antal förstagångsregistrerade studenter på de kurstillfällen som ingår i kursomgången. Antal förstagångsregistrerade studenter hämtas automatiskt från Ladok för kursomgångar med startdatum VT 2017 och senare. Det är möjligt att ange examinationsgrad manuellt. Studenter som antagits men som inte registrerats ska inte räknas in. Inte heller registrerade studenter som omregistrerats från ett annat kurstillfälle på samma kurs ska räknas in. Beräkningen görs på kursomgångens starttermin.',
       btnCancel: 'Close',
     },
 

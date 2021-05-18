@@ -138,7 +138,7 @@ server.use(session(options))
  * ************************
  */
 const { languageHandler } = require('kth-node-web-common/lib/language')
-server.use(_addProxy(), languageHandler)
+server.use(config.proxyPrefixPath.uri, languageHandler)
 
 /* ******************************
  ***** AUTHENTICATION - OIDC ****

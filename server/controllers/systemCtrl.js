@@ -45,30 +45,31 @@ function _notFound(req, res, next) {
 
 // this function must keep this signature for it to work properly
 function _final(err, req, res, next) {
-  let statusCode
-  let courseCode = ''
-  if (err.response) {
-    statusCode = err.response.status
-    courseCode = err.response.data ? err.response.data : ''
-  } else {
-    statusCode = err.status || err.statusCode || 500
-  }
-
-  if (statusCode === 403 || statusCode === 404) {
-    log.debug({ err: err })
-  } else {
-    log.error({ err: err }, 'Unhandled error')
-  }
-
+  const statusCode = err.status || err.statusCode || 500
   const isProd = /prod/gi.test(process.env.NODE_ENV)
   const lang = language.getLanguage(res)
+
+  switch (statusCode) {
+    case 403:
+      log.info({ err }, `403 Forbidden ${err.message}`)
+      break
+    case 404:
+      log.info({ err }, `404 Not found ${err.message}`)
+      break
+    default:
+      log.error({ err }, `Unhandled error ${err.message}`)
+      break
+  }
 
   res.format({
     'text/html': () => {
       res.status(statusCode).render('system/error', {
+        lang,
         layout: 'errorLayout',
         message: err.message,
-        friendly: _getFriendlyErrorMessage(lang, statusCode, courseCode),
+        showMessage: err.showMessage || false,
+        showKoppsLink: statusCode === 403,
+        friendly: _getFriendlyErrorMessage(lang, statusCode),
         error: isProd ? {} : err,
         status: statusCode,
         debug: 'debug' in req.query,
@@ -78,7 +79,7 @@ function _final(err, req, res, next) {
     'application/json': () => {
       res.status(statusCode).json({
         message: err.message,
-        friendly: _getFriendlyErrorMessage(lang, statusCode, courseCode),
+        friendly: _getFriendlyErrorMessage(lang, statusCode),
         error: isProd ? undefined : err.stack,
       })
     },
@@ -92,12 +93,12 @@ function _final(err, req, res, next) {
   })
 }
 
-function _getFriendlyErrorMessage(lang, statusCode, courseCode) {
+function _getFriendlyErrorMessage(lang, statusCode) {
   switch (statusCode) {
     case 404:
-      // if(courseCode.length > 0)
-      // return i18n.message('error_course_not_found', lang) + courseCode
       return i18n.message('error_not_found', lang)
+    case 403:
+      return i18n.message('friendly_message_have_not_rights', lang)
     default:
       return i18n.message('error_generic', lang)
   }

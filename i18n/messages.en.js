@@ -6,9 +6,13 @@ module.exports = {
     date_format_short: '%d-%b-%Y',
 
     error_not_found: "Sorry, we can't find your requested page",
-    error_course_not_found: 'Sorry, there is no course with course code ',
     error_generic: 'Something went wrong on the server, please try again later.',
-    error_auth: 'You are not authorized to access this page',
+    contact_support: 'Contact',
+    for_questions: 'for questions',
+    friendly_message_have_not_rights: 'Missing permission to use About the course administration tool.',
+    look_at_list_of_kopps_admin:
+      'If you want to know who is the Kopps administrator at your school, look at the list here:',
+    message_have_not_rights: `Missing permission to use About the course administration tool. Permission is automatically granted to those who are registered in KOPPS as an examiner, course coordinator or teacher for the course.`,
 
     /**
      * Message keys
@@ -161,15 +165,13 @@ module.exports = {
     },
     info_cancel: {
       header: 'To be aware of before cancelling!',
-      body:
-        'Unsaved changes will be lost if you cancel the publishing of course analysis <br/>  <br/> Do you want to cancel?',
+      body: 'Unsaved changes will be lost if you cancel the publishing of course analysis <br/>  <br/> Do you want to cancel?',
       btnCancel: 'No, go back',
       btnConfirm: 'Yes, cancel',
     },
     info_delete: {
       header: 'To be aware of before deleting this draft!',
-      body:
-        'Deleting the draft cannot be undone. The draft draft will be lost. <br/><br/> Do you want do delete this draft?',
+      body: 'Deleting the draft cannot be undone. The draft draft will be lost. <br/><br/> Do you want do delete this draft?',
       btnCancel: 'No, go back',
       btnConfirm: 'Yes, delete',
     },
@@ -177,28 +179,24 @@ module.exports = {
     /** **** INFO BUTTONS ***** */
     info_select_semester: {
       header: 'Choose semester',
-      body:
-        'Choose what semester the course offering started. If the course offering stretched over several semesters then choose the first semester.',
+      body: 'Choose what semester the course offering started. If the course offering stretched over several semesters then choose the first semester.',
       btnCancel: 'Close',
     },
     info_choose_course_offering: {
       header: 'Choose course offering',
-      body:
-        'Choose all the administrative course instances that was included in the course offering. Students are admitted to an administrative course instance. Degree program students and non-programme students are admitted to different administrative course instances but may be educated in the same course offering. A course offering is thereby the practical realisation of the course with a common start date, common pace, common timetable etc. for all students. Several administrative course instances are grouped to one course offering.',
+      body: 'Choose all the administrative course instances that was included in the course offering. Students are admitted to an administrative course instance. Degree program students and non-programme students are admitted to different administrative course instances but may be educated in the same course offering. A course offering is thereby the practical realisation of the course with a common start date, common pace, common timetable etc. for all students. Several administrative course instances are grouped to one course offering.',
       btnCancel: 'Close',
     },
 
     info_registrated: {
       header: 'First time registered students',
-      body:
-        'Number of first registration students are defined as the number of first registration students on all the administrative course instances that are included in the course offering. The number is fetched automatically from Ladok for course offerings with a start semester from Spring 2017 and later. It is possible to enter number of first registration students manually. Admitted students that have not been registered shall not be counted. Neither shall registered students that have been re-registered from a previous administrative course instance be counted. Number of registered students is counted on the start semester of the course offering.',
+      body: 'Number of first registration students are defined as the number of first registration students on all the administrative course instances that are included in the course offering. The number is fetched automatically from Ladok for course offerings with a start semester from Spring 2017 and later. It is possible to enter number of first registration students manually. Admitted students that have not been registered shall not be counted. Neither shall registered students that have been re-registered from a previous administrative course instance be counted. Number of registered students is counted on the start semester of the course offering.',
       btnCancel: 'Close',
     },
 
     info_examination_grade: {
       header: 'Graduation rate in percent (%)',
-      body:
-        'Graduation rate is defined as the number of passed first registration students on the whole course by entered end date divided by the number of registered students (as defined above) on the course offering in percent (%). The number is fetched automatically from Ladok for course offerings with a start semester from Spring 2017 and later based on the end date of the course offering. It is possible to recalculate graduation rate based on a manually entered end date. It is also possible to enter graduation rate manually. In that case end date is not relevant. Graduation rate is not calculated for each examination session in the course examination set. Neither is it recalculated after each following re-examination. Graduation rate is calculated based on information fetched from Ladok.',
+      body: 'Graduation rate is defined as the number of passed first registration students on the whole course by entered end date divided by the number of registered students (as defined above) on the course offering in percent (%). The number is fetched automatically from Ladok for course offerings with a start semester from Spring 2017 and later based on the end date of the course offering. It is possible to recalculate graduation rate based on a manually entered end date. It is also possible to enter graduation rate manually. In that case end date is not relevant. Graduation rate is not calculated for each examination session in the course examination set. Neither is it recalculated after each following re-examination. Graduation rate is calculated based on information fetched from Ladok.',
       btnCancel: 'Close',
     },
 
@@ -210,8 +208,7 @@ module.exports = {
 
     info_responsibles: {
       header: 'Course coordinators',
-      body:
-        'All the course coordinators for all the administrative course instances that are included in the course offering. Course coordinators are administrated in Kopps.',
+      body: 'All the course coordinators for all the administrative course instances that are included in the course offering. Course coordinators are administrated in Kopps.',
       btn_close: 'Close',
     },
 
@@ -223,8 +220,7 @@ module.exports = {
 
     info_edit_comments: {
       header: 'Comments to changes',
-      body:
-        'It is possible to upload new versions of course analysis and course memos and rewrite changes to this course offering. Comment the purpose of the new versions in this field.',
+      body: 'It is possible to upload new versions of course analysis and course memos and rewrite changes to this course offering. Comment the purpose of the new versions in this field.',
       btnCancel: 'Close',
     },
     info_upload_course_analysis: {
@@ -240,22 +236,19 @@ module.exports = {
     info_upload_course_analysis_date: {
       // Semlan
       header: 'Publish date of course analysis',
-      body:
-        'The date of when the course analysis is published. Leave the automatically proposed date if the course analysis is published for a recently finished course offering. If the course analysis has previously been published, use the date when it was originally published.',
+      body: 'The date of when the course analysis is published. Leave the automatically proposed date if the course analysis is published for a recently finished course offering. If the course analysis has previously been published, use the date when it was originally published.',
       btnCancel: 'Close',
     },
     info_upload_course_memo_date: {
       // Semlan
       header: 'Publish date of course memo',
-      body:
-        'The date of when the course memo is published. Leave the automatically proposed date if the course memo is published for a recently finished course offering. If the course memo has previously been published, use the date when it was originally published.',
+      body: 'The date of when the course memo is published. Leave the automatically proposed date if the course memo is published for a recently finished course offering. If the course memo has previously been published, use the date when it was originally published.',
       btnCancel: 'Close',
     },
 
     info_course_changes_comment: {
       header: 'Summarize changes to the course',
-      body:
-        'Summarized changes made to the course before this particular course offering. The purpose of publishing changes made to the course is to show the improvements of the course over time. All changes documented to the course offerings gives an overview of the improvement steps of the course.',
+      body: 'Summarized changes made to the course before this particular course offering. The purpose of publishing changes made to the course is to show the improvements of the course over time. All changes documented to the course offerings gives an overview of the improvement steps of the course.',
       btnCancel: 'Close',
     },
 
@@ -277,8 +270,7 @@ module.exports = {
       header: 'A draft of course analysis and course data have been saved',
       /** semester: 'Semester:', /** Följt av kursomgångens starttermin */
       /** course_round: 'Course offering:', /** Följt av kursomgångens namn */
-      body:
-        'Copy link to draft of publish from the page:' /** Följt av länk till steg 1, "Publish new course analysis and course data" */,
+      body: 'Copy link to draft of publish from the page:' /** Följt av länk till steg 1, "Publish new course analysis and course data" */,
     },
     info_draft_deleted: {
       header: 'Draft of course analysis and course data have been deleted',
