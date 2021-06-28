@@ -118,8 +118,8 @@ module.exports = {
 
     link_syllabus: 'Course syllabus ' /** Followed by ([giltighetstermin år] – [sista giltighetstermin år]) */,
     link_syllabus_empty: 'Link not available in preview',
-    link_pm: 'Course memo',
-    link_analysis: 'Course analysis ' /** Followed by [dd/mm/yyyy] */,
+    link_analysis: { label_analysis: 'Course analysis', no_added_doc: 'No course analysis added' },
+    link_memo: { label_memo: 'Course memo', no_added_doc: 'No course memo added' },
 
     original_values_are: 'The original values are',
     and: 'and',

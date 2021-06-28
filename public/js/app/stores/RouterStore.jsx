@@ -48,6 +48,7 @@ class RouterStore {
     endDate: null,
     registeredStudents: -1,
   }
+  miniMemosPdfAndWeb = { miniMemos: [] } // kurs-pm-data-api
 
   buildApiUrl(path, params) {
     let host

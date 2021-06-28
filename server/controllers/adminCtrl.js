@@ -18,6 +18,7 @@ const kursutvecklingAPI = require('../apiCalls/kursutvecklingAPI')
 const koppsCourseData = require('../apiCalls/koppsCourseData')
 const kursstatistikAPI = require('../apiCalls/kursstatistikAPI')
 const i18n = require('../../i18n')
+const { getSortedAndPrioritizedMiniMemosWebOrPdf } = require('../apiCalls/kursPmDataApi')
 
 function _staticFactory(context, location) {
   if (process.env.NODE_ENV === 'development') {
@@ -262,9 +263,8 @@ async function getIndex(req, res, next) {
 
   let lang = language.getLanguage(res) || 'sv'
   const ldapUser = req.session.authUser ? req.session.authUser.username : 'null'
-  const courseTitle = req.query.title || ''
+  const { title: courseTitle = '', serv: service } = req.query
   let status = req.query.status
-  const service = req.query.serv
 
   try {
     const renderProps = _staticFactory()
@@ -302,6 +302,8 @@ async function getIndex(req, res, next) {
       } else {
         renderProps.props.children.props.routerStore.analysisId = req.params.id
         renderProps.props.children.props.routerStore.analysisData = apiResponse.body
+        const { courseCode } = apiResponse.body //req.params.id.split('_')[0].slice(0, -6)
+        renderProps.props.children.props.adminStore.courseCode = courseCode
 
         /** ------- Setting status ------- */
         status = req.params.preview && req.params.preview === 'preview' ? 'preview' : status
@@ -322,8 +324,16 @@ async function getIndex(req, res, next) {
           courseTitle.length > 0 ? decodeURIComponent(courseTitle) : ''
         )
       }
+      /* Course memo in preview */
+
+      renderProps.props.children.props.adminStore.miniMemosPdfAndWeb =
+        (await getSortedAndPrioritizedMiniMemosWebOrPdf(courseCode)) || []
     }
     renderProps.props.children.props.routerStore.__SSR__setCookieHeader(req.headers.cookie)
+
+    // if (req.params.preview && req.params.preview === 'preview') {
+
+    // }
 
     const html = ReactDOMServer.renderToString(renderProps)
 

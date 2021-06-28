@@ -126,8 +126,8 @@ module.exports = {
 
     link_syllabus: 'Kursplan',
     link_syllabus_empty: 'Länk syns inte vid granskning',
-    link_analysis: 'Kursanalys',
-    link_pm: 'Kurs-PM',
+    link_analysis: { label_analysis: 'Kursanalys', no_added_doc: 'Ingen kursanalys tillagd' },
+    link_memo: { label_memo: 'Kurs-PM', no_added_doc: 'Inget kurs-PM tillagt' },
 
     original_values_are: 'De ursprungliga värdena är',
     and: 'och',
