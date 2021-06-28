@@ -6,9 +6,13 @@ module.exports = {
     date_format_short: '%d-%b-%Y',
 
     error_not_found: "Sorry, we can't find your requested page",
-    error_course_not_found: 'Sorry, there is no course with course code ',
     error_generic: 'Something went wrong on the server, please try again later.',
-    error_auth: 'You are not authorized to access this page',
+    contact_support: 'Contact',
+    for_questions: 'for questions',
+    friendly_message_have_not_rights: 'Missing permission to use About the course administration tool.',
+    look_at_list_of_kopps_admin:
+      'If you want to know who is the Kopps administrator at your school, look at the list here:',
+    message_have_not_rights: `Missing permission to use About the course administration tool. Permission is automatically granted to those who are registered in KOPPS as an examiner, course coordinator or teacher for the course.`,
 
     /**
      * Message keys
@@ -43,11 +47,11 @@ module.exports = {
 
     //* **** INTRO TEXT FOR ANALYSIS MENUE, EDIT, PREVIEW */
     intro_analysis_menu:
-      'Choose a semester and a course offering for the course analysis to be published (step 1 of 3). In the next step (2 of 3), course data will be fetched automatically for the selected semester and course offering. It is there possible to edit some of the course data and upload a course analysis document. Preview the table with the course data and course analysis that are about to be published in the last step (3 of 3). The course data with the course analysis will then be published on the page Course development and history.',
+      'Choose a semester and a course offering for the course analysis to be published (step 1 of 3). In the next step (2 of 3), course data will be fetched automatically for the selected semester and course offering. It is there possible to edit some of the course data and upload a course analysis document. Preview the table with the course data and course analysis that are about to be published in the last step (3 of 3). The course data with the course analysis will then be published on the page Course development.',
     intro_edit:
       'In this step (2 of 3) course analysis and course memo shall be uploaded, changes to the chosen course offering is summarized and some of the course data are reviewed and adjusted.',
     intro_preview:
-      'In this step (3 of 3) a preview of the course analysis with course data is presented as it will be published on the page Course development and history. It is possible to go back to make adjustments, to save a draft or publish the information.',
+      'In this step (3 of 3) a preview of the course analysis with course data is presented as it will be published on the page Course development. It is possible to go back to make adjustments, to save a draft or publish the information.',
 
     //* **** INTRO SELECT NEW, DRAFT, PUBLISHED */
     intro_new:
@@ -147,7 +151,7 @@ module.exports = {
 
     info_publish: {
       header: 'To be aware of before publishing!',
-      body: `The information will be published on the page Course development and history
+      body: `The information will be published on the page Course development
         <br/> 
         <br/> 
         Do you want to publish?`,
@@ -271,7 +275,7 @@ module.exports = {
       header: 'Course analysis and course data have been published',
       /** semester: 'Semester:', /** Följt av kursomgångens starttermin */
       /** course_round: 'Course offering:', /** Följt av kursomgångens namn */
-      body: 'View results on the page:' /** Följt av länk till sidan "Course development and history */,
+      body: 'View results on the page:' /** Följt av länk till sidan "Course development*/,
     },
     info_draft_saved: {
       header: 'A draft of course analysis and course data have been saved',

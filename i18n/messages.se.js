@@ -13,9 +13,12 @@ module.exports = {
      */
 
     error_not_found: 'Tyvärr kunde vi inte hitta sidan du efterfrågade',
-    error_course_not_found: 'Tyvärr så finns det ingen kurs med kurskod ',
     error_generic: 'Något gick fel på servern, var god försök igen senare',
-    error_auth: 'Du har inte behörighet att se sidan.',
+    contact_support: 'Kontakta',
+    for_questions: 'vid frågor',
+    friendly_message_have_not_rights: 'Du saknar behörighet att använda Om kursens administrationsverktyg',
+    look_at_list_of_kopps_admin: 'Vill du veta vem som är Kopps-administratör på din skola, se förteckning här:',
+    message_have_not_rights: `Du saknar behörighet att använda Om kursens administrationsverktyg. Behörighet ges per automatik till de som är inlagda i KOPPS som examinator, kursansvarig eller lärare för kursen. `,
 
     /**
      * Message keys
@@ -59,11 +62,11 @@ module.exports = {
 
     /* **** INTRO TEXT FOR ANALYSIS MENUE, EDIT, PREVIEW */
     intro_analysis_menu:
-      'Börja med att välja termin och kursomgång för den kursanalys som ska publiceras (steg 1 av 3). I nästa steg (2 av 3) kommer kursdata för kursen att hämtas automatiskt från Ladok och Kopps för den termin och kursomgång som valts. Det finns sedan möjlighet att redigera viss kursdata samt ladda upp kursanalysen. I sista steget (3 av 3) ges möjlighet att först granska och sedan publicera tabellen med kursanalys och all kursdata på sidan Kursens utveckling och historik.',
+      'Börja med att välja termin och kursomgång för den kursanalys som ska publiceras (steg 1 av 3). I nästa steg (2 av 3) kommer kursdata för kursen att hämtas automatiskt från Ladok och Kopps för den termin och kursomgång som valts. Det finns sedan möjlighet att redigera viss kursdata samt ladda upp kursanalysen. I sista steget (3 av 3) ges möjlighet att först granska och sedan publicera tabellen med kursanalys och all kursdata på sidan Kursens utveckling.',
     intro_edit:
       'I detta steg (2 av 3) ska kursanalys och kurs-PM laddas upp, förändringar för vald kursomgång summeras samt kursdata kontrolleras och vid behov justeras. I nästa steg granskas all kursdata innan publicering.',
     intro_preview:
-      'I detta steg (3 av 3) visas hur kursanalys och kursdata kommer att se ut på sidan Kursens utveckling och historik. Här finns möjlighet att gå tillbaka för att redigera ytterligare, spara som utkast eller publicera direkt.',
+      'I detta steg (3 av 3) visas hur kursanalys och kursdata kommer att se ut på sidan Kursens utveckling. Här finns möjlighet att gå tillbaka för att redigera ytterligare, spara som utkast eller publicera direkt.',
 
     /* **** INTRO SELECT NEW, DRAFT, PUBLISHED */
     intro_new:
@@ -76,7 +79,7 @@ module.exports = {
     draft_empty: 'Det finns inga sparade utkast för vald termin',
     published_empty: 'Det finns ingen publicerad kursutveckling för vald termin',
     new_empty:
-      'Kursanalys och kursdata har publicerats för samtliga kursomgångar den valda terminen. Kontrollera publicerad kursanalys på sidan Kursens utveckling och historik',
+      'Kursanalys och kursdata har publicerats för samtliga kursomgångar den valda terminen. Kontrollera publicerad kursanalys på sidan Kursens utveckling',
 
     not_authorized_course_offering: 'Du kan endast granska detta utkast då du inte kursansvarig för kursomgången.',
     not_authorized_publish_new: 'Du är inte kursansvarig för detta kurstillfälle och kan därför inte välja det.',
@@ -156,7 +159,7 @@ module.exports = {
     },
     info_publish: {
       header: 'Att tänka på innan du publicerar!',
-      body: `Publicering kommer att ske på sidan Kursens utveckling och historik.
+      body: `Publicering kommer att ske på sidan Kursens utveckling.
         <br/>
         <br/>
         Vill du fortsätta att publicera?`,

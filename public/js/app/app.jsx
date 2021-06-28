@@ -1,78 +1,59 @@
 'use strict'
-//import 'react-app-polyfill/ie11'
-//import 'react-app-polyfill/stable'
-
 
 import React from 'react'
-import  ReactDOM from 'react-dom'
+import ReactDOM from 'react-dom'
 import { Component } from 'react'
 import { Provider, inject } from 'mobx-react'
-import {  BrowserRouter, Route, Switch} from 'react-router-dom'
+import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import { configure } from 'mobx'
 import queryString from 'query-string'
 
 import { IMobxStore } from './interfaces/utils'
 import { StaticRouter } from 'react-router'
 import RouterStore from './stores/RouterStore'
-import ArchiveStore from './stores/ArchiveStore'
 import AdminPage from './views/AdminPage'
-import ArchivePage from './views/ArchivePage'
-import  '../../css/kursutveckling-web.scss'
-import  '../../css/kursutveckling-admin.scss'
+import '../../css/kursutveckling-web.scss'
+import '../../css/kursutveckling-admin.scss'
 
-
-function staticFactory () {
-  return (
-    <StaticRouter >
-      { appFactory() }
-    </StaticRouter>
-  )
+function staticFactory() {
+  return <StaticRouter>{appFactory()}</StaticRouter>
 }
 
 function appFactory() {
-
   if (process.env['NODE_ENV'] !== 'production') {
     configure({
-      isolateGlobalState: true
+      isolateGlobalState: true,
     })
   }
 
   const routerStore = new RouterStore()
-  const archiveStore = new ArchiveStore()
 
   if (typeof window !== 'undefined') {
     routerStore.initializeStore('routerStore')
-    archiveStore.initializeStore('archiveStore')
   }
 
   return (
-    <Provider routerStore={routerStore} archiveStore={archiveStore}>
+    <Provider routerStore={routerStore}>
       <Switch>
-        <Route exact path='/kursinfoadmin/kursutveckling/archive' component={ArchivePage} />
-        <Route path='/kursinfoadmin/kursutveckling' component={AdminPage} asyncBefore={AdminPage.fetchData} />
-        <Route path='/kursinfoadmin/kursutveckling/preview' component={AdminPage} />
+        <Route path="/kursinfoadmin/kursutveckling" component={AdminPage} asyncBefore={AdminPage.fetchData} />
+        <Route path="/kursinfoadmin/kursutveckling/preview" component={AdminPage} />
       </Switch>
     </Provider>
   )
 }
 
-function doAllAsyncBefore ({
-  pathname,
-  query,
-  routerStore,
-  routes}) 
-{
+function doAllAsyncBefore({ pathname, query, routerStore, routes }) {
   const queryParams = queryString.parse(query)
   return Promise.resolve()
 }
 
 @inject(['routerStore'])
 class ProgressLayer extends Component {
-  constructor (props, context) {
+  constructor(props, context) {
     super(props)
     this.state = {
       context,
-      id:"test"
+      id: 'test',
     }
 
     //this.doContinueNavigation = this.doContinueNavigation.bind(this)
@@ -80,13 +61,11 @@ class ProgressLayer extends Component {
     //this.didChangeLocation = this.didChangeLocation.bind(this)
   }
 
-  getChildContext () {
+  getChildContext() {
     return this.state.context
   }
 
- 
-
-  componentWillReceiveProps (nextProps, nextContext) {
+  componentWillReceiveProps(nextProps, nextContext) {
     if (nextContext.router.route.location.key !== this.context.router.route.location.key) {
       const asyncBeforeProps = {
         pathname: nextContext.router.route.location.pathname,
@@ -94,12 +73,11 @@ class ProgressLayer extends Component {
         routerStore: nextProps.routerStore,
         routes: nextProps.children.props.children,
         nextContext,
-        nextProps
+        nextProps,
       }
 
-
       // Continue with page change
-      doAllAsyncBefore (asyncBeforeProps).then((res) => {
+      doAllAsyncBefore(asyncBeforeProps).then(res => {
         this.setState({ context: nextContext })
       })
     }
@@ -109,42 +87,34 @@ class ProgressLayer extends Component {
     this.props.routerStore.didCancelEdits()
 
     if (this.asyncBeforeProps) {
-      return doAllAsyncBefore (this.asyncBeforeProps).then((res) => {
+      return doAllAsyncBefore(this.asyncBeforeProps).then(res => {
         this.setState({
           context: this.asyncBeforeProps.nextContext,
-          showIsEditingModal: false
+          showIsEditingModal: false,
         })
         this.asyncBeforeProps = undefined
       })
-
     }
 
     // Leaving page
   }
 
+  doCancelNavigation() {
+    // Revert the addressbar since it is changed prior to reaching the modal
+    this.state.context.router.history.replace(this.state.context.router.route.location.pathname)
+    this.setState({
+      showIsEditingModal: false,
+    })
+    this.asyncBeforeProps = undefined
+  }
 
-doCancelNavigation() {
-  // Revert the addressbar since it is changed prior to reaching the modal
-  this.state.context.router.history.replace(this.state.context.router.route.location.pathname)
-  this.setState({
-    showIsEditingModal: false
-  })
-  this.asyncBeforeProps = undefined
-}
-
-render ({ routerStore }) {
-  return (
-    <div>
-      {this.props.children}
-    </div>
-  )
-}
+  render({ routerStore }) {
+    return <div>{this.props.children}</div>
+  }
 }
 
 if (typeof window !== 'undefined') {
   ReactDOM.render(<BrowserRouter>{appFactory()}</BrowserRouter>, document.getElementById('kth-kursutveckling-admin'))
 }
 
-export { 
-staticFactory
-}
+export { staticFactory }

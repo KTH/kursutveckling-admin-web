@@ -39,7 +39,7 @@ class RouterStore {
   courseCode = ''
   errorMessage = '' // Error message from API calls
   service = '' // Is set in url param to send back to right page
-  member = [] // List of grups in LDAP the user is member of
+  member = [] // List of grups the user is member of
   roundAccess = {}
   user = '' //Logged in user name
   statistics = {
@@ -64,27 +64,6 @@ class RouterStore {
     return [host, newPath].join('')
   }
 
-  _getOptions(params) {
-    // Pass Cookie header on SSR-calls
-    let options
-    if (typeof window === 'undefined') {
-      options = {
-        headers: {
-          Cookie: this.cookieHeader,
-          Accept: 'application/json',
-          'X-Forwarded-Proto': _webUsesSSL(this.apiHost) ? 'https' : 'http',
-        },
-        timeout: 10000,
-        params: params,
-      }
-    } else {
-      options = {
-        params: params,
-      }
-    }
-    return options
-  }
-
   /** ***************************************************************************************************************************************** */
   /*                                                       COLLECTED ROUND INFORMATION                                                        */
   /** ***************************************************************************************************************************************** */
@@ -103,7 +82,7 @@ class RouterStore {
   /** ***************************************************************************************************************************************** */
   @action updateFileInStorage(fileName, metadata) {
     return axios
-      .post(this.buildApiUrl(this.paths.storage.updateFile.uri, { fileName }), this._getOptions({ metadata }))
+      .post(this.buildApiUrl(this.paths.storage.updateFile.uri, { fileName }), { params: metadata })
       .then(apiResponse => {
         if (apiResponse.statusCode >= 400) {
           return 'ERROR-' + apiResponse.statusCode
@@ -124,7 +103,7 @@ class RouterStore {
 
   @action getRoundAnalysis(id, lang = 'sv') {
     return axios
-      .get(this.buildApiUrl(this.paths.api.kursutvecklingGetById.uri, { id: id }), this._getOptions())
+      .get(this.buildApiUrl(this.paths.api.kursutvecklingGetById.uri, { id: id }))
       .then(result => {
         if (result.statusCode >= 400) {
           this.errorMessage = result.statusText
@@ -150,7 +129,7 @@ class RouterStore {
           id: postObject._id,
           status: status /*, lang: lang*/,
         }),
-        this._getOptions(JSON.stringify(postObject))
+        { params: JSON.stringify(postObject) }
       )
       .then(apiResponse => {
         if (apiResponse.statusCode >= 400) {
@@ -180,7 +159,7 @@ class RouterStore {
           id: postObject._id,
           status: status /*, lang: lang*/,
         }),
-        this._getOptions(JSON.stringify(postObject))
+        { params: JSON.stringify(postObject) }
       )
       .then(apiResponse => {
         if (apiResponse.statusCode >= 400) {
@@ -206,7 +185,7 @@ class RouterStore {
 
   @action deleteRoundAnalysis(id, lang = 'sv') {
     return axios
-      .delete(this.buildApiUrl(this.paths.api.kursutvecklingDelete.uri, { id: id }), this._getOptions())
+      .delete(this.buildApiUrl(this.paths.api.kursutvecklingDelete.uri, { id: id }))
       .then(result => {
         return result.data
       })
@@ -225,8 +204,7 @@ class RouterStore {
         this.buildApiUrl(this.paths.api.kursutvecklingGetUsedRounds.uri, {
           courseCode: courseCode,
           semester: semester,
-        }),
-        this._getOptions()
+        })
       )
       .then(result => {
         if (result.status >= 400) {
@@ -244,19 +222,16 @@ class RouterStore {
   /** ***************************************************************************************************************************************** */
   /*                                             GET COURSE INFORMATION ACTION (KOPPS - API)                                                    */
   /** ***************************************************************************************************************************************** */
-  @action getCourseInformation(courseCode, ldapUsername, lang = 'sv') {
+  @action getCourseInformation(courseCode, userName, lang = 'sv') {
     this.courseCode = courseCode
     return axios
-      .get(
-        this.buildApiUrl(this.paths.api.koppsCourseData.uri, { courseCode: courseCode, language: lang }),
-        this._getOptions()
-      )
+      .get(this.buildApiUrl(this.paths.api.koppsCourseData.uri, { courseCode: courseCode, language: lang }))
       .then(result => {
         if (result.status >= 400) {
           this.errorMessage = result.statusText
           return 'ERROR-' + result.status
         }
-        this.handleCourseData(result.data, courseCode, ldapUsername, lang)
+        this.handleCourseData(result.data, courseCode, userName, lang)
         return result.body
       })
       .catch(err => {
@@ -272,10 +247,7 @@ class RouterStore {
   /** ***************************************************************************************************************************************** */
   @action postLadokRoundIdListAndDateToGetStatistics(ladokRoundIdList, endDate) {
     return axios
-      .post(
-        this.buildApiUrl(this.paths.api.kursstatistik.uri, { roundEndDate: endDate }),
-        this._getOptions(ladokRoundIdList)
-      )
+      .post(this.buildApiUrl(this.paths.api.kursstatistik.uri, { roundEndDate: endDate }), { params: ladokRoundIdList })
       .then(apiResponse => {
         if (apiResponse.statusCode >= 400) {
           this.errorMessage = result.statusText
@@ -325,7 +297,7 @@ class RouterStore {
   }
 
   //--- Building up courseTitle, courseData, semesters and roundData and check access for rounds ---//
-  @action handleCourseData(courseObject, courseCode, ldapUsername, language) {
+  @action handleCourseData(courseObject, courseCode, userName, language) {
     if (courseObject === undefined) {
       this.errorMessage = 'Whoopsi daisy... kan just nu inte hämta data från kopps'
       return undefined
@@ -565,7 +537,7 @@ class RouterStore {
     return list
   }
 
-  getMemberOf(memberOf, id, ldapUsername, superUser) {
+  getMemberOf(memberOf, id, user, superUser) {
     if (id.length > 7) {
       let splitId = id.split('_')
       this.courseCode = splitId[0].length > 12 ? id.slice(0, 7).toUpperCase() : id.slice(0, 6).toUpperCase()
@@ -573,7 +545,7 @@ class RouterStore {
       this.courseCode = id.toUpperCase()
     }
     this.member = memberOf.filter(member => member.indexOf(this.courseCode) > -1 || member.indexOf(superUser) > -1)
-    this.user = ldapUsername
+    this.user = user
   }
 
   setLanguage(lang = 'sv') {
@@ -588,10 +560,9 @@ class RouterStore {
   /** ***************************************************************************************************************************************** */
   @action getCourseEmployeesPost(key, type = 'multi', lang = 'sv') {
     return axios
-      .post(
-        this.buildApiUrl(this.paths.redis.ugCache.uri, { key: key, type: type }),
-        this._getOptions(JSON.stringify(this.redisKeys))
-      )
+      .post(this.buildApiUrl(this.paths.redis.ugCache.uri, { key: key, type: type }), {
+        params: JSON.stringify(this.redisKeys),
+      })
       .then(result => {
         return result.data
       })
@@ -605,20 +576,6 @@ class RouterStore {
 
   /** ***********************************************************************************************************************/
 
-  @action getLdapUserByUsername(params) {
-    return axios
-      .get(this.buildApiUrl(this.paths.api.searchLdapUser.uri, params), this._getOptions())
-      .then(res => {
-        return res.data
-      })
-      .catch(err => {
-        if (err.response) {
-          throw new Error(err.message, err.response.data)
-        }
-        throw err
-      })
-  }
-
   @action getBreadcrumbs() {
     return {
       url: '/kursinfoadmin/kursutveckling/',
@@ -631,12 +588,6 @@ class RouterStore {
     this.paths = paths
     this.apiHost = apiHost
     this.profileBaseUrl = profileBaseUrl
-  }
-
-  @action __SSR__setCookieHeader(cookieHeader) {
-    if (typeof window === 'undefined') {
-      this.cookieHeader = cookieHeader || ''
-    }
   }
 
   @action doSetLanguage(lang) {

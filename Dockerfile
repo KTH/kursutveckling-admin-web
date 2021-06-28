@@ -16,17 +16,16 @@ WORKDIR /application
 RUN cp -a /npm/node_modules /application && \
     rm -rf /npm
 
-# Copy files used by Gulp.
+# Copy files.
 COPY ["config", "config"]
 COPY ["public", "public"]
 COPY ["i18n", "i18n"]
 COPY [".babelrc", ".babelrc"]
 COPY [".eslintrc", ".eslintrc"]
 COPY ["package.json", "package.json"]
-COPY ["gulpfile.js", "gulpfile.js"]
 RUN npm run docker
 
-# Copy source files, so changes does not trigger gulp.
+# Copy source files.
 COPY ["app.js", "app.js"]
 COPY ["server", "server"]
 

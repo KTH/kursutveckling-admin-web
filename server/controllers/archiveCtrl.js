@@ -11,9 +11,13 @@ const { browser, server } = require('../configuration')
 
 const i18n = require('../../i18n')
 
-const { getAllArchiveFragments, createArchivePackage, setExportedArchiveFragments } = require('../apiCalls/kursutvecklingAPI')
+const {
+  getAllArchiveFragments,
+  createArchivePackage,
+  setExportedArchiveFragments,
+} = require('../apiCalls/kursutvecklingAPI')
 
-function hydrateStores (renderProps) {
+function hydrateStores(renderProps) {
   // This assumes that all stores are specified in a root element called Provider
   const props = renderProps.props.children.props
   const outp = {}
@@ -25,7 +29,7 @@ function hydrateStores (renderProps) {
   return outp
 }
 
-function _staticRender (context, location) {
+function _staticRender(context, location) {
   if (process.env.NODE_ENV === 'development') {
     delete require.cache[require.resolve('../../dist/app.js')]
   }
@@ -33,7 +37,7 @@ function _staticRender (context, location) {
   return staticFactory(context, location)
 }
 
-async function _createArchivePackage (req, res, next) {
+async function _createArchivePackage(req, res, next) {
   const selected = req.body
   log.debug('createArchivePackage called with:', selected)
 
@@ -46,7 +50,7 @@ async function _createArchivePackage (req, res, next) {
   }
 }
 
-async function _setExportedArchiveFragments (req, res, next) {
+async function _setExportedArchiveFragments(req, res, next) {
   const selected = req.body
   log.debug('setExportedArchiveFragments called with:', selected)
 
@@ -59,7 +63,7 @@ async function _setExportedArchiveFragments (req, res, next) {
   }
 }
 
-async function getIndex (req, res, next) {
+async function getIndex(req, res, next) {
   try {
     const context = {}
     const renderProps = _staticRender(context, req.url)
@@ -69,7 +73,6 @@ async function getIndex (req, res, next) {
     const { archiveStore } = renderProps.props.children.props
 
     archiveStore.setBrowserConfig(browser, serverPaths, apis, server.hostUrl)
-    archiveStore.__SSR__setCookieHeader(req.headers.cookie)
 
     const archiveFragments = await getAllArchiveFragments()
     archiveStore.archiveFragments = archiveFragments.body
@@ -81,7 +84,7 @@ async function getIndex (req, res, next) {
       title: i18n.messages[responseLanguage === 'en' ? 0 : 1].messages.title,
       initialState: JSON.stringify(hydrateStores(renderProps)),
       lang: responseLanguage,
-      description: i18n.messages[responseLanguage === 'en' ? 0 : 1].messages.title
+      description: i18n.messages[responseLanguage === 'en' ? 0 : 1].messages.title,
     })
   } catch (err) {
     log.error('Error in getIndex', { error: err })
@@ -92,5 +95,5 @@ async function getIndex (req, res, next) {
 module.exports = {
   getIndex: getIndex,
   createArchivePackage: _createArchivePackage,
-  setExportedArchiveFragments: _setExportedArchiveFragments
+  setExportedArchiveFragments: _setExportedArchiveFragments,
 }
