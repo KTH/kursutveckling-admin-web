@@ -227,8 +227,9 @@ async function getIndex(req, res, next) {
       } else {
         renderProps.props.children.props.routerStore.analysisId = req.params.id
         renderProps.props.children.props.routerStore.analysisData = apiResponse.body
+
         const { courseCode } = apiResponse.body //req.params.id.split('_')[0].slice(0, -6)
-        renderProps.props.children.props.adminStore.courseCode = courseCode
+        renderProps.props.children.props.routerStore.courseCode = courseCode
 
         /** ------- Setting status ------- */
         status = req.params.preview && req.params.preview === 'preview' ? 'preview' : status
@@ -248,11 +249,12 @@ async function getIndex(req, res, next) {
         renderProps.props.children.props.routerStore.setCourseTitle(
           courseTitle.length > 0 ? decodeURIComponent(courseTitle) : ''
         )
-      }
-      /* Course memo in preview */
 
-      renderProps.props.children.props.adminStore.miniMemosPdfAndWeb =
-        (await getSortedAndPrioritizedMiniMemosWebOrPdf(courseCode)) || []
+        /* Course memo in preview */
+
+        renderProps.props.children.props.routerStore.miniMemosPdfAndWeb =
+          (await getSortedAndPrioritizedMiniMemosWebOrPdf(courseCode)) || []
+      }
     }
 
     // if (req.params.preview && req.params.preview === 'preview') {

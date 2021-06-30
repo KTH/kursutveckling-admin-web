@@ -18,9 +18,11 @@ class LinkToValidSyllabusPdf extends Component {
     const { course_short_semester, link_syllabus, link_syllabus_empty } = i18n.messages[language].messages
 
     return (
-      <p className="pdf-link" key={'link-syllabus-from-'}>
-        {`${link_syllabus} ${courseCode}: `}
-        <i style={{ color: '#000' }}>{link_syllabus_empty}</i>
+      <p key={'link-syllabus-from-'}>
+        <span className="pdf-link">
+          {`${link_syllabus} ${courseCode}: `}
+          <i style={{ color: '#000' }}>{link_syllabus_empty}</i>
+        </span>
       </p>
     )
   }

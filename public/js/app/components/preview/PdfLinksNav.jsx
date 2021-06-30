@@ -47,11 +47,12 @@ function resolveMemoBlobUrl() {
   return prodMemoStorageUrl
 }
 
-function parseCourseOffering(ladokRoundIds, rawSemester, langAbbr) {
-  const languageIndex = langAbbr === 'en' ? 0 : 1
-  const { archiveTitles: memoTitles } = i18n.messages[languageIndex].messages
+function parseCourseOffering(ladokRoundIds, rawSemester, lang) {
+  const languageIndex = typeof lang === 'string' ? (lang === 'en' ? 0 : 1) : lang
 
-  const { label_memo: memoLabel, course_short_semester: shortSemLabels } = memoTitles
+  const { course_short_semester: shortSemLabels, link_memo: linkMemoTexts } = i18n.messages[languageIndex].messages
+
+  const { label_memo: memoLabel } = linkMemoTexts
 
   const semester = shortSemLabels[rawSemester.toString().slice(-1)]
   const year = rawSemester.toString().slice(0, 4)
@@ -62,10 +63,10 @@ function parseCourseOffering(ladokRoundIds, rawSemester, langAbbr) {
   return courseOfferings
 }
 
-function ParseUploadedMemo({ fileInfo, memoBlobUrl, userLanguageAbbr, translate }) {
+function ParseUploadedMemo({ fileInfo, memoBlobUrl, userLanguageIndex, translate }) {
   const { courseCode, courseMemoFileName, ladokRoundIds, semester: memoSemester } = fileInfo
 
-  const courseOfferingName = parseCourseOffering(ladokRoundIds, memoSemester, userLanguageAbbr)
+  const courseOfferingName = parseCourseOffering(ladokRoundIds, memoSemester, userLanguageIndex)
 
   const { label_memo: memoLabel } = translate
 
@@ -136,9 +137,9 @@ class PdfLinksNav extends Component {
   }
 
   render() {
-    const { translate, analysisFile, pmFile, thisAnalysisObj, lang } = this.props
+    const { translate, analysisFile, pmFile, thisAnalysisObj, langIndex } = this.props
     const { link_memo: linkMemoTexts, link_analysis: linkAnalysisTexts } = translate
-    const { miniMemosPdfAndWeb } = this.props.adminStore
+    const { miniMemosPdfAndWeb } = this.props.routerStore
 
     const { storageUri } = this.props.routerStore.browserConfig
     const memoStorageUrl = resolveMemoBlobUrl() //move to domain or settings
@@ -159,18 +160,11 @@ class PdfLinksNav extends Component {
 
     return (
       <span className="right-block-of-links">
-        <LinkToValidSyllabusPdf startDate={syllabusStartTerm} lang={lang} key={syllabusStartTerm} />
-        {/* <ActiveOrDisabledLink
-          fileName={pmFile}
-          storageUri={storageUri}
-          linkTitle={translate.link_pm}
-          roundName={analysisName}
-          translate={translate}
-          validFrom={getDateFormat(pdfPMDate, lang)}
-        /> */}
+        <LinkToValidSyllabusPdf startDate={syllabusStartTerm} lang={langIndex} key={syllabusStartTerm} />
+        {/* Kurs-PM länkar */}
         <span className="vertical-block-of-links">
           {unfilteredRoundsMissingMemos.map(ladokRoundId => {
-            const missingMemoOfferingName = parseCourseOffering([ladokRoundId], analysisSemester, lang)
+            const missingMemoOfferingName = parseCourseOffering([ladokRoundId], analysisSemester, langIndex)
             const title = `${linkMemoTexts.label_memo} ${courseCode} ${missingMemoOfferingName}`
             return <ActiveOrDisabledPdfLink ariaLabel={title} key={title} linkTitle={title} translate={linkMemoTexts} />
           })}
@@ -183,7 +177,7 @@ class PdfLinksNav extends Component {
                 translate={linkMemoTexts}
                 fileInfo={memoInfo}
                 memoBlobUrl={memoStorageUrl}
-                userLanguageAbbr={lang}
+                userLanguageIndex={langIndex}
                 translate={linkMemoTexts}
               />
             ) : (
@@ -191,28 +185,22 @@ class PdfLinksNav extends Component {
             )
           })}
         </span>
+        {/* Kursanalys länk */}
+
         <ActiveOrDisabledPdfLink
           ariaLabel={`PDF ${linkAnalysisTexts.label_analysis} ${analysisName}`}
           href={`${storageUri}${analysisFileName}`}
           className="pdf-link"
           linkTitle={`${linkAnalysisTexts.label_analysis}`}
           translate={linkAnalysisTexts}
-          validFrom={getDateFormat(pdfAnalysisDate, lang)}
+          validFrom={getDateFormat(pdfAnalysisDate, langIndex)}
         />
-        {/* <ActiveOrDisabledLink
-          fileName={analysisFile}
-          storageUri={storageUri}
-          linkTitle={translate.link_analysis}
-          roundName={analysisName}
-          translate={translate}
-          validFrom={getDateFormat(pdfAnalysisDate, lang)}
-        /> */}
       </span>
     )
   }
 }
 PdfLinksNav.propTypes = {
-  lang: PropTypes.oneOf(['en', 'sv']).isRequired,
+  langIndex: PropTypes.oneOf([0, 1]).isRequired,
   translate: PropTypes.shape({
     link_analysis: PropTypes.shape({ label_analysis: PropTypes.string, no_added_doc: PropTypes.string }).isRequired,
     link_memo: PropTypes.shape({ label_memo: PropTypes.string, no_added_doc: PropTypes.string }).isRequired,
@@ -239,7 +227,7 @@ ParseUploadedMemo.propTypes = {
   translate: PropTypes.shape({
     label_memo: PropTypes.string.isRequired,
   }).isRequired,
-  userLanguageAbbr: PropTypes.oneOf(['en', 'sv']).isRequired,
+  userLanguageIndex: PropTypes.oneOf([0, 1]).isRequired,
 }
 
 ParseWebMemoName.propTypes = {
