@@ -41,7 +41,7 @@ function resolveMemoBlobUrl() {
     return memoStorageUrl
   }
   const nodeEnv = process.env.NODE_ENV && process.env.NODE_ENV.toLowerCase()
-  if (nodeEnv === 'development' || nodeEnv === 'dev' || !nodeEnv) {
+  if (nodeEnv === 'development' || nodeEnv === 'test' || nodeEnv === 'dev' || !nodeEnv) {
     return devMemoStorageUrl
   }
   return prodMemoStorageUrl
@@ -137,7 +137,7 @@ class PdfLinksNav extends Component {
   }
 
   render() {
-    const { translate, analysisFile, pmFile, thisAnalysisObj, langIndex } = this.props
+    const { translate, latestAnalysisFileName, staticAnalysisInfo, langIndex } = this.props
     const { link_memo: linkMemoTexts, link_analysis: linkAnalysisTexts } = translate
     const { miniMemosPdfAndWeb } = this.props.routerStore
 
@@ -145,14 +145,13 @@ class PdfLinksNav extends Component {
     const memoStorageUrl = resolveMemoBlobUrl() //move to domain or settings
 
     const {
-      analysisFileName,
       analysisName,
       courseCode,
       pdfAnalysisDate,
       syllabusStartTerm,
       roundIdList,
       semester: analysisSemester,
-    } = thisAnalysisObj
+    } = staticAnalysisInfo
 
     const analysesLadokRounds = roundIdList.split(',') || []
     const thisSemesterMemos = miniMemosPdfAndWeb[analysisSemester] || []
@@ -170,8 +169,8 @@ class PdfLinksNav extends Component {
           })}
           {existingMemos.map((memo, index) => {
             const memoInfo = Object.values(memo)[0]
-            const { isPdf } = memoInfo
-            return isPdf ? (
+            const { isPdf, courseMemoFileName } = memoInfo
+            return isPdf || courseMemoFileName ? (
               <ParseUploadedMemo
                 key={index}
                 translate={linkMemoTexts}
@@ -189,7 +188,7 @@ class PdfLinksNav extends Component {
 
         <ActiveOrDisabledPdfLink
           ariaLabel={`PDF ${linkAnalysisTexts.label_analysis} ${analysisName}`}
-          href={`${storageUri}${analysisFileName}`}
+          href={`${storageUri}${latestAnalysisFileName}`}
           className="pdf-link"
           linkTitle={`${linkAnalysisTexts.label_analysis}`}
           translate={linkAnalysisTexts}
@@ -206,7 +205,6 @@ PdfLinksNav.propTypes = {
     link_memo: PropTypes.shape({ label_memo: PropTypes.string, no_added_doc: PropTypes.string }).isRequired,
   }).isRequired,
   thisAnalysisObj: PropTypes.shape({
-    analysisFileName: PropTypes.string,
     analysisName: PropTypes.string,
     courseCode: PropTypes.string,
     pdfAnalysisDate: PropTypes.string,

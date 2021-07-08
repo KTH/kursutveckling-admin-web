@@ -23,7 +23,7 @@ class Preview extends Component {
   }
 
   render() {
-    const { routerStore, analysisFile, pmFile } = this.props
+    const { routerStore, analysisFile: latestAnalysisFileName } = this.props
     const { language: langIndex } = routerStore
     const translate = i18n.messages[langIndex].messages
     const courseRoundObj = this.state.values
@@ -48,7 +48,12 @@ class Preview extends Component {
             <div className="h3-and-link">
               <h3 id={'h3' + courseAnalysDataId}>{analysisName}</h3>
             </div>
-            <PdfLinksNav langIndex={langIndex} translate={translate} thisAnalysisObj={courseRoundObj} />
+            <PdfLinksNav
+              latestAnalysisFileName={latestAnalysisFileName}
+              langIndex={langIndex}
+              translate={translate}
+              staticAnalysisInfo={courseRoundObj}
+            />
 
             <TableWithCourseData
               translate={translate.table_headers_with_popup}
