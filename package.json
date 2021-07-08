@@ -1,7 +1,7 @@
 {
   "//": "JSHint configuration - http://jshint.com/docs/options/",
   "name": "kursutveckling-admin-web",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Course development admin page to upload course analyses/memo as pdf and fetch data from ladok, kopps, and push it to kurutveckling-api",
   "main": "app.js",
   "license": "MIT",
