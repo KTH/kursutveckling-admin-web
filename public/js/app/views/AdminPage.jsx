@@ -43,12 +43,9 @@ class AdminPage extends Component {
       alertError: '',
       madatoryMessage: '',
       analysisFile: this.props.routerStore.analysisData ? this.props.routerStore.analysisData.analysisFileName : '',
-      pmFile: this.props.routerStore.analysisData ? this.props.routerStore.analysisData.pmFileName : '',
-      hasNewUploadedFilePM: false,
       hasNewUploadedFileAnalysis: false,
       notValid: [],
       fileProgress: {
-        pm: 0,
         analysis: 0,
       },
       statisticsParams: {
@@ -114,7 +111,7 @@ class AdminPage extends Component {
     if (e.target.files[0].type === 'application/pdf') {
       response = await this.sendRequest(id, file, e)
     } else {
-      const notValid = id === 'analysis' ? ['analysisFile'] : ['pmFile']
+      const notValid = id === 'analysis' ? ['analysisFile'] : ['unknownFile']
       this.setState({
         notValid: notValid,
         alertError: i18n.messages[this.props.routerStore.language].messages.alert_not_pdf,
@@ -148,16 +145,6 @@ class AdminPage extends Component {
               notValid: [],
               alertError: '',
             })
-          } else {
-            values.pdfPMDate = getTodayDate()
-            fileProgress.pm = 0
-            thisInstance.setState({
-              pmFile: this.responseText,
-              alertSuccess: i18n.messages[thisInstance.props.routerStore.language].messages.alert_uploaded_file,
-              values: values,
-              notValid: [],
-              alertError: '',
-            })
           }
         }
       }
@@ -187,9 +174,7 @@ class AdminPage extends Component {
   }
 
   handleRemoveFile(event) {
-    event.target.id === 'remove_analysis'
-      ? this.setState({ analysisFile: '', hasNewUploadedFileAnalysis: true })
-      : this.setState({ pmFile: '', hasNewUploadedFilePM: true })
+    if (event.target.id === 'remove_analysis') this.setState({ analysisFile: '', hasNewUploadedFileAnalysis: true })
   }
 
   //***************************** BUTTON CLICK HANDLERS ****************************** */
@@ -272,11 +257,6 @@ class AdminPage extends Component {
       postObject.analysisFileName = this.state.analysisFile
     }
 
-    if (this.state.pmFile !== postObject.pmFileName) {
-      postObject.pmFileName = this.state.pmFile
-      //postObject.pdfPmDate = getTodayDate()
-    }
-
     if (!this.state.saved && this.state.analysisFile.length > 0) {
       routerStore.updateFileInStorage(this.state.analysisFile, this.getMetadata('draft'))
     }
@@ -302,7 +282,6 @@ class AdminPage extends Component {
           progress: 'edit',
           alertSuccess: i18n.messages[routerStore.language].messages.alert_saved_draft,
           hasNewUploadedFileAnalysis: false,
-          hasNewUploadedFilePM: false,
           values: data,
         })
         thisInstance.props.history.push(
@@ -322,10 +301,6 @@ class AdminPage extends Component {
     const thisInstance = this
     let postObject = this.state.values
     let modal = this.state.modalOpen
-
-    if (this.state.pmFile !== postObject.pmFileName) {
-      postObject.pmFileName = this.state.pmFile
-    }
 
     if (postObject.isPublished) {
       postObject.changedAfterPublishedDate = new Date().toISOString()
@@ -433,7 +408,6 @@ class AdminPage extends Component {
               values: valuesObject.values,
               activeSemester: semester,
               analysisFile: valuesObject.files.analysisFile,
-              pmFile: valuesObject.files.pmFile,
               alert: '',
               statisticsParams,
               multiLineAlert,
@@ -462,7 +436,6 @@ class AdminPage extends Component {
           isPublished: thisAdminPage.props.routerStore.analysisData.isPublished,
           values: valuesObject.values,
           analysisFile: valuesObject.files.analysisFile,
-          pmFile: valuesObject.files.pmFile,
           saved: true,
           statisticsParams,
           alert: '',
@@ -551,12 +524,6 @@ class AdminPage extends Component {
       }
     }
 
-    if (this.state.pmFile.length > 0) {
-      if (!isValidDate(values.pdfPMDate)) {
-        invalidList.push('pdfPMDate')
-      }
-    }
-
     if (this.state.isPublished && values.commentChange.length === 0) {
       invalidList.push('commentChange')
     }
@@ -567,13 +534,12 @@ class AdminPage extends Component {
   getTempData() {
     if (this.state.progress === 'back_new') {
       const { alterationText, examinationGrade, registeredStudents, roundIdList } = this.state.values
-      const { pmFile, analysisFile, statisticsParams } = this.state
+      const { analysisFile, statisticsParams } = this.state
       return {
         alterationText,
         examinationGrade,
         registeredStudents,
         roundIdList,
-        pmFile,
         analysisFile,
         statisticsParams,
       }
@@ -585,7 +551,6 @@ class AdminPage extends Component {
     let returnObject = {
       values: valueObject,
       files: {
-        pmFile: '',
         analysisFile: '',
       },
     }
@@ -594,11 +559,9 @@ class AdminPage extends Component {
       returnObject.values.registeredStudents = tempData.registeredStudents
       returnObject.values.examinationGrade = tempData.examinationGrade
       returnObject.files.analysisFile = tempData.analysisFile
-      returnObject.files.pmFile = tempData.pmFile
     } else {
       if (valueObject) {
-        ;(returnObject.files.analysisFile = valueObject.analysisFileName),
-          (returnObject.files.pmFile = valueObject.pmFileName)
+        returnObject.files.analysisFile = valueObject.analysisFileName
       }
     }
     return returnObject
@@ -713,7 +676,7 @@ class AdminPage extends Component {
               {/*                                   PREVIEW                                           */}
               {/************************************************************************************* */}
               {this.state.values && this.state.isPreviewMode ? (
-                <Preview values={this.state.values} analysisFile={this.state.analysisFile} pmFile={this.state.pmFile} />
+                <Preview values={this.state.values} analysisFile={this.state.analysisFile} />
               ) : (
                 ''
               )}
@@ -811,42 +774,6 @@ class AdminPage extends Component {
                           )}
 
                           <br />
-
-                          {/** ------- PM-FILE UPLOAD --------- */}
-                          <FormLabel
-                            translate={translate}
-                            header={'header_upload_file_pm'}
-                            id={'info_upload_course_memo'}
-                          />
-                          <UpLoad
-                            id="pm"
-                            key="pm"
-                            handleUpload={this.hanleUploadFile}
-                            progress={fileProgress.pm}
-                            path={routerStore.browserConfig.proxyPrefixPath.uri}
-                            file={this.state.pmFile}
-                            notValid={this.state.notValid}
-                            handleRemoveFile={this.handleRemoveFile}
-                            type="pmFile"
-                          />
-                          {this.state.pmFile.length > 0 && (
-                            <span>
-                              <FormLabel
-                                translate={translate}
-                                header={'header_upload_file_pm_date'}
-                                id={'info_upload_course_memo_date'}
-                              />
-                              <Input
-                                id="pdfPMDate"
-                                key="pdfPMDate"
-                                type="date"
-                                value={this.state.values.pdfPMDate}
-                                onChange={this.handleInputChange}
-                                className={this.state.notValid.indexOf('pdfPMDate') > -1 ? 'not-valid' : ''}
-                                style={{ maxWidth: '180px' }}
-                              />
-                            </span>
-                          )}
                         </Col>
 
                         {/* ------ FORM - SECOND COLUMN ------ */}

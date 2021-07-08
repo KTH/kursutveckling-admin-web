@@ -377,7 +377,6 @@ class RouterStore {
         _id: this.analysisId,
         alterationText: '',
         analysisFileName: '',
-        pmFileName: '',
         changedBy: this.user,
         changedDate: '',
         commentChange: '',
@@ -392,7 +391,6 @@ class RouterStore {
         endDate: this.statistics.endDate,
         isPublished: false,
         pdfAnalysisDate: '',
-        pdfPMDate: '',
         programmeCodes: this.getAllTargetGroups(rounds, this.roundData[semester]).join(', '),
         publishedDate: '',
         registeredStudents:
