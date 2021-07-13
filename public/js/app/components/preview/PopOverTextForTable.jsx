@@ -21,6 +21,7 @@ const OnlyMobileVisiblePopup = ({ ariaLabel, ariaPressed, popUpHeader, id, onCli
         onClick={onClick}
         aria-label={ariaLabel}
         aria-pressed={ariaPressed}
+        style={{ minHeight: '0.75rem' }}
       >
         <span className="sr-only">{ariaLabel}</span>
       </Button>
@@ -65,6 +66,7 @@ class ControlledPopover extends Component {
             onClick={this.toggle}
             aria-label={ariaLabel}
             aria-pressed={popoverOpen}
+            style={{ minHeight: '0.75rem' }}
           >
             <span className="sr-only">{ariaLabel}</span>
           </Button>

@@ -1,5 +1,8 @@
 import React, { Component } from 'react'
+import ReactDOM from 'react-dom'
+
 import PropTypes from 'prop-types'
+import { Alert } from '@kth/kth-reactstrap/dist/components/studinfo'
 
 import { SYLLABUS_URL } from '../../util/constants'
 import { getDateFormat } from '../../util/helpers'
@@ -102,44 +105,82 @@ function ParseWebMemoName({ courseMemo, translate }) {
   )
 }
 
+function renderAlertToTop(langIndex, rounds) {
+  const alertContainer = document.getElementById('alert-placeholder')
+  const { alert_no_course_memo_header: alertTitle, alert_no_course_memo_info: description } =
+    i18n.messages[langIndex].messages
+  if (alertContainer) {
+    ReactDOM.render(
+      <Alert type="info" className="margin-bottom-40">
+        <h5>{alertTitle}</h5>
+        <p>{description}</p>
+        <p>{`${langIndex === 0 ? 'Rounds without memo:' : 'Kurstillfälle som saknar kurs-PM:'} ${rounds.join(
+          ', '
+        )}`}</p>
+      </Alert>,
+      alertContainer
+    )
+  }
+}
+
 @inject(['routerStore'])
 @observer
 class PdfLinksNav extends Component {
   constructor(props) {
     super(props)
-    this.state = {}
+    this.state = { emptyRounds: [], memos: [] }
     this.getMemoLinksInfo = this.getMemoLinksInfo.bind(this)
+    this.sortMemosByTypes = this.sortMemosByTypes.bind(this)
+  }
+
+  componentDidMount() {
+    const { langIndex } = this.props
+
+    const [unfilteredRoundsMissingMemos, existingMemos] = this.sortMemosByTypes()
+    this.setState({ emptyRounds: unfilteredRoundsMissingMemos, memos: existingMemos })
+
+    if (unfilteredRoundsMissingMemos.length > 0) {
+      renderAlertToTop(langIndex, unfilteredRoundsMissingMemos)
+    }
   }
 
   getMemoLinksInfo(thisSemesterMemos, analysesLadokRounds) {
     const unfilteredRoundsMissingMemos = []
-    const resultMissingMemos = []
+    const roundsWithMemo = analysesLadokRounds.filter(analysesRoundId => {
+      const hasMemo = !!thisSemesterMemos[analysesRoundId]
+      if (!hasMemo) {
+        unfilteredRoundsMissingMemos.push(analysesRoundId)
+        return false
+      }
+      return true
+    })
     const existingMemos =
-      analysesLadokRounds
-        .filter(analysesRoundId => {
-          const roundhasMemo = !!thisSemesterMemos[analysesRoundId]
-          if (!roundhasMemo) {
-            unfilteredRoundsMissingMemos.push(analysesRoundId)
-            return false
-          }
-          return true
-        })
-        .map(analysesRoundId => {
-          const thisRoundMemo = thisSemesterMemos[analysesRoundId]
-          const { courseMemoFileName, memoEndPoint, isPdf } = thisRoundMemo
-          const memoUniqueId = isPdf ? courseMemoFileName : memoEndPoint
-          return {
-            [memoUniqueId ? memoUniqueId : 'noName']: thisRoundMemo,
-          }
-        }) || []
+      roundsWithMemo.map(analysesRoundId => {
+        const thisRoundMemo = thisSemesterMemos[analysesRoundId]
+        const { courseMemoFileName, memoEndPoint, isPdf } = thisRoundMemo
+        const memoUniqueId = isPdf ? courseMemoFileName : memoEndPoint
+        return {
+          [memoUniqueId ? memoUniqueId : 'noName']: thisRoundMemo,
+        }
+      }) || []
 
     return [unfilteredRoundsMissingMemos, existingMemos]
+  }
+
+  sortMemosByTypes() {
+    const { miniMemosPdfAndWeb } = this.props.routerStore
+    const { staticAnalysisInfo } = this.props
+
+    const { roundIdList, semester: analysisSemester } = staticAnalysisInfo
+
+    const analysesLadokRounds = roundIdList.split(',') || []
+    const thisSemesterMemos = miniMemosPdfAndWeb[analysisSemester] || []
+    return this.getMemoLinksInfo(thisSemesterMemos, analysesLadokRounds)
   }
 
   render() {
     const { translate, latestAnalysisFileName, staticAnalysisInfo, langIndex } = this.props
     const { link_memo: linkMemoTexts, link_analysis: linkAnalysisTexts } = translate
-    const { miniMemosPdfAndWeb } = this.props.routerStore
 
     const { storageUri } = this.props.routerStore.browserConfig
     const memoStorageUrl = resolveMemoBlobUrl() //move to domain or settings
@@ -149,25 +190,20 @@ class PdfLinksNav extends Component {
       courseCode,
       pdfAnalysisDate,
       syllabusStartTerm,
-      roundIdList,
       semester: analysisSemester,
     } = staticAnalysisInfo
-
-    const analysesLadokRounds = roundIdList.split(',') || []
-    const thisSemesterMemos = miniMemosPdfAndWeb[analysisSemester] || []
-    const [unfilteredRoundsMissingMemos, existingMemos] = this.getMemoLinksInfo(thisSemesterMemos, analysesLadokRounds)
 
     return (
       <span className="right-block-of-links">
         <LinkToValidSyllabusPdf startDate={syllabusStartTerm} lang={langIndex} key={syllabusStartTerm} />
         {/* Kurs-PM länkar */}
         <span className="vertical-block-of-links">
-          {unfilteredRoundsMissingMemos.map(ladokRoundId => {
+          {this.state.emptyRounds.map(ladokRoundId => {
             const missingMemoOfferingName = parseCourseOffering([ladokRoundId], analysisSemester, langIndex)
             const title = `${linkMemoTexts.label_memo} ${courseCode} ${missingMemoOfferingName}`
             return <ActiveOrDisabledPdfLink ariaLabel={title} key={title} linkTitle={title} translate={linkMemoTexts} />
           })}
-          {existingMemos.map((memo, index) => {
+          {this.state.memos.map((memo, index) => {
             const memoInfo = Object.values(memo)[0]
             const { isPdf, courseMemoFileName } = memoInfo
             return isPdf || courseMemoFileName ? (

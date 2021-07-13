@@ -36,6 +36,8 @@ class Preview extends Component {
         <h2>{translate.header_preview_content}</h2>
         <p>{routerStore.status === 'preview' ? '' : translate.intro_preview}</p>
         <p>{translate.info_manually_edited}</p>
+        {/* If memo is missing a memo place an alert */}
+        <div id="alert-placeholder" />
         {routerStore.analysisData.examinationRounds && routerStore.analysisData.examinationRounds.length === 0 ? (
           <Alert className="margin-bottom-40">Something got wrong</Alert>
         ) : (
