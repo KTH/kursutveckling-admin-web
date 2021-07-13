@@ -230,6 +230,7 @@ div.popover.show {
 button.desktop.btn-info-modal,
 button.mobile.btn-info-modal {
   @extend %grey-icon-for-table-header;
+  min-height: 0.75rem;
 }
 
 /*Table cells try to give it more stable width*/

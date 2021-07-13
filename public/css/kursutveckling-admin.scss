@@ -16,14 +16,11 @@ $kth-blue: #007fae;
 #course-title {
   margin-bottom: 40px;
 }
-
-.progress-bar1 {
-  text-align: center;
-  border-bottom: 2px solid #d4d4d4;
-  font-weight: 900;
-  padding-top: 30px;
-  &.progress-active {
-    border-bottom: 3px solid $kth-blue;
+.progress-bar-container {
+  margin-left: 0.1em;
+  .progress-bar1 {
+    text-align: center;
+    padding-top: 30px;
   }
 }
 
@@ -194,7 +191,6 @@ ul.no-padding-left {
   border-color: $light-grey;
   height: 38px;
 }
-
 //-------- PREVIEW ------- /
 
 span.right-links {
@@ -234,12 +230,9 @@ span.right-links {
 .inline-flex {
   display: inline-flex;
 }
-.info-inline {
-  margin-left: 10px;
-  margin-top: -6px;
-  display: inline-table;
+.btn-info-modal {
+  min-height: 0.75rem;
 }
-
 .padding-top-30 {
   padding-top: 30px;
 }
@@ -361,10 +354,11 @@ input[type='date'] {
   height: 38px;
   padding: 6px 10px;
 }
-
-h5 {
-  font-size: 0.875rem;
-  margin-bottom: 0;
+.calculate-examination-grade {
+  h5 {
+    font-size: 0.875rem;
+    margin-bottom: 0;
+  }
 }
 
 .calculate-examination-grade {
