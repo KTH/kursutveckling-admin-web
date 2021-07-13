@@ -45,13 +45,6 @@ module.exports = {
       published: 'Ändra publicerad kursanalys och kursdata',
       preview: 'Förhandsgranska sparat utkast av kursanalys och kursdata',
     },
-    //* **** PROGRESS BAR  */
-    header_progress_select:
-      '1. Välj kursomgång' /** Ersätter bilden, ska vara understruket med blå linje om användaren är i detta steg */,
-    header_progress_edit_upload:
-      '2. Redigera kursdata och ladda upp kursanalys' /** Ersätter bilden, ska vara understruket med blå linje om användaren är i detta steg */,
-    header_progress_review:
-      '3. Granska och publicera' /** Ersätter bilden, ska vara understruket med blå linje om användaren är i detta steg */,
 
     /** ***** PAGE 1 - ANALYSIS MENU */
 
@@ -60,13 +53,24 @@ module.exports = {
     header_analysis_menu: 'Välj kursomgång',
     label_start_date: 'Startdatum',
 
+    //* **** PROGRESS BAR  */
     /* **** INTRO TEXT FOR ANALYSIS MENUE, EDIT, PREVIEW */
-    intro_analysis_menu:
-      'Börja med att välja termin och kursomgång för den kursanalys som ska publiceras (steg 1 av 3). I nästa steg (2 av 3) kommer kursdata för kursen att hämtas automatiskt från Ladok och Kopps för den termin och kursomgång som valts. Det finns sedan möjlighet att redigera viss kursdata samt ladda upp kursanalysen. I sista steget (3 av 3) ges möjlighet att först granska och sedan publicera tabellen med kursanalys och all kursdata på sidan Kursens utveckling.',
-    intro_edit:
-      'I detta steg (2 av 3) ska kursanalys laddas upp, förändringar för vald kursomgång summeras samt kursdata kontrolleras och vid behov justeras. I nästa steg granskas all kursdata innan publicering.',
-    intro_preview:
-      'I detta steg (3 av 3) visas hur kursanalys och kursdata kommer att se ut på sidan Kursens utveckling. Här finns möjlighet att gå tillbaka för att redigera ytterligare, spara som utkast eller publicera direkt.',
+    pagesProgressBar: [
+      {
+        title: 'Välj kursomgång',
+        intro:
+          'Börja med att välja termin och kursomgång för den kursanalys som ska publiceras (steg 1 av 3). I nästa steg (2 av 3) kommer kursdata för kursen att hämtas automatiskt från Ladok och Kopps för den termin och kursomgång som valts. Det finns sedan möjlighet att redigera viss kursdata samt ladda upp kursanalysen. I sista steget (3 av 3) ges möjlighet att först granska och sedan publicera tabellen med kursanalys och all kursdata på sidan Kursens utveckling.',
+      },
+      {
+        title: 'Redigera kursdata och ladda upp kursanalys',
+        intro:
+          'I detta steg (2 av 3) ska kursanalys laddas upp, förändringar för vald kursomgång summeras samt kursdata kontrolleras och vid behov justeras. I nästa steg granskas all kursdata innan publicering.',
+      },
+      {
+        title: 'Granska och publicera',
+        intro: '',
+      },
+    ],
 
     /* **** INTRO SELECT NEW, DRAFT, PUBLISHED */
     intro_new:
@@ -128,11 +132,15 @@ module.exports = {
     link_syllabus: 'Kursplan',
     link_syllabus_empty: 'Länk syns inte vid granskning',
     link_analysis: { label_analysis: 'Kursanalys', no_added_doc: 'Ingen kursanalys tillagd' },
-    link_memo: { label_memo: 'Kurs-PM', no_added_doc: 'Inget kurs-PM tillagt' },
+    link_memo: { label_memo: 'Kurs-PM', no_added_doc: 'Saknas ett publicerat kurs-PM' },
 
     original_values_are: 'De ursprungliga värdena är',
     and: 'och',
-
+    /** ************ ALERTS ************** */
+    alert_no_course_memo_header: 'Det saknas ett publicerat kurs-PM',
+    alert_no_course_memo_info: `Det saknas ett publicerat kurs-PM för vald termin och kursomgång. 
+    Efter att du avslutat här (med ett utkast eller genom att publicera)  kan du fortsätta med att publicera kurs-PM m.h.a. funktionen ”Kurs-PM” (i Administrera Om kursen). 
+    Då kommer kurs-PM att visas på sidan ”Kursens utveckling”.`,
     alert_no_rounds_selected:
       'Du måste välja en kursomgång/ kurstillfälle nedan, innan du klickar på knapp "Redigera, ladda upp".',
     alert_no_rounds: 'Den här kursen har inga opublicerade kursomgångar denna termin',
@@ -166,9 +174,6 @@ module.exports = {
     },
     info_cancel: {
       header: 'Att tänka på innan du avbryter!',
-      /** selected: 'Du har valt...', /** */
-      /** semester: 'Termin:', /** Följt av kursomgångens starttermin */
-      /** course_round: 'Kursomgång:', /** Följt av kursomgångens namn */
       body: `Osparade ändringar kommer att försvinna om du avbryter. 
       <br/>  
       <br/> 

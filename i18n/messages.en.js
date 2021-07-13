@@ -45,13 +45,24 @@ module.exports = {
     header_analysis_menu: 'Choose course offering',
     label_start_date: 'Start date',
 
-    //* **** INTRO TEXT FOR ANALYSIS MENUE, EDIT, PREVIEW */
-    intro_analysis_menu:
-      'Choose a semester and a course offering for the course analysis to be published (step 1 of 3). In the next step (2 of 3), course data will be fetched automatically for the selected semester and course offering. It is there possible to edit some of the course data and upload a course analysis document. Preview the table with the course data and course analysis that are about to be published in the last step (3 of 3). The course data with the course analysis will then be published on the page Course development.',
-    intro_edit:
-      'In this step (2 of 3) course analysis shall be uploaded, changes to the chosen course offering is summarized and some of the course data are reviewed and adjusted.',
-    intro_preview:
-      'In this step (3 of 3) a preview of the course analysis with course data is presented as it will be published on the page Course development. It is possible to go back to make adjustments, to save a draft or publish the information.',
+    //* **** PROGRESS BAR  */
+    /* **** INTRO TEXT FOR ANALYSIS MENUE, EDIT, PREVIEW */
+    pagesProgressBar: [
+      {
+        title: 'Choose course offering',
+        intro:
+          'Choose a semester and a course offering for the course analysis to be published (step 1 of 3). In the next step (2 of 3), course data will be fetched automatically for the selected semester and course offering. It is there possible to edit some of the course data and upload a course analysis document. Preview the table with the course data and course analysis that are about to be published in the last step (3 of 3). The course data with the course analysis will then be published on the page Course development.',
+      },
+      {
+        title: 'Edit course data and upload course analysis',
+        intro:
+          'In this step (2 of 3) course analysis shall be uploaded, changes to the chosen course offering is summarized and some of the course data are reviewed and adjusted.',
+      },
+      {
+        title: 'Review and publish',
+        intro: '',
+      },
+    ],
 
     //* **** INTRO SELECT NEW, DRAFT, PUBLISHED */
     intro_new:
@@ -93,11 +104,9 @@ module.exports = {
     header_summarize: 'Summarize changes' /** Visas i steg 2, rubrik för kolumn 2 */,
     header_check_data: 'Check fetched data' /** Visas i steg 2, rubrik för kolumn 3 */,
     header_review_fetched_data: 'Review fetched course data',
-    // header_course_offering: 'Upload course analysis and edit course data for:',
     header_programs: 'Compulsory within programme',
     header_rounds: 'Administrative course instances included in the course offering',
     header_examiners: 'Examiner *',
-    // header_employees: 'Kursansvarig, Examinator ',
     header_responsibles: 'Course coordinator *',
     header_registrated: 'Number of first registered students *',
     header_examination: 'Examination',
@@ -121,16 +130,16 @@ module.exports = {
     link_syllabus: 'Course syllabus ' /** Followed by ([giltighetstermin år] – [sista giltighetstermin år]) */,
     link_syllabus_empty: 'Link not available in preview',
     link_analysis: { label_analysis: 'Course analysis', no_added_doc: 'No course analysis added' },
-    link_memo: { label_memo: 'Course memo', no_added_doc: 'No course memo added' },
+    link_memo: { label_memo: 'Course memo', no_added_doc: 'Missing a published course memo' },
 
     original_values_are: 'The original values are',
     and: 'and',
 
-    /** draft_empty: 'Det finns inga sparade utkast för vald termin', */
-    /** published_empty: 'There are no published course analysis and course data this semester.', */
-    /** new_empty: 'Course analysis and course data are published for all course offerings this semester', */
-
     /** ************ ALERTS ************** */
+    alert_no_course_memo_header: 'There is no published course PM',
+    alert_no_course_memo_info: `There is no published course PM for the chosen semester and course round. 
+    After you have finished here (with a draft or by publishing), you can continue to publish course PM m.h.a. the function "Course PM" (in Manage About the course). 
+    Then the course PM will be displayed on the page "Course development". `,
     alert_no_rounds_selected:
       'Choose a course offering or administrative course instances below before you click on "Review" or "Edit, upload".',
     alert_no_rounds: 'Course analysis and course data are published for all course offerings this semester',
@@ -238,33 +247,16 @@ module.exports = {
       btnCancel: 'Close',
     },
 
-    /** Nya texter */
-    header_progress_select:
-      '1. Choose course offering' /** Ersätter bilden, ska vara understruket med blå linje om användaren är i detta steg */,
-    header_progress_edit_upload:
-      '2. Edit course data and upload course analysis' /** Ersätter bilden, ska vara understruket med blå linje om användaren är i detta steg */,
-    header_progress_review:
-      '3. Review and publish' /** Ersätter bilden, ska vara understruket med blå linje om användaren är i detta steg */,
-
     info_published: {
       header: 'Course analysis and course data have been published',
-      /** semester: 'Semester:', /** Följt av kursomgångens starttermin */
-      /** course_round: 'Course offering:', /** Följt av kursomgångens namn */
       body: 'View results on the page:' /** Följt av länk till sidan "Course development*/,
     },
     info_draft_saved: {
       header: 'A draft of course analysis and course data have been saved',
-      /** semester: 'Semester:', /** Följt av kursomgångens starttermin */
-      /** course_round: 'Course offering:', /** Följt av kursomgångens namn */
       body: 'Copy link to draft of publish from the page:' /** Följt av länk till steg 1, "Publish new course analysis and course data" */,
     },
     info_draft_deleted: {
       header: 'Draft of course analysis and course data have been deleted',
-      /** semester: 'Semester:', /** Följt av kursomgångens starttermin */
-      /** course_round: 'Course offering:', /** Följt av kursomgångens namn */
-      /** Länk till steg 1, "Publish new course analysis and course data" */
-
-      // error_mandantory_fields: 'All mandatory fields must contain information before proceeding to Review and publish.',
     },
     //* **** PREVIEW **********
     info_manually_edited: '* Course data has been registered manually',
