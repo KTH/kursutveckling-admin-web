@@ -8,7 +8,7 @@ const api = require('../api')
 async function getSortedAndPrioritizedMiniMemosWebOrPdf(courseCode) {
   const { client, paths } = api.kursPmDataApi
   const uri = client.resolve(paths.getPrioritizedWebOrPdfMemosByCourseCode.uri, { courseCode })
-  logger.debug('Fetching data from kurs-pm-data-api', { uri })
+  log.debug('Fetching data from kurs-pm-data-api', { uri })
 
   try {
     const { body } = await client.getAsync({ uri })
