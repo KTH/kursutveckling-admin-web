@@ -205,20 +205,18 @@ async function getIndex(req, res, next) {
     )
     /* Course memo in preview */
 
-    renderProps.props.children.props.routerStore.miniMemosPdfAndWeb =
-      (await getSortedAndPrioritizedMiniMemosWebOrPdf(courseCode)) || []
-
     if (req.params.id.length <= 7) {
       /** ------- Got course code -> prepare for Page 1 depending on status (draft or published) ------- */
-      log.debug(' getIndex, get course data for : ' + req.params.id)
-      const apiResponse = await koppsCourseData.getKoppsCourseData(req.params.id.toUpperCase(), lang)
+      const { id: courseCodeId } = req.params
+      log.debug(' getIndex, get course data for : ' + courseCodeId)
+      const apiResponse = await koppsCourseData.getKoppsCourseData(courseCodeId.toUpperCase(), lang)
       if (apiResponse.statusCode >= 400) {
         renderProps.props.children.props.routerStore.errorMessage = apiResponse.statusMessage // TODO: ERROR?????
       } else {
         renderProps.props.children.props.routerStore.status = status === 'p' ? 'published' : 'new'
         await renderProps.props.children.props.routerStore.handleCourseData(
           apiResponse.body,
-          req.params.id.toUpperCase(),
+          courseCodeId.toUpperCase(),
           user,
           lang
         )
@@ -236,6 +234,10 @@ async function getIndex(req, res, next) {
 
         const { courseCode } = apiResponse.body //req.params.id.split('_')[0].slice(0, -6)
         renderProps.props.children.props.routerStore.courseCode = courseCode
+        /* Course memo for preview */
+
+        renderProps.props.children.props.routerStore.miniMemosPdfAndWeb =
+          (await getSortedAndPrioritizedMiniMemosWebOrPdf(courseCode)) || []
 
         /** ------- Setting status ------- */
         status = req.params.preview && req.params.preview === 'preview' ? 'preview' : status
