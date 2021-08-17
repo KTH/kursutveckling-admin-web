@@ -235,9 +235,10 @@ async function getIndex(req, res, next) {
         const { courseCode } = apiResponse.body //req.params.id.split('_')[0].slice(0, -6)
         renderProps.props.children.props.routerStore.courseCode = courseCode
         /* Course memo for preview */
+        log.debug(' get data from kurs-pm-data-api, get analysis data for : ' + courseCode)
 
         renderProps.props.children.props.routerStore.miniMemosPdfAndWeb =
-          (await getSortedAndPrioritizedMiniMemosWebOrPdf(courseCode)) || []
+          await getSortedAndPrioritizedMiniMemosWebOrPdf(courseCode)
 
         /** ------- Setting status ------- */
         status = req.params.preview && req.params.preview === 'preview' ? 'preview' : status
