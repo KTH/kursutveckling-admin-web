@@ -203,6 +203,11 @@ async function getIndex(req, res, next) {
       req.user.username,
       serverConfig.auth.superuserGroup
     )
+    /* Course memo in preview */
+
+    renderProps.props.children.props.routerStore.miniMemosPdfAndWeb =
+      (await getSortedAndPrioritizedMiniMemosWebOrPdf(courseCode)) || []
+
     if (req.params.id.length <= 7) {
       /** ------- Got course code -> prepare for Page 1 depending on status (draft or published) ------- */
       log.debug(' getIndex, get course data for : ' + req.params.id)
@@ -222,6 +227,7 @@ async function getIndex(req, res, next) {
       /** ------- Got analysisId  -> request analysis data from api ------- */
       log.debug(' getIndex, get analysis data for : ' + req.params.id)
       const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(req.params.id.toUpperCase(), lang)
+
       if (apiResponse.statusCode >= 400) {
         renderProps.props.children.props.routerStore.errorMessage = apiResponse.statusMessage // TODO: ERROR?????
       } else {
@@ -249,11 +255,6 @@ async function getIndex(req, res, next) {
         renderProps.props.children.props.routerStore.setCourseTitle(
           courseTitle.length > 0 ? decodeURIComponent(courseTitle) : ''
         )
-
-        /* Course memo in preview */
-
-        renderProps.props.children.props.routerStore.miniMemosPdfAndWeb =
-          (await getSortedAndPrioritizedMiniMemosWebOrPdf(courseCode)) || []
       }
     }
 
