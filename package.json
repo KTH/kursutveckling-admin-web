@@ -54,7 +54,7 @@
     "mobx-utils": "^5.6.2",
     "passport": "^0.4.1",
     "popper.js": "^1.16.1",
-    "query-string": "^7.0.0",
+    "query-string": "^7.0.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-icons": "^4.2.0",
@@ -92,10 +92,10 @@
     "jest-extended": "^0.11.5",
     "nodemon": "^2.0.7",
     "parcel-bundler": "^1.12.4",
-    "prettier": "^2.3.0",
+    "prettier": "^2.3.2",
     "prettier-eslint-cli": "^5.0.1",
-    "pretty-quick": "^3.1.0",
-    "sass": "^1.32.13"
+    "pretty-quick": "^3.1.1",
+    "sass": "^1.38.0"
   },
   "resolutions": {
     "node-forge": "0.10.0"
