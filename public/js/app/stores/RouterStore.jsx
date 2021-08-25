@@ -440,7 +440,7 @@ class RouterStore {
       } ( ${language === 'en' ? 'Start date ' : 'Startdatum'} ${getDateFormat(
         roundList[index].startDate,
         language
-      )}, ${thisRoundLanguage} ) `
+      )}, ${thisRoundLanguage} ) ` // don't remove space after it (because it's used later in preview of kurs-pm link)
 
       if (selectedRounds.indexOf(roundList[index].roundId) >= 0) {
         addRounds.push(tempName)

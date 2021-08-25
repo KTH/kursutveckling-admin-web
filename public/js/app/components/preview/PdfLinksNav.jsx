@@ -105,7 +105,7 @@ function ParseWebMemoName({ courseMemo, translate }) {
   )
 }
 
-function renderAlertToTop(langIndex, rounds) {
+function renderAlertToTop(langIndex, roundsWithoutMemo) {
   const alertContainer = document.getElementById('alert-placeholder')
   const { alert_no_course_memo_header: alertTitle, alert_no_course_memo_info: description } =
     i18n.messages[langIndex].messages
@@ -114,9 +114,9 @@ function renderAlertToTop(langIndex, rounds) {
       <Alert type="info" className="margin-bottom-40">
         <h5>{alertTitle}</h5>
         <p>{description}</p>
-        <p>{`${langIndex === 0 ? 'Rounds without memo:' : 'Kurstillfälle som saknar kurs-PM:'} ${rounds.join(
-          ', '
-        )}`}</p>
+        <p>{`${
+          langIndex === 0 ? 'Rounds without memo:' : 'Kurstillfälle som saknar kurs-PM:'
+        } ${roundsWithoutMemo}`}</p>
       </Alert>,
       alertContainer
     )
@@ -128,20 +128,41 @@ function renderAlertToTop(langIndex, rounds) {
 class PdfLinksNav extends Component {
   constructor(props) {
     super(props)
-    this.state = { emptyRounds: [], memos: [] }
+    this.state = { emptyRoundsNames: '', emptyRounds: [], memos: [] }
     this.getMemoLinksInfo = this.getMemoLinksInfo.bind(this)
+    this.getRoundsNames = this.getRoundsNames.bind(this)
     this.sortMemosByTypes = this.sortMemosByTypes.bind(this)
   }
 
   componentDidMount() {
-    const { langIndex } = this.props
+    const { langIndex, staticAnalysisInfo } = this.props
 
     const [unfilteredRoundsMissingMemos, existingMemos] = this.sortMemosByTypes()
-    this.setState({ emptyRounds: unfilteredRoundsMissingMemos, memos: existingMemos })
+
+    const roundsNamesMissingMemos = this.getRoundsNames(unfilteredRoundsMissingMemos)
+
+    this.setState({
+      emptyRoundsNames: roundsNamesMissingMemos,
+      emptyRounds: unfilteredRoundsMissingMemos,
+      memos: existingMemos,
+    })
 
     if (unfilteredRoundsMissingMemos.length > 0) {
-      renderAlertToTop(langIndex, unfilteredRoundsMissingMemos)
+      renderAlertToTop(langIndex, roundsNamesMissingMemos)
     }
+  }
+
+  getRoundsNames(rounds) {
+    const { analysisName, roundIdList } = this.props.staticAnalysisInfo
+    const splittedNames = analysisName.split(') ,')
+    const splittedRoundIds = roundIdList.split(',')
+    const matchingNames = []
+    rounds.forEach(roundId => {
+      const indexOfMatchingRound = splittedRoundIds.indexOf(roundId)
+      if (splittedNames[indexOfMatchingRound]) matchingNames.push(splittedNames[indexOfMatchingRound])
+    })
+
+    return matchingNames.join(') , ')
   }
 
   getMemoLinksInfo(thisSemesterMemos, analysesLadokRounds) {
