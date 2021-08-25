@@ -147,6 +147,9 @@ class PdfLinksNav extends Component {
       memos: existingMemos,
     })
 
+    // push it to routerStore for alert about missing memo after save/publish on admin start page
+    this.props.routerStore.roundNamesWithMissingMemos = roundsNamesMissingMemos
+
     if (unfilteredRoundsMissingMemos.length > 0) {
       renderAlertToTop(langIndex, roundsNamesMissingMemos)
     }

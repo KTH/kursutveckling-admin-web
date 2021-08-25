@@ -268,13 +268,14 @@ class AdminPage extends Component {
     postObject.courseName = routerStore.courseTitle.name
 
     return routerStore.postRoundAnalysisData(postObject, postObject.changedDate.length === 0).then(data => {
+      const { roundNamesWithMissingMemos } = routerStore
       if (this.state.isPreviewMode) {
         window.location = encodeURI(
           `${routerStore.browserConfig.hostUrl}${SERVICE_URL[routerStore.service]}${
             routerStore.analysisData.courseCode
           }?serv=kutv&event=save&id=${routerStore.analysisId}&term=${routerStore.analysisData.semester}&name=${
             routerStore.analysisData.analysisName
-          }`
+          }${roundNamesWithMissingMemos ? '&noMemo=' + roundNamesWithMissingMemos : ''}`
         ) // term=, name=
       } else {
         thisInstance.setState({
@@ -331,12 +332,14 @@ class AdminPage extends Component {
             modalOpen: modal,
             values: response,
           })
+          const { roundNamesWithMissingMemos } = routerStore
+
           window.location = encodeURI(
             `${routerStore.browserConfig.hostUrl}${SERVICE_URL[routerStore.service]}${
               routerStore.analysisData.courseCode
             }?serv=kutv&event=pub&id=${routerStore.analysisId}&term=${routerStore.analysisData.semester}&name=${
               routerStore.analysisData.analysisName
-            }`
+            }${roundNamesWithMissingMemos ? '&noMemo=' + roundNamesWithMissingMemos : ''}`
           )
         }
       })
@@ -616,7 +619,7 @@ class AdminPage extends Component {
               />
 
               {/************************************************************************************* */}
-              {/*                               PAGE1: ANALYSIS MENU                             */}
+              {/*                               PAGE1: ANALYSIS MENU                                  */}
               {/************************************************************************************* */}
               {routerStore.semesters.length === 0 ? (
                 <Alert color="info" className="margin-bottom-40">
@@ -655,7 +658,7 @@ class AdminPage extends Component {
           ref={ref => (this._div = ref)}
         >
           {/************************************************************************************* */}
-          {/*                     PAGE 2: EDIT  AND  PAGE 3: PREVIEW                               */}
+          {/*                     PAGE 2: EDIT  AND  PAGE 3: PREVIEW                              */}
           {/************************************************************************************* */}
           {routerStore.errorMessage.length > 0 ? (
             <Alert color="info" className="margin-bottom-40">
@@ -683,7 +686,7 @@ class AdminPage extends Component {
               <Row key="form" id="form-container">
                 <Col sm="12" lg="12">
                   {/************************************************************************************* */}
-                  {/*                                 EDIT FORM                                               */}
+                  {/*                                 EDIT FORM                                           */}
                   {/************************************************************************************* */}
 
                   {this.state.values && !this.state.isPreviewMode ? (
