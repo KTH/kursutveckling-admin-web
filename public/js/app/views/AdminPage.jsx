@@ -242,9 +242,7 @@ class AdminPage extends Component {
   }
 
   handleCancel(event) {
-    window.location = `${SERVICE_URL[this.props.routerStore.service]}${
-      this.props.routerStore.analysisData.courseCode
-    }?serv=kutv&event=cancel`
+    window.location = `${SERVICE_URL.admin}${this.props.routerStore.analysisData.courseCode}?serv=kutv&event=cancel`
   }
 
   handleSave(event) {
@@ -271,7 +269,7 @@ class AdminPage extends Component {
       const { roundNamesWithMissingMemos } = routerStore
       if (this.state.isPreviewMode) {
         window.location = encodeURI(
-          `${routerStore.browserConfig.hostUrl}${SERVICE_URL[routerStore.service]}${
+          `${routerStore.browserConfig.hostUrl}${SERVICE_URL.admin}${
             routerStore.analysisData.courseCode
           }?serv=kutv&event=save&id=${routerStore.analysisId}&term=${routerStore.analysisData.semester}&name=${
             routerStore.analysisData.analysisName
@@ -335,7 +333,7 @@ class AdminPage extends Component {
           const { roundNamesWithMissingMemos } = routerStore
 
           window.location = encodeURI(
-            `${routerStore.browserConfig.hostUrl}${SERVICE_URL[routerStore.service]}${
+            `${routerStore.browserConfig.hostUrl}${SERVICE_URL.admin}${
               routerStore.analysisData.courseCode
             }?serv=kutv&event=pub&id=${routerStore.analysisId}&term=${routerStore.analysisData.semester}&name=${
               routerStore.analysisData.analysisName

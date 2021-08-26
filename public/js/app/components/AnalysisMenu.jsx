@@ -204,9 +204,7 @@ class AnalysisMenu extends Component {
 
   handleCancel(event) {
     event.preventDefault()
-    window.location = `${SERVICE_URL[this.props.routerStore.service]}${
-      this.props.routerStore.courseCode
-    }?serv=kutv&event=cancel`
+    window.location = `${SERVICE_URL.admin}${this.props.routerStore.courseCode}?serv=kutv&event=cancel`
   }
 
   handleDelete = async (id, fromModal = false) => {
@@ -230,9 +228,7 @@ class AnalysisMenu extends Component {
         }
 
         const analysisName = getValueFromObjectList(this.state.draftAnalysis, id, 'analysisId', 'analysisName')
-        window.location = `${SERVICE_URL[this.props.routerStore.service]}${
-          this.props.routerStore.courseCode
-        }?serv=kutv&event=delete&id=${this.state.selectedRadio.draft}&term=${this.state.semester}&name=${analysisName}`
+        window.location = `${SERVICE_URL.admin}${this.props.routerStore.courseCode}?serv=kutv&event=delete&id=${this.state.selectedRadio.draft}&term=${this.state.semester}&name=${analysisName}`
         this.getUsedRounds(this.state.semester)
 
         let { modalOpen, selectedRadio } = this.state

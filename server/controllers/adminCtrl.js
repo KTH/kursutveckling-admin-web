@@ -188,15 +188,14 @@ async function getIndex(req, res, next) {
 
   let lang = language.getLanguage(res) || 'sv'
   const user = req.user ? req.user.username : 'null'
-  const { title: courseTitle = '', serv: service } = req.query
+  const { title: courseTitle = '' } = req.query
   let status = req.query.status
 
   try {
     const renderProps = _staticFactory()
     /* ------- Settings ------- */
-    renderProps.props.children.props.routerStore.setBrowserConfig(browserConfig, paths, serverConfig.hostUrl, service)
+    renderProps.props.children.props.routerStore.setBrowserConfig(browserConfig, paths, serverConfig.hostUrl)
     renderProps.props.children.props.routerStore.setLanguage(lang)
-    renderProps.props.children.props.routerStore.setService(service)
     await renderProps.props.children.props.routerStore.getMemberOf(
       req.user.memberOf,
       req.params.id.toUpperCase(),

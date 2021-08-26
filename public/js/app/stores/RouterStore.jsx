@@ -582,11 +582,10 @@ class RouterStore {
     }
   }
 
-  @action setBrowserConfig(config, paths, apiHost, profileBaseUrl) {
+  @action setBrowserConfig(config, paths, apiHost) {
     this.browserConfig = config
     this.paths = paths
     this.apiHost = apiHost
-    this.profileBaseUrl = profileBaseUrl
   }
 
   @action doSetLanguage(lang) {

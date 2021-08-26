@@ -13,7 +13,7 @@ export const ADMIN_URL = '/kursinfoadmin/kurser/kurs/'
 export const KURSUTVECKLING_URL = '/kursutveckling/'
 export const SERVICE_URL = {
   admin: '/kursinfoadmin/kurser/kurs/',
-  kutv: '/kursutveckling/',
+  // kutv: '/kursutveckling/',
 }
 export const BREADCRUMB_URL = '/student/kurser/kurser-inom-program'
 export const SYLLABUS_URL = '/student/kurser/kurs/kursplan/'
