@@ -137,10 +137,9 @@ module.exports = {
     original_values_are: 'De ursprungliga värdena är',
     and: 'och',
     /** ************ ALERTS ************** */
-    alert_no_course_memo_header: 'Det saknas ett publicerat kurs-PM',
-    alert_no_course_memo_info: `Det saknas ett publicerat kurs-PM för vald termin och kursomgång. 
-    Efter att du avslutat här (med ett utkast eller genom att publicera)  kan du fortsätta med att publicera kurs-PM m.h.a. funktionen ”Kurs-PM” (i Administrera Om kursen). 
-    Då kommer kurs-PM att visas på sidan ”Kursens utveckling”.`,
+    alert_no_course_memo_header: 'Komplettera efteråt med de Kurs-PM som saknas',
+    alert_no_course_memo_info: `Efter att du avslutat här kan du publicera kurs-PM för dessa kurstillfällen i: 
+      Administrera Om kursen. Då kommer kurs-PM att visas på sidorna: Kursens utveckling och Kurs-PM.`,
     alert_no_rounds_selected:
       'Du måste välja en kursomgång/ kurstillfälle nedan, innan du klickar på knapp "Redigera, ladda upp".',
     alert_no_rounds: 'Den här kursen har inga opublicerade kursomgångar denna termin',

@@ -136,10 +136,8 @@ module.exports = {
     and: 'and',
 
     /** ************ ALERTS ************** */
-    alert_no_course_memo_header: 'There is no published course PM',
-    alert_no_course_memo_info: `There is no published course PM for the chosen semester and course round. 
-    After you have finished here (with a draft or by publishing), you can continue to publish course PM m.h.a. the function "Course PM" (in Manage About the course). 
-    Then the course PM will be displayed on the page "Course development". `,
+    alert_no_course_memo_header: 'Complete afterwards with the missing course memo',
+    alert_no_course_memo_info: `After you have finished here, you can publish the course memo for these course offerings in: Administrate About course information. The published course memo will be displayed on pages: Course development and Course memo.`,
     alert_no_rounds_selected:
       'Choose a course offering or administrative course instances below before you click on "Review" or "Edit, upload".',
     alert_no_rounds: 'Course analysis and course data are published for all course offerings this semester',

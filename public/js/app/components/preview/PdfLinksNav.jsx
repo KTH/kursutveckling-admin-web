@@ -113,10 +113,12 @@ function renderAlertToTop(langIndex, roundsWithoutMemo) {
     ReactDOM.render(
       <Alert type="info" className="margin-bottom-40">
         <h5>{alertTitle}</h5>
-        <p>{description}</p>
         <p>{`${
-          langIndex === 0 ? 'Rounds without memo:' : 'Kurstillfälle som saknar kurs-PM:'
+          langIndex === 0
+            ? 'The following course offerings some are included in your course analysis do not have a course PM:'
+            : 'Följande kurstillfällen som du valt för din kursanalys saknar kurs-PM:'
         } ${roundsWithoutMemo}`}</p>
+        <p>{description}</p>
       </Alert>,
       alertContainer
     )
