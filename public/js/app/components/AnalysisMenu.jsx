@@ -388,7 +388,7 @@ class AnalysisMenu extends Component {
         </Dropdown>
 
         {this.state.alert.length > 0 ? (
-          <Alert color="danger" className="margin-bottom-40">
+          <Alert color="danger" className="alert-margin">
             {' '}
             {this.state.alert}
           </Alert>
@@ -402,7 +402,7 @@ class AnalysisMenu extends Component {
         <Collapse isOpen={this.state.collapseOpen}>
           <Row id="analysisMenuContainer">
             {showAllEmptyNew || showAllEmptyPublished ? (
-              <Alert color="info" className="margin-bottom-40">
+              <Alert color="info" className="alert-margin">
                 <p>{showAllEmptyNew ? translate.alert_no_rounds : translate.alert_no_published}</p>
               </Alert>
             ) : (

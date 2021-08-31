@@ -39,7 +39,7 @@ class Preview extends Component {
         {/* If memo is missing a memo place an alert */}
         <div id="alert-placeholder" />
         {routerStore.analysisData.examinationRounds && routerStore.analysisData.examinationRounds.length === 0 ? (
-          <Alert className="margin-bottom-40">Something got wrong</Alert>
+          <Alert className="alert-margin">Something got wrong</Alert>
         ) : (
           <section
             className="course-data-for-round"

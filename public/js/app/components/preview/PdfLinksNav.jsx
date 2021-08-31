@@ -111,7 +111,7 @@ function renderAlertToTop(langIndex, roundsWithoutMemo) {
     i18n.messages[langIndex].messages
   if (alertContainer) {
     ReactDOM.render(
-      <Alert type="info" className="margin-bottom-40">
+      <Alert type="info" className="alert-margin">
         <h5>{alertTitle}</h5>
         <p>{`${
           langIndex === 0
