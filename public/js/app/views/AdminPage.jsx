@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
 import { Row, Col, Button, Form, Label, Input, Alert } from 'reactstrap'
+import { ProgressBar } from '@kth/kth-reactstrap/dist/components/utbildningsinfo'
 
 //Components
 import Title from '../components/Title'
@@ -611,16 +612,15 @@ class AdminPage extends Component {
                 title={routerStore.courseTitle}
                 language={routerStore.language}
                 courseCode={routerStore.courseCode}
-                progress={1}
                 header={translate.header_main[routerStore.status]}
-                showProgressBar={true}
               />
+              <ProgressBar active={1} pages={translate.pagesProgressBar} />
 
               {/************************************************************************************* */}
               {/*                               PAGE1: ANALYSIS MENU                                  */}
               {/************************************************************************************* */}
               {routerStore.semesters.length === 0 ? (
-                <Alert color="info" className="margin-bottom-40">
+                <Alert color="info" className="alert-margin">
                   {' '}
                   {translate.alert_no_rounds}{' '}
                 </Alert>
@@ -640,7 +640,7 @@ class AdminPage extends Component {
               )}
             </div>
           ) : (
-            <Alert className="margin-bottom-40" color="info">
+            <Alert className="alert-margin" color="info">
               {' '}
               {routerStore.errorMessage}
             </Alert>
@@ -659,7 +659,7 @@ class AdminPage extends Component {
           {/*                     PAGE 2: EDIT  AND  PAGE 3: PREVIEW                              */}
           {/************************************************************************************* */}
           {routerStore.errorMessage.length > 0 ? (
-            <Alert color="info" className="margin-bottom-40">
+            <Alert color="info" className="alert-margin">
               {routerStore.errorMessage}
             </Alert>
           ) : (
@@ -668,10 +668,11 @@ class AdminPage extends Component {
                 title={routerStore.courseTitle}
                 language={routerStore.language}
                 courseCode={routerStore.courseCode}
-                progress={this.state.progress === 'edit' ? 2 : 3}
                 header={translate.header_main[routerStore.status]}
-                showProgressBar={routerStore.status !== 'preview'}
               />
+              {routerStore.status !== 'preview' && (
+                <ProgressBar active={this.state.progress === 'edit' ? 2 : 3} pages={translate.pagesProgressBar} />
+              )}
 
               {/************************************************************************************* */}
               {/*                                   PREVIEW                                           */}
@@ -709,14 +710,14 @@ class AdminPage extends Component {
                       {/* ----- ALERTS ----- */}
                       {this.state.alert.length > 0 && (
                         <Row>
-                          <Alert color="info" className="margin-bottom-40">
+                          <Alert color="info" className="alert-margin">
                             {this.state.alert}{' '}
                           </Alert>
                         </Row>
                       )}
                       {this.state.multiLineAlert.length > 0 && (
                         <Row>
-                          <Alert color="info" className="margin-bottom-40">
+                          <Alert color="info" className="alert-margin">
                             {this.state.multiLineAlert.map((text, index) => (
                               <p key={'alert-p-' + index}>{text}</p>
                             ))}
