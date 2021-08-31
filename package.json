@@ -24,7 +24,7 @@
   "dependencies": {
     "@azure/storage-blob": "^12.5.0",
     "@kth/kth-node-passport-oidc": "^1.0.42",
-    "@kth/kth-reactstrap": "^0.4.34",
+    "@kth/kth-reactstrap": "^0.4.42",
     "applicationinsights": "^1.8.9",
     "axios": "^0.21.1",
     "bluebird": "^3.7.2",
