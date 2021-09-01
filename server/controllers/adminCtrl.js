@@ -180,16 +180,19 @@ async function getIndex(req, res, next) {
   try {
     await redis('ugRedis', serverConfig.cache.ugRedis.redis)
   } catch (err) {
-    log.error('No connection to kursutveckling-api', api.kursutvecklingApi)
+    log.error('No connection to ugRedis')
     const error = new Error('No access to  ugRedis - ' + err)
     error.status = 500
     return next(error)
   }
 
-  let lang = language.getLanguage(res) || 'sv'
+  const lang = language.getLanguage(res) || 'sv'
   const user = req.user ? req.user.username : 'null'
   const { title: courseTitle = '' } = req.query
   let status = req.query.status
+  const { id: thisId } = req.params
+  const analysisId = thisId.length <= 7 ? '' : thisId.toUpperCase()
+  const courseCodeId = analysisId ? analysisId.split('_')[0].slice(0, -6).toUpperCase() : thisId.toUpperCase()
 
   try {
     const renderProps = _staticFactory()
@@ -198,46 +201,36 @@ async function getIndex(req, res, next) {
     renderProps.props.children.props.routerStore.setLanguage(lang)
     await renderProps.props.children.props.routerStore.getMemberOf(
       req.user.memberOf,
-      req.params.id.toUpperCase(),
+      courseCodeId,
       req.user.username,
       serverConfig.auth.superuserGroup
     )
+
     /* Course memo in preview */
 
-    if (req.params.id.length <= 7) {
+    if (thisId.length <= 7) {
       /** ------- Got course code -> prepare for Page 1 depending on status (draft or published) ------- */
-      const { id: courseCodeId } = req.params
       log.debug(' getIndex, get course data for : ' + courseCodeId)
-      const apiResponse = await koppsCourseData.getKoppsCourseData(courseCodeId.toUpperCase(), lang)
+      const apiResponse = await koppsCourseData.getKoppsCourseData(courseCodeId, lang)
       if (apiResponse.statusCode >= 400) {
         renderProps.props.children.props.routerStore.errorMessage = apiResponse.statusMessage // TODO: ERROR?????
       } else {
         renderProps.props.children.props.routerStore.status = status === 'p' ? 'published' : 'new'
-        await renderProps.props.children.props.routerStore.handleCourseData(
-          apiResponse.body,
-          courseCodeId.toUpperCase(),
-          user,
-          lang
-        )
+        await renderProps.props.children.props.routerStore.handleCourseData(apiResponse.body, courseCodeId, user, lang)
       }
     } else {
       /** ------- Got analysisId  -> request analysis data from api ------- */
-      log.debug(' getIndex, get analysis data for : ' + req.params.id)
-      const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(req.params.id.toUpperCase(), lang)
+      log.debug(' getIndex, get analysis data for : ' + analysisId)
+      const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(analysisId, lang)
 
       if (apiResponse.statusCode >= 400) {
         renderProps.props.children.props.routerStore.errorMessage = apiResponse.statusMessage // TODO: ERROR?????
       } else {
-        renderProps.props.children.props.routerStore.analysisId = req.params.id
+        renderProps.props.children.props.routerStore.analysisId = analysisId
         renderProps.props.children.props.routerStore.analysisData = apiResponse.body
 
-        const { courseCode } = apiResponse.body //req.params.id.split('_')[0].slice(0, -6)
+        const { courseCode } = apiResponse.body
         renderProps.props.children.props.routerStore.courseCode = courseCode
-        /* Course memo for preview */
-        log.debug(' get data from kurs-pm-data-api, get analysis data for : ' + courseCode)
-
-        renderProps.props.children.props.routerStore.miniMemosPdfAndWeb =
-          await getSortedAndPrioritizedMiniMemosWebOrPdf(courseCode)
 
         /** ------- Setting status ------- */
         status = req.params.preview && req.params.preview === 'preview' ? 'preview' : status
@@ -260,9 +253,16 @@ async function getIndex(req, res, next) {
       }
     }
 
-    // if (req.params.preview && req.params.preview === 'preview') {
+    // /* Course memo for preview */
+    log.debug(' get data from kurs-pm-data-api, get kurs-pm data for : ' + courseCodeId)
 
-    // }
+    renderProps.props.children.props.routerStore.miniMemosPdfAndWeb = await getSortedAndPrioritizedMiniMemosWebOrPdf(
+      courseCodeId
+    )
+    log.debug(
+      'data from kurs-pm-data-api, fetched successfully : ' +
+        renderProps.props.children.props.routerStore.miniMemosPdfAndWeb
+    )
 
     const html = ReactDOMServer.renderToString(renderProps)
 
