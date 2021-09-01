@@ -172,6 +172,8 @@ class PdfLinksNav extends Component {
 
   getMemoLinksInfo(thisSemesterMemos, analysesLadokRounds) {
     const unfilteredRoundsMissingMemos = []
+    const tmpMemoNames = {}
+    // move rounds without a memo to a separate array
     const roundsWithMemo = analysesLadokRounds.filter(analysesRoundId => {
       const hasMemo = !!thisSemesterMemos[analysesRoundId]
       if (!hasMemo) {
@@ -180,15 +182,20 @@ class PdfLinksNav extends Component {
       }
       return true
     })
-    const existingMemos =
+    // check for duplicates and mark it
+    const existingMemosAndDuplicates =
       roundsWithMemo.map(analysesRoundId => {
         const thisRoundMemo = thisSemesterMemos[analysesRoundId]
         const { courseMemoFileName, memoEndPoint, isPdf } = thisRoundMemo
         const memoUniqueId = isPdf ? courseMemoFileName : memoEndPoint
-        return {
-          [memoUniqueId ? memoUniqueId : 'noName']: thisRoundMemo,
-        }
+        const uid = memoUniqueId ? memoUniqueId : 'noName'
+        if (!tmpMemoNames[uid]) {
+          tmpMemoNames[uid] = 'has_memo'
+          return thisRoundMemo
+        } else return 'duplicate'
       }) || []
+
+    const existingMemos = existingMemosAndDuplicates.filter(memoInfo => memoInfo !== 'duplicate') || []
 
     return [unfilteredRoundsMissingMemos, existingMemos]
   }
@@ -229,8 +236,7 @@ class PdfLinksNav extends Component {
             const title = `${linkMemoTexts.label_memo} ${courseCode} ${missingMemoOfferingName}`
             return <ActiveOrDisabledPdfLink ariaLabel={title} key={title} linkTitle={title} translate={linkMemoTexts} />
           })}
-          {this.state.memos.map((memo, index) => {
-            const memoInfo = Object.values(memo)[0]
+          {this.state.memos.map((memoInfo, index) => {
             const { isPdf, courseMemoFileName } = memoInfo
             return isPdf || courseMemoFileName ? (
               <ParseUploadedMemo
