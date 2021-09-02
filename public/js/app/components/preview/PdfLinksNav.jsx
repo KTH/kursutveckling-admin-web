@@ -94,11 +94,11 @@ function ParseWebMemoName({ courseMemo, hostUrl, translate }) {
   const { label_memo: memoLabel } = translate
 
   const memoNameWithCourseOfferings = `${memoLabel} ${courseCode} ${courseOfferingName}`
-
+  const cleanHostUrl = hostUrl.slice(-1) === '/' ? hostUrl.slice(0, -1) : hostUrl
   return (
     <ActiveOrDisabledPdfLink
       ariaLabel={`${memoNameWithCourseOfferings}`}
-      href={`${hostUrl}/kurs-pm/${courseCode}/${memoEndPoint}`}
+      href={`${cleanHostUrl}/kurs-pm/${courseCode}/${memoEndPoint}`}
       linkTitle={memoNameWithCourseOfferings}
       translate={translate}
     />
