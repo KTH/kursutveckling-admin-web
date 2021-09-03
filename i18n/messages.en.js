@@ -137,7 +137,7 @@ module.exports = {
 
     /** ************ ALERTS ************** */
     alert_no_course_memo_header: 'Complete afterwards with the missing course memo',
-    alert_no_course_memo_info: `After you have finished here, you can publish the course memo for these course offerings in: Administrate About course information. The published course memo will be displayed on pages: Course development and Course memo.`,
+    alert_no_course_memo_info: `After you have finished here, you can publish the course memo for these course offerings in: Administrate About course. The published course memo will be displayed on pages: Course development and Course memo.`,
     alert_no_rounds_selected:
       'Choose a course offering or administrative course instances below before you click on "Review" or "Edit, upload".',
     alert_no_rounds: 'Course analysis and course data are published for all course offerings this semester',
