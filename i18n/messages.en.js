@@ -100,7 +100,7 @@ module.exports = {
     header_mandatory_fields: '* Mandatory fields',
     header_semester: 'Semester: ' /** Visas i steg 2, följt av kursomgångens starttermin */,
     header_course_offering: 'Course offering:' /** Visas i steg 2, följt av kursomgångens namn */,
-    header_upload: 'Upload' /** Visas i steg 2, rubrik för kolumn 1 */,
+    header_upload: 'Upload a course analysis' /** Visas i steg 2, rubrik för kolumn 1 */,
     header_summarize: 'Summarize changes' /** Visas i steg 2, rubrik för kolumn 2 */,
     header_check_data: 'Check fetched data' /** Visas i steg 2, rubrik för kolumn 3 */,
     header_review_fetched_data: 'Review fetched course data',

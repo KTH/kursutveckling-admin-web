@@ -106,7 +106,7 @@ module.exports = {
     header_semester: 'Termin:' /** Visas i steg 2, följt av kursomgångens starttermin */,
     header_course_offering: 'Kursomgång:' /** Visas i steg 2, följt av kursomgångens namn */,
 
-    header_upload: 'Ladda upp' /** Visas i steg 2, rubrik för kolumn 1 */,
+    header_upload: 'Ladda upp kursanalys' /** Visas i steg 2, rubrik för kolumn 1 */,
     header_summarize: 'Summera förändringar' /** Visas i steg 2, rubrik för kolumn 2 */,
     header_check_data: 'Kontrollera hämtat data' /** Visas i steg 2, rubrik för kolumn 3 */,
 
