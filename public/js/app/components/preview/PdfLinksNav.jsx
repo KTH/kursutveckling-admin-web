@@ -36,20 +36,6 @@ const ActiveOrDisabledPdfLink = ({ ariaLabel, href = '', className = '', linkTit
   )
 }
 
-function resolveMemoBlobUrl() {
-  const devMemoStorageUrl = 'https://kursinfostoragestage.blob.core.windows.net/memo-blob-container/'
-  const prodMemoStorageUrl = 'https://kursinfostorageprod.blob.core.windows.net/memo-blob-container/'
-  const memoStorageUrl = process.env.MEMO_STORAGE_URL
-  if (memoStorageUrl) {
-    return memoStorageUrl
-  }
-  const nodeEnv = process.env.NODE_ENV && process.env.NODE_ENV.toLowerCase()
-  if (nodeEnv === 'development' || nodeEnv === 'test' || nodeEnv === 'dev' || !nodeEnv) {
-    return devMemoStorageUrl
-  }
-  return prodMemoStorageUrl
-}
-
 function parseCourseOffering(ladokRoundIds, rawSemester, lang = 'sv') {
   const languageIndex = typeof lang === 'string' ? (lang === 'en' ? 0 : 1) : lang
 
@@ -215,8 +201,7 @@ class PdfLinksNav extends Component {
     const { translate, latestAnalysisFileName, staticAnalysisInfo, langIndex } = this.props
     const { link_memo: linkMemoTexts, link_analysis: linkAnalysisTexts } = translate
 
-    const { storageUri, hostUrl } = this.props.routerStore.browserConfig
-    const memoStorageUrl = resolveMemoBlobUrl() //move to domain or settings
+    const { storageUri, hostUrl, memoStorageUri } = this.props.routerStore.browserConfig
 
     const {
       analysisName,
@@ -243,7 +228,7 @@ class PdfLinksNav extends Component {
                 key={index}
                 translate={linkMemoTexts}
                 fileInfo={memoInfo}
-                memoBlobUrl={memoStorageUrl}
+                memoBlobUrl={memoStorageUri}
                 userLanguageIndex={langIndex}
                 translate={linkMemoTexts}
               />
