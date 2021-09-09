@@ -3,8 +3,16 @@ const { BlobServiceClient } = require('@azure/storage-blob')
 const serverConfig = require('./configuration').server
 const log = require('kth-node-log')
 
+const ACCEPTED_FILES_EXTENSIONS = ['pdf']
+const DEFAULT_FILE_EXTENSION = 'pdf'
+
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
+}
+
+const resolveFileExtension = fileName => {
+  const presumedFileExtension = fileName.split('.').pop()
+  return ACCEPTED_FILES_EXTENSIONS.includes(presumedFileExtension) ? presumedFileExtension : DEFAULT_FILE_EXTENSION
 }
 
 const getTodayDate = () => {
@@ -25,7 +33,8 @@ const BLOB_SERVICE_SAS_URL = serverConfig.fileStorage.kursutvecklingStorage.blob
 const blobServiceClient = new BlobServiceClient(BLOB_SERVICE_SAS_URL)
 
 async function runBlobStorage(file, id, type, saveCopyOfFile, metadata) {
-  const blobName = `${type}-${id.replace('_', '-')}-${getTodayDate()}.${file.name.split('.')[1]}`
+  const fileExtension = resolveFileExtension(file.name)
+  const blobName = `${type}-${id.replace('_', '-')}-${getTodayDate()}.${fileExtension}`
   const content = file.data
   const fileType = file.mimetype
 
