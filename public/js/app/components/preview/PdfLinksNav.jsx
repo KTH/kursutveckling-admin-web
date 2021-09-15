@@ -115,7 +115,7 @@ function renderAlertToTop(langIndex, roundsWithoutMemo) {
         <h5>{alertTitle}</h5>
         <p>{`${
           langIndex === 0
-            ? 'The following course offerings some are included in your course analysis do not have a course PM:'
+            ? 'The following course offerings which are included in your course analysis do not have a course PM:'
             : 'Följande kurstillfällen som du valt för din kursanalys saknar kurs-PM:'
         } ${roundsWithoutMemo}`}</p>
         <p>{description}</p>
