@@ -113,7 +113,11 @@ module.exports = {
     useRedis: safeGet(() => getEnv('SESSION_USE_REDIS', devSessionUseRedis) === 'true'),
     sessionOptions: {
       // do not set session secret here!!
-      cookie: { secure: safeGet(() => getEnv('SESSION_SECURE_COOKIE', false) === 'true') },
+      cookie: {
+        secure: String(getEnv('SESSION_SECURE_COOKIE', false)).toLowerCase() === 'true',
+        path: getEnv('SERVICE_PUBLISH', '/kursinfoadmin/kursutveckling'),
+        sameSite: getEnv('SESSION_SAME_SITE_COOKIE', 'Lax'),
+      },
       proxy: safeGet(() => getEnv('SESSION_TRUST_PROXY', true) === 'true'),
     },
     redisOptions: unpackRedisConfig('REDIS_URI', devRedis),
