@@ -185,13 +185,14 @@ class PdfLinksNav extends Component {
     const duplicates = existingMemosAndDuplicates.filter(({ type }) => type === 'duplicate') || []
 
     // update original memos with ladok round id from a duplicate memo
-    duplicates.forEach(({ uid, analysesRoundId, isPdf }) => {
-      // if (isPdf) OBS! Unique condition for ADMIN
+    duplicates.forEach(({ uid: duplicateMemoFileName, analysesRoundId: roundIdOfDuplicate, isPdf }) => {
+      // OBS! Unique condition for ADMIN
       if (isPdf) {
-        const index = uniqueMemos.findIndex(({ isPdf, courseMemoFileName = 'noName', memoEndPoint = 'noName' }) =>
-          isPdf ? courseMemoFileName === uid : memoEndPoint === uid
+        const indexInOriginal = uniqueMemos.findIndex(
+          ({ isPdf, courseMemoFileName = 'noName', ladokRoundIds }) =>
+            courseMemoFileName === duplicateMemoFileName && !ladokRoundIds.includes(roundIdOfDuplicate)
         )
-        uniqueMemos[index].ladokRoundIds.push(analysesRoundId)
+        if (indexInOriginal > -1) uniqueMemos[indexInOriginal].ladokRoundIds.push(roundIdOfDuplicate)
       }
     })
 
