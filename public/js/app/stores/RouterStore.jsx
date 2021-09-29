@@ -104,11 +104,13 @@ class RouterStore {
 
   @action getRoundAnalysis(id, lang = 'sv') {
     return axios
-      .get(this.buildApiUrl(this.paths.api.kursutvecklingGetById.uri, { id: id }))
+      .get(this.buildApiUrl(this.paths.api.kursutvecklingGetById.uri, { id: id }), {
+        validateStatus: status => status < 500,
+      })
       .then(result => {
-        if (result.statusCode >= 400) {
-          this.errorMessage = result.statusText
-          return 'ERROR-' + result.statusCode
+        if (result.status >= 400) {
+          this.errorMessage = result.data.message
+          return { message: 'ERROR-' + result.statusCode }
         }
         this.status = result.data.isPublished ? 'published' : 'draft'
         this.courseCode = result.data.courseCode
@@ -130,12 +132,17 @@ class RouterStore {
           id: postObject._id,
           status: status /*, lang: lang*/,
         }),
-        { params: JSON.stringify(postObject) }
+        {
+          params: JSON.stringify(postObject),
+        },
+        {
+          validateStatus: status => status < 500,
+        }
       )
       .then(apiResponse => {
-        if (apiResponse.statusCode >= 400) {
-          this.errorMessage = result.statusText
-          return 'ERROR-' + apiResponse.statusCode
+        if (apiResponse.status >= 400) {
+          this.errorMessage = apiResponse.data.message
+          return { message: 'ERROR-' + apiResponse.status }
         }
         if (this.status === 'new') this.hasChangedStatus = true
 
@@ -147,7 +154,6 @@ class RouterStore {
         if (err.response) {
           this.errorMessage = err.message
           return err.message
-          //throw new Error(err.message)
         }
         throw err
       })
@@ -160,12 +166,17 @@ class RouterStore {
           id: postObject._id,
           status: status /*, lang: lang*/,
         }),
-        { params: JSON.stringify(postObject) }
+        {
+          params: JSON.stringify(postObject),
+        },
+        {
+          validateStatus: status => status < 500,
+        }
       )
       .then(apiResponse => {
-        if (apiResponse.statusCode >= 400) {
-          this.errorMessage = result.statusText
-          return 'ERROR-' + apiResponse.statusCode
+        if (apiResponse.status >= 400) {
+          this.errorMessage = apiResponse.data.message
+          return { message: 'ERROR-' + apiResponse.status }
         }
         this.errorMessage = apiResponse.data.message
         if (this.errorMessage !== undefined) {
@@ -186,7 +197,9 @@ class RouterStore {
 
   @action deleteRoundAnalysis(id, lang = 'sv') {
     return axios
-      .delete(this.buildApiUrl(this.paths.api.kursutvecklingDelete.uri, { id: id }))
+      .delete(this.buildApiUrl(this.paths.api.kursutvecklingDelete.uri, { id: id }), {
+        validateStatus: status => status < 500,
+      })
       .then(result => {
         return result.data
       })
@@ -205,7 +218,10 @@ class RouterStore {
         this.buildApiUrl(this.paths.api.kursutvecklingGetUsedRounds.uri, {
           courseCode: courseCode,
           semester: semester,
-        })
+        }),
+        {
+          validateStatus: status => status < 500,
+        }
       )
       .then(result => {
         if (result.status >= 400) {
@@ -266,7 +282,6 @@ class RouterStore {
           this.errorMessage = err.message
           return err.message
         }
-        //throw new Error(err.message
         throw err
       })
   }
@@ -381,7 +396,7 @@ class RouterStore {
         changedBy: this.user,
         changedDate: '',
         commentChange: '',
-        commentExam: courseSyllabus.examComments ? courseSyllabus.examComments[roundLang] : '', //todo
+        commentExam: courseSyllabus.examComments ? courseSyllabus.examComments[roundLang] : '',
         courseCode: this.courseData.courseCode,
         examinationRounds: this.getExamObject(examinationRounds, this.courseData.gradeScale, roundLang),
         examiners: '',
