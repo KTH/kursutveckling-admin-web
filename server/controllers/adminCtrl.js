@@ -43,7 +43,7 @@ async function _postRoundAnalysis(req, res, next) {
       apiResponse = await kursutvecklingAPI.updateRoundAnalysisData(roundAnalysisId, sendObject, language)
     }
 
-    return httpResponse.json(res, apiResponse.body)
+    return httpResponse.json(res, apiResponse.body, apiResponse.statusCode)
   } catch (err) {
     log.error('Exception from setRoundAnalysis ', { error: err })
     next(err)
@@ -56,7 +56,7 @@ async function _getRoundAnalysis(req, res, next) {
   log.debug('_getRoundAnalysis id:' + req.params.id)
   try {
     const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(roundAnalysisId, language)
-    return httpResponse.json(res, apiResponse.body)
+    return httpResponse.json(res, apiResponse.body, apiResponse.statusCode)
   } catch (err) {
     log.error('Exception from getRoundAnalysis ', { error: err })
     next(err)
@@ -68,7 +68,7 @@ async function _deleteRoundAnalysis(req, res, next) {
   log.debug('_deleteRoundAnalysis with id:' + req.params.id)
   try {
     const apiResponse = await kursutvecklingAPI.deleteRoundAnalysisData(roundAnalysisId)
-    return httpResponse.json(res, apiResponse)
+    return httpResponse.json(res, apiResponse, apiResponse.statusCode)
   } catch (err) {
     log.error('Exception from _deleteRoundAnalysis ', { error: err })
     next(err)
@@ -82,7 +82,7 @@ async function _getUsedRounds(req, res, next) {
   try {
     const apiResponse = await kursutvecklingAPI.getUsedRounds(courseCode, semester)
     log.debug('_getUsedRounds response: ', apiResponse.body)
-    return httpResponse.json(res, apiResponse.body)
+    return httpResponse.json(res, apiResponse.body, apiResponse.statusCode)
   } catch (error) {
     log.error('Exception from _getUsedRounds ', { error: error })
     next(error)
@@ -96,7 +96,7 @@ async function _getKoppsCourseData(req, res, next) {
   log.debug('_getKoppsCourseData with code:' + courseCode)
   try {
     const apiResponse = await koppsCourseData.getKoppsCourseData(courseCode, language)
-    return httpResponse.json(res, apiResponse.body)
+    return httpResponse.json(res, apiResponse.body, apiResponse.statusCode)
   } catch (err) {
     log.error('Exception from koppsAPI ', { error: err })
     next(err)

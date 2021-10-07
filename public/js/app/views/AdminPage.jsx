@@ -19,6 +19,8 @@ import i18n from '../../../../i18n/index'
 
 import loader from '../../../img/*.gif'
 
+const ALTERATION_TEXT_MAX = 2000
+
 @inject(['routerStore'])
 @observer
 class AdminPage extends Component {
@@ -41,11 +43,10 @@ class AdminPage extends Component {
       },
       alert: '',
       alertSuccess: '',
-      alertError: '',
       madatoryMessage: '',
       analysisFile: this.props.routerStore.analysisData ? this.props.routerStore.analysisData.analysisFileName : '',
       hasNewUploadedFileAnalysis: false,
-      notValid: [],
+      notValid: { mandatoryFields: [], overMaxFields: [], wrongFileTypeFields: [] },
       fileProgress: {
         analysis: 0,
       },
@@ -85,6 +86,10 @@ class AdminPage extends Component {
           this.props.routerStore.analysisData && this.props.routerStore.analysisData.examinationGradeLadok >= 0
             ? this.props.routerStore.analysisData.examinationGradeLadok
             : -1,
+        alterationText:
+          this.props.routerStore.analysisData && this.props.routerStore.analysisData.alterationText
+            ? this.props.routerStore.analysisData.alterationText
+            : '',
       }),
     }
     this.handlePreview = this.handlePreview.bind(this)
@@ -112,10 +117,15 @@ class AdminPage extends Component {
     if (e.target.files[0].type === 'application/pdf') {
       response = await this.sendRequest(id, file, e)
     } else {
-      const notValid = id === 'analysis' ? ['analysisFile'] : ['unknownFile']
-      this.setState({
-        notValid: notValid,
-        alertError: i18n.messages[this.props.routerStore.language].messages.alert_not_pdf,
+      this.setState(prevState => {
+        const notValid = {
+          ...prevState.notValid,
+          wrongFileTypeFields: [...prevState.notValid.wrongFileTypeFields, 'analysisFile'],
+        }
+        return {
+          notValid,
+          // alertError: i18n.messages[this.props.routerStore.language].messages.alert_not_pdf,
+        }
       })
     }
   }
@@ -135,18 +145,26 @@ class AdminPage extends Component {
       req.onreadystatechange = function () {
         let values = thisInstance.state.values
         if (this.readyState == 4 && this.status == 200) {
-          if (id === 'analysis') {
-            values.pdfAnalysisDate = getTodayDate()
-            fileProgress.analysis = 0
-            thisInstance.setState({
+          values.pdfAnalysisDate = getTodayDate()
+          fileProgress.analysis = 0
+          thisInstance.setState(prevState => {
+            const { mandatoryFields, wrongFileTypeFields } = prevState.notValid
+            const mandatoryFieldsIndex = mandatoryFields.indexOf('analysisFile')
+            if (mandatoryFieldsIndex > -1) {
+              mandatoryFields.splice(mandatoryFieldsIndex, 1)
+            }
+            const wrongFileTypeFieldsIndex = wrongFileTypeFields.indexOf('analysisFile')
+            if (wrongFileTypeFieldsIndex > -1) {
+              wrongFileTypeFields.splice(wrongFileTypeFieldsIndex, 1)
+            }
+            return {
               analysisFile: this.responseText,
               alertSuccess: i18n.messages[thisInstance.props.routerStore.language].messages.alert_uploaded_file,
               values: values,
               hasNewUploadedFileAnalysis: true,
-              notValid: [],
-              alertError: '',
-            })
-          }
+              notValid: { ...prevState.notValid, mandatoryFields, wrongFileTypeFields },
+            }
+          })
         }
       }
 
@@ -183,18 +201,21 @@ class AdminPage extends Component {
 
   handlePreview(event) {
     event.preventDefault()
-    let invalidList = this.validateData(this.state.values)
-    if (invalidList.length > 0) {
+    const invalidData = { ...this.state.notValid, ...this.validateData(this.state.values) }
+
+    if (
+      invalidData.mandatoryFields.length > 0 ||
+      invalidData.overMaxFields.length > 0 ||
+      invalidData.wrongFileTypeFields.length > 0
+    ) {
       this.setState({
-        notValid: invalidList,
-        alertError: i18n.messages[this.props.routerStore.language].messages.alert_empty_fields,
+        notValid: invalidData,
+        // alertError: i18n.messages[this.props.routerStore.language].messages.alert_empty_fields,
       })
     } else {
       this.setState({
         isPreviewMode: true,
         progress: 'preview',
-        alertError: '',
-        notValid: invalidList,
       })
       window.scrollTo(0, 300)
     }
@@ -493,44 +514,49 @@ class AdminPage extends Component {
       examinationGradeLadok: values.examinationGradeLadok,
     })
 
+    const invalidData = { ...this.state.notValid, ...this.validateData(this.state.values) }
+
     this.setState({
       endDateInputEnabled: endDateInputEnabled,
       examinationGradeInputEnabled: examinationGradeInputEnabled,
       values: values,
-      //saved: false,
-      notValid: [],
-      alertError: '',
+      notValid: invalidData,
       multiLineAlert: multiLineAlert,
     })
   }
 
   validateData(values) {
-    let invalidList = []
+    let invalidData = { mandatoryFields: [], overMaxFields: [] }
     const toValidate = ['registeredStudents', 'examiners', 'responsibles']
     for (let key of toValidate) {
       if (values[key].length === 0) {
-        invalidList.push(key)
+        invalidData.mandatoryFields.push(key)
       }
     }
 
     const examinationGradeValue = values['examinationGrade']
     if (examinationGradeValue.length === 0 || examinationGradeValue === '-1') {
-      invalidList.push('examinationGrade')
+      invalidData.mandatoryFields.push('examinationGrade')
     }
 
-    if (this.state.analysisFile.length === 0) {
-      invalidList.push('analysisFile')
+    if (!this.state.analysisFile.length) {
+      invalidData.mandatoryFields.push('analysisFile')
     } else {
       if (!isValidDate(values.pdfAnalysisDate)) {
-        invalidList.push('pdfAnalysisDate')
+        invalidData.mandatoryFields.push('pdfAnalysisDate')
       }
     }
 
     if (this.state.isPublished && values.commentChange.length === 0) {
-      invalidList.push('commentChange')
+      invalidData.mandatoryFields.push('commentChange')
     }
 
-    return invalidList
+    const alterationTextLength = values['alterationText'] ? values['alterationText'].length : 0
+    if (alterationTextLength > ALTERATION_TEXT_MAX) {
+      invalidData.overMaxFields.push('alterationText')
+    }
+
+    return invalidData
   }
 
   getTempData() {
@@ -729,11 +755,10 @@ class AdminPage extends Component {
                           <Alert color="success">{this.state.alertSuccess} </Alert>
                         </Row>
                       )}
-                      {this.state.alertError.length > 0 && (
-                        <Row>
-                          <Alert color="danger">{this.state.alertError} </Alert>
-                        </Row>
-                      )}
+                      <AlertError
+                        notValid={this.state.notValid}
+                        translations={i18n.messages[this.props.routerStore.language]}
+                      />
                       {/* FORM - FIRST COLUMN */}
                       <Row className="form-group">
                         <Col sm="4" className="col-form">
@@ -769,7 +794,9 @@ class AdminPage extends Component {
                                 type="date"
                                 value={this.state.values.pdfAnalysisDate}
                                 onChange={this.handleInputChange}
-                                className={this.state.notValid.indexOf('pdfAnalysisDate') > -1 ? 'not-valid ' : ''}
+                                className={
+                                  this.state.notValid.mandatoryFields.includes('pdfAnalysisDate') ? 'not-valid ' : ''
+                                }
                                 style={{ maxWidth: '180px' }}
                               />
                             </span>
@@ -786,6 +813,11 @@ class AdminPage extends Component {
                             translate={translate}
                             header={'header_course_changes_comment'}
                             id={'info_course_changes_comment'}
+                            badgeText={
+                              this.state.values.alterationText.length > ALTERATION_TEXT_MAX
+                                ? this.state.values.alterationText.length
+                                : ''
+                            }
                           />
                           <Input
                             style={{ height: 300 }}
@@ -794,6 +826,7 @@ class AdminPage extends Component {
                             type="textarea"
                             value={this.state.values.alterationText}
                             onChange={this.handleInputChange}
+                            className={this.state.notValid.overMaxFields.includes('alterationText') ? 'not-valid' : ''}
                           />
                         </Col>
 
@@ -808,7 +841,7 @@ class AdminPage extends Component {
                             type="text"
                             value={this.state.values.examiners}
                             onChange={this.handleInputChange}
-                            className={this.state.notValid.indexOf('examiners') > -1 ? 'not-valid' : ''}
+                            className={this.state.notValid.mandatoryFields.includes('examiners') ? 'not-valid' : ''}
                           />
 
                           <FormLabel translate={translate} header={'header_responsibles'} id={'info_responsibles'} />
@@ -818,7 +851,7 @@ class AdminPage extends Component {
                             type="text"
                             value={this.state.values.responsibles}
                             onChange={this.handleInputChange}
-                            className={this.state.notValid.indexOf('responsibles') > -1 ? 'not-valid' : ''}
+                            className={this.state.notValid.mandatoryFields.includes('responsibles') ? 'not-valid' : ''}
                           />
 
                           <FormLabel translate={translate} header={'header_registrated'} id={'info_registrated'} />
@@ -829,7 +862,9 @@ class AdminPage extends Component {
                             placeholder="0"
                             value={this.state.values.registeredStudents}
                             onChange={this.handleInputChange}
-                            className={this.state.notValid.indexOf('registeredStudents') > -1 ? 'not-valid' : ''}
+                            className={
+                              this.state.notValid.mandatoryFields.includes('registeredStudents') ? 'not-valid' : ''
+                            }
                           />
 
                           <FormLabel
@@ -846,7 +881,7 @@ class AdminPage extends Component {
                                 type="date"
                                 value={this.state.values.endDate}
                                 onChange={this.handleInputChange}
-                                className={this.state.notValid.indexOf('endDate') > -1 ? 'not-valid' : ''}
+                                className={this.state.notValid.mandatoryFields.includes('endDate') ? 'not-valid' : ''}
                                 disabled={this.state.endDateInputEnabled ? '' : 'disabled'}
                                 max="2099-12-31"
                               />
@@ -868,7 +903,9 @@ class AdminPage extends Component {
                                   placeholder="0"
                                   value={this.state.values.examinationGrade}
                                   onChange={this.handleInputChange}
-                                  className={this.state.notValid.indexOf('examinationGrade') > -1 ? 'not-valid' : ''}
+                                  className={
+                                    this.state.notValid.mandatoryFields.includes('examinationGrade') ? 'not-valid' : ''
+                                  }
                                   disabled={this.state.examinationGradeInputEnabled ? '' : 'disabled'}
                                 />
                               </span>
@@ -891,7 +928,9 @@ class AdminPage extends Component {
                                 type="textarea"
                                 value={this.state.values.commentChange}
                                 onChange={this.handleInputChange}
-                                className={this.state.notValid.indexOf('commentChange') > -1 ? 'not-valid' : ''}
+                                className={
+                                  this.state.notValid.mandatoryFields.indexOf('commentChange') > -1 ? 'not-valid' : ''
+                                }
                               />
                             </span>
                           ) : (
@@ -1020,12 +1059,58 @@ const handleMultiLineAlert = alertVariables => {
   return multiLineAlert
 }
 
-const FormLabel = ({ translate, header, id }) => {
+const FormLabel = ({ translate, header, id, badgeText }) => {
   return (
     <span className="inline-flex">
-      <Label>{translate[header]} </Label>
+      <Label>
+        {translate[header]} {badgeText ? <span className="badge badge-warning badge-pill">{badgeText}</span> : null}
+      </Label>
       <InfoButton id={id} textObj={translate[id]} />
     </span>
+  )
+}
+
+const AlertError = ({ notValid, translations }) => {
+  const { mandatoryFields, overMaxFields, wrongFileTypeFields } = notValid
+  const noOfErrorCategories =
+    (mandatoryFields.length ? 1 : 0) + (overMaxFields.length ? 1 : 0) + (wrongFileTypeFields.length ? 1 : 0)
+  if (!noOfErrorCategories) {
+    return null
+  }
+
+  const errors =
+    noOfErrorCategories === 1 ? (
+      <>
+        {!!mandatoryFields.length && <>{translations.messages.alert_empty_fields}</>}
+        {!!overMaxFields.length && (
+          <>
+            {overMaxFields[0] === 'alterationText'
+              ? translations.messages.alert_over_max_fields.alterationText
+              : translations.messages.alert_over_max_fields.default}
+          </>
+        )}
+        {!!wrongFileTypeFields.length && <>{translations.messages.alert_not_pdf}</>}
+      </>
+    ) : (
+      <>
+        {!!mandatoryFields.length && <li>{translations.messages.alert_empty_fields}</li>}
+        {!!overMaxFields.length && (
+          <li>
+            {overMaxFields[0] === 'alterationText'
+              ? translations.messages.alert_over_max_fields.alterationText
+              : translations.messages.alert_over_max_fields.default}
+          </li>
+        )}
+        {!!wrongFileTypeFields.length && <li>{translations.messages.alert_not_pdf}</li>}
+      </>
+    )
+
+  const errorsBlock = noOfErrorCategories === 1 ? <>{errors}</> : <ul>{errors}</ul>
+
+  return (
+    <Row>
+      <Alert color="danger">{errorsBlock}</Alert>
+    </Row>
   )
 }
 
