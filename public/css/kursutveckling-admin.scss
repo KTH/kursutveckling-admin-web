@@ -59,9 +59,12 @@ $kth-blue: #007fae;
     }
     .caretholder {
       background-color: $kth-blue;
+      border-bottom-right-radius: 0.25rem;
+      border-top-right-radius: 0.25rem;
+      border: 1px solid $kth-blue;
       width: 42px;
       height: 42px;
-      margin: 0;
+      margin: -1px 0;
       position: relative;
 
       &:after {
