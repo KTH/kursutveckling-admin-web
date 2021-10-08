@@ -514,7 +514,18 @@ class AdminPage extends Component {
       examinationGradeLadok: values.examinationGradeLadok,
     })
 
-    const invalidData = { ...this.state.notValid, ...this.validateData(this.state.values) }
+    const invalidFields = []
+    if (event.target.id === 'alterationText') {
+      const alterationTextLength = values['alterationText'] ? values['alterationText'].length : 0
+      if (alterationTextLength > ALTERATION_TEXT_MAX) {
+        invalidFields.overMaxFields = ['alterationText']
+      } else {
+        invalidFields.overMaxFields = []
+      }
+    }
+
+    // const invalidData = { ...this.state.notValid, ...this.validateData(this.state.values, event.target.id) }
+    const invalidData = { ...this.state.notValid, ...invalidFields }
 
     this.setState({
       endDateInputEnabled: endDateInputEnabled,
@@ -525,9 +536,9 @@ class AdminPage extends Component {
     })
   }
 
-  validateData(values) {
+  validateData(values, fieldId) {
     let invalidData = { mandatoryFields: [], overMaxFields: [] }
-    const toValidate = ['registeredStudents', 'examiners', 'responsibles']
+    const toValidate = fieldId ? [fieldId] : ['registeredStudents', 'examiners', 'responsibles']
     for (let key of toValidate) {
       if (values[key].length === 0) {
         invalidData.mandatoryFields.push(key)
@@ -813,11 +824,8 @@ class AdminPage extends Component {
                             translate={translate}
                             header={'header_course_changes_comment'}
                             id={'info_course_changes_comment'}
-                            badgeText={
-                              this.state.values.alterationText.length > ALTERATION_TEXT_MAX
-                                ? this.state.values.alterationText.length
-                                : ''
-                            }
+                            badgeText={this.state.values.alterationText.length || '0'}
+                            mode={this.state.values.alterationText.length > ALTERATION_TEXT_MAX ? 'warning' : 'info'}
                           />
                           <Input
                             style={{ height: 300 }}
@@ -1059,11 +1067,11 @@ const handleMultiLineAlert = alertVariables => {
   return multiLineAlert
 }
 
-const FormLabel = ({ translate, header, id, badgeText }) => {
+const FormLabel = ({ translate, header, id, badgeText, mode = 'info' }) => {
   return (
     <span className="inline-flex">
       <Label>
-        {translate[header]} {badgeText ? <span className="badge badge-warning badge-pill">{badgeText}</span> : null}
+        {translate[header]} {badgeText ? <span className={`badge badge-${mode} badge-pill`}>{badgeText}</span> : null}
       </Label>
       <InfoButton id={id} textObj={translate[id]} />
     </span>
