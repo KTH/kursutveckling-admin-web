@@ -138,16 +138,72 @@ LOGGING_LEVEL=DEBUG [only for dev env]
 
 These settings are also available in an `env.in` file.
 
-## Install
+### Install
+
+First time you might need to use options `--ignore-scripts` because of npm resolutions:
+```sh
+npm install --ignore-scripts
+```
+or 
 
 ```sh
 npm install
+
+```
+You might need to install as well:
+
+```sh
+npm install cross-env
+npm install concurrently
 ```
 
-## Usage
+### Usage
+
+Start the service on [http://localhost:3000/kursinfoadmin/kursutveckling/:courseCode](http://localhost:3000/kursinfoadmin/kursutveckling/:courseCode).
 
 ```sh
 npm run start-dev
+```
+
+
+### Debug in Visual Studio Code
+It's possible to use debugging options available in Visual Studio Code
+Add a file `launch.json` to `.vscode` directory :
+- *Microsoft*
+```json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",           
+            "request": "launch",
+            "name": "Debug kursutveckling-admin-web",
+            "program": "${workspaceFolder}\\app.js",
+            "envFile": "${workspaceFolder}\\.env",
+            "env": {
+              "NODE_ENV": "development"
+            }
+        }
+    ]
+}
+```
+- _Mac, Unix and so on_
+```json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",           
+            "request": "launch",
+            "name": "Debug kursutveckling-admin-web",
+            "program": "${workspaceFolder}/app.js",
+            "envFile": "${workspaceFolder}/.env",
+            "env": {
+              "NODE_ENV": "development"
+            }
+        }
+    ]
+}
 ```
 
 ## Run tests
