@@ -825,7 +825,7 @@ class AdminPage extends Component {
                             header={'header_course_changes_comment'}
                             id={'info_course_changes_comment'}
                             badgeText={this.state.values.alterationText.length || '0'}
-                            mode={this.state.values.alterationText.length > ALTERATION_TEXT_MAX ? 'warning' : 'info'}
+                            mode={this.state.values.alterationText.length > ALTERATION_TEXT_MAX ? 'danger' : 'warning'}
                           />
                           <Input
                             style={{ height: 300 }}
@@ -1067,7 +1067,7 @@ const handleMultiLineAlert = alertVariables => {
   return multiLineAlert
 }
 
-const FormLabel = ({ translate, header, id, badgeText, mode = 'info' }) => {
+const FormLabel = ({ translate, header, id, badgeText, mode = 'warning' }) => {
   return (
     <span className="inline-flex">
       <Label>
