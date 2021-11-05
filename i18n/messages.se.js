@@ -207,7 +207,7 @@ module.exports = {
 
     info_examination_grade: {
       header: 'Examinationsgrad i procent (%)',
-      body: 'Examinationsgrad är antal förstagångsregistrerade studenter som godkänts på hela kursomgången vid valt slutdatum dividerat med antal förstagångsregistrerade på kursomgången i procent (%). Examinationsgrad hämtas automatiskt från Ladok för kursomgångar med starttermin VT 2017 och senare baserat på kursomgångens slutdatum. Det är möjligt att beräkna om examinationsgrad baserat på ett eget valt slutdatum. Det är också möjligt att ange examinationsgrad manuellt. I det fallet är slutdatum inte relevant. Examinationsgrad redovisas inte för respektive delmoment i examinationen. Examinationsgrad beräknas inte heller om efter efterföljande omtentor.',
+      body: 'Examinationsgrad är antal förstagångsregistrerade studenter som godkänts på hela kursomgången vid valt slutdatum dividerat med antal förstagångsregistrerade på kursomgången i procent (%). Examinationsgrad hämtas automatiskt från Ladok för kursomgångar med starttermin VT 2017 och senare baserat på kursomgångens slutdatum. Vissa kurser har ett examinationsdatum efter kursomgångens slut vilket gör att examinationsgraden blir 0. Det är därför möjligt att ange ett eget slutdatum som är efter examinationsdatumet och låta systemet räkna om examinationsgraden. Det är också möjligt att ange examinationsgrad manuellt. Examinationsgrad redovisas inte för respektive delmoment i examinationen. Examinationsgrad beräknas inte heller om efter efterföljande omtentor.',
       btnCancel: 'Close',
     },
 

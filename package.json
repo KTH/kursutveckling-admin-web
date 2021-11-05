@@ -18,8 +18,10 @@
     "docker": "npm install --development && npm run build && npm prune --production",
     "build": "NODE_ENV=production rm -rf dist && parcel build ./public/js/app/app.jsx && npm run vendor --preserve-comments",
     "build-dev": "NODE_ENV=development rimraf ./dist && parcel build ./public/js/app/app.jsx && parcel build ./public/js/vendor.js --public-url /kursinfoadmin/kursutveckling/static && parcel watch ./public/js/app/app.jsx --public-url /kursinfoadmin/kursutveckling/static",
+    "build-dev-win": "cross-env NODE_ENV=development rimraf ./dist && parcel build ./public/js/app/app.jsx && parcel build ./public/js/vendor.js --public-url /kursinfoadmin/kursutveckling/static && parcel watch ./public/js/app/app.jsx --public-url /kursinfoadmin/kursutveckling/static",
     "start": "NODE_ENV=production node app.js",
-    "start-dev": "cross-env NODE_ENV=development concurrently --kill-others \"npm run build-dev\" \"nodemon --ignore dist/ --ignore public/ app.js\""
+    "start-dev": "cross-env NODE_ENV=development concurrently --kill-others \"npm run build-dev\" \"nodemon --ignore dist/ --ignore public/ app.js\"",
+    "start-dev-win": "cross-env NODE_ENV=development concurrently --kill-others -n build,app \"npm run build-dev-win\" \"nodemon --ignore dist/ --ignore public/ app.js\""
   },
   "dependencies": {
     "@azure/storage-blob": "^12.5.0",
