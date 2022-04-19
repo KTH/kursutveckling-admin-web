@@ -1,11 +1,10 @@
 import React from 'react'
-import { Provider } from 'mobx-react'
 import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
 import i18n from '../../../i18n'
-import { StaticRouter } from 'react-router'
+import { StaticRouter } from 'react-router-dom/server'
 import PdfLinksNav from '../../../public/js/app/components/preview/PdfLinksNav'
-import mockRouterStore from '../../mocks/mockRouterStore'
+import mockWebContext from '../../mocks/mockRouterStore'
 import mockedProps from '../../mocks/mockProps'
 import mockedMiniMemosPdfAndWeb from '../../mocks/mockMiniMemos'
 import mockCourseAnalysis from '../../mocks/mockCourseAnalysis'
@@ -13,24 +12,19 @@ import mockCourseAnalysis from '../../mocks/mockCourseAnalysis'
 const { getAllByRole, getAllByTestId, getAllByText, getByTestId, getByText } = screen
 
 const RenderPdfLinksNav = ({ userLang = 'en', semester, koppsRoundId, ...rest }) => {
-  const rS = mockRouterStore(userLang)
+  const rS = mockWebContext(userLang)
   return (
-    <StaticRouter>
-      <Provider
-        routerStore={{
-          ...rS,
-          ...mockedMiniMemosPdfAndWeb,
-        }}
-      >
-        <PdfLinksNav
+    <PdfLinksNav
+          context={{
+            ...rS,
+            ...mockedMiniMemosPdfAndWeb,
+          }}
           {...rest}
           translate={i18n.messages[userLang === 'en' ? 0 : 1].messages}
           latestAnalysisFileName={'analysis-EI1220HT2017_1-newCourseAnalysisFile.pdf'} // new file was uploaded
           staticAnalysisInfo={mockCourseAnalysis(semester, koppsRoundId)}
           langIndex={userLang === 'en' ? 0 : 1}
-        />
-      </Provider>
-    </StaticRouter>
+    />
   )
 }
 

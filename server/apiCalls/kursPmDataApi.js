@@ -1,6 +1,6 @@
 'use strict'
 
-const log = require('kth-node-log')
+const log = require('@kth/log')
 
 const i18n = require('../../i18n')
 const api = require('../api')

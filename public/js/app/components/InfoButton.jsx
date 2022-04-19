@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { Button, UncontrolledPopover, PopoverHeader, PopoverBody } from 'reactstrap'
 
 const InfoButton = ({ id, textObj, addClass }) => {

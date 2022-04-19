@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React  from 'react'
 import { Collapse } from 'reactstrap'
 import { formatISODate } from '../../util/helpers'
 

@@ -1,7 +1,7 @@
 'use strict'
 
 const config = require('../configuration').server
-const BasicAPI = require('kth-node-api-call').BasicAPI
+const BasicAPI = require('@kth/api-call').BasicAPI
 
 const koppsApi = new BasicAPI({
   hostname: config.koppsApi.host,

@@ -1,5 +1,7 @@
 'use strict'
-import { SUPERUSER_PART } from './constants'
+
+//import { SUPERUSER_PART } from './constants'
+const SUPERUSER_PART = require('./constants')
 
 const getDateFormat = (date, language) => {
   if (language === 'Svenska' || language === 'Engelska' || language === 'sv' || language === 1 || language === 'sv') {
@@ -95,8 +97,14 @@ const getAccess = (memberOf, round, courseCode, semester) => {
     return true
   }
 
+  if (memberOf.toString().indexOf(`${courseCode.toUpperCase()}.${semester}.${round.ladokRoundId}.teachers`) > -1) {
+    return true
+  }
+
   return false
 }
+
+
 
 const getValueFromObjectList = (objectList, value, key, returnKey) => {
   let object
@@ -109,7 +117,7 @@ const getValueFromObjectList = (objectList, value, key, returnKey) => {
   return null
 }
 
-export {
+module.exports = {
   getAccess,
   noAccessToRoundsList,
   formatDate,

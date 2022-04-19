@@ -1,40 +1,27 @@
 'use strict'
 
-const log = require('kth-node-log')
-const language = require('kth-node-web-common/lib/language')
-const { toJS } = require('mobx')
+const log = require('@kth/log')
+const language = require('@kth/kth-node-web-common/lib/language')
 const serverPaths = require('../server').getPaths()
 const ReactDOMServer = require('react-dom/server')
-
 const apis = require('../api')
-const { browser, server } = require('../configuration')
-
+const paths = require('../server').getPaths()
+const browserConfig = require('../configuration').browser
+const serverConfig = require('../configuration').server
 const i18n = require('../../i18n')
-
 const {
-  getAllArchiveFragments,
   createArchivePackage,
   setExportedArchiveFragments,
 } = require('../apiCalls/kursutvecklingAPI')
-
-function hydrateStores(renderProps) {
-  // This assumes that all stores are specified in a root element called Provider
-  const props = renderProps.props.children.props
-  const outp = {}
-  for (let key in props) {
-    if (typeof props[key].initializeStore === 'function') {
-      outp[key] = encodeURIComponent(JSON.stringify(toJS(props[key], true)))
-    }
-  }
-  return outp
-}
+const { getServerSideFunctions } = require('../utils/serverSideRendering')
+const { createServerSideContext } = require('../ssr-context/createServerSideContext')
 
 function _staticRender(context, location) {
   if (process.env.NODE_ENV === 'development') {
     delete require.cache[require.resolve('../../dist/app.js')]
   }
-  const { staticFactory } = require('../../dist/app.js')
-  return staticFactory(context, location)
+  const { appFactory } = require('../../dist/app.js')
+  return appFactory(context, location)
 }
 
 async function _createArchivePackage(req, res, next) {
@@ -66,25 +53,32 @@ async function _setExportedArchiveFragments(req, res, next) {
 async function getIndex(req, res, next) {
   try {
     const context = {}
-    const renderProps = _staticRender(context, req.url)
+    const lang = language.getLanguage(res) || 'sv'
+    const { getCompressedData, renderStaticPage } = getServerSideFunctions()
+    const webContext = { lang, proxyPrefixPath: serverConfig.proxyPrefixPath, ...createServerSideContext() }
 
-    const responseLanguage = language.getLanguage(res) || 'sv'
+    webContext.setBrowserConfig(browserConfig, paths, serverConfig.hostUrl)
+    webContext.setLanguage(lang)
 
-    const { archiveStore } = renderProps.props.children.props
+    const compressedData = getCompressedData(webContext)
 
-    archiveStore.setBrowserConfig(browser, serverPaths, apis, server.hostUrl)
-
-    const archiveFragments = await getAllArchiveFragments()
-    archiveStore.archiveFragments = archiveFragments.body
-
-    const html = ReactDOMServer.renderToString(renderProps)
+    const { uri: proxyPrefix } = serverConfig.proxyPrefixPath
+    
+    const html = renderStaticPage({
+      applicationStore: {},
+      location: req.url,
+      basename: proxyPrefix,
+      context: webContext,
+    })
 
     res.render('archive/index', {
+      compressedData,
+      debug: 'debug' in req.query,
       html: html,
-      title: i18n.messages[responseLanguage === 'en' ? 0 : 1].messages.title,
-      initialState: JSON.stringify(hydrateStores(renderProps)),
-      lang: responseLanguage,
-      description: i18n.messages[responseLanguage === 'en' ? 0 : 1].messages.title,
+      title: i18n.messages[lang === 'en' ? 0 : 1].messages.title,
+      lang: lang,
+      proxyPrefix,
+      description: i18n.messages[lang === 'en' ? 0 : 1].messages.title,
     })
   } catch (err) {
     log.error('Error in getIndex', { error: err })

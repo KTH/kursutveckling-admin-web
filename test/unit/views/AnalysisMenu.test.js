@@ -1,19 +1,18 @@
 import React from 'react'
-import { Provider } from 'mobx-react'
 import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
 import i18n from '../../../i18n'
-import { StaticRouter } from 'react-router'
+import { StaticRouter } from 'react-router-dom/server'
 import AnalysisMenu from '../../../public/js/app/components/AnalysisMenu'
-import mockRouterStore from '../../mocks/mockRouterStore'
+import mockWebContext  from '../../mocks/mockRouterStore'
 import mockedProps from '../../mocks/mockProps'
 const { getAllByRole, getAllByTestId, getAllByText, getByTestId, getByText } = screen
 
 const RenderAnalysisMenu = ({ userLang = 'en', ...rest }) => {
-  const rS = mockRouterStore(userLang)
+  const rS = mockWebContext(userLang)
   return (
     <AnalysisMenu
-      routerStore={rS}
+      context={rS}
       {...rest}
       semesterList={rS.semesters}
       roundList={rS.roundData}

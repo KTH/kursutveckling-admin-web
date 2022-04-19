@@ -1,14 +1,14 @@
-import React, { Component } from 'react'
+import React, { useEffect, useReducer } from 'react'
 import ReactDOM from 'react-dom'
-
 import PropTypes from 'prop-types'
 import { Alert } from '@kth/kth-reactstrap/dist/components/studinfo'
-
 import { SYLLABUS_URL } from '../../util/constants'
 import { getDateFormat } from '../../util/helpers'
 import LinkToValidSyllabusPdf from './LinkToValidSyllabus'
-import { inject, observer } from 'mobx-react'
 import i18n from '../../../../../i18n'
+import { useWebContext } from '../../context/WebContext'
+
+const paramsReducer = (state, action) => ({ ...state, ...action })
 
 const ActiveOrDisabledPdfLink = ({ ariaLabel, href = '', className = '', linkTitle, translate, validFrom = '' }) => {
   const { no_added_doc } = translate
@@ -110,41 +110,35 @@ function renderAlertToTop(langIndex, roundsWithoutMemo) {
     )
   }
 }
+function PdfLinksNav(props) {
+  const { context: rawContext } = props
+  const context = React.useMemo(() => rawContext, [rawContext])
+  const [state, setState] = useReducer(paramsReducer, {
+    emptyRoundsNames: '',
+    emptyRounds: [],
+    memos: [],
+  })
 
-@inject(['routerStore'])
-@observer
-class PdfLinksNav extends Component {
-  constructor(props) {
-    super(props)
-    this.state = { emptyRoundsNames: '', emptyRounds: [], memos: [] }
-    this.getMemoLinksInfo = this.getMemoLinksInfo.bind(this)
-    this.getRoundsNames = this.getRoundsNames.bind(this)
-    this.sortMemosByTypes = this.sortMemosByTypes.bind(this)
-  }
+  useEffect(() => {
+    const { langIndex, staticAnalysisInfo } = props
+    const [unfilteredRoundsMissingMemos, existingMemos] = sortMemosByTypes()
+    const roundsNamesMissingMemos = getRoundsNames(unfilteredRoundsMissingMemos)
 
-  componentDidMount() {
-    const { langIndex, staticAnalysisInfo } = this.props
-
-    const [unfilteredRoundsMissingMemos, existingMemos] = this.sortMemosByTypes()
-
-    const roundsNamesMissingMemos = this.getRoundsNames(unfilteredRoundsMissingMemos)
-
-    this.setState({
+    setState({
       emptyRoundsNames: roundsNamesMissingMemos,
       emptyRounds: unfilteredRoundsMissingMemos,
       memos: existingMemos,
     })
-
-    // push it to routerStore for alert about missing memo after save/publish on admin start page
-    this.props.routerStore.roundNamesWithMissingMemos = roundsNamesMissingMemos
+    // push it to context for alert about missing memo after save/publish on admin start page
+    context.roundNamesWithMissingMemos = roundsNamesMissingMemos
 
     if (unfilteredRoundsMissingMemos.length > 0) {
       renderAlertToTop(langIndex, roundsNamesMissingMemos)
     }
-  }
+  }, [])
 
-  getRoundsNames(rounds) {
-    const { analysisName, roundIdList } = this.props.staticAnalysisInfo
+  function getRoundsNames(rounds) {
+    const { analysisName, roundIdList } = props.staticAnalysisInfo
     const splittedNames = analysisName.split(') ,')
     const splittedRoundIds = roundIdList.split(',')
     const matchingNames = []
@@ -155,8 +149,7 @@ class PdfLinksNav extends Component {
 
     return matchingNames.join(') , ')
   }
-
-  getMemoLinksInfo(thisSemesterMemos, analysesLadokRounds) {
+  function getMemoLinksInfo(thisSemesterMemos, analysesLadokRounds) {
     const unfilteredRoundsMissingMemos = []
     const tmpMemoNames = {}
     // move rounds without a memo to a separate array
@@ -198,72 +191,67 @@ class PdfLinksNav extends Component {
 
     return [unfilteredRoundsMissingMemos, uniqueMemos]
   }
-
-  sortMemosByTypes() {
-    const { miniMemosPdfAndWeb } = this.props.routerStore
-    const { staticAnalysisInfo } = this.props
+  function sortMemosByTypes() {
+    const { miniMemosPdfAndWeb } = context
+    const { staticAnalysisInfo } = props
 
     const { roundIdList, semester: analysisSemester } = staticAnalysisInfo
 
     const analysesLadokRounds = roundIdList.split(',') || []
     const thisSemesterMemos = miniMemosPdfAndWeb[analysisSemester] || []
-    return this.getMemoLinksInfo(thisSemesterMemos, analysesLadokRounds)
+    return getMemoLinksInfo(thisSemesterMemos, analysesLadokRounds)
   }
+  const { translate, latestAnalysisFileName, staticAnalysisInfo, langIndex } = props
+  const { link_memo: linkMemoTexts, link_analysis: linkAnalysisTexts } = translate
 
-  render() {
-    const { translate, latestAnalysisFileName, staticAnalysisInfo, langIndex } = this.props
-    const { link_memo: linkMemoTexts, link_analysis: linkAnalysisTexts } = translate
+  const { storageUri, hostUrl, memoStorageUri } = context.browserConfig
 
-    const { storageUri, hostUrl, memoStorageUri } = this.props.routerStore.browserConfig
-
-    const {
-      analysisName,
-      courseCode,
-      pdfAnalysisDate,
-      syllabusStartTerm,
-      semester: analysisSemester,
-    } = staticAnalysisInfo
-
-    return (
-      <span className="right-block-of-links">
-        <LinkToValidSyllabusPdf startDate={syllabusStartTerm} lang={langIndex} key={syllabusStartTerm} />
-        {/* Kurs-PM länkar */}
-        <span className="vertical-block-of-links">
-          {this.state.emptyRounds.map(ladokRoundId => {
-            const missingMemoOfferingName = parseCourseOffering([ladokRoundId], analysisSemester, langIndex)
-            const title = `${linkMemoTexts.label_memo} ${courseCode} ${missingMemoOfferingName}`
-            return <ActiveOrDisabledPdfLink ariaLabel={title} key={title} linkTitle={title} translate={linkMemoTexts} />
-          })}
-          {this.state.memos.map((memoInfo, index) => {
-            const { isPdf, courseMemoFileName } = memoInfo
-            return isPdf || courseMemoFileName ? (
-              <ParseUploadedMemo
-                key={index}
-                translate={linkMemoTexts}
-                fileInfo={memoInfo}
-                memoBlobUrl={memoStorageUri}
-                userLanguageIndex={langIndex}
-                translate={linkMemoTexts}
-              />
-            ) : (
-              <ParseWebMemoName hostUrl={hostUrl} courseMemo={memoInfo} key={index} translate={linkMemoTexts} />
-            )
-          })}
-        </span>
-        {/* Kursanalys länk */}
-
-        <ActiveOrDisabledPdfLink
-          ariaLabel={`PDF ${linkAnalysisTexts.label_analysis} ${analysisName}`}
-          href={`${storageUri}${latestAnalysisFileName}`}
-          className="pdf-link"
-          linkTitle={`${linkAnalysisTexts.label_analysis}`}
-          translate={linkAnalysisTexts}
-          validFrom={getDateFormat(pdfAnalysisDate, langIndex)}
-        />
+  const {
+    analysisName,
+    courseCode,
+    pdfAnalysisDate,
+    syllabusStartTerm,
+    semester: analysisSemester,
+  } = staticAnalysisInfo
+  return (
+    <span className="right-block-of-links">
+      <LinkToValidSyllabusPdf startDate={syllabusStartTerm} lang={langIndex} key={syllabusStartTerm} />
+      {/* Kurs-PM länkar */}
+      <span className="vertical-block-of-links">
+        {state.emptyRounds.map(ladokRoundId => {
+          const missingMemoOfferingName = parseCourseOffering([ladokRoundId], analysisSemester, langIndex)
+          const title = `${linkMemoTexts.label_memo} ${courseCode} ${missingMemoOfferingName}`
+          return <ActiveOrDisabledPdfLink ariaLabel={title} key={title} linkTitle={title} translate={linkMemoTexts} />
+        })}
+        {state.memos.map((memoInfo, index) => {
+          const { isPdf, courseMemoFileName } = memoInfo
+          return isPdf || courseMemoFileName ? (
+            <ParseUploadedMemo
+              key={index}
+              translate={linkMemoTexts}
+              fileInfo={memoInfo}
+              memoBlobUrl={memoStorageUri}
+              userLanguageIndex={langIndex}
+            />
+          ) : (
+            <ParseWebMemoName hostUrl={hostUrl} courseMemo={memoInfo} key={index} translate={linkMemoTexts} />
+          )
+        })}
       </span>
-    )
-  }
+      {/* Kursanalys länk */}
+
+      <ActiveOrDisabledPdfLink
+        ariaLabel={`PDF ${linkAnalysisTexts.label_analysis} ${analysisName}`}
+        href={`${storageUri}${latestAnalysisFileName}`}
+        className="pdf-link"
+        linkTitle={`${linkAnalysisTexts.label_analysis}`}
+        translate={linkAnalysisTexts}
+        validFrom={getDateFormat(pdfAnalysisDate, langIndex)}
+      />
+    </span>
+  )
 }
+
 PdfLinksNav.propTypes = {
   langIndex: PropTypes.oneOf([0, 1]).isRequired,
   translate: PropTypes.shape({
