@@ -1,10 +1,9 @@
-import React, { useEffect, useReducer, useState } from 'react'
+import React, { useEffect, useReducer } from 'react'
 import { Row, Col, Button, Form, Label, Input, Alert, Spinner } from 'reactstrap'
 import { ProgressBar } from '@kth/kth-reactstrap/dist/components/utbildningsinfo'
 import { useWebContext } from '../context/WebContext'
-import { useNavigate } from 'react-router-dom'
 
-//Components
+// Components
 import Title from '../components/Title'
 import AnalysisMenu from '../components/AnalysisMenu'
 import Preview from '../components/Preview'
@@ -13,85 +12,117 @@ import CopyText from '../components/CopyText'
 import InfoButton from '../components/InfoButton'
 import UpLoad from '../components/UpLoad'
 
-//Helpers
+// Helpers
 import { SERVICE_URL } from '../util/constants'
 import { getTodayDate, isValidDate } from '../util/helpers'
 import i18n from '../../../../i18n/index'
 
 const ALTERATION_TEXT_MAX = 2000
 
+function validateData(state, fieldId = null) {
+  const { analysisFile, isPublished, values } = state
+  const invalidData = { mandatoryFields: [], overMaxFields: [] }
+  const toValidate = fieldId ? [fieldId] : ['registeredStudents', 'examiners', 'responsibles']
+  for (let key of toValidate) {
+    if (values[key].length === 0) {
+      invalidData.mandatoryFields.push(key)
+    }
+  }
+
+  const { alterationText, examinationGrade: examinationGradeValue } = values
+  if (examinationGradeValue.length === 0 || examinationGradeValue === '-1') {
+    invalidData.mandatoryFields.push('examinationGrade')
+  }
+
+  if (!analysisFile.length) {
+    invalidData.mandatoryFields.push('analysisFile')
+  } else if (!isValidDate(values.pdfAnalysisDate)) {
+    invalidData.mandatoryFields.push('pdfAnalysisDate')
+  }
+
+  if (isPublished && values.commentChange.length === 0) {
+    invalidData.mandatoryFields.push('commentChange')
+  }
+
+  const alterationTextLength = alterationText ? alterationText.length : 0
+  if (alterationTextLength > ALTERATION_TEXT_MAX) {
+    invalidData.overMaxFields.push('alterationText')
+  }
+
+  return invalidData
+}
+
+const handleMultiLineAlert = alertVariables => {
+  const { init, messages, ladokId, endDate, examinationGrade, endDateLadok, examinationGradeLadok } = alertVariables
+  const multiLineAlert = []
+
+  // Automatic calculation of examination rate is possible
+  if (ladokId && ladokId.length) {
+    if (!(endDate === endDateLadok && Number(examinationGrade) === examinationGradeLadok)) {
+      multiLineAlert.push(messages.alert_graduation_rate_fields_updated)
+      multiLineAlert.push(`${messages.original_values_are} ${endDateLadok} ${messages.and} ${examinationGradeLadok}.`)
+    }
+    // Round is chosen, but automatic calculation of examination rate is not possible
+  } else if (!init) {
+    multiLineAlert.push(messages.alert_graduation_rate_cant_be_calculated)
+  }
+  return multiLineAlert
+}
+
 const paramsReducer = (state, action) => ({ ...state, ...action })
 
-function AdminPage(props) {
+function AdminPage() {
   const [webContext] = useWebContext()
-  
-  const { progress, alertSuccess, fileProgress } = state
 
-  const [ state, setState ] = useReducer(paramsReducer, {
-      saved: webContext.analysisData !== undefined && webContext.analysisData.changedDate.length > 2,
-      values: webContext.analysisData,
-      isPublished: webContext.analysisData
-        ? webContext.analysisData.isPublished
-        : webContext.status === 'published',
-      progress: webContext.status === 'new' ? 'new' : 'edit',
-      isPreviewMode: webContext.status === 'preview',
-      activeSemester: '',
-      changedStatus: false,
-      modalOpen: {
-        publish: false,
-        cancel: false,
-      },
-      alert: '',
-      alertSuccess: '',
-      madatoryMessage: '',
-      analysisFile: webContext.analysisData ? webContext.analysisData.analysisFileName : '',
-      hasNewUploadedFileAnalysis: false,
-      notValid: { mandatoryFields: [], overMaxFields: [], wrongFileTypeFields: [] },
-      fileProgress: {
-        analysis: 0,
-      },
-      statisticsParams: {
-        endDate:
-        webContext.analysisData && webContext.analysisData.endDate
-            ? webContext.analysisData.endDate
-            : '',
-        ladokId:
-        webContext.analysisData && webContext.analysisData.ladokUIDs
-            ? webContext.analysisData.ladokUIDs
-            : [],
-      },
-      endDateInputEnabled: true,
-      examinationGradeInputEnabled: true,
-      ladokLoading: false,
-      multiLineAlert: handleMultiLineAlert({
-        init: !webContext.analysisData,
-        messages: i18n.messages[webContext.language].messages,
-        ladokId:
-        webContext.analysisData && webContext.analysisData.ladokUIDs
-            ? webContext.analysisData.ladokUIDs
-            : [],
-        endDate:
-        webContext.analysisData && webContext.analysisData.endDate
-            ? webContext.analysisData.endDate
-            : '',
-        examinationGrade:
+  const [state, setState] = useReducer(paramsReducer, {
+    saved: webContext.analysisData !== undefined && webContext.analysisData.changedDate.length > 2,
+    values: webContext.analysisData,
+    isPublished: webContext.analysisData ? webContext.analysisData.isPublished : webContext.status === 'published',
+    progress: webContext.status === 'new' ? 'new' : 'edit',
+    isPreviewMode: webContext.status === 'preview',
+    activeSemester: '',
+    changedStatus: false,
+    modalOpen: {
+      publish: false,
+      cancel: false,
+    },
+    alert: '',
+    alertSuccess: '',
+    madatoryMessage: '',
+    analysisFile: webContext.analysisData ? webContext.analysisData.analysisFileName : '',
+    hasNewUploadedFileAnalysis: false,
+    notValid: { mandatoryFields: [], overMaxFields: [], wrongFileTypeFields: [] },
+    fileProgress: {
+      analysis: 0,
+    },
+    statisticsParams: {
+      endDate: webContext.analysisData && webContext.analysisData.endDate ? webContext.analysisData.endDate : '',
+      ladokId: webContext.analysisData && webContext.analysisData.ladokUIDs ? webContext.analysisData.ladokUIDs : [],
+    },
+    endDateInputEnabled: true,
+    examinationGradeInputEnabled: true,
+    ladokLoading: false,
+    multiLineAlert: handleMultiLineAlert({
+      init: !webContext.analysisData,
+      messages: i18n.messages[webContext.language].messages,
+      ladokId: webContext.analysisData && webContext.analysisData.ladokUIDs ? webContext.analysisData.ladokUIDs : [],
+      endDate: webContext.analysisData && webContext.analysisData.endDate ? webContext.analysisData.endDate : '',
+      examinationGrade:
         webContext.analysisData && webContext.analysisData.examinationGrade
-            ? webContext.analysisData.examinationGrade
-            : -1,
-        endDateLadok:
-        webContext.analysisData && webContext.analysisData.endDateLadok
-            ? webContext.analysisData.endDateLadok
-            : '',
-        examinationGradeLadok:
+          ? webContext.analysisData.examinationGrade
+          : -1,
+      endDateLadok:
+        webContext.analysisData && webContext.analysisData.endDateLadok ? webContext.analysisData.endDateLadok : '',
+      examinationGradeLadok:
         webContext.analysisData && webContext.analysisData.examinationGradeLadok >= 0
-            ? webContext.analysisData.examinationGradeLadok
-            : -1,
-        alterationText:
-        webContext.analysisData && webContext.analysisData.alterationText
-            ? webContext.analysisData.alterationText
-            : '',
-      }),
+          ? webContext.analysisData.examinationGradeLadok
+          : -1,
+      alterationText:
+        webContext.analysisData && webContext.analysisData.alterationText ? webContext.analysisData.alterationText : '',
+    }),
   })
+
+  const { progress, alertSuccess, fileProgress } = state
 
   useEffect(() => {
     let isMounted = true
@@ -103,26 +134,25 @@ function AdminPage(props) {
     return () => (isMounted = false)
   }, [alertSuccess])
 
-
-  //*********************************  FILE UPLOAD  ********************************* */
-  //********************************************************************************** */
+  // *********************************  FILE UPLOAD  ********************************* */
+  // ********************************************************************************** */
 
   async function handleUploadFile(id, file, e) {
     if (e.target.files[0].type === 'application/pdf') {
       const response = await sendRequest(id, file, e)
     } else {
-      setState({ notValid: { wrongFileTypeFields: ['analysisFile'] }})
+      setState({ notValid: { wrongFileTypeFields: ['analysisFile'] } })
     }
   }
 
   function sendRequest(id, file, e) {
-    const { fileProgress, values } = state
+    const { values } = state
     return new Promise((resolve, reject) => {
       const req = new XMLHttpRequest()
       req.upload.addEventListener('progress', event => {
         if (event.lengthComputable) {
           fileProgress[id] = (event.loaded / event.total) * 100
-          setState({ fileProgress: fileProgress })
+          setState({ fileProgress })
         }
       })
 
@@ -140,11 +170,11 @@ function AdminPage(props) {
             wrongFileTypeFields.splice(wrongFileTypeFieldsIndex, 1)
           }
           setState({
-              analysisFile: this.responseText,
-              alertSuccess: i18n.messages[webContext.language].messages.alert_uploaded_file,
-              values: values,
-              hasNewUploadedFileAnalysis: true,
-              notValid: { mandatoryFields, wrongFileTypeFields },
+            analysisFile: this.responseText,
+            alertSuccess: i18n.messages[webContext.language].messages.alert_uploaded_file,
+            values,
+            hasNewUploadedFileAnalysis: true,
+            notValid: { mandatoryFields, wrongFileTypeFields },
           })
         }
       }
@@ -157,9 +187,9 @@ function AdminPage(props) {
       formData.append('status', data.status)
       req.open(
         'POST',
-        `${webContext.browserConfig.hostUrl}${
-         webContext.paths.storage.saveFile.uri.split(':')[0]
-        }${webContext.analysisData._id}/${id}/${state.isPublished}`
+        `${webContext.browserConfig.hostUrl}${webContext.paths.storage.saveFile.uri.split(':')[0]}${
+          webContext.analysisData._id
+        }/${id}/${state.isPublished}`
       )
       req.send(formData)
     })
@@ -177,12 +207,12 @@ function AdminPage(props) {
     if (event.target.id === 'remove_analysis') setState({ analysisFile: '', hasNewUploadedFileAnalysis: true })
   }
 
-  //***************************** BUTTON CLICK HANDLERS ****************************** */
-  //********************************************************************************** */
+  // ***************************** BUTTON CLICK HANDLERS ****************************** */
+  // ********************************************************************************** */
 
   function handlePreview(event) {
     event.preventDefault()
-    const invalidData = { ...state.notValid, ...validateData(state.values) }
+    const invalidData = { ...state.notValid, ...validateData(state) }
 
     if (
       invalidData.mandatoryFields.length > 0 ||
@@ -205,11 +235,11 @@ function AdminPage(props) {
   function handleBack(event) {
     event.preventDefault()
     if (progress === 'edit') {
-      
       if (webContext.semesters.length === 0) {
-        return webContext.getCourseInformation(webContext.courseCode, webContext.user, webContext.language)
+        return webContext
+          .getCourseInformation(webContext.courseCode, webContext.user, webContext.language)
           .then(courseData => {
-              setState({
+            setState({
               isPreviewMode: false,
               progress: 'back_new',
               activeSemester: webContext.analysisData.semester,
@@ -248,7 +278,7 @@ function AdminPage(props) {
   function handleSave(event) {
     event.preventDefault()
     const { postObject } = state.values
-     
+
     if (state.analysisFile !== postObject.analysisFileName) {
       postObject.analysisFileName = state.analysisFile
     }
@@ -274,18 +304,13 @@ function AdminPage(props) {
           }${roundNamesWithMissingMemos ? '&noMemo=' + roundNamesWithMissingMemos : ''}`
         ) // term=, name=
       } else {
-          setState({
-            saved: true,
-            progress: 'edit',
-            alertSuccess: i18n.messages[webContext.language].messages.alert_saved_draft,
-            hasNewUploadedFileAnalysis: false,
-            values: data,
-          })
-        /* history.push(
-          webContext.browserConfig.proxyPrefixPath.uri +
-            '/' +
-            webContext.analysisId
-        ) */
+        setState({
+          saved: true,
+          progress: 'edit',
+          alertSuccess: i18n.messages[webContext.language].messages.alert_saved_draft,
+          hasNewUploadedFileAnalysis: false,
+          values: data,
+        })
       }
     })
   }
@@ -294,8 +319,8 @@ function AdminPage(props) {
     if (!fromModal) {
       event.preventDefault()
     }
-    
-    const{values: postObject}  = state
+
+    const { values: postObject } = state
     const { modalOpen: modal } = state
 
     if (postObject.isPublished) {
@@ -311,38 +336,36 @@ function AdminPage(props) {
     postObject.courseName = webContext.courseTitle.name
     postObject.analysisFileName = state.analysisFile
 
-    return webContext
-      .postRoundAnalysisData(postObject, webContext.status === 'new')
-      .then(response => {
-        modal.publish = false
-        if (response === undefined || response.message) {
-          setState({
-            alert: response.message ? response.message : 'No connection with data base',
-            modalOpen: modal,
-          })
-        } else {
-          setState({
-            saved: true,
-            isPublished: true,
-            modalOpen: modal,
-            values: response,
-          })
-          const { roundNamesWithMissingMemos } = webContext
+    return webContext.postRoundAnalysisData(postObject, webContext.status === 'new').then(response => {
+      modal.publish = false
+      if (response === undefined || response.message) {
+        setState({
+          alert: response.message ? response.message : 'No connection with data base',
+          modalOpen: modal,
+        })
+      } else {
+        setState({
+          saved: true,
+          isPublished: true,
+          modalOpen: modal,
+          values: response,
+        })
+        const { roundNamesWithMissingMemos } = webContext
 
-          window.location = encodeURI(
-            `${webContext.browserConfig.hostUrl}${SERVICE_URL.admin}${
-              webContext.analysisData.courseCode
-            }?serv=kutv&event=pub&id=${webContext.analysisId}&term=${webContext.analysisData.semester}&name=${
-              webContext.analysisData.analysisName
-            }${roundNamesWithMissingMemos ? '&noMemo=' + roundNamesWithMissingMemos : ''}`
-          )
-        }
-      })
+        window.location = encodeURI(
+          `${webContext.browserConfig.hostUrl}${SERVICE_URL.admin}${
+            webContext.analysisData.courseCode
+          }?serv=kutv&event=pub&id=${webContext.analysisId}&term=${webContext.analysisData.semester}&name=${
+            webContext.analysisData.analysisName
+          }${roundNamesWithMissingMemos ? '&noMemo=' + roundNamesWithMissingMemos : ''}`
+        )
+      }
+    })
   }
 
   function handleNewExaminationGrade(newEndDate) {
     setState({ ladokLoading: true })
-    const { values, statisticsParams, modalOpen } = state
+    const { values, statisticsParams } = state
     if (newEndDate.length > 0) {
       return webContext
         .postLadokRoundIdListAndDateToGetStatistics(statisticsParams.ladokId, newEndDate)
@@ -379,16 +402,34 @@ function AdminPage(props) {
     }
   }
 
-  //************************ OTHER **************************** */
-  //*************************************************************/
+  function handleTemporaryData(valueObject, tempData) {
+    let returnObject = {
+      values: valueObject,
+      files: {
+        analysisFile: '',
+      },
+    }
+    if (tempData) {
+      returnObject.values.alterationText = tempData.alterationText
+      returnObject.values.registeredStudents = tempData.registeredStudents
+      returnObject.values.examinationGrade = tempData.examinationGrade
+      returnObject.files.analysisFile = tempData.analysisFile
+    } else if (valueObject) {
+      returnObject.files.analysisFile = valueObject.analysisFileName
+    }
+    return returnObject
+  }
 
- function editMode(semester, rounds, analysisId, status, tempData, statisticsParams) {
+  //* *********************** OTHER **************************** */
+  //* ************************************************************/
+
+  function editMode(semester, rounds, analysisId, status, tempData, statisticsParams) {
     if (status === 'new') {
       return webContext
         .postLadokRoundIdListAndDateToGetStatistics(statisticsParams.ladokId, statisticsParams.endDate)
         .then(ladokResponse => {
           webContext.createAnalysisData(semester, rounds).then(data => {
-            const valuesObject = handleTemporaryData(thisAdminPage.props.webContext.analysisData, tempData)
+            const valuesObject = handleTemporaryData(webContext.analysisData, tempData)
             const multiLineAlert = handleMultiLineAlert({
               messages: i18n.messages[webContext.language].messages,
               ladokId: statisticsParams.ladokId,
@@ -397,7 +438,8 @@ function AdminPage(props) {
               endDateLadok: valuesObject.values.endDateLadok,
               examinationGradeLadok: valuesObject.values.examinationGradeLadok,
             })
-            thisAdminPage.setState({
+
+            setState({
               progress: 'edit',
               isPreviewMode: false,
               isPublished: false,
@@ -410,48 +452,49 @@ function AdminPage(props) {
             })
           })
         })
-    } else {
-      //history.push(webContext.browserConfig.proxyPrefixPath.uri + '/' + analysisId)
-      return thisAdminPage.props.webContext.getRoundAnalysis(analysisId).then(analysis => {
-        const valuesObject = handleTemporaryData(thisAdminPage.props.webContext.analysisData, tempData)
-        const statisticsParams = {}
-        statisticsParams.endDate = valuesObject.values.endDate
-        statisticsParams.ladokId = valuesObject.values.ladokUIDs ? valuesObject.values.ladokUIDs : []
-        const multiLineAlert = handleMultiLineAlert({
-          messages: i18n.messages[webContext.language].messages,
-          ladokId: valuesObject.values.ladokUIDs,
-          endDate: valuesObject.values.endDate,
-          examinationGrade: valuesObject.values.examinationGrade,
-          endDateLadok: valuesObject.values.endDateLadok,
-          examinationGradeLadok: valuesObject.values.examinationGradeLadok,
-        })
-        const endDateInputEnabled = !valuesObject.values.ladokUIDs || !!valuesObject.values.endDate
-        setState({
-          progress: 'edit',
-          isPreviewMode: false,
-          isPublished: webContext.analysisData.isPublished,
-          values: valuesObject.values,
-          analysisFile: valuesObject.files.analysisFile,
-          saved: true,
-          statisticsParams,
-          alert: '',
-          multiLineAlert,
-          endDateInputEnabled,
-        })
-      })
     }
+
+    return webContext.getRoundAnalysis(analysisId).then(analysis => {
+      const valuesObject = handleTemporaryData(webContext.analysisData, tempData)
+      const _statisticsParams = {}
+      _statisticsParams.endDate = valuesObject.values.endDate
+      _statisticsParams.ladokId = valuesObject.values.ladokUIDs ? valuesObject.values.ladokUIDs : []
+      const multiLineAlert = handleMultiLineAlert({
+        messages: i18n.messages[webContext.language].messages,
+        ladokId: valuesObject.values.ladokUIDs,
+        endDate: valuesObject.values.endDate,
+        examinationGrade: valuesObject.values.examinationGrade,
+        endDateLadok: valuesObject.values.endDateLadok,
+        examinationGradeLadok: valuesObject.values.examinationGradeLadok,
+      })
+      const endDateInputEnabled = !valuesObject.values.ladokUIDs || !!valuesObject.values.endDate
+      setState({
+        progress: 'edit',
+        isPreviewMode: false,
+        isPublished: webContext.analysisData.isPublished,
+        values: valuesObject.values,
+        analysisFile: valuesObject.files.analysisFile,
+        saved: true,
+        statisticsParams: _statisticsParams,
+        alert: '',
+        multiLineAlert,
+        endDateInputEnabled,
+      })
+    })
   }
 
   function toggleModal(event) {
     const { modalOpen } = state
     modalOpen[event.target.id] = !modalOpen[event.target.id]
     setState({
-      modalOpen: modalOpen,
+      modalOpen,
     })
   }
 
   function handleInputChange(event) {
-    const { values, endDateInputEnabled, examinationGradeInputEnabled } = state
+    const { values } = state
+    let { endDateInputEnabled, examinationGradeInputEnabled } = state
+
     values[event.target.id] = event.target.value
     if (
       event.target.id === 'examinationGrade' ||
@@ -487,7 +530,7 @@ function AdminPage(props) {
 
     const invalidFields = []
     if (event.target.id === 'alterationText') {
-      const alterationTextLength = values['alterationText'] ? values['alterationText'].length : 0
+      const alterationTextLength = values.alterationText ? values.alterationText.length : 0
       if (alterationTextLength > ALTERATION_TEXT_MAX) {
         invalidFields.overMaxFields = ['alterationText']
       } else {
@@ -495,50 +538,15 @@ function AdminPage(props) {
       }
     }
 
-    // const invalidData = { ...state.notValid, ...validateData(state.values, event.target.id) }
     const invalidData = { ...state.notValid, ...invalidFields }
 
     setState({
-      endDateInputEnabled: endDateInputEnabled,
-      examinationGradeInputEnabled: examinationGradeInputEnabled,
-      values: values,
+      endDateInputEnabled,
+      examinationGradeInputEnabled,
+      values,
       notValid: invalidData,
-      multiLineAlert: multiLineAlert,
+      multiLineAlert,
     })
-  }
-
- function  validateData(values, fieldId) {
-    let invalidData = { mandatoryFields: [], overMaxFields: [] }
-    const toValidate = fieldId ? [fieldId] : ['registeredStudents', 'examiners', 'responsibles']
-    for (let key of toValidate) {
-      if (values[key].length === 0) {
-        invalidData.mandatoryFields.push(key)
-      }
-    }
-
-    const examinationGradeValue = values['examinationGrade']
-    if (examinationGradeValue.length === 0 || examinationGradeValue === '-1') {
-      invalidData.mandatoryFields.push('examinationGrade')
-    }
-
-    if (!state.analysisFile.length) {
-      invalidData.mandatoryFields.push('analysisFile')
-    } else {
-      if (!isValidDate(values.pdfAnalysisDate)) {
-        invalidData.mandatoryFields.push('pdfAnalysisDate')
-      }
-    }
-
-    if (state.isPublished && values.commentChange.length === 0) {
-      invalidData.mandatoryFields.push('commentChange')
-    }
-
-    const alterationTextLength = values['alterationText'] ? values['alterationText'].length : 0
-    if (alterationTextLength > ALTERATION_TEXT_MAX) {
-      invalidData.overMaxFields.push('alterationText')
-    }
-
-    return invalidData
   }
 
   function getTempData() {
@@ -557,485 +565,407 @@ function AdminPage(props) {
     return null
   }
 
- function handleTemporaryData(valueObject, tempData) {
-    let returnObject = {
-      values: valueObject,
-      files: {
-        analysisFile: '',
-      },
-    }
-    if (tempData) {
-      returnObject.values.alterationText = tempData.alterationText
-      returnObject.values.registeredStudents = tempData.registeredStudents
-      returnObject.values.examinationGrade = tempData.examinationGrade
-      returnObject.files.analysisFile = tempData.analysisFile
-    } else {
-      if (valueObject) {
-        returnObject.files.analysisFile = valueObject.analysisFileName
-      }
-    }
-    return returnObject
-  }
+  const { isPublished } = state
+  const translate = i18n.messages[webContext.language].messages
 
-  function resolveMultiLineAlert() {
-    const language = webContext.language
-    const messages = i18n.messages[language].messages
+  if (webContext.analysisData === undefined || progress === 'back_new') {
+    return (
+      <div>
+        {webContext.errorMessage.length === 0 ? (
+          <div>
+            <Title
+              title={webContext.courseTitle}
+              language={webContext.language}
+              courseCode={webContext.courseCode}
+              header={translate.header_main[webContext.status]}
+            />
+            <ProgressBar active={1} pages={translate.pagesProgressBar} />
 
-    const ladokId = state.statisticsParams.ladokId
-    const endDate = state.values.endDate
-    const examinationGrade = state.values.examinationGrade
-    const endDateLadok = state.values.endDateLadok
-    const examinationGradeLadok = state.values.examinationGradeLadok
-
-    return handleMultiLineAlert({
-      messages,
-      ladokId,
-      endDate,
-      examinationGrade,
-      endDateLadok,
-      examinationGradeLadok,
-    })
-  }
-
-    const { isPublished } = state
-    const translate = i18n.messages[webContext.language].messages
-
-    if (webContext.analysisData === undefined || progress === 'back_new') {
-      return (
-        <div ref={this.divTop}>
-          {webContext.errorMessage.length === 0 ? (
-            <div>
-              <Title
-                title={webContext.courseTitle}
-                language={webContext.language}
-                courseCode={webContext.courseCode}
-                header={translate.header_main[webContext.status]}
+            {/* ************************************************************************************ */}
+            {/*                               PAGE1: ANALYSIS MENU                                  */}
+            {/* ************************************************************************************ */}
+            {webContext.semesters.length === 0 ? (
+              <Alert color="info" className="alert-margin">
+                {' '}
+                {translate.alert_no_rounds}{' '}
+              </Alert>
+            ) : (
+              <AnalysisMenu
+                editMode={editMode}
+                semesterList={webContext.semesters}
+                roundList={webContext.roundData}
+                progress={progress}
+                activeSemester={state.activeSemester}
+                firstVisit={webContext.analysisData === undefined}
+                status={webContext.status}
+                tempData={/*state.saved ? {} : */ getTempData()}
+                saved={state.values && state.values.changedDate.length > 0}
+                analysisId={state.saved && state.values ? state.values._id : ''}
               />
-              <ProgressBar active={1} pages={translate.pagesProgressBar} />
+            )}
+          </div>
+        ) : (
+          <Alert className="alert-margin" color="info">
+            {' '}
+            {webContext.errorMessage}
+          </Alert>
+        )}
+      </div>
+    )
+  } else {
+    return (
+      <div key="kursutveckling-form-container" className="container" id="kursutveckling-form-container">
+        {/************************************************************************************* */}
+        {/*                     PAGE 2: EDIT  AND  PAGE 3: PREVIEW                              */}
+        {/************************************************************************************* */}
+        {webContext.errorMessage.length > 0 ? (
+          <Alert color="info" className="alert-margin">
+            {webContext.errorMessage}
+          </Alert>
+        ) : (
+          <div>
+            <Title
+              title={webContext.courseTitle}
+              language={webContext.language}
+              courseCode={webContext.courseCode}
+              header={translate.header_main[webContext.status]}
+            />
+            {webContext.status !== 'preview' && (
+              <ProgressBar active={progress === 'edit' ? 2 : 3} pages={translate.pagesProgressBar} />
+            )}
 
-              {/************************************************************************************* */}
-              {/*                               PAGE1: ANALYSIS MENU                                  */}
-              {/************************************************************************************* */}
-              {webContext.semesters.length === 0 ? (
-                <Alert color="info" className="alert-margin">
-                  {' '}
-                  {translate.alert_no_rounds}{' '}
-                </Alert>
-              ) : (
-                <AnalysisMenu
-                  editMode={editMode}
-                  semesterList={webContext.semesters}
-                  roundList={webContext.roundData}
-                  progress={progress}
-                  activeSemester={state.activeSemester}
-                  firstVisit={webContext.analysisData === undefined}
-                  status={webContext.status}
-                  tempData={/*state.saved ? {} : */ getTempData()}
-                  saved={state.values && state.values.changedDate.length > 0}
-                  analysisId={state.saved && state.values ? state.values._id : ''}
-                />
-              )}
-            </div>
-          ) : (
-            <Alert className="alert-margin" color="info">
-              {' '}
-              {webContext.errorMessage}
-            </Alert>
-          )}
-        </div>
-      )
-    } else {
-      return (
-        <div
-          key="kursutveckling-form-container"
-          className="container"
-          id="kursutveckling-form-container"
-        >
-          {/************************************************************************************* */}
-          {/*                     PAGE 2: EDIT  AND  PAGE 3: PREVIEW                              */}
-          {/************************************************************************************* */}
-          {webContext.errorMessage.length > 0 ? (
-            <Alert color="info" className="alert-margin">
-              {webContext.errorMessage}
-            </Alert>
-          ) : (
-            <div>
-              <Title
-                title={webContext.courseTitle}
-                language={webContext.language}
-                courseCode={webContext.courseCode}
-                header={translate.header_main[webContext.status]}
-              />
-              {webContext.status !== 'preview' && (
-                <ProgressBar active={progress === 'edit' ? 2 : 3} pages={translate.pagesProgressBar} />
-              )}
+            {/************************************************************************************* */}
+            {/*                                   PREVIEW                                           */}
+            {/************************************************************************************* */}
+            {state.values && state.isPreviewMode ? (
+              <Preview values={state.values} analysisFile={state.analysisFile} />
+            ) : (
+              ''
+            )}
+            <Row key="form" id="form-container">
+              <Col sm="12" lg="12">
+                {/************************************************************************************* */}
+                {/*                                 EDIT FORM                                           */}
+                {/************************************************************************************* */}
 
-              {/************************************************************************************* */}
-              {/*                                   PREVIEW                                           */}
-              {/************************************************************************************* */}
-              {state.values && state.isPreviewMode ? (
-                <Preview values={state.values} analysisFile={state.analysisFile} />
-              ) : (
-                ''
-              )}
-              <Row key="form" id="form-container">
-                <Col sm="12" lg="12">
-                  {/************************************************************************************* */}
-                  {/*                                 EDIT FORM                                           */}
-                  {/************************************************************************************* */}
+                {state.values && !state.isPreviewMode ? (
+                  <Form className="admin-form">
+                    {/* ----- Intro text for Edit ------- */}
+                    <div>
+                      <p>{translate.intro_edit}</p>
+                    </div>
 
-                  {state.values && !state.isPreviewMode ? (
-                    <Form className="admin-form">
-                      {/* ----- Intro text for Edit ------- */}
-                      <div>
-                        <p>{translate.intro_edit}</p>
-                      </div>
-
-                      {/* ---- Semester and name of analysis ---- */}
-                      <h2>{translate.header_edit_content}</h2>
-                      <p>
-                        {' '}
-                        <b>{translate.header_semester} </b>
-                        {`${translate.course_short_semester[state.values.semester.toString().match(/.{1,4}/g)[1]]} 
+                    {/* ---- Semester and name of analysis ---- */}
+                    <h2>{translate.header_edit_content}</h2>
+                    <p>
+                      {' '}
+                      <b>{translate.header_semester} </b>
+                      {`${translate.course_short_semester[state.values.semester.toString().match(/.{1,4}/g)[1]]} 
                   ${state.values.semester.toString().match(/.{1,4}/g)[0]}`}
-                        <b> {translate.header_course_offering}</b> {state.values.analysisName}
-                      </p>
+                      <b> {translate.header_course_offering}</b> {state.values.analysisName}
+                    </p>
 
-                      <p>{translate.header_mandatory_fields}</p>
+                    <p>{translate.header_mandatory_fields}</p>
 
-                      {/* ----- ALERTS ----- */}
-                      {state.alert.length > 0 && (
-                        <Row>
-                          <Alert color="info" className="alert-margin">
-                            {state.alert}{' '}
-                          </Alert>
-                        </Row>
-                      )}
-                      {state.multiLineAlert.length > 0 && (
-                        <Row>
-                          <Alert color="info" className="alert-margin">
-                            {state.multiLineAlert.map((text, index) => (
-                              <p key={'alert-p-' + index}>{text}</p>
-                            ))}
-                          </Alert>
-                        </Row>
-                      )}
-                      {state.alertSuccess.length > 0 && (
-                        <Row>
-                          <Alert color="success">{state.alertSuccess} </Alert>
-                        </Row>
-                      )}
-                      <AlertError
-                        notValid={state.notValid}
-                        translations={i18n.messages[webContext.language]}
-                      />
-                      {/* FORM - FIRST COLUMN */}
-                      <Row className="form-group">
-                        <Col sm="4" className="col-form">
-                          <h4>{translate.header_upload}</h4>
-
-                          {/** ------ ANALYSIS-FILE UPLOAD ------- **/}
-                          <FormLabel
-                            translate={translate}
-                            header={'header_upload_file'}
-                            id={'info_upload_course_analysis'}
-                          />
-                          <UpLoad
-                            id="analysis"
-                            key="analysis"
-                            handleUpload={handleUploadFile}
-                            progress={fileProgress.analysis}
-                            path={webContext.browserConfig.proxyPrefixPath.uri}
-                            file={state.analysisFile}
-                            notValid={state.notValid}
-                            handleRemoveFile={handleRemoveFile}
-                            type="analysisFile"
-                          />
-                          {state.analysisFile.length > 0 && (
-                            <span>
-                              <FormLabel
-                                translate={translate}
-                                header={'header_upload_file_date'}
-                                id={'info_upload_course_analysis_date'}
-                              />
-                              <Input
-                                id="pdfAnalysisDate"
-                                key="pdfAnalysisDate"
-                                type="date"
-                                value={state.values.pdfAnalysisDate}
-                                onChange={handleInputChange}
-                                className={
-                                  state.notValid.mandatoryFields.includes('pdfAnalysisDate') ? 'not-valid ' : ''
-                                }
-                                style={{ maxWidth: '180px' }}
-                              />
-                            </span>
-                          )}
-
-                          <br />
-                        </Col>
-
-                        {/* ------ FORM - SECOND COLUMN ------ */}
-                        <Col sm="4" className="col-form">
-                          <h4>{translate.header_summarize}</h4>
-
-                          <FormLabel
-                            translate={translate}
-                            header={'header_course_changes_comment'}
-                            id={'info_course_changes_comment'}
-                            badgeText={state.values.alterationText.length || '0'}
-                            mode={state.values.alterationText.length > ALTERATION_TEXT_MAX ? 'danger' : 'warning'}
-                          />
-                          <Input
-                            style={{ height: 300 }}
-                            id="alterationText"
-                            key="alterationText"
-                            type="textarea"
-                            value={state.values.alterationText}
-                            onChange={handleInputChange}
-                            className={state.notValid.overMaxFields.includes('alterationText') ? 'not-valid' : ''}
-                          />
-                        </Col>
-
-                        {/* ------ FORM - THIRD COLUMN -------- */}
-                        <Col sm="4" className="col-form">
-                          <h4>{translate.header_check_data}</h4>
-
-                          <FormLabel translate={translate} header={'header_examiners'} id={'info_examiners'} />
-                          <Input
-                            id="examiners"
-                            key="examiners"
-                            type="text"
-                            value={state.values.examiners}
-                            onChange={handleInputChange}
-                            className={state.notValid.mandatoryFields.includes('examiners') ? 'not-valid' : ''}
-                          />
-
-                          <FormLabel translate={translate} header={'header_responsibles'} id={'info_responsibles'} />
-                          <Input
-                            id="responsibles"
-                            key="responsibles"
-                            type="text"
-                            value={state.values.responsibles}
-                            onChange={handleInputChange}
-                            className={state.notValid.mandatoryFields.includes('responsibles') ? 'not-valid' : ''}
-                          />
-
-                          <FormLabel translate={translate} header={'header_registrated'} id={'info_registrated'} />
-                          <Input
-                            id="registeredStudents"
-                            key="registeredStudents"
-                            type="number"
-                            placeholder="0"
-                            value={state.values.registeredStudents}
-                            onChange={handleInputChange}
-                            className={
-                              state.notValid.mandatoryFields.includes('registeredStudents') ? 'not-valid' : ''
-                            }
-                          />
-
-                          <FormLabel
-                            translate={translate}
-                            header={'header_examination_grade'}
-                            id={'info_examination_grade'}
-                          />
-                          <div className="calculate-examination-grade">
-                            <div>
-                              <h5>{translate.header_end_date}</h5>
-                              <Input
-                                id="endDate"
-                                key="endDate"
-                                type="date"
-                                value={state.values.endDate}
-                                onChange={handleInputChange}
-                                className={state.notValid.mandatoryFields.includes('endDate') ? 'not-valid' : ''}
-                                disabled={state.endDateInputEnabled ? '' : 'disabled'}
-                                max="2099-12-31"
-                              />
-                            </div>
-                            <div>
-                              <h5>{translate.header_result}</h5>
-                              <span>
-                                {state.ladokLoading === true ? (
-                                  <span className="ladok-loading-progress-inline">
-                                    <Spinner size="sm" color="primary" />
-                                  </span>
-                                ) : (
-                                  ''
-                                )}
-                                <Input
-                                  id="examinationGrade"
-                                  key="examinationGrade"
-                                  type="number"
-                                  placeholder="0"
-                                  value={state.values.examinationGrade}
-                                  onChange={handleInputChange}
-                                  className={
-                                    state.notValid.mandatoryFields.includes('examinationGrade') ? 'not-valid' : ''
-                                  }
-                                  disabled={state.examinationGradeInputEnabled ? '' : 'disabled'}
-                                />
-                              </span>
-                            </div>
-                          </div>
-
-                          {isPublished ? (
-                            <span>
-                              <div className="inline-flex">
-                                <h4>{translate.header_analysis_edit_comment}</h4>
-                                <InfoButton
-                                  addClass="padding-top-30"
-                                  id="info_edit_comments"
-                                  textObj={translate.info_edit_comments}
-                                />
-                              </div>
-                              <Input
-                                id="commentChange"
-                                key="commentChange"
-                                type="textarea"
-                                value={state.values.commentChange}
-                                onChange={handleInputChange}
-                                className={
-                                  state.notValid.mandatoryFields.indexOf('commentChange') > -1 ? 'not-valid' : ''
-                                }
-                              />
-                            </span>
-                          ) : (
-                            ''
-                          )}
-                        </Col>
+                    {/* ----- ALERTS ----- */}
+                    {state.alert.length > 0 && (
+                      <Row>
+                        <Alert color="info" className="alert-margin">
+                          {state.alert}{' '}
+                        </Alert>
                       </Row>
-                    </Form>
-                  ) : (
-                    ''
-                  )}
-                  {/************************************************************************************* */}
-                  {/*                                BUTTONS FOR PAG 2 AND 3                              */}
-                  {/************************************************************************************* */}
-                  {state.isPreviewMode &&
-                  state.values.changedDate.length > 0 &&
-                  webContext.status !== 'preview' &&
-                  webContext.analysisId ? (
-                    <CopyText
-                      textToCopy={
-                        webContext.browserConfig.hostUrl +
-                        webContext.browserConfig.proxyPrefixPath.uri +
-                        '/preview/' +
-                        webContext.analysisId +
-                        '?title=' +
-                        encodeURI(webContext.courseTitle.name + '_' + webContext.courseTitle.credits)
-                      }
-                      header={translate.header_copy_link}
-                    />
-                  ) : (
-                    ''
-                  )}
+                    )}
+                    {state.multiLineAlert.length > 0 && (
+                      <Row>
+                        <Alert color="info" className="alert-margin">
+                          {state.multiLineAlert.map((text, index) => (
+                            <p key={'alert-p-' + index}>{text}</p>
+                          ))}
+                        </Alert>
+                      </Row>
+                    )}
+                    {state.alertSuccess.length > 0 && (
+                      <Row>
+                        <Alert color="success">{state.alertSuccess} </Alert>
+                      </Row>
+                    )}
+                    <AlertError notValid={state.notValid} translations={i18n.messages[webContext.language]} />
+                    {/* FORM - FIRST COLUMN */}
+                    <Row className="form-group">
+                      <Col sm="4" className="col-form">
+                        <h4>{translate.header_upload}</h4>
 
-                  <Row className="button-container text-center">
-                    <Col sm="4" className="align-left-sm-center">
-                      {webContext.status === 'preview' ? (
-                        ''
-                      ) : (
-                        <Button className="back" color="secondary" id="back" key="back" onClick={handleBack}>
-                          {state.isPreviewMode ? translate.btn_back_edit : translate.btn_back}
-                        </Button>
-                      )}
-                    </Col>
-                    <Col sm="3" className="align-right-sm-center">
-                      {webContext.status !== 'preview' && (
-                        <Button color="secondary" id="cancel" key="cancel" onClick={toggleModal}>
-                          {translate.btn_cancel}
-                        </Button>
-                      )}
-                    </Col>
-                    <Col sm="3">
-                      {state.isPublished || webContext.status === 'preview' ? (
-                        ''
-                      ) : (
-                        <Button color="secondary" id="save" key="save" onClick={handleSave}>
-                          {state.isPreviewMode ? translate.btn_save_and_cancel : translate.btn_save}
-                        </Button>
-                      )}
-                    </Col>
-                    <Col sm="2">
-                      {webContext.status !== 'preview' && (
-                        <span>
-                          {state.isPreviewMode ? (
-                            <Button color="success" id="publish" key="publish" onClick={toggleModal}>
-                              {translate.btn_publish}
-                            </Button>
-                          ) : (
-                            <Button
-                              className="next"
-                              color="success"
-                              id="preview"
-                              key="preview"
-                              onClick={handlePreview}
-                            >
-                              {translate.btn_preview}
-                            </Button>
-                          )}
-                        </span>
-                      )}
-                    </Col>
-                  </Row>
-                </Col>
-              </Row>
-              {/************************************************************************************* */}
-              {/*                               MODALS FOR PUBLISH AND CANCEL                         */}
-              {/************************************************************************************* */}
-              <InfoModal
-                type="publish"
-                toggle={toggleModal}
-                isOpen={state.modalOpen.publish}
-                id={webContext.analysisId}
-                handleConfirm={handlePublish}
-                infoText={translate.info_publish}
-              />
-              <InfoModal
-                type="cancel"
-                toggle={toggleModal}
-                isOpen={state.modalOpen.cancel}
-                id={webContext.analysisId}
-                handleConfirm={handleCancel}
-                infoText={translate.info_cancel}
-              />
-            </div>
-          )}
-        </div>
-      )
-    }
+                        {/** ------ ANALYSIS-FILE UPLOAD ------- **/}
+                        <FormLabel
+                          translate={translate}
+                          header={'header_upload_file'}
+                          id={'info_upload_course_analysis'}
+                        />
+                        <UpLoad
+                          id="analysis"
+                          key="analysis"
+                          handleUpload={handleUploadFile}
+                          progress={fileProgress.analysis}
+                          path={webContext.browserConfig.proxyPrefixPath.uri}
+                          file={state.analysisFile}
+                          notValid={state.notValid}
+                          handleRemoveFile={handleRemoveFile}
+                          type="analysisFile"
+                        />
+                        {state.analysisFile.length > 0 && (
+                          <span>
+                            <FormLabel
+                              translate={translate}
+                              header={'header_upload_file_date'}
+                              id={'info_upload_course_analysis_date'}
+                            />
+                            <Input
+                              id="pdfAnalysisDate"
+                              key="pdfAnalysisDate"
+                              type="date"
+                              value={state.values.pdfAnalysisDate}
+                              onChange={handleInputChange}
+                              className={state.notValid.mandatoryFields.includes('pdfAnalysisDate') ? 'not-valid ' : ''}
+                              style={{ maxWidth: '180px' }}
+                            />
+                          </span>
+                        )}
+
+                        <br />
+                      </Col>
+
+                      {/* ------ FORM - SECOND COLUMN ------ */}
+                      <Col sm="4" className="col-form">
+                        <h4>{translate.header_summarize}</h4>
+
+                        <FormLabel
+                          translate={translate}
+                          header={'header_course_changes_comment'}
+                          id={'info_course_changes_comment'}
+                          badgeText={state.values.alterationText.length || '0'}
+                          mode={state.values.alterationText.length > ALTERATION_TEXT_MAX ? 'danger' : 'warning'}
+                        />
+                        <Input
+                          style={{ height: 300 }}
+                          id="alterationText"
+                          key="alterationText"
+                          type="textarea"
+                          value={state.values.alterationText}
+                          onChange={handleInputChange}
+                          className={state.notValid.overMaxFields.includes('alterationText') ? 'not-valid' : ''}
+                        />
+                      </Col>
+
+                      {/* ------ FORM - THIRD COLUMN -------- */}
+                      <Col sm="4" className="col-form">
+                        <h4>{translate.header_check_data}</h4>
+
+                        <FormLabel translate={translate} header={'header_examiners'} id={'info_examiners'} />
+                        <Input
+                          id="examiners"
+                          key="examiners"
+                          type="text"
+                          value={state.values.examiners}
+                          onChange={handleInputChange}
+                          className={state.notValid.mandatoryFields.includes('examiners') ? 'not-valid' : ''}
+                        />
+
+                        <FormLabel translate={translate} header={'header_responsibles'} id={'info_responsibles'} />
+                        <Input
+                          id="responsibles"
+                          key="responsibles"
+                          type="text"
+                          value={state.values.responsibles}
+                          onChange={handleInputChange}
+                          className={state.notValid.mandatoryFields.includes('responsibles') ? 'not-valid' : ''}
+                        />
+
+                        <FormLabel translate={translate} header={'header_registrated'} id={'info_registrated'} />
+                        <Input
+                          id="registeredStudents"
+                          key="registeredStudents"
+                          type="number"
+                          placeholder="0"
+                          value={state.values.registeredStudents}
+                          onChange={handleInputChange}
+                          className={state.notValid.mandatoryFields.includes('registeredStudents') ? 'not-valid' : ''}
+                        />
+
+                        <FormLabel
+                          translate={translate}
+                          header={'header_examination_grade'}
+                          id={'info_examination_grade'}
+                        />
+                        <div className="calculate-examination-grade">
+                          <div>
+                            <h5>{translate.header_end_date}</h5>
+                            <Input
+                              id="endDate"
+                              key="endDate"
+                              type="date"
+                              value={state.values.endDate}
+                              onChange={handleInputChange}
+                              className={state.notValid.mandatoryFields.includes('endDate') ? 'not-valid' : ''}
+                              disabled={state.endDateInputEnabled ? '' : 'disabled'}
+                              max="2099-12-31"
+                            />
+                          </div>
+                          <div>
+                            <h5>{translate.header_result}</h5>
+                            <span>
+                              {state.ladokLoading === true ? (
+                                <span className="ladok-loading-progress-inline">
+                                  <Spinner size="sm" color="primary" />
+                                </span>
+                              ) : (
+                                ''
+                              )}
+                              <Input
+                                id="examinationGrade"
+                                key="examinationGrade"
+                                type="number"
+                                placeholder="0"
+                                value={state.values.examinationGrade}
+                                onChange={handleInputChange}
+                                className={
+                                  state.notValid.mandatoryFields.includes('examinationGrade') ? 'not-valid' : ''
+                                }
+                                disabled={state.examinationGradeInputEnabled ? '' : 'disabled'}
+                              />
+                            </span>
+                          </div>
+                        </div>
+
+                        {isPublished ? (
+                          <span>
+                            <div className="inline-flex">
+                              <h4>{translate.header_analysis_edit_comment}</h4>
+                              <InfoButton
+                                addClass="padding-top-30"
+                                id="info_edit_comments"
+                                textObj={translate.info_edit_comments}
+                              />
+                            </div>
+                            <Input
+                              id="commentChange"
+                              key="commentChange"
+                              type="textarea"
+                              value={state.values.commentChange}
+                              onChange={handleInputChange}
+                              className={
+                                state.notValid.mandatoryFields.indexOf('commentChange') > -1 ? 'not-valid' : ''
+                              }
+                            />
+                          </span>
+                        ) : (
+                          ''
+                        )}
+                      </Col>
+                    </Row>
+                  </Form>
+                ) : (
+                  ''
+                )}
+                {/************************************************************************************* */}
+                {/*                                BUTTONS FOR PAG 2 AND 3                              */}
+                {/************************************************************************************* */}
+                {state.isPreviewMode &&
+                state.values.changedDate.length > 0 &&
+                webContext.status !== 'preview' &&
+                webContext.analysisId ? (
+                  <CopyText
+                    textToCopy={
+                      webContext.browserConfig.hostUrl +
+                      webContext.browserConfig.proxyPrefixPath.uri +
+                      '/preview/' +
+                      webContext.analysisId +
+                      '?title=' +
+                      encodeURI(webContext.courseTitle.name + '_' + webContext.courseTitle.credits)
+                    }
+                    header={translate.header_copy_link}
+                  />
+                ) : (
+                  ''
+                )}
+
+                <Row className="button-container text-center">
+                  <Col sm="4" className="align-left-sm-center">
+                    {webContext.status === 'preview' ? (
+                      ''
+                    ) : (
+                      <Button className="back" color="secondary" id="back" key="back" onClick={handleBack}>
+                        {state.isPreviewMode ? translate.btn_back_edit : translate.btn_back}
+                      </Button>
+                    )}
+                  </Col>
+                  <Col sm="3" className="align-right-sm-center">
+                    {webContext.status !== 'preview' && (
+                      <Button color="secondary" id="cancel" key="cancel" onClick={toggleModal}>
+                        {translate.btn_cancel}
+                      </Button>
+                    )}
+                  </Col>
+                  <Col sm="3">
+                    {state.isPublished || webContext.status === 'preview' ? (
+                      ''
+                    ) : (
+                      <Button color="secondary" id="save" key="save" onClick={handleSave}>
+                        {state.isPreviewMode ? translate.btn_save_and_cancel : translate.btn_save}
+                      </Button>
+                    )}
+                  </Col>
+                  <Col sm="2">
+                    {webContext.status !== 'preview' && (
+                      <span>
+                        {state.isPreviewMode ? (
+                          <Button color="success" id="publish" key="publish" onClick={toggleModal}>
+                            {translate.btn_publish}
+                          </Button>
+                        ) : (
+                          <Button className="next" color="success" id="preview" key="preview" onClick={handlePreview}>
+                            {translate.btn_preview}
+                          </Button>
+                        )}
+                      </span>
+                    )}
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+            {/************************************************************************************* */}
+            {/*                               MODALS FOR PUBLISH AND CANCEL                         */}
+            {/************************************************************************************* */}
+            <InfoModal
+              type="publish"
+              toggle={toggleModal}
+              isOpen={state.modalOpen.publish}
+              id={webContext.analysisId}
+              handleConfirm={handlePublish}
+              infoText={translate.info_publish}
+            />
+            <InfoModal
+              type="cancel"
+              toggle={toggleModal}
+              isOpen={state.modalOpen.cancel}
+              id={webContext.analysisId}
+              handleConfirm={handleCancel}
+              infoText={translate.info_cancel}
+            />
+          </div>
+        )}
+      </div>
+    )
   }
-
-const handleMultiLineAlert = alertVariables => {
-  const { init, messages, ladokId, endDate, examinationGrade, endDateLadok, examinationGradeLadok } = alertVariables
-  const multiLineAlert = []
-
-  // Automatic calculation of examination rate is possible
-  if (ladokId && ladokId.length) {
-    if (!(endDate === endDateLadok && Number(examinationGrade) === examinationGradeLadok)) {
-      multiLineAlert.push(messages.alert_graduation_rate_fields_updated)
-      multiLineAlert.push(
-        `${messages.original_values_are} ${endDateLadok} ${messages.and} ${examinationGradeLadok}.`
-      )
-    }
-    // Round is chosen, but automatic calculation of examination rate is not possible
-  } else if (!init) {
-    multiLineAlert.push(messages.alert_graduation_rate_cant_be_calculated)
-  }
-  return multiLineAlert
 }
 
-const FormLabel = ({ translate, header, id, badgeText, mode = 'warning' }) => {
-  return (
-    <span className="inline-flex">
-      <Label>
-        {translate[header]} {badgeText ? <span className={`badge badge-${mode} badge-pill`}>{badgeText}</span> : null}
-      </Label>
-      <InfoButton id={id} textObj={translate[id]} />
-    </span>
-  )
-}
+const FormLabel = ({ translate, header, id, badgeText, mode = 'warning' }) => (
+  <span className="inline-flex">
+    <Label>
+      {translate[header]} {badgeText ? <span className={`badge badge-${mode} badge-pill`}>{badgeText}</span> : null}
+    </Label>
+    <InfoButton id={id} textObj={translate[id]} />
+  </span>
+)
 
 const AlertError = ({ notValid, translations }) => {
   const { mandatoryFields, overMaxFields, wrongFileTypeFields } = notValid

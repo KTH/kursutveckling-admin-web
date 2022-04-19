@@ -17,84 +17,62 @@ import {
   Spinner,
 } from 'reactstrap'
 
-//Custom components
 import InfoModal from './InfoModal'
 import InfoButton from './InfoButton'
 import i18n from '../../../../i18n/index'
-import { EMPTY, SERVICE_URL } from '../util/constants'
+import { SERVICE_URL } from '../util/constants'
 import { getDateFormat, getValueFromObjectList } from '../util/helpers'
 import { useWebContext } from '../context/WebContext'
 
 const paramsReducer = (state, action) => ({ ...state, ...action })
 
 function AnalysisMenu(props) {
-  const { context: rawContext } = props
-  const context = React.useMemo(() => rawContext, [rawContext])
+  const [webContext] = useWebContext()
+  const { activeSemester, firstVisit: extFirstVisit, progress, saved, semesterList, tempData } = props
+  const context = React.useMemo(() => webContext, [webContext])
   const [state, setState] = useReducer(paramsReducer, {
-      alert: '',
-      firstVisit: props.firstVisit,
-      showEditBtn: false,
-      dropdownOpen: false,
-      collapseOpen: props.progress === 'back_new',
-      modalOpen: {
-        delete: false,
-        info: false,
-        copy: false,
-      },
-      semester:
-        props.activeSemester && props.activeSemester.length > 0
-          ? props.activeSemester
-          : props.semesterList[0],
-      rounds: props.tempData && !props.saved ? props.tempData.roundIdList.split(',') : [],
-      usedRounds: context.usedRounds.usedRounds || [],
-      draftAnalysis: context.usedRounds.draftAnalysis || [],
-      publishedAnalysis: context.usedRounds.publishedAnalysis || [],
-      selectedRadio: {
-        draft: '',
-        published: '',
-      },
-      lastSelected: props.tempData ? 'new' : '',
-      canOnlyPreview: '',
-      temporaryData: props.tempData,
-      newSemester: false,
-      statisticsParams: {
-        endDate: props.tempData ? props.tempData.statisticsParams.endDate : '',
-        ladokId: props.tempData ? props.tempData.statisticsParams.ladokId : [],
-      },
-      ladokLoading: false,
-    })
+    alert: '',
+    firstVisit: extFirstVisit,
+    showEditBtn: false,
+    dropdownOpen: false,
+    collapseOpen: progress === 'back_new',
+    modalOpen: {
+      delete: false,
+      info: false,
+      copy: false,
+    },
+    semester: activeSemester && activeSemester.length > 0 ? activeSemester : semesterList[0],
+    rounds: tempData && !saved ? tempData.roundIdList.split(',') : [],
+    usedRounds: context.usedRounds.usedRounds || [],
+    draftAnalysis: context.usedRounds.draftAnalysis || [],
+    publishedAnalysis: context.usedRounds.publishedAnalysis || [],
+    selectedRadio: {
+      draft: '',
+      published: '',
+    },
+    lastSelected: tempData ? 'new' : '',
+    canOnlyPreview: '',
+    temporaryData: tempData,
+    newSemester: false,
+    statisticsParams: {
+      endDate: tempData ? tempData.statisticsParams.endDate : '',
+      ladokId: tempData ? tempData.statisticsParams.ladokId : [],
+    },
+    ladokLoading: false,
+  })
 
-    
-  //******************************* SEMESTER DROPDOWN ******************************* */
-  //********************************************************************************** */
+  //* ****************************** SEMESTER DROPDOWN ******************************* */
+  //* ********************************************************************************* */
   function toggleDropdown(event) {
     event.preventDefault()
+    console.log('dropddown')
     setState({
       dropdownOpen: !state.dropdownOpen,
     })
   }
 
-  function handleSelectedSemester(event) {
-    event.preventDefault()
-    let radios = state.selectedRadio
-    radios.published = ''
-    radios.draft = ''
-    state.statisticsParams.endDate = ''
-    state.statisticsParams.ladokId = []
-    getUsedRounds(event.target.id)
-    setState({
-      semester: event.target.id,
-      collapseOpen: true,
-      firstVisit: false,
-      rounds: [],
-      lastSelected: '',
-      selectedRadio: radios,
-      newSemester: true,
-    })
-  }
-
-  //************************ CHECKBOXES AND RADIO BUTTONS **************************** */
-  //********************************************************************************** */
+  //* * ********************** CHECKBOXES AND RADIO BUTTONS **************************** */
+  //* ********************************************************************************* */
   function handleRoundCheckbox(event) {
     event.persist()
     let endDate = event.target.getAttribute('data-enddate')
@@ -163,8 +141,8 @@ function AnalysisMenu(props) {
     }
   }
 
-  //************************ SUBMIT BUTTONS **************************** */
-  //******************************************************************** */
+  //* *********************** SUBMIT BUTTONS **************************** */
+  //* ******************************************************************* */
 
   function goToEditMode(event) {
     event.preventDefault()
@@ -175,14 +153,7 @@ function AnalysisMenu(props) {
       if (lastSelected === 'new') {
         props.editMode(semester, rounds, null, lastSelected, temporaryData, statisticsParams)
       } else {
-        props.editMode(
-          semester,
-          null,
-          selectedRadio[lastSelected],
-          lastSelected,
-          temporaryData,
-          statisticsParams
-        )
+        props.editMode(semester, null, selectedRadio[lastSelected], lastSelected, temporaryData, statisticsParams)
       }
     } else {
       setState({
@@ -196,13 +167,13 @@ function AnalysisMenu(props) {
     window.location = `${SERVICE_URL.admin}${context.courseCode}?serv=kutv&event=cancel`
   }
 
- async function handleDelete(id, fromModal = false) {
+  async function handleDelete(id, fromModal = false) {
     if (!fromModal) {
       if (state.selectedRadio.draft.length > 0) {
         let modalOpen = state.modalOpen
         modalOpen.delete = !modalOpen.delete === true
         setState({
-          modalOpen: modalOpen,
+          modalOpen,
         })
       } else {
         setState({
@@ -240,9 +211,7 @@ function AnalysisMenu(props) {
 
   function handlePreview(event) {
     event.preventDefault()
-    const { context } = props
-    const analysisId =
-      state.selectedRadio.draft.length > 0 ? state.selectedRadio.draft : state.selectedRadio.published
+    const analysisId = state.selectedRadio.draft.length > 0 ? state.selectedRadio.draft : state.selectedRadio.published
     window.open(
       `${context.browserConfig.hostUrl}${
         context.browserConfig.proxyPrefixPath.uri
@@ -252,19 +221,18 @@ function AnalysisMenu(props) {
     )
   }
 
-function toggleModal(event) {
+  function toggleModal(event) {
     let modalOpen = state.modalOpen
     modalOpen[event.target.id] = !modalOpen[event.target.id]
     setState({
       modalOpen,
     })
   }
-  //******************************************************************** */
-  //****************************** OTHER ******************************* */
+  //* ******************************************************************* */
+  //* ***************************** OTHER ******************************* */
 
   function getUsedRounds(semester) {
-    
-    const { context, analysisId } = props
+    const { analysisId } = props
     const prevState = state
     return context.getUsedRounds(context.courseData.courseCode, semester).then(result => {
       if (analysisId && analysisId.length > 0) {
@@ -277,7 +245,7 @@ function toggleModal(event) {
         }
       }
       setState({
-        semester: semester,
+        semester,
         usedRounds: context.usedRounds.usedRounds,
         draftAnalysis: context.usedRounds.draftAnalysis,
         publishedAnalysis: context.usedRounds.publishedAnalysis,
@@ -288,111 +256,209 @@ function toggleModal(event) {
     })
   }
 
+  function handleSelectedSemester(event) {
+    event.preventDefault()
+    const { selectedRadio: radios } = state
+    radios.published = ''
+    radios.draft = ''
+    state.statisticsParams.endDate = ''
+    state.statisticsParams.ladokId = []
+    getUsedRounds(event.target.id)
+    setState({
+      semester: event.target.id,
+      collapseOpen: true,
+      firstVisit: false,
+      rounds: [],
+      lastSelected: '',
+      selectedRadio: radios,
+      newSemester: true,
+    })
+  }
+
   function showEditButton() {
     return context.status === 'published'
       ? state.publishedAnalysis.length > 0
-      : state.draftAnalysis.length > 0 ||
-          props.roundList[state.semester].length > state.usedRounds.length
+      : state.draftAnalysis.length > 0 || props.roundList[state.semester].length > state.usedRounds.length
   }
 
-    const { status, semesterList, roundList} = props
-    const translate = i18n.messages[context.language].messages
-    const showAllEmptyNew =
-      status !== 'published' &&
-      state.draftAnalysis.length === 0 &&
-      roundList[state.semester].length === state.usedRounds.length
-    const showAllEmptyPublished = status === 'published' && state.publishedAnalysis.length === 0
-    const {
-      alert,
-      firstVisit,
-      dropdownOpen,
-      collapseOpen,
-      modalOpen,
-      semester,
-      rounds,
-      usedRounds,
-      draftAnalysis,
-      publishedAnalysis,
-      selectedRadio,
-      canOnlyPreview,
-      statisticsParams,
-      ladokLoading,
-    } = state
+  const { status, roundList } = props
+  const translate = i18n.messages[context.language].messages
+  const showAllEmptyNew =
+    status !== 'published' &&
+    state.draftAnalysis.length === 0 &&
+    roundList[state.semester].length === state.usedRounds.length
+  const showAllEmptyPublished = status === 'published' && state.publishedAnalysis.length === 0
+  const {
+    alert,
+    firstVisit,
+    dropdownOpen,
+    collapseOpen,
+    modalOpen,
+    semester,
+    rounds,
+    usedRounds,
+    draftAnalysis,
+    publishedAnalysis,
+    selectedRadio,
+    canOnlyPreview,
+    statisticsParams,
+    ladokLoading,
+  } = state
 
-    return (
-      <div id="YearAndRounds">
-        <p>{translate.intro_analysis_menu}</p>
+  return (
+    <div id="YearAndRounds">
+      <p>{translate.intro_analysis_menu}</p>
 
-        {/************************************************************************************* */}
-        {/*                               SEMESTER DROPDOWN                          */}
-        {/************************************************************************************* */}
-        <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className="select-semester">
-          <div className="inline-flex padding-top-30">
-            <h3> {translate.select_semester} </h3>
-            <InfoButton addClass="padding-top-30" id="info_select_semester" textObj={translate.info_select_semester} />
-          </div>
+      {/* ************************************************************************************ */}
+      {/*                               SEMESTER DROPDOWN                          */}
+      {/* ************************************************************************************ */}
+      <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className="select-semester">
+        <div className="inline-flex padding-top-30">
+          <h3> {translate.select_semester} </h3>
+          <InfoButton addClass="padding-top-30" id="info_select_semester" textObj={translate.info_select_semester} />
+        </div>
 
-          <DropdownToggle>
-            <span>
-              {semester && semester > 0 && !firstVisit
-                ? `${translate.course_short_semester[semester.toString().match(/.{1,4}/g)[1]]} 
+        <DropdownToggle>
+          <span>
+            {semester && semester > 0 && !firstVisit
+              ? `${translate.course_short_semester[semester.toString().match(/.{1,4}/g)[1]]} 
                                     ${semester.toString().match(/.{1,4}/g)[0]}`
-                : translate.select_semester}
-            </span>
-            <span className="caretholder" id={'_spanCaret'}></span>
-          </DropdownToggle>
-          <DropdownMenu>
-            {semesterList &&
-              semesterList.map(semester => (
-                <DropdownItem id={semester} key={semester} onClick={handleSelectedSemester}>
-                  {`
-                                    ${translate.course_short_semester[semester.toString().match(/.{1,4}/g)[1]]} 
-                                    ${semester.toString().match(/.{1,4}/g)[0]}
+              : translate.select_semester}
+          </span>
+          <span className="caretholder" id={'_spanCaret'}></span>
+        </DropdownToggle>
+        <DropdownMenu>
+          {semesterList &&
+            semesterList.map(semesterItem => (
+              <DropdownItem id={semester} key={semesterItem} onClick={handleSelectedSemester}>
+                {`
+                                    ${translate.course_short_semester[semesterItem.toString().match(/.{1,4}/g)[1]]} 
+                                    ${semesterItem.toString().match(/.{1,4}/g)[0]}
                                 `}
-                </DropdownItem>
-              ))}
-          </DropdownMenu>
-        </Dropdown>
+              </DropdownItem>
+            ))}
+        </DropdownMenu>
+      </Dropdown>
 
-        {alert.length > 0 ? (
-          <Alert color="danger" className="alert-margin">
-            {' '}
-            {alert}
-          </Alert>
-        ) : (
-          ''
-        )}
+      {alert.length > 0 ? (
+        <Alert color="danger" className="alert-margin">
+          {' '}
+          {alert}
+        </Alert>
+      ) : (
+        ''
+      )}
 
-        {/************************************************************************************* */}
-        {/*                        SELECT BUTTONS FOR ANALYSIS OR ROUNDS                        */}
-        {/************************************************************************************* */}
-        <Collapse isOpen={collapseOpen}>
-          <Row id="analysisMenuContainer">
-            {showAllEmptyNew || showAllEmptyPublished ? (
-              <Alert color="info" className="alert-margin">
-                <p>{showAllEmptyNew ? translate.alert_no_rounds : translate.alert_no_published}</p>
-              </Alert>
-            ) : (
-              <Form>
-                <div className="inline-flex">
-                  <h3>{translate.header_analysis_menu}</h3>
-                  <InfoButton
-                    addClass="padding-top-30"
-                    id="info_choose_course_offering"
-                    textObj={translate.info_choose_course_offering}
-                  />
+      {/** *********************************************************************************** */}
+      {/*                        SELECT BUTTONS FOR ANALYSIS OR ROUNDS                        */}
+      {/** *********************************************************************************** */}
+      <Collapse isOpen={collapseOpen}>
+        <Row id="analysisMenuContainer">
+          {showAllEmptyNew || showAllEmptyPublished ? (
+            <Alert color="info" className="alert-margin">
+              <p>{showAllEmptyNew ? translate.alert_no_rounds : translate.alert_no_published}</p>
+            </Alert>
+          ) : (
+            <Form>
+              <div className="inline-flex">
+                <h3>{translate.header_analysis_menu}</h3>
+                <InfoButton
+                  addClass="padding-top-30"
+                  id="info_choose_course_offering"
+                  textObj={translate.info_choose_course_offering}
+                />
+              </div>
+
+              {status === 'new' || status === 'draft' ? (
+                <div className="selectBlock">
+                  {/** *********************************************************************************** */}
+                  {/*                              DRAFT ANALYSIS                                          */}
+                  {/** *********************************************************************************** */}
+                  {draftAnalysis.length > 0 && (
+                    <FormGroup id="drafts">
+                      <p>{translate.intro_draft}</p>
+                      <ul className="no-padding-left">
+                        {draftAnalysis.map(analysis => (
+                          <li className="select-list" key={analysis.analysisId}>
+                            <Label key={'Label' + analysis.analysisId} for={analysis.analysisId}>
+                              <Input
+                                type="radio"
+                                id={`${!analysis.hasAccess ? analysis.analysisId + '_preview' : analysis.analysisId}`}
+                                key={analysis.analysisId}
+                                value={analysis.analysisId}
+                                onChange={handleSelectedDraft}
+                                checked={selectedRadio.draft === analysis.analysisId}
+                              />
+                              {analysis.analysisName}{' '}
+                              <span className="no-access">
+                                {' '}
+                                {analysis.hasAccess ? '' : translate.not_authorized_course_offering}
+                              </span>
+                            </Label>
+                            <br />
+                          </li>
+                        ))}
+                      </ul>
+                    </FormGroup>
+                  )}
+
+                  {/** *********************************************************************************** */}
+                  {/*                               NEW ANALYSIS                                          */}
+                  {/** *********************************************************************************** */}
+                  {roundList[semester].length > usedRounds.length ? (
+                    <FormGroup id="rounds">
+                      <p>{translate.intro_new}</p>
+                      <ul className="no-padding-left">
+                        {roundList[semester].map(round =>
+                          usedRounds.indexOf(round.roundId) < 0 ? (
+                            <li className="select-list" key={round.roundId}>
+                              <Label key={'Label' + round.roundId} for={round.roundId}>
+                                <Input
+                                  type="checkbox"
+                                  id={round.roundId}
+                                  key={'checkbox' + round.roundId}
+                                  onChange={handleRoundCheckbox}
+                                  checked={rounds.indexOf(round.roundId) > -1}
+                                  name={round.roundId}
+                                  disabled={!round.hasAccess}
+                                  data-uid={round.ladokUID}
+                                  data-enddate={round.endDate}
+                                />
+                                {round.shortName
+                                  ? round.shortName + ' '
+                                  : `${translate.course_short_semester[semester.toString().match(/.{1,4}/g)[1]]} ${
+                                      semester.toString().match(/.{1,4}/g)[0]
+                                    }-${round.roundId} `}
+                                ( {translate.label_start_date} {getDateFormat(round.startDate, round.language)},{' '}
+                                {round.language} )
+                                <span className="no-access">
+                                  {' '}
+                                  {round.hasAccess ? '' : translate.not_authorized_publish_new}
+                                </span>
+                              </Label>
+                              <br />
+                            </li>
+                          ) : (
+                            ''
+                          )
+                        )}
+                      </ul>
+                    </FormGroup>
+                  ) : (
+                    ''
+                  )}
                 </div>
-
-                {status === 'new' || status === 'draft' ? (
-                  <div className="selectBlock">
-                    {/************************************************************************************* */}
-                    {/*                              DRAFT ANALYSIS                                          */}
-                    {/************************************************************************************* */}
-                    {draftAnalysis.length > 0 ? (
-                      <FormGroup id="drafts">
-                        <p>{translate.intro_draft}</p>
+              ) : (
+                <div className="selectBlock">
+                  <FormGroup>
+                    {/** *********************************************************************************** */}
+                    {/*                               PUBLISHED ANALYSIS                                    */}
+                    {/** *********************************************************************************** */}
+                    {publishedAnalysis.length > 0 ? (
+                      <div>
+                        <p>{translate.intro_published}</p>
                         <ul className="no-padding-left">
-                          {draftAnalysis.map(analysis => (
+                          {publishedAnalysis.map(analysis => (
                             <li className="select-list" key={analysis.analysisId}>
                               <Label key={'Label' + analysis.analysisId} for={analysis.analysisId}>
                                 <Input
@@ -400,9 +466,8 @@ function toggleModal(event) {
                                   id={`${!analysis.hasAccess ? analysis.analysisId + '_preview' : analysis.analysisId}`}
                                   key={analysis.analysisId}
                                   value={analysis.analysisId}
-                                  onChange={handleSelectedDraft}
-                                  checked={selectedRadio.draft === analysis.analysisId}
-                                  //disabled ={!analysis.hasAccess}
+                                  onChange={handleSelectedPublished}
+                                  checked={selectedRadio.published === analysis.analysisId}
                                 />
                                 {analysis.analysisName}{' '}
                                 <span className="no-access">
@@ -414,192 +479,98 @@ function toggleModal(event) {
                             </li>
                           ))}
                         </ul>
-                      </FormGroup>
+                      </div>
                     ) : (
-                      ''
+                      <p>{translate.published_empty}</p>
                     )}
-
-                    {/************************************************************************************* */}
-                    {/*                               NEW ANALYSIS                                          */}
-                    {/************************************************************************************* */}
-                    {roundList[semester].length > usedRounds.length ? (
-                      <FormGroup id="rounds">
-                        <p>{translate.intro_new}</p>
-                        <ul className="no-padding-left">
-                          {roundList[semester].map(round =>
-                            usedRounds.indexOf(round.roundId) < 0 ? (
-                              <li className="select-list" key={round.roundId}>
-                                <Label key={'Label' + round.roundId} for={round.roundId}>
-                                  <Input
-                                    type="checkbox"
-                                    id={round.roundId}
-                                    key={'checkbox' + round.roundId}
-                                    onChange={handleRoundCheckbox}
-                                    checked={rounds.indexOf(round.roundId) > -1}
-                                    name={round.roundId}
-                                    disabled={!round.hasAccess}
-                                    data-uid={round.ladokUID}
-                                    data-enddate={round.endDate}
-                                  />
-                                  {round.shortName
-                                    ? round.shortName + ' '
-                                    : `${
-                                        translate.course_short_semester[
-                                          semester.toString().match(/.{1,4}/g)[1]
-                                        ]
-                                      } ${semester.toString().match(/.{1,4}/g)[0]}-${round.roundId} `}
-                                  ( {translate.label_start_date} {getDateFormat(round.startDate, round.language)},{' '}
-                                  {round.language} )
-                                  <span className="no-access">
-                                    {' '}
-                                    {round.hasAccess ? '' : translate.not_authorized_publish_new}
-                                  </span>
-                                </Label>
-                                <br />
-                              </li>
-                            ) : (
-                              ''
-                            )
-                          )}
-                        </ul>
-                      </FormGroup>
-                    ) : (
-                      ''
-                    )}
-                  </div>
-                ) : (
-                  <div className="selectBlock">
-                    <FormGroup>
-                      {/************************************************************************************* */}
-                      {/*                               PUBLISHED ANALYSIS                                    */}
-                      {/************************************************************************************* */}
-                      {publishedAnalysis.length > 0 ? (
-                        <div>
-                          <p>{translate.intro_published}</p>
-                          <ul className="no-padding-left">
-                            {publishedAnalysis.map(analysis => (
-                              <li className="select-list" key={analysis.analysisId}>
-                                <Label key={'Label' + analysis.analysisId} for={analysis.analysisId}>
-                                  <Input
-                                    type="radio"
-                                    id={`${
-                                      !analysis.hasAccess ? analysis.analysisId + '_preview' : analysis.analysisId
-                                    }`}
-                                    key={analysis.analysisId}
-                                    value={analysis.analysisId}
-                                    onChange={handleSelectedPublished}
-                                    checked={selectedRadio.published === analysis.analysisId}
-                                    //disabled = {!analysis.hasAccess}
-                                  />
-                                  {analysis.analysisName}{' '}
-                                  <span className="no-access">
-                                    {' '}
-                                    {analysis.hasAccess ? '' : translate.not_authorized_course_offering}
-                                  </span>
-                                </Label>
-                                <br />
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      ) : (
-                        <p>{translate.published_empty}</p>
-                      )}
-                    </FormGroup>
-                  </div>
-                )}
-              </Form>
-            )}
-          </Row>
-        </Collapse>
-        {/************************************************************************************* */}
-        {/*                             BUTTONS FOR ANALYSIS MENU                               */}
-        {/************************************************************************************* */}
-        <Row className="button-container text-center">
-          <Col sm="12" lg="4">
-            {selectedRadio.draft.length > 0 && !canOnlyPreview ? (
-              <span>
-                <Button
-                  color="danger"
-                  id="delete"
-                  key="delete"
-                  onClick={toggleModal}
-                  style={{ marginRight: '5px' }}
-                >
-                  {translate.btn_delete}
-                </Button>
-                <Button color="secondary" id="copy" key="copy" onClick={toggleModal}>
-                  {translate.btn_copy}
-                </Button>
-              </span>
-            ) : (
-              ''
-            )}
-          </Col>
-          <Col sm="12" lg="4">
-            <Button color="secondary" id="cancel" key="cancel" onClick={handleCancel}>
-              {translate.btn_cancel}
-            </Button>
-          </Col>
-          <Col sm="12" lg="4">
-            {!firstVisit && showEditButton() && !canOnlyPreview ? (
-              <div>
-                <Button
-                  className="loading-button next"
-                  color="success"
-                  id="new"
-                  key="new"
-                  onClick={goToEditMode}
-                  disabled={firstVisit}
-                >
-                  <Spinner
-                    size="sm"
-                    className={
-                      ladokLoading && statisticsParams.ladokId.length
-                        ? 'loading-button-spinner-loading'
-                        : 'loading-button-spinner'
-                    }
-                  />
-                  <div>{translate.btn_add_analysis}</div>
-                </Button>
-              </div>
-            ) : (
-              ''
-            )}
-            {canOnlyPreview ? (
-              <Button className="next" color="success" id="new" key="new" onClick={handlePreview}>
-                {translate.btn_preview}
-              </Button>
-            ) : (
-              ''
-            )}
-          </Col>
+                  </FormGroup>
+                </div>
+              )}
+            </Form>
+          )}
         </Row>
-        {/************************************************************************************* */}
-        {/*                               MODALS FOR DELETE AND COPY                            */}
-        {/************************************************************************************* */}
-        <InfoModal
-          type="delete"
-          toggle={toggleModal}
-          isOpen={modalOpen.delete}
-          id={selectedRadio.draft}
-          handleConfirm={handleDelete}
-          infoText={translate.info_delete}
-        />
-        <InfoModal
-          type="copy"
-          toggle={toggleModal}
-          isOpen={modalOpen.copy}
-          id={'copy'}
-          url={`${context.browserConfig.hostUrl}${context.browserConfig.proxyPrefixPath.uri}/preview/${
-            selectedRadio.draft
-          }?title=${encodeURI(context.courseTitle.name + '_' + context.courseTitle.credits)}`}
-          infoText={translate.info_copy_link}
-          copyHeader={translate.header_copy_link}
-        />
-      </div>
-    )
-
+      </Collapse>
+      {/** *********************************************************************************** */}
+      {/*                             BUTTONS FOR ANALYSIS MENU                               */}
+      {/** *********************************************************************************** */}
+      <Row className="button-container text-center">
+        <Col sm="12" lg="4">
+          {selectedRadio.draft.length > 0 && !canOnlyPreview ? (
+            <span>
+              <Button color="danger" id="delete" key="delete" onClick={toggleModal} style={{ marginRight: '5px' }}>
+                {translate.btn_delete}
+              </Button>
+              <Button color="secondary" id="copy" key="copy" onClick={toggleModal}>
+                {translate.btn_copy}
+              </Button>
+            </span>
+          ) : (
+            ''
+          )}
+        </Col>
+        <Col sm="12" lg="4">
+          <Button color="secondary" id="cancel" key="cancel" onClick={handleCancel}>
+            {translate.btn_cancel}
+          </Button>
+        </Col>
+        <Col sm="12" lg="4">
+          {!firstVisit && showEditButton() && !canOnlyPreview ? (
+            <div>
+              <Button
+                className="loading-button next"
+                color="success"
+                id="new"
+                key="new"
+                onClick={goToEditMode}
+                disabled={firstVisit}
+              >
+                <Spinner
+                  size="sm"
+                  className={
+                    ladokLoading && statisticsParams.ladokId.length
+                      ? 'loading-button-spinner-loading'
+                      : 'loading-button-spinner'
+                  }
+                />
+                <div>{translate.btn_add_analysis}</div>
+              </Button>
+            </div>
+          ) : (
+            ''
+          )}
+          {canOnlyPreview ? (
+            <Button className="next" color="success" id="new" key="new" onClick={handlePreview}>
+              {translate.btn_preview}
+            </Button>
+          ) : (
+            ''
+          )}
+        </Col>
+      </Row>
+      {/** *********************************************************************************** */}
+      {/*                               MODALS FOR DELETE AND COPY                            */}
+      {/** *********************************************************************************** */}
+      <InfoModal
+        type="delete"
+        toggle={toggleModal}
+        isOpen={modalOpen.delete}
+        id={selectedRadio.draft}
+        handleConfirm={handleDelete}
+        infoText={translate.info_delete}
+      />
+      <InfoModal
+        type="copy"
+        toggle={toggleModal}
+        isOpen={modalOpen.copy}
+        id={'copy'}
+        url={`${context.browserConfig.hostUrl}${context.browserConfig.proxyPrefixPath.uri}/preview/${
+          selectedRadio.draft
+        }?title=${encodeURI(context.courseTitle.name + '_' + context.courseTitle.credits)}`}
+        infoText={translate.info_copy_link}
+        copyHeader={translate.header_copy_link}
+      />
+    </div>
+  )
 }
 
 export default AnalysisMenu
