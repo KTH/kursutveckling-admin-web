@@ -1,5 +1,3 @@
-'use strict'
-
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
@@ -11,11 +9,11 @@ import '../../css/kursutveckling-admin.scss'
 
 function _renderOnClientSide() {
   const isClientSide = typeof window !== 'undefined'
-  
+
   if (!isClientSide) {
     return
   }
-    
+
   const webContext = {}
   uncompressData(webContext)
 
@@ -34,10 +32,10 @@ function appFactory(applicationStore, context) {
   return (
     <WebContextProvider configIn={context}>
       <Routes>
-        <Route path="/kursinfoadmin/kursutveckling" element={<AdminPage />} asyncBefore={AdminPage.fetchData} />
-        <Route path="/kursinfoadmin/kursutveckling/preview" element={<AdminPage />} />
+        <Route path="/:id" element={<AdminPage />} />
+        <Route path="/preview" element={<AdminPage />} />
       </Routes>
-      </WebContextProvider>
+    </WebContextProvider>
   )
 }
 
