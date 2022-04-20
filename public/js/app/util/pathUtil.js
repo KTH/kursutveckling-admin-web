@@ -3,6 +3,6 @@ function _addParamToPath (path, param, value) {
   return path.replace(paramToReplace, value)
 }
 
-module.exports = {
+export {
   addParamToPath: _addParamToPath
 }

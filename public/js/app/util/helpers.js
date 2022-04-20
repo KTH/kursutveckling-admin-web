@@ -104,8 +104,6 @@ const getAccess = (memberOf, round, courseCode, semester) => {
   return false
 }
 
-
-
 const getValueFromObjectList = (objectList, value, key, returnKey) => {
   let object
   for (let index = 0; index < objectList.length; index++) {
@@ -117,7 +115,7 @@ const getValueFromObjectList = (objectList, value, key, returnKey) => {
   return null
 }
 
-module.exports = {
+export {
   getAccess,
   noAccessToRoundsList,
   formatDate,
