@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
-import { Alert } from '@kth/kth-reactstrap/dist/components/studinfo'
+import { Alert } from 'reactstrap'
 import { getDateFormat } from '../../util/helpers'
 import LinkToValidSyllabusPdf from './LinkToValidSyllabus'
 import i18n from '../../../../../i18n'
@@ -138,7 +138,7 @@ function renderAlertToTop(langIndex, roundsWithoutMemo) {
     i18n.messages[langIndex].messages
   if (alertContainer) {
     ReactDOM.render(
-      <Alert type="info" className="alert-margin">
+      <Alert color="info" className="alert-margin">
         <h5>{alertTitle}</h5>
         <p>{`${
           langIndex === 0

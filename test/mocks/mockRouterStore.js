@@ -4,7 +4,7 @@ import { addClientFunctionsToWebContext } from '../../public/js/app/client-conte
 
 const storeFunctions = addClientFunctionsToWebContext()
 
-const mockWebContext  = (userLang = 'en') => {
+const mockWebContext = (userLang = 'en') => {
   const routerWithData = {
     ...storeFunctions,
     language: 1,
@@ -18,6 +18,7 @@ const mockWebContext  = (userLang = 'en') => {
       port: 3000,
       proxyPrefixPath: { uri: '/kursinfoadmin/kursutveckling' },
       storageUri: 'https://kursinfostoragestage/kursutveckling-blob-container/',
+      memoStorageUri: 'https://kursinfostoragestage.blob.core.windows.net/memo-blob-container/',
       useSsl: false,
     },
     usedRounds: {

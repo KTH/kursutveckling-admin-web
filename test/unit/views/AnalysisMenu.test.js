@@ -4,7 +4,7 @@ import '@testing-library/jest-dom/extend-expect'
 import i18n from '../../../i18n'
 import { StaticRouter } from 'react-router-dom/server'
 import AnalysisMenu from '../../../public/js/app/components/AnalysisMenu'
-import mockWebContext  from '../../mocks/mockRouterStore'
+import mockWebContext from '../../mocks/mockRouterStore'
 import mockedProps from '../../mocks/mockProps'
 const { getAllByRole, getAllByTestId, getAllByText, getByTestId, getByText } = screen
 
