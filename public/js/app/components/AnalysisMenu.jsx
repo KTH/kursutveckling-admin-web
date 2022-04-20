@@ -381,7 +381,7 @@ function AnalysisMenu(props) {
                     <>
                       <p>{translate.intro_draft}</p>
                       {draftAnalysis.map(analysis => (
-                        <FormGroup className="form-check" id="drafts">
+                        <FormGroup className="form-check" id="drafts" key={analysis.analysisId}>
                           <Label key={'Label' + analysis.analysisId} for={analysis.analysisId}>
                             <Input
                               type="radio"
@@ -412,7 +412,7 @@ function AnalysisMenu(props) {
                       {roundList[semester].map(
                         round =>
                           usedRounds.indexOf(round.roundId) < 0 && (
-                            <FormGroup className="form-check" id="rounds">
+                            <FormGroup className="form-check" id="rounds" key={round.roundId}>
                               <Input
                                 type="checkbox"
                                 id={round.roundId}
