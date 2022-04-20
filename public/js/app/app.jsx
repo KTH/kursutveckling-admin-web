@@ -32,8 +32,8 @@ function appFactory(applicationStore, context) {
   return (
     <WebContextProvider configIn={context}>
       <Routes>
-        <Route path="/:id" element={<AdminPage />} />
-        <Route path="/preview" element={<AdminPage />} />
+        <Route exact path="/:id" element={<AdminPage />} />
+        <Route exact path="/preview/:id" element={<AdminPage />} />
       </Routes>
     </WebContextProvider>
   )
