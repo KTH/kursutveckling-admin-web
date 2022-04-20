@@ -241,12 +241,20 @@ server.use('/', systemRoute.getRouter())
 // App routes
 const appRoute = AppRouter()
 appRoute.get(
+  'system.gateway',
+  _addProxy('/silent'),
+  oidc.silentLogin,
+  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser'),
+  Admin.getIndex
+)
+appRoute.get(
   'app.index',
   _addProxy('/:id'),
   oidc.login,
   requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser'),
   Admin.getIndex
 )
+
 appRoute.get(
   'app.preview',
   _addProxy('/:preview/:id'),
@@ -254,8 +262,6 @@ appRoute.get(
   requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isCourseTeacher'),
   Admin.getIndex
 )
-appRoute.get('system.gateway', _addProxy('/gateway'), oidc.silentLogin, requireRole('isAdmin'), Admin.getIndex)
-
 appRoute.get('api.kursutvecklingGetById', _addProxy('/apicall/getRoundAnalysisById/:id'), Admin.getRoundAnalysis)
 appRoute.all('api.kursutvecklingPost', _addProxy('/apicall/postRoundAnalysisById/:id/:status'), Admin.postRoundAnalysis)
 appRoute.delete(
