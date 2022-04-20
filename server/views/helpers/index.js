@@ -25,7 +25,7 @@ try {
 */
 registerHeaderContentHelper({
   proxyPrefixPath: config.proxyPrefixPath.uri,
-  version: version
+  version: version,
 })
 
 /**
@@ -33,8 +33,13 @@ registerHeaderContentHelper({
  * packaged helpers in https://github.com/KTH/kth-node-web-common/tree/master/lib/handlebars/helpers
  * Those only need to be required. Docs embedded in source.
  */
- require('@kth/kth-node-web-common/lib/handlebars/helpers/breadcrumbs')(config.hostUrl, 'host_name', 'student/', 'page_student')
- require('@kth/kth-node-web-common/lib/handlebars/helpers/contentedit')
+require('@kth/kth-node-web-common/lib/handlebars/helpers/breadcrumbs')(
+  config.hostUrl,
+  'host_name',
+  'student/',
+  'page_student'
+)
+require('@kth/kth-node-web-common/lib/handlebars/helpers/contentedit')
 
 const i18n = require('../../../i18n')
 require('@kth/kth-node-web-common/lib/handlebars/helpers/createI18nHelper')(i18n)

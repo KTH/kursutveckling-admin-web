@@ -20,7 +20,7 @@ function getServerSideFunctions() {
 
   try {
     if (ENSURE_THAT_BUILDDEV_RECEIVES_UPDATED_SSR_PACKAGES) {
-        delete require.cache[require.resolve('../../dist/ssr-app')]
+      delete require.cache[require.resolve('../../dist/ssr-app')]
     }
 
     // @ts-ignore

@@ -12,7 +12,7 @@ const kursutvecklingAPI = require('../apiCalls/kursutvecklingAPI')
 const koppsCourseData = require('../apiCalls/koppsCourseData')
 const kursstatistikAPI = require('../apiCalls/kursstatistikAPI')
 const i18n = require('../../i18n')
-const { runBlobStorage, updateMetaData, deleteBlob } = require('../blobStorage')
+const { runBlobStorage, updateMetaData } = require('../blobStorage')
 const { getSortedAndPrioritizedMiniMemosWebOrPdf } = require('../apiCalls/kursPmDataApi')
 const { getServerSideFunctions } = require('../utils/serverSideRendering')
 const { createServerSideContext } = require('../ssr-context/createServerSideContext')
@@ -20,17 +20,15 @@ const { createServerSideContext } = require('../ssr-context/createServerSideCont
 // ------- ANALYSES FROM KURSUTVECKLING-API: POST, GET, DELETE, GET USED ROUNDS ------- /
 
 async function _postRoundAnalysis(req, res, next) {
-  const roundAnalysisId = req.params.id
-  const isNewAnalysis = req.params.status
-  const language = req.params.language || 'sv'
+  const { id: roundAnalysisId, status: isNewAnalysis, lang = 'sv' } = req.params
   const sendObject = JSON.parse(req.body.params)
   log.debug('_postRoundAnalysis id:' + req.params.id)
   try {
     let apiResponse = {}
-    if (isNewAnalysis === 'true') {
-      apiResponse = await kursutvecklingAPI.setRoundAnalysisData(roundAnalysisId, sendObject, language)
+    if (isNewAnalysis === 'new') {
+      apiResponse = await kursutvecklingAPI.setRoundAnalysisData(roundAnalysisId, sendObject, lang)
     } else {
-      apiResponse = await kursutvecklingAPI.updateRoundAnalysisData(roundAnalysisId, sendObject, language)
+      apiResponse = await kursutvecklingAPI.updateRoundAnalysisData(roundAnalysisId, sendObject, lang)
     }
 
     return httpResponse.json(res, apiResponse.body, apiResponse.statusCode)
@@ -42,10 +40,10 @@ async function _postRoundAnalysis(req, res, next) {
 
 async function _getRoundAnalysis(req, res, next) {
   const roundAnalysisId = req.params.id || ''
-  const language = req.params.language || 'sv'
+  const { lang = 'sv' } = req.params
   log.debug('_getRoundAnalysis id:' + req.params.id)
   try {
-    const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(roundAnalysisId, language)
+    const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(roundAnalysisId, lang)
     return httpResponse.json(res, apiResponse.body, apiResponse.statusCode)
   } catch (err) {
     log.error('Exception from getRoundAnalysis ', { error: err })
@@ -54,7 +52,7 @@ async function _getRoundAnalysis(req, res, next) {
 }
 
 async function _deleteRoundAnalysis(req, res, next) {
-  const roundAnalysisId = req.params.id
+  const { id: roundAnalysisId } = req.params
   log.debug('_deleteRoundAnalysis with id:' + req.params.id)
   try {
     const apiResponse = await kursutvecklingAPI.deleteRoundAnalysisData(roundAnalysisId)
@@ -66,26 +64,24 @@ async function _deleteRoundAnalysis(req, res, next) {
 }
 
 async function _getUsedRounds(req, res, next) {
-  const courseCode = req.params.courseCode
-  const semester = req.params.semester
+  const { courseCode, semester } = req.params
   log.debug('_getUsedRounds with course code: ' + courseCode + 'and semester: ' + semester)
   try {
     const apiResponse = await kursutvecklingAPI.getUsedRounds(courseCode, semester)
     log.debug('_getUsedRounds response: ', apiResponse.body)
     return httpResponse.json(res, apiResponse.body, apiResponse.statusCode)
   } catch (error) {
-    log.error('Exception from _getUsedRounds ', { error: error })
+    log.error('Exception from _getUsedRounds ', { error })
     next(error)
   }
 }
 
 // ------- COURSE DATA FROM KOPPS-API   ------- /
 async function _getKoppsCourseData(req, res, next) {
-  const courseCode = req.params.courseCode
-  const language = req.params.language || 'sv'
+  const { courseCode, lang = 'sv' } = req.params
   log.debug('_getKoppsCourseData with code:' + courseCode)
   try {
-    const apiResponse = await koppsCourseData.getKoppsCourseData(courseCode, language)
+    const apiResponse = await koppsCourseData.getKoppsCourseData(courseCode, lang)
     return httpResponse.json(res, apiResponse.body, apiResponse.statusCode)
   } catch (err) {
     log.error('Exception from koppsAPI ', { error: err })
@@ -95,13 +91,14 @@ async function _getKoppsCourseData(req, res, next) {
 
 // ------- FILES IN BLOB STORAGE: SAVE, UPDATE, DELETE ------- /
 async function _saveFileToStorage(req, res, next) {
-  log.debug('Saving uploaded file to storage ' + req.files.file)
-  let file = req.files.file
+  const { file } = req.files
+  log.debug('Saving uploaded file to storage ' + file)
+
   try {
     const fileName = await runBlobStorage(file, req.params.analysisid, req.params.type, req.params.published, req.body)
     return httpResponse.json(res, fileName)
   } catch (error) {
-    log.error('Exception from saveFileToStorage ', { error: error })
+    log.error('Exception from saveFileToStorage ', { error })
     next(error)
   }
 }
@@ -154,7 +151,7 @@ async function _getStatisicsForRound(req, res, next) {
     log.debug('_getStatisicsForRound response: ', apiResponse.body)
     return httpResponse.json(res, apiResponse.body)
   } catch (error) {
-    log.error('Exception from _getUsedRounds ', { error: error })
+    log.error('Exception from _getUsedRounds ', { error })
     next(error)
   }
 }
@@ -177,20 +174,31 @@ async function getIndex(req, res, next) {
   }
 
   const lang = language.getLanguage(res) || 'sv'
-  //const user = req.user ? req.user.username : 'null'
-  const { user: loggedInUser } = req.session.passport
-  const username = loggedInUser ? loggedInUser.username : 'null'
+  const { user: loggedInUser = null } = req.session?.passport
+  const username = loggedInUser ? loggedInUser.username : null
   const { memberOf } = loggedInUser
   const { title: courseTitle = '' } = req.query
-  let status = req.query.status
+  let { status } = req.query
   const { id: thisId } = req.params
   const analysisId = thisId.length <= 7 ? '' : thisId.toUpperCase()
   const courseCodeId = analysisId ? analysisId.split('_')[0].slice(0, -6).toUpperCase() : thisId.toUpperCase()
 
- try {
-    const context = {}
+  try {
     const { getCompressedData, renderStaticPage } = getServerSideFunctions()
     const webContext = { lang, proxyPrefixPath: serverConfig.proxyPrefixPath, ...createServerSideContext() }
+
+    /** ------- Setting status ------- */
+    status = req.params.preview && req.params.preview === 'preview' ? 'preview' : status
+    switch (status) {
+      case 'p':
+        webContext.status = 'published'
+        break
+      case 'n':
+        webContext.status = 'draft'
+        break
+      default:
+        webContext.status = 'draft'
+    }
     /* ------- Settings ------- */
     webContext.setBrowserConfig(browserConfig, paths, serverConfig.hostUrl)
     webContext.setLanguage(lang)
@@ -219,43 +227,25 @@ async function getIndex(req, res, next) {
         const { courseCode } = apiResponse.body
         webContext.courseCode = courseCode
 
-        /** ------- Setting status ------- */
-        status = req.params.preview && req.params.preview === 'preview' ? 'preview' : status
-        switch (status) {
-          case 'p':
-            webContext.status = 'published'
-            break
-          case 'n':
-            webContext.status = 'draft'
-            break
-          default:
-            webContext.status = 'draft'
-        }
-        log.debug(' getIndex, status set to: ' + status)
-
         /** ------- Creating title  ------- */
-        webContext.setCourseTitle(
-          courseTitle.length > 0 ? decodeURIComponent(courseTitle) : ''
-        )
+        webContext.setCourseTitle(courseTitle.length > 0 ? decodeURIComponent(courseTitle) : '')
       }
     }
+    log.debug('status set to: ' + webContext.status)
 
     // /* Course memo for preview */
     log.debug(' get data from kurs-pm-data-api, get kurs-pm data for : ' + courseCodeId)
 
-    webContext.miniMemosPdfAndWeb = await getSortedAndPrioritizedMiniMemosWebOrPdf(
-      courseCodeId
-    )
-    log.debug(
-      'data from kurs-pm-data-api, fetched successfully : ' +
-      webContext.miniMemosPdfAndWeb
-    )
+    webContext.miniMemosPdfAndWeb = await getSortedAndPrioritizedMiniMemosWebOrPdf(courseCodeId)
+    log.debug('data from kurs-pm-data-api, fetched successfully : ', {
+      miniMemosPdfAndWeb: webContext.miniMemosPdfAndWeb,
+    })
 
     const compressedData = getCompressedData(webContext)
 
     const { uri: proxyPrefix } = serverConfig.proxyPrefixPath
-    
-    const html = renderStaticPage({
+
+    const view = renderStaticPage({
       applicationStore: {},
       location: req.url,
       basename: proxyPrefix,
@@ -266,9 +256,9 @@ async function getIndex(req, res, next) {
       compressedData,
       debug: 'debug' in req.query,
       instrumentationKey: serverConfig.appInsights.instrumentationKey,
-      html: html,
+      html: view,
       title: i18n.messages[lang === 'en' ? 0 : 1].messages.title,
-      lang: lang,
+      lang,
       proxyPrefix,
       description: i18n.messages[lang === 'en' ? 0 : 1].messages.title,
     })
@@ -277,7 +267,6 @@ async function getIndex(req, res, next) {
     next(err)
   }
 }
-
 
 module.exports = {
   getIndex,
