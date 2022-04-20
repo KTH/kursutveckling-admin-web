@@ -513,7 +513,11 @@ function AnalysisMenu(props) {
                 onClick={goToEditMode}
                 disabled={firstVisit}
               >
-                {ladokLoading && statisticsParams.ladokId.length && <Spinner color="light" size="sm" />}
+                {ladokLoading && statisticsParams.ladokId.length && (
+                  <Spinner color="light" size="sm">
+                    {translate.spinner_loading_button}
+                  </Spinner>
+                )}
                 <div>{translate.btn_add_analysis}</div>
               </Button>
             </div>

@@ -71,6 +71,12 @@ module.exports = {
       },
     ],
 
+    //* **** Spinner  */
+
+    spinner_loading_button: '  ',
+    spinner_loading_file: 'Laddar upp filen...',
+    spinner_loading_ladok: '',
+
     /* **** INTRO SELECT NEW, DRAFT, PUBLISHED */
     intro_new:
       'Följande kurstillfällen saknar publicerad kursanalys/kursdata. Markera en eller flera som ingår i kursomgången: ',
@@ -151,7 +157,7 @@ module.exports = {
       alterationText: 'Fältet Summera förändringar innehåller för många tecken.',
       default: 'Fält innehåller för många tecken.',
     },
-    alert_uploaded_file: 'Vald fil har laddatas upp och fått nytt namn',
+    alert_uploaded_file: 'Vald fil har laddas upp och fått nytt namn',
     alert_not_pdf: 'Vald fil kunde inte laddas upp. Filen måste vara av typen PDF.',
     alert_graduation_rate_fields_updated: 'Ett eller båda fälten för examinationsgrad har manuellt uppdaterats.',
     alert_graduation_rate_cant_be_calculated:
