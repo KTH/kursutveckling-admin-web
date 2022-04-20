@@ -210,7 +210,7 @@ function AdminPage() {
 
     if (
       invalidData.mandatoryFields.length > 0 ||
-      invalidData.overMaxFields.length > 0 ||
+      invalidData.overMaxFields?.length > 0 ||
       invalidData.wrongFileTypeFields.length > 0
     ) {
       setState({
@@ -274,10 +274,13 @@ function AdminPage() {
     const { postObject } = { ...state.values }
 
     if (state.analysisFile !== postObject.analysisFileName) {
+      console.log('nope')
       postObject.analysisFileName = state.analysisFile
     }
 
     if (!state.saved && state.analysisFile.length > 0) {
+      console.log('sssssss')
+
       webContext.updateFileInStorage(state.analysisFile, getMetadata('draft'))
     }
 
@@ -740,7 +743,7 @@ function AdminPage() {
                         type="textarea"
                         value={state.values.alterationText}
                         onChange={handleInputChange}
-                        className={state.notValid.overMaxFields.includes('alterationText') ? 'not-valid' : ''}
+                        className={state.notValid.overMaxFields?.includes('alterationText') ? 'not-valid' : ''}
                       />
                     </Col>
 
@@ -935,7 +938,7 @@ const FormLabel = ({ translate, header, id, badgeText, mode = 'warning' }) => (
 const AlertError = ({ notValid, translations }) => {
   const { mandatoryFields, overMaxFields, wrongFileTypeFields } = notValid
   const noOfErrorCategories =
-    (mandatoryFields.length ? 1 : 0) + (overMaxFields.length ? 1 : 0) + (wrongFileTypeFields.length ? 1 : 0)
+    (mandatoryFields.length ? 1 : 0) + (overMaxFields?.length ? 1 : 0) + (wrongFileTypeFields.length ? 1 : 0)
   if (!noOfErrorCategories) {
     return null
   }
@@ -944,7 +947,7 @@ const AlertError = ({ notValid, translations }) => {
     noOfErrorCategories === 1 ? (
       <>
         {!!mandatoryFields.length && <>{translations.messages.alert_empty_fields}</>}
-        {!!overMaxFields.length && (
+        {!!overMaxFields?.length && (
           <>
             {overMaxFields[0] === 'alterationText'
               ? translations.messages.alert_over_max_fields.alterationText
@@ -956,7 +959,7 @@ const AlertError = ({ notValid, translations }) => {
     ) : (
       <>
         {!!mandatoryFields.length && <li>{translations.messages.alert_empty_fields}</li>}
-        {!!overMaxFields.length && (
+        {!!overMaxFields?.length && (
           <li>
             {overMaxFields[0] === 'alterationText'
               ? translations.messages.alert_over_max_fields.alterationText
