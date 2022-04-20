@@ -48,7 +48,6 @@ module.exports = {
 
     /** ***** PAGE 1 - ANALYSIS MENU */
 
-    header_select_semester: 'Välj termin',
     select_semester: 'Välj termin',
     header_analysis_menu: 'Välj kursomgång',
     label_start_date: 'Startdatum',

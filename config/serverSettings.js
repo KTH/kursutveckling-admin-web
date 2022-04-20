@@ -126,7 +126,7 @@ module.exports = {
   koppsApi: unpackKOPPSConfig('KOPPS_URI', devKoppsApi),
 
   appInsights: {
-    instrumentationKey: getEnv('APPINSIGHTS_INSTRUMENTATIONKEY'),
+    instrumentationKey: getEnv('APPINSIGHTS_INSTRUMENTATIONKEY', ''),
   },
 
   fileStorage: {

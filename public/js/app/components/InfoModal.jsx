@@ -1,63 +1,56 @@
-import React, { Component } from 'react'
+import React, { useReducer } from 'react'
 import { Modal, ModalBody, ModalHeader, ModalFooter, Button, Input } from 'reactstrap'
+import i18n from '../../../../i18n/index'
 
 //Custom components
 import CopyText from './CopyText'
 
-class InfoModal extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      modal: this.props.isOpen,
-      newEndDate: '',
-    }
-    this.handleConfirm = this.handleConfirm.bind(this)
-    this.handleDateChange = this.handleDateChange.bind(this)
-  }
+const paramsReducer = (state, action) => ({ ...state, ...action })
 
-  handleConfirm(event) {
+function InfoModal(props) {
+  
+  const [state, setState] = useReducer(paramsReducer, { modal: props.isOpen,  newEndDate: '' })
+
+  function handleConfirm(event) {
     event.preventDefault()
-    const { type, handleConfirm } = this.props
-    handleConfirm(this.props.id, true)
+    props.handleConfirm(props.id, true)
   }
 
-  handleDateChange(event) {
+  function handleDateChange(event) {
     event.persist()
-    this.state.newEndDate = event.target.value
+    props.handleDateChange(event.target.value)
   }
 
-  render() {
-    const { fade, isOpen, toggle, className, type, infoText, id, url, copyHeader } = this.props
-    const fadeModal = this.props.hasOwnProperty('fade') ? fade : true
+  const { fade, isOpen, toggle, className, type, infoText, id, url, copyHeader } = props
+  const fadeModal = props.hasOwnProperty('fade') ? fade : true
 
-    return (
-      <div>
-        {type === 'info' && (
-          <Button id={type} type="button" onClick={toggle} className="btn-info-modal btn btn-secondary" />
-        )}
-        <Modal isOpen={isOpen} toggle={toggle} className={className} fade={fadeModal} id={id}>
-          <ModalHeader toggle={toggle}>{infoText.header}</ModalHeader>
-          <ModalBody>
-            {type === 'copy' ? (
-              <CopyText textToCopy={url} header={copyHeader} />
-            ) : (
-              <p dangerouslySetInnerHTML={{ __html: infoText.body }} />
-            )}
-          </ModalBody>
-          <ModalFooter>
-            <Button id={type} color="secondary" onClick={toggle}>
-              {infoText.btnCancel}
+  return (
+    <div>
+      {type === 'info' && (
+        <Button id={type} type="button" onClick={toggle} className="btn-info-modal btn btn-secondary" />
+      )}
+      <Modal isOpen={isOpen} toggle={toggle} className={className} fade={fadeModal} id={id}>
+        <ModalHeader toggle={toggle}>{infoText.header}</ModalHeader>
+        <ModalBody>
+          {type === 'copy' ? (
+            <CopyText textToCopy={url} header={copyHeader} />
+          ) : (
+            <p dangerouslySetInnerHTML={{ __html: infoText.body }} />
+          )}
+        </ModalBody>
+        <ModalFooter>
+          <Button id={type} color="secondary" onClick={toggle}>
+            {infoText.btnCancel}
+          </Button>
+          {infoText.btnConfirm && (
+            <Button color="secondary" onClick={handleConfirm}>
+              {infoText.btnConfirm}
             </Button>
-            {infoText.btnConfirm && (
-              <Button color="secondary" onClick={this.handleConfirm}>
-                {infoText.btnConfirm}
-              </Button>
-            )}
-          </ModalFooter>
-        </Modal>
-      </div>
-    )
-  }
+          )}
+        </ModalFooter>
+      </Modal>
+    </div>
+  )
 }
 
 export default InfoModal

@@ -1,4 +1,5 @@
-export const SEMESTER = [
+const SUPERUSER_PART = 'kursinfo-admins'
+const SEMESTER = [
   {
     1: 'Spring ',
     2: 'Autumn ',
@@ -8,19 +9,33 @@ export const SEMESTER = [
     2: 'HT ',
   },
 ]
-export const EMPTY = ['No information added', 'Ingen information tillagd']
-export const ADMIN_URL = '/kursinfoadmin/kurser/kurs/'
-export const KURSUTVECKLING_URL = '/kursutveckling/'
-export const SERVICE_URL = {
+const EMPTY = ['No information added', 'Ingen information tillagd']
+const ADMIN_URL = '/kursinfoadmin/kurser/kurs/'
+const KURSUTVECKLING_URL = '/kursutveckling/'
+const SERVICE_URL = {
   admin: '/kursinfoadmin/kurser/kurs/',
   // kutv: '/kursutveckling/',
 }
-export const BREADCRUMB_URL = '/student/kurser/kurser-inom-program'
-export const SYLLABUS_URL = '/student/kurser/kurs/kursplan/'
+const BREADCRUMB_URL = '/student/kurser/kurser-inom-program'
+const SYLLABUS_URL = '/student/kurser/kurs/kursplan/'
 
-export const LANGUAGE = {
+const LANGUAGE = {
   sv: {
     svenska: 'svenska',
   },
 }
-export const SUPERUSER_PART = 'kursinfo-admins'
+
+const ADMIN_KURSUTVECKLING = '/kursinfoadmin/kursutveckling/'
+
+export {
+  SUPERUSER_PART,
+  SEMESTER,
+  EMPTY,
+  ADMIN_URL,
+  KURSUTVECKLING_URL,
+  SERVICE_URL,
+  BREADCRUMB_URL,
+  SYLLABUS_URL,
+  LANGUAGE,
+  ADMIN_KURSUTVECKLING,
+}

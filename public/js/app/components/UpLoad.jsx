@@ -1,5 +1,5 @@
-import React from 'react'
-import loader from '../../../img/*.gif'
+import React, { useState } from 'react'
+import { Spinner } from 'reactstrap'
 
 const styles = {
   fontFamily: 'sans-serif',
@@ -7,53 +7,44 @@ const styles = {
   display: 'flex',
 }
 
-class UpLoad extends React.Component {
-  constructor() {
-    super()
-    this.onChange = this.onChange.bind(this)
-    this.removeFile = this.removeFile.bind(this)
-    this.state = {
-      files: [],
-    }
+function UpLoad(props) {
+  const [ files, setFiles ] = useState([])
+
+  function onChange(event) {
+    props.handleUpload(event.target.id, event.target.files, event)
   }
 
-  onChange(event) {
-    this.props.handleUpload(event.target.id, event.target.files, event)
+  function removeFile(event) {
+    props.handleRemoveFile(event)
   }
 
-  removeFile(event) {
-    this.props.handleRemoveFile(event)
-  }
+  const { id, path, progress, file, notValid, type } = props
+  const { mandatoryFields, wrongFileTypeFields } = notValid
 
-  render() {
-    const { id, path, progress, file, notValid, type } = this.props
-    const { mandatoryFields, wrongFileTypeFields } = notValid
-    return (
-      <div className={mandatoryFields.includes(type) || wrongFileTypeFields.includes(type) ? 'not-valid' : ''}>
-        {file && file.length > 0 ? (
-          <span>
-            <br />
-            <div className="inline-flex">
-              <p className="upload-text"> {file} </p>
-              <div className="iconContainer icon-trash-can" id={'remove_' + id} onClick={this.removeFile}></div>
-            </div>
-          </span>
-        ) : (
-          <label className="custom-file-upload">
-            <input type="file" id={id} onChange={this.onChange} />
-            {progress > 0 && (
-              <span>
-                <img title="loading file" src={loader['ajax-loader']} />
-                <div className="file-progress-bar">
-                  <div className="file-progress" style={{ width: progress + '%' }}></div>
-                </div>
-              </span>
-            )}
-          </label>
-        )}
-      </div>
-    )
-  }
+  return (
+    <div className={mandatoryFields.includes(type) || wrongFileTypeFields.includes(type) ? 'not-valid' : ''}>
+      {file && file.length > 0 ? (
+        <span>
+          <br />
+          <div className="inline-flex">
+            <p className="upload-text"> {file} </p>
+            <div className="iconContainer icon-trash-can" id={'remove_' + id} onClick={removeFile}></div>
+          </div>
+        </span>
+      ) : (
+        <label className="custom-file-upload">
+          <input type="file" id={id} onChange={onChange} />
+          {progress > 0 && (
+            <>
+              <Spinner size="sm" color="primary" />
+              <div className="file-progress-bar">
+                <div className="file-progress" style={{ width: progress + '%' }}></div>
+              </div>
+            </>
+          )}
+        </label>
+      )}
+    </div>
+  )
 }
-
 export default UpLoad
