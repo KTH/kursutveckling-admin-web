@@ -524,6 +524,7 @@ function addClientFunctionsToWebContext() {
     buildApiUrl,
     _analysisAccess,
     _createAnalysisName,
+    getAllTargetGroups,
     getTargetGroup,
     getExamObject,
     getEmployees,
