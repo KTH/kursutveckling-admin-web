@@ -41,9 +41,10 @@ async function _postRoundAnalysis(req, res, next) {
 async function _getRoundAnalysis(req, res, next) {
   const roundAnalysisId = req.params.id || ''
   const { lang = 'sv' } = req.params
-  log.debug('_getRoundAnalysis id:' + req.params.id)
+  log.debug('Fetching _getRoundAnalysis id:' + req.params.id)
   try {
     const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(roundAnalysisId, lang)
+    if (apiResponse.body) log.debug('Fetched analysis', { body: apiResponse.body })
     return httpResponse.json(res, apiResponse.body, apiResponse.statusCode)
   } catch (err) {
     log.error('Exception from getRoundAnalysis ', { error: err })
