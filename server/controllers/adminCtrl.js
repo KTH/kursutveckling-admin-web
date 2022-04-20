@@ -68,7 +68,7 @@ async function _getUsedRounds(req, res, next) {
   log.debug('_getUsedRounds with course code: ' + courseCode + 'and semester: ' + semester)
   try {
     const apiResponse = await kursutvecklingAPI.getUsedRounds(courseCode, semester)
-    log.debug('_getUsedRounds response: ', apiResponse.body)
+    log.debug('_getUsedRounds response: ', { body: apiResponse.body })
     return httpResponse.json(res, apiResponse.body, apiResponse.statusCode)
   } catch (error) {
     log.error('Exception from _getUsedRounds ', { error })
@@ -79,7 +79,7 @@ async function _getUsedRounds(req, res, next) {
 // ------- COURSE DATA FROM KOPPS-API   ------- /
 async function _getKoppsCourseData(req, res, next) {
   const { courseCode, lang = 'sv' } = req.params
-  log.debug('_getKoppsCourseData with code:' + courseCode)
+  log.debug('_getKoppsCourseData with code:', { courseCode })
   try {
     const apiResponse = await koppsCourseData.getKoppsCourseData(courseCode, lang)
     return httpResponse.json(res, apiResponse.body, apiResponse.statusCode)
@@ -92,7 +92,7 @@ async function _getKoppsCourseData(req, res, next) {
 // ------- FILES IN BLOB STORAGE: SAVE, UPDATE, DELETE ------- /
 async function _saveFileToStorage(req, res, next) {
   const { file } = req.files
-  log.debug('Saving uploaded file to storage ' + file)
+  log.debug('Saving uploaded file to storage ', { file })
 
   try {
     const fileName = await runBlobStorage(file, req.params.analysisid, req.params.type, req.params.published, req.body)
