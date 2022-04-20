@@ -850,23 +850,9 @@ function AdminPage() {
               {/*                                BUTTONS FOR PAG 2 AND 3                              */}
               {/* ************************************************************************************ */}
               {state.isPreviewMode &&
-              state.values.changedDate.length > 0 &&
-              webContext.status !== 'preview' &&
-              webContext.analysisId ? (
-                <CopyText
-                  textToCopy={
-                    webContext.browserConfig.hostUrl +
-                    webContext.browserConfig.proxyPrefixPath.uri +
-                    '/preview/' +
-                    webContext.analysisId +
-                    '?title=' +
-                    encodeURI(webContext.courseTitle.name + '_' + webContext.courseTitle.credits)
-                  }
-                  header={translate.header_copy_link}
-                />
-              ) : (
-                ''
-              )}
+                state.values.changedDate.length > 0 &&
+                webContext.status !== 'preview' &&
+                webContext.analysisId && <CopyText webContext={webContext} header={translate.header_copy_link} />}
 
               <Row className="button-container text-center">
                 <Col sm="4" className="align-left-sm-center">
