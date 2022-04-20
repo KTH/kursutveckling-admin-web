@@ -73,11 +73,12 @@ const paramsReducer = (state, action) => ({ ...state, ...action })
 
 function AdminPage() {
   const [webContext] = useWebContext()
+  const { analysisData } = webContext
 
   const [state, setState] = useReducer(paramsReducer, {
-    saved: webContext.analysisData !== undefined && webContext.analysisData.changedDate.length > 2,
-    values: webContext.analysisData,
-    isPublished: webContext.analysisData ? webContext.analysisData.isPublished : webContext.status === 'published',
+    saved: analysisData !== undefined && analysisData.changedDate.length > 2,
+    values: analysisData,
+    isPublished: analysisData ? analysisData.isPublished : webContext.status === 'published',
     progress: webContext.status === 'new' ? 'new' : 'edit',
     isPreviewMode: webContext.status === 'preview',
     activeSemester: '',
@@ -89,36 +90,29 @@ function AdminPage() {
     alert: '',
     alertSuccess: '',
     madatoryMessage: '',
-    analysisFile: webContext.analysisData ? webContext.analysisData.analysisFileName : '',
+    analysisFile: analysisData ? analysisData.analysisFileName : '',
     hasNewUploadedFileAnalysis: false,
     notValid: { mandatoryFields: [], overMaxFields: [], wrongFileTypeFields: [] },
     fileProgress: {
       analysis: 0,
     },
     statisticsParams: {
-      endDate: webContext.analysisData && webContext.analysisData.endDate ? webContext.analysisData.endDate : '',
-      ladokId: webContext.analysisData && webContext.analysisData.ladokUIDs ? webContext.analysisData.ladokUIDs : [],
+      endDate: analysisData && analysisData.endDate ? analysisData.endDate : '',
+      ladokId: analysisData && analysisData.ladokUIDs ? analysisData.ladokUIDs : [],
     },
     endDateInputEnabled: true,
     examinationGradeInputEnabled: true,
     ladokLoading: false,
     multiLineAlert: handleMultiLineAlert({
-      init: !webContext.analysisData,
+      init: !analysisData,
       messages: i18n.messages[webContext.language].messages,
-      ladokId: webContext.analysisData && webContext.analysisData.ladokUIDs ? webContext.analysisData.ladokUIDs : [],
-      endDate: webContext.analysisData && webContext.analysisData.endDate ? webContext.analysisData.endDate : '',
-      examinationGrade:
-        webContext.analysisData && webContext.analysisData.examinationGrade
-          ? webContext.analysisData.examinationGrade
-          : -1,
-      endDateLadok:
-        webContext.analysisData && webContext.analysisData.endDateLadok ? webContext.analysisData.endDateLadok : '',
+      ladokId: analysisData && analysisData.ladokUIDs ? analysisData.ladokUIDs : [],
+      endDate: analysisData && analysisData.endDate ? analysisData.endDate : '',
+      examinationGrade: analysisData && analysisData.examinationGrade ? analysisData.examinationGrade : -1,
+      endDateLadok: analysisData && analysisData.endDateLadok ? analysisData.endDateLadok : '',
       examinationGradeLadok:
-        webContext.analysisData && webContext.analysisData.examinationGradeLadok >= 0
-          ? webContext.analysisData.examinationGradeLadok
-          : -1,
-      alterationText:
-        webContext.analysisData && webContext.analysisData.alterationText ? webContext.analysisData.alterationText : '',
+        analysisData && analysisData.examinationGradeLadok >= 0 ? analysisData.examinationGradeLadok : -1,
+      alterationText: analysisData && analysisData.alterationText ? analysisData.alterationText : '',
     }),
   })
 
@@ -188,7 +182,7 @@ function AdminPage() {
       req.open(
         'POST',
         `${webContext.browserConfig.hostUrl}${webContext.paths.storage.saveFile.uri.split(':')[0]}${
-          webContext.analysisData._id
+          analysisData._id
         }/${id}/${state.isPublished}`
       )
       req.send(formData)
@@ -242,7 +236,7 @@ function AdminPage() {
             setState({
               isPreviewMode: false,
               progress: 'back_new',
-              activeSemester: webContext.analysisData.semester,
+              activeSemester: analysisData.semester,
               analysisFile: '',
               alert: '',
               multiLineAlert: [],
@@ -252,7 +246,7 @@ function AdminPage() {
       setState({
         isPreviewMode: false,
         progress: 'back_new',
-        activeSemester: webContext.analysisData.semester,
+        activeSemester: analysisData.semester,
         alert: '',
         multiLineAlert: [],
         endDateInputEnabled: true,
@@ -272,12 +266,12 @@ function AdminPage() {
   }
 
   function handleCancel(event) {
-    window.location = `${SERVICE_URL.admin}${webContext.analysisData.courseCode}?serv=kutv&event=cancel`
+    window.location = `${SERVICE_URL.admin}${analysisData.courseCode}?serv=kutv&event=cancel`
   }
 
   function handleSave(event) {
     event.preventDefault()
-    const { postObject } = state.values
+    const { postObject } = { ...state.values }
 
     if (state.analysisFile !== postObject.analysisFileName) {
       postObject.analysisFileName = state.analysisFile
@@ -297,11 +291,11 @@ function AdminPage() {
       const { roundNamesWithMissingMemos } = webContext
       if (state.isPreviewMode) {
         window.location = encodeURI(
-          `${webContext.browserConfig.hostUrl}${SERVICE_URL.admin}${
-            webContext.analysisData.courseCode
-          }?serv=kutv&event=save&id=${webContext.analysisId}&term=${webContext.analysisData.semester}&name=${
-            webContext.analysisData.analysisName
-          }${roundNamesWithMissingMemos ? '&noMemo=' + roundNamesWithMissingMemos : ''}`
+          `${webContext.browserConfig.hostUrl}${SERVICE_URL.admin}${analysisData.courseCode}?serv=kutv&event=save&id=${
+            webContext.analysisId
+          }&term=${analysisData.semester}&name=${analysisData.analysisName}${
+            roundNamesWithMissingMemos ? '&noMemo=' + roundNamesWithMissingMemos : ''
+          }`
         ) // term=, name=
       } else {
         setState({
@@ -353,11 +347,11 @@ function AdminPage() {
         const { roundNamesWithMissingMemos } = webContext
 
         window.location = encodeURI(
-          `${webContext.browserConfig.hostUrl}${SERVICE_URL.admin}${
-            webContext.analysisData.courseCode
-          }?serv=kutv&event=pub&id=${webContext.analysisId}&term=${webContext.analysisData.semester}&name=${
-            webContext.analysisData.analysisName
-          }${roundNamesWithMissingMemos ? '&noMemo=' + roundNamesWithMissingMemos : ''}`
+          `${webContext.browserConfig.hostUrl}${SERVICE_URL.admin}${analysisData.courseCode}?serv=kutv&event=pub&id=${
+            webContext.analysisId
+          }&term=${analysisData.semester}&name=${analysisData.analysisName}${
+            roundNamesWithMissingMemos ? '&noMemo=' + roundNamesWithMissingMemos : ''
+          }`
         )
       }
     })
@@ -402,9 +396,9 @@ function AdminPage() {
     }
   }
 
-  function handleTemporaryData(valueObject, tempData) {
+  function handleTemporaryData(analysisValues, tempData) {
     let returnObject = {
-      values: valueObject,
+      values: analysisValues,
       files: {
         analysisFile: '',
       },
@@ -414,8 +408,8 @@ function AdminPage() {
       returnObject.values.registeredStudents = tempData.registeredStudents
       returnObject.values.examinationGrade = tempData.examinationGrade
       returnObject.files.analysisFile = tempData.analysisFile
-    } else if (valueObject) {
-      returnObject.files.analysisFile = valueObject.analysisFileName
+    } else if (analysisValues) {
+      returnObject.files.analysisFile = analysisValues.analysisFileName
     }
     return returnObject
   }
@@ -428,8 +422,8 @@ function AdminPage() {
       return webContext
         .postLadokRoundIdListAndDateToGetStatistics(statisticsParams.ladokId, statisticsParams.endDate)
         .then(ladokResponse => {
-          webContext.createAnalysisData(semester, rounds).then(data => {
-            const valuesObject = handleTemporaryData(webContext.analysisData, tempData)
+          webContext.createAnalysisData(semester, rounds).then(createdAnalysis => {
+            const valuesObject = handleTemporaryData(createdAnalysis, tempData)
             const multiLineAlert = handleMultiLineAlert({
               messages: i18n.messages[webContext.language].messages,
               ladokId: statisticsParams.ladokId,
@@ -454,8 +448,9 @@ function AdminPage() {
         })
     }
 
-    return webContext.getRoundAnalysis(analysisId).then(analysis => {
-      const valuesObject = handleTemporaryData(webContext.analysisData, tempData)
+    return webContext.getRoundAnalysis(analysisId).then(fetchedAnalysis => {
+      const valuesObject = handleTemporaryData(fetchedAnalysis, tempData)
+
       const _statisticsParams = {}
       _statisticsParams.endDate = valuesObject.values.endDate
       _statisticsParams.ladokId = valuesObject.values.ladokUIDs ? valuesObject.values.ladokUIDs : []
@@ -471,7 +466,7 @@ function AdminPage() {
       setState({
         progress: 'edit',
         isPreviewMode: false,
-        isPublished: webContext.analysisData.isPublished,
+        isPublished: fetchedAnalysis.isPublished,
         values: valuesObject.values,
         analysisFile: valuesObject.files.analysisFile,
         saved: true,
@@ -568,7 +563,7 @@ function AdminPage() {
   const { isPublished } = state
   const translate = i18n.messages[webContext.language].messages
 
-  if (webContext.analysisData === undefined || progress === 'back_new') {
+  if (analysisData === undefined || progress === 'back_new') {
     return (
       <div>
         {webContext.errorMessage.length === 0 ? (
@@ -596,7 +591,7 @@ function AdminPage() {
                 roundList={webContext.roundData}
                 progress={progress}
                 activeSemester={state.activeSemester}
-                firstVisit={webContext.analysisData === undefined}
+                firstVisit={analysisData === undefined}
                 status={webContext.status}
                 tempData={/*state.saved ? {} : */ getTempData()}
                 saved={state.values && state.values.changedDate.length > 0}
