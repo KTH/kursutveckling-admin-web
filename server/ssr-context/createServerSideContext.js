@@ -216,6 +216,7 @@ function createServerSideContext() {
     handleCourseData,
     getBreadcrumbs,
     setBrowserConfig,
+    setCourseTitle,
   }
   return context
 }
