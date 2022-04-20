@@ -1,31 +1,26 @@
-import React, { Component } from 'react'
+import React, { useState } from 'react'
 import { Collapse } from 'reactstrap'
 import { SYLLABUS_URL } from '../../util/constants'
-import { inject, observer } from 'mobx-react'
 import i18n from '../../../../../i18n'
+import { useWebContext } from '../../context/WebContext'
 
-@inject(['routerStore'])
-@observer
-class LinkToValidSyllabusPdf extends Component {
-  constructor(props) {
-    super(props)
-    this.state = { lang: this.props.lang }
-  }
+function LinkToValidSyllabusPdf(props) {
+  const [webContext] = useWebContext()
+  const context = React.useMemo(() => webContext, [webContext])
+  const [state, setState] = useState({ lang: props.lang })
 
-  render() {
-    const { lang, startDate } = this.state
-    const { courseCode, language } = this.props.routerStore
-    const { course_short_semester, link_syllabus, link_syllabus_empty } = i18n.messages[language].messages
+  const { lang, startDate } = state
+  const { courseCode, language } = context
+  const { course_short_semester, link_syllabus, link_syllabus_empty } = i18n.messages[language].messages
 
-    return (
-      <p key={'link-syllabus-from-'}>
-        <span className="pdf-link">
-          {`${link_syllabus} ${courseCode}: `}
-          <i style={{ color: '#000' }}>{link_syllabus_empty}</i>
-        </span>
-      </p>
-    )
-  }
+  return (
+    <p key={'link-syllabus-from-'}>
+      <span className="pdf-link">
+        {`${link_syllabus} ${courseCode}: `}
+        <i style={{ color: '#000' }}>{link_syllabus_empty}</i>
+      </span>
+    </p>
+  )
 }
 
 export default LinkToValidSyllabusPdf

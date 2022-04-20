@@ -1,46 +1,34 @@
 'use strict'
 
-const log = require('kth-node-log')
+const log = require('@kth/log')
 const redis = require('kth-node-redis')
-const language = require('kth-node-web-common/lib/language')
-const { toJS } = require('mobx')
-const httpResponse = require('kth-node-response')
+const language = require('@kth/kth-node-web-common/lib/language')
+const httpResponse = require('@kth/kth-node-response')
 const paths = require('../server').getPaths()
-const ReactDOMServer = require('react-dom/server')
-
 const browserConfig = require('../configuration').browser
 const serverConfig = require('../configuration').server
-
 const api = require('../api')
-const { runBlobStorage, updateMetaData, deleteBlob } = require('../blobStorage')
 const kursutvecklingAPI = require('../apiCalls/kursutvecklingAPI')
 const koppsCourseData = require('../apiCalls/koppsCourseData')
 const kursstatistikAPI = require('../apiCalls/kursstatistikAPI')
 const i18n = require('../../i18n')
+const { runBlobStorage, updateMetaData } = require('../blobStorage')
 const { getSortedAndPrioritizedMiniMemosWebOrPdf } = require('../apiCalls/kursPmDataApi')
-
-function _staticFactory(context, location) {
-  if (process.env.NODE_ENV === 'development') {
-    delete require.cache[require.resolve('../../dist/app.js')]
-  }
-  const { staticFactory } = require('../../dist/app.js')
-  return staticFactory(context, location)
-}
+const { getServerSideFunctions } = require('../utils/serverSideRendering')
+const { createServerSideContext } = require('../ssr-context/createServerSideContext')
 
 // ------- ANALYSES FROM KURSUTVECKLING-API: POST, GET, DELETE, GET USED ROUNDS ------- /
 
 async function _postRoundAnalysis(req, res, next) {
-  const roundAnalysisId = req.params.id
-  const isNewAnalysis = req.params.status
-  const language = req.params.language || 'sv'
+  const { id: roundAnalysisId, status: isNewAnalysis, lang = 'sv' } = req.params
   const sendObject = JSON.parse(req.body.params)
   log.debug('_postRoundAnalysis id:' + req.params.id)
   try {
     let apiResponse = {}
     if (isNewAnalysis === 'true') {
-      apiResponse = await kursutvecklingAPI.setRoundAnalysisData(roundAnalysisId, sendObject, language)
+      apiResponse = await kursutvecklingAPI.setRoundAnalysisData(roundAnalysisId, sendObject, lang)
     } else {
-      apiResponse = await kursutvecklingAPI.updateRoundAnalysisData(roundAnalysisId, sendObject, language)
+      apiResponse = await kursutvecklingAPI.updateRoundAnalysisData(roundAnalysisId, sendObject, lang)
     }
 
     return httpResponse.json(res, apiResponse.body, apiResponse.statusCode)
@@ -52,10 +40,11 @@ async function _postRoundAnalysis(req, res, next) {
 
 async function _getRoundAnalysis(req, res, next) {
   const roundAnalysisId = req.params.id || ''
-  const language = req.params.language || 'sv'
-  log.debug('_getRoundAnalysis id:' + req.params.id)
+  const { lang = 'sv' } = req.params
+  log.debug('Fetching _getRoundAnalysis id:' + req.params.id)
   try {
-    const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(roundAnalysisId, language)
+    const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(roundAnalysisId, lang)
+    if (apiResponse.body) log.debug('Fetched analysis', { body: apiResponse.body })
     return httpResponse.json(res, apiResponse.body, apiResponse.statusCode)
   } catch (err) {
     log.error('Exception from getRoundAnalysis ', { error: err })
@@ -64,7 +53,7 @@ async function _getRoundAnalysis(req, res, next) {
 }
 
 async function _deleteRoundAnalysis(req, res, next) {
-  const roundAnalysisId = req.params.id
+  const { id: roundAnalysisId } = req.params
   log.debug('_deleteRoundAnalysis with id:' + req.params.id)
   try {
     const apiResponse = await kursutvecklingAPI.deleteRoundAnalysisData(roundAnalysisId)
@@ -76,26 +65,24 @@ async function _deleteRoundAnalysis(req, res, next) {
 }
 
 async function _getUsedRounds(req, res, next) {
-  const courseCode = req.params.courseCode
-  const semester = req.params.semester
+  const { courseCode, semester } = req.params
   log.debug('_getUsedRounds with course code: ' + courseCode + 'and semester: ' + semester)
   try {
     const apiResponse = await kursutvecklingAPI.getUsedRounds(courseCode, semester)
-    log.debug('_getUsedRounds response: ', apiResponse.body)
+    log.debug('_getUsedRounds response: ', { body: apiResponse.body })
     return httpResponse.json(res, apiResponse.body, apiResponse.statusCode)
   } catch (error) {
-    log.error('Exception from _getUsedRounds ', { error: error })
+    log.error('Exception from _getUsedRounds ', { error })
     next(error)
   }
 }
 
 // ------- COURSE DATA FROM KOPPS-API   ------- /
 async function _getKoppsCourseData(req, res, next) {
-  const courseCode = req.params.courseCode
-  const language = req.params.language || 'sv'
-  log.debug('_getKoppsCourseData with code:' + courseCode)
+  const { courseCode, lang = 'sv' } = req.params
+  log.debug('_getKoppsCourseData with code:', { courseCode })
   try {
-    const apiResponse = await koppsCourseData.getKoppsCourseData(courseCode, language)
+    const apiResponse = await koppsCourseData.getKoppsCourseData(courseCode, lang)
     return httpResponse.json(res, apiResponse.body, apiResponse.statusCode)
   } catch (err) {
     log.error('Exception from koppsAPI ', { error: err })
@@ -105,19 +92,20 @@ async function _getKoppsCourseData(req, res, next) {
 
 // ------- FILES IN BLOB STORAGE: SAVE, UPDATE, DELETE ------- /
 async function _saveFileToStorage(req, res, next) {
-  log.debug('Saving uploaded file to storage ' + req.files.file)
-  let file = req.files.file
+  const { file } = req.files
+  log.debug('Saving uploaded file to storage ', { file })
+
   try {
     const fileName = await runBlobStorage(file, req.params.analysisid, req.params.type, req.params.published, req.body)
     return httpResponse.json(res, fileName)
   } catch (error) {
-    log.error('Exception from saveFileToStorage ', { error: error })
+    log.error('Exception from saveFileToStorage ', { error })
     next(error)
   }
 }
 
-async function updateFileInStorage(req, res, next) {
-  log.debug('updateFileInStorage file name:' + req.params.fileName + ', metadata:' + req.body.params.metadata)
+async function _updateFileInStorage(req, res, next) {
+  log.debug('_updateFileInStorage file name:' + req.params.fileName + ', metadata:' + req.body.params.metadata)
   try {
     const response = await updateMetaData(req.params.fileName, req.body.params.metadata)
     return httpResponse.json(res, response)
@@ -164,7 +152,7 @@ async function _getStatisicsForRound(req, res, next) {
     log.debug('_getStatisicsForRound response: ', apiResponse.body)
     return httpResponse.json(res, apiResponse.body)
   } catch (error) {
-    log.error('Exception from _getUsedRounds ', { error: error })
+    log.error('Exception from _getUsedRounds ', { error })
     next(error)
   }
 }
@@ -187,36 +175,44 @@ async function getIndex(req, res, next) {
   }
 
   const lang = language.getLanguage(res) || 'sv'
-  const user = req.user ? req.user.username : 'null'
+  const { user: loggedInUser = null } = req.session?.passport
+  const username = loggedInUser ? loggedInUser.username : null
+  const { memberOf } = loggedInUser
   const { title: courseTitle = '' } = req.query
-  let status = req.query.status
+  let { status } = req.query
   const { id: thisId } = req.params
   const analysisId = thisId.length <= 7 ? '' : thisId.toUpperCase()
   const courseCodeId = analysisId ? analysisId.split('_')[0].slice(0, -6).toUpperCase() : thisId.toUpperCase()
 
   try {
-    const renderProps = _staticFactory()
+    const { getCompressedData, renderStaticPage } = getServerSideFunctions()
+    const webContext = { lang, proxyPrefixPath: serverConfig.proxyPrefixPath, ...createServerSideContext() }
+
+    /** ------- Setting status ------- */
+    status = req.params.preview && req.params.preview === 'preview' ? 'preview' : status
+    switch (status) {
+      case 'p':
+        webContext.status = 'published'
+        break
+      case 'n':
+        webContext.status = 'draft'
+        break
+      default:
+        webContext.status = 'draft'
+    }
     /* ------- Settings ------- */
-    renderProps.props.children.props.routerStore.setBrowserConfig(browserConfig, paths, serverConfig.hostUrl)
-    renderProps.props.children.props.routerStore.setLanguage(lang)
-    await renderProps.props.children.props.routerStore.getMemberOf(
-      req.user.memberOf,
-      courseCodeId,
-      req.user.username,
-      serverConfig.auth.superuserGroup
-    )
-
-    /* Course memo in preview */
-
+    webContext.setBrowserConfig(browserConfig, paths, serverConfig.hostUrl)
+    webContext.setLanguage(lang)
+    await webContext.getMemberOf(memberOf, req.params.id.toUpperCase(), username, serverConfig.auth.superuserGroup)
     if (thisId.length <= 7) {
       /** ------- Got course code -> prepare for Page 1 depending on status (draft or published) ------- */
       log.debug(' getIndex, get course data for : ' + courseCodeId)
       const apiResponse = await koppsCourseData.getKoppsCourseData(courseCodeId, lang)
       if (apiResponse.statusCode >= 400) {
-        renderProps.props.children.props.routerStore.errorMessage = apiResponse.statusMessage // TODO: ERROR?????
+        webContext.errorMessage = apiResponse.statusMessage // TODO: ERROR?????
       } else {
-        renderProps.props.children.props.routerStore.status = status === 'p' ? 'published' : 'new'
-        await renderProps.props.children.props.routerStore.handleCourseData(apiResponse.body, courseCodeId, user, lang)
+        webContext.status = status === 'p' ? 'published' : 'new'
+        await webContext.handleCourseData(apiResponse.body, courseCodeId, username, lang)
       }
     } else {
       /** ------- Got analysisId  -> request analysis data from api ------- */
@@ -224,73 +220,53 @@ async function getIndex(req, res, next) {
       const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(analysisId, lang)
 
       if (apiResponse.statusCode >= 400) {
-        renderProps.props.children.props.routerStore.errorMessage = apiResponse.statusMessage // TODO: ERROR?????
+        webContext.errorMessage = apiResponse.statusMessage // TODO: ERROR?????
       } else {
-        renderProps.props.children.props.routerStore.analysisId = analysisId
-        renderProps.props.children.props.routerStore.analysisData = apiResponse.body
+        webContext.analysisId = analysisId
+        webContext.analysisData = apiResponse.body
 
         const { courseCode } = apiResponse.body
-        renderProps.props.children.props.routerStore.courseCode = courseCode
-
-        /** ------- Setting status ------- */
-        status = req.params.preview && req.params.preview === 'preview' ? 'preview' : status
-        switch (status) {
-          case 'p':
-            renderProps.props.children.props.routerStore.status = 'published'
-            break
-          case 'n':
-            renderProps.props.children.props.routerStore.status = 'draft'
-            break
-          default:
-            renderProps.props.children.props.routerStore.status = 'draft'
-        }
-        log.debug(' getIndex, status set to: ' + status)
+        webContext.courseCode = courseCode
 
         /** ------- Creating title  ------- */
-        renderProps.props.children.props.routerStore.setCourseTitle(
-          courseTitle.length > 0 ? decodeURIComponent(courseTitle) : ''
-        )
+        webContext.setCourseTitle(courseTitle.length > 0 ? decodeURIComponent(courseTitle) : '')
       }
     }
+    log.debug('status set to: ' + webContext.status)
 
     // /* Course memo for preview */
     log.debug(' get data from kurs-pm-data-api, get kurs-pm data for : ' + courseCodeId)
 
-    renderProps.props.children.props.routerStore.miniMemosPdfAndWeb = await getSortedAndPrioritizedMiniMemosWebOrPdf(
-      courseCodeId
-    )
-    log.debug(
-      'data from kurs-pm-data-api, fetched successfully : ' +
-        renderProps.props.children.props.routerStore.miniMemosPdfAndWeb
-    )
+    webContext.miniMemosPdfAndWeb = await getSortedAndPrioritizedMiniMemosWebOrPdf(courseCodeId)
+    log.debug('data from kurs-pm-data-api, fetched successfully : ', {
+      miniMemosPdfAndWeb: webContext.miniMemosPdfAndWeb,
+    })
 
-    const html = ReactDOMServer.renderToString(renderProps)
+    const compressedData = getCompressedData(webContext)
+
+    const { uri: proxyPrefix } = serverConfig.proxyPrefixPath
+
+    const view = renderStaticPage({
+      applicationStore: {},
+      location: req.url,
+      basename: proxyPrefix,
+      context: webContext,
+    })
 
     res.render('admin/index', {
+      compressedData,
       debug: 'debug' in req.query,
       instrumentationKey: serverConfig.appInsights.instrumentationKey,
-      html: html,
+      html: view,
       title: i18n.messages[lang === 'en' ? 0 : 1].messages.title,
-      initialState: JSON.stringify(hydrateStores(renderProps)),
-      lang: lang,
+      lang,
+      proxyPrefix,
       description: i18n.messages[lang === 'en' ? 0 : 1].messages.title,
     })
   } catch (err) {
     log.error('Error in getIndex', { error: err })
     next(err)
   }
-}
-
-function hydrateStores(renderProps) {
-  // This assumes that all stores are specified in a root element called Provider
-  const props = renderProps.props.children.props
-  const outp = {}
-  for (let key in props) {
-    if (typeof props[key].initializeStore === 'function') {
-      outp[key] = encodeURIComponent(JSON.stringify(toJS(props[key], true)))
-    }
-  }
-  return outp
 }
 
 module.exports = {
@@ -302,6 +278,6 @@ module.exports = {
   getUsedRounds: _getUsedRounds,
   getKoppsCourseData: _getKoppsCourseData,
   saveFileToStorage: _saveFileToStorage,
-  updateFileInStorage,
+  updateFileInStorage: _updateFileInStorage,
   getStatisicsForRound: _getStatisicsForRound,
 }

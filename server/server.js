@@ -1,4 +1,4 @@
-const server = require('kth-node-server')
+const server = require('@kth/server')
 
 // Now read the server config etc.
 const config = require('./configuration').server
@@ -30,7 +30,7 @@ const _addProxy = uri => `${config.proxyPrefixPath.uri}${uri}`
  * ******* LOGGING *******
  * ***********************
  */
-const log = require('kth-node-log')
+const log = require('@kth/log')
 const packageFile = require('../package.json')
 
 let logConfiguration = {
@@ -55,7 +55,7 @@ server.set('layouts', path.join(__dirname, '/views/layouts'))
 server.set('partials', path.join(__dirname, '/views/partials'))
 server.engine(
   'handlebars',
-  exphbs({
+  exphbs.engine({
     defaultLayout: 'publicLayout',
     layoutsDir: server.settings.layouts,
     partialsDir: server.settings.partials,
@@ -80,33 +80,28 @@ const browserConfig = require('./configuration').browser
 const browserConfigHandler = require('kth-node-configuration').getHandler(browserConfig, getPaths())
 const express = require('express')
 
+// Removes the "X-Powered-By: Express header" that shows the underlying Express framework
+server.disable('x-powered-by')
 // helper
-function setCustomCacheControl(res, path) {
-  if (express.static.mime.lookup(path) === 'text/html') {
-    // Custom Cache-Control for HTML files
-    res.setHeader('Cache-Control', 'no-cache')
-  }
-}
+/// Files/statics routes--
 
-// Files/statics routes--
-// Map components HTML files as static content, but set custom cache control header, currently no-cache to force If-modified-since/Etag check.
-server.use(
-  _addProxy('/static/js/components'),
-  express.static('./dist/js/components', { setHeaders: setCustomCacheControl })
-)
+const staticOption = { maxAge: 365 * 24 * 3600 * 1000 } // 365 days in ms is maximum
+
 // Expose browser configurations
 server.use(_addProxy('/static/browserConfig'), browserConfigHandler)
-// Map Bootstrap.
-server.use(_addProxy('/static/bootstrap'), express.static('./node_modules/bootstrap/dist'))
-// Map kth-style.
-server.use(_addProxy('/static/kth-style'), express.static('./node_modules/kth-style/dist'))
+
+// Files/statics routes
+server.use(_addProxy('/static/kth-style'), express.static('./node_modules/kth-style/dist', staticOption))
 
 // Map static content like images, css and js.
-server.use(_addProxy('/static'), express.static('./dist'))
+server.use(_addProxy('/static'), express.static('./dist', staticOption))
+
+server.use(_addProxy('/static/icon/favicon'), express.static('./public/favicon.ico', staticOption))
+
 // Return 404 if static file isn't found so we don't go through the rest of the pipeline
-server.use(_addProxy('/static'), function (req, res, next) {
-  var error = new Error('File not found: ' + req.originalUrl)
-  error.statusCode = 404
+server.use(_addProxy('/static'), (req, res, next) => {
+  const error = new Error('File not found: ' + req.originalUrl)
+  error.status = 404
   next(error)
 })
 
@@ -128,7 +123,7 @@ server.use(cookieParser())
  * ******* SESSION *******
  * ***********************
  */
-const session = require('kth-node-session')
+const session = require('@kth/session')
 const options = config.session
 options.sessionOptions.secret = config.sessionSecret
 server.use(session(options))
@@ -137,7 +132,7 @@ server.use(session(options))
  * ******* LANGUAGE *******
  * ************************
  */
-const { languageHandler } = require('kth-node-web-common/lib/language')
+const { languageHandler } = require('@kth/kth-node-web-common/lib/language')
 server.use(config.proxyPrefixPath.uri, languageHandler)
 
 /* ******************************
@@ -197,7 +192,7 @@ server.get(_addProxy('/logout'), oidc.logout)
  */
 server.use(
   config.proxyPrefixPath.uri,
-  require('kth-node-web-common/lib/web/cortina')({
+  require('@kth/kth-node-web-common/lib/web/cortina')({
     blockUrl: config.blockApi.blockUrl,
     proxyPrefixPath: config.proxyPrefixPath.uri,
     hostUrl: config.hostUrl,
@@ -213,7 +208,7 @@ const excludePath = _addProxy('(?!/static).*')
 const excludeExpression = new RegExp(excludePath)
 server.use(
   excludeExpression,
-  require('kth-node-web-common/lib/web/crawlerRedirect')({
+  require('@kth/kth-node-web-common/lib/web/crawlerRedirect')({
     hostUrl: config.hostUrl,
   })
 )
@@ -246,12 +241,20 @@ server.use('/', systemRoute.getRouter())
 // App routes
 const appRoute = AppRouter()
 appRoute.get(
+  'system.gateway',
+  _addProxy('/silent'),
+  oidc.silentLogin,
+  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser'),
+  Admin.getIndex
+)
+appRoute.get(
   'app.index',
   _addProxy('/:id'),
   oidc.login,
   requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser'),
   Admin.getIndex
 )
+
 appRoute.get(
   'app.preview',
   _addProxy('/:preview/:id'),
@@ -259,8 +262,6 @@ appRoute.get(
   requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isCourseTeacher'),
   Admin.getIndex
 )
-appRoute.get('system.gateway', _addProxy('/gateway'), oidc.silentLogin, requireRole('isAdmin'), Admin.getIndex)
-
 appRoute.get('api.kursutvecklingGetById', _addProxy('/apicall/getRoundAnalysisById/:id'), Admin.getRoundAnalysis)
 appRoute.all('api.kursutvecklingPost', _addProxy('/apicall/postRoundAnalysisById/:id/:status'), Admin.postRoundAnalysis)
 appRoute.delete(

@@ -1,36 +1,34 @@
 import React from 'react'
-import { Provider } from 'mobx-react'
 import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
 import i18n from '../../../i18n'
-import { StaticRouter } from 'react-router'
+import { StaticRouter } from 'react-router-dom/server'
 import PdfLinksNav from '../../../public/js/app/components/preview/PdfLinksNav'
-import mockRouterStore from '../../mocks/mockRouterStore'
+import mockWebContext from '../../mocks/mockRouterStore'
 import mockedProps from '../../mocks/mockProps'
 import mockedMiniMemosPdfAndWeb from '../../mocks/mockMiniMemos'
 import mockCourseAnalysis from '../../mocks/mockCourseAnalysis'
+import { WebContextProvider } from '../../../public/js/app/context/WebContext'
 
 const { getAllByRole, getAllByTestId, getAllByText, getByTestId, getByText } = screen
 
 const RenderPdfLinksNav = ({ userLang = 'en', semester, koppsRoundId, ...rest }) => {
-  const rS = mockRouterStore(userLang)
+  const rS = mockWebContext(userLang)
   return (
-    <StaticRouter>
-      <Provider
-        routerStore={{
-          ...rS,
-          ...mockedMiniMemosPdfAndWeb,
-        }}
-      >
-        <PdfLinksNav
-          {...rest}
-          translate={i18n.messages[userLang === 'en' ? 0 : 1].messages}
-          latestAnalysisFileName={'analysis-EI1220HT2017_1-newCourseAnalysisFile.pdf'} // new file was uploaded
-          staticAnalysisInfo={mockCourseAnalysis(semester, koppsRoundId)}
-          langIndex={userLang === 'en' ? 0 : 1}
-        />
-      </Provider>
-    </StaticRouter>
+    <WebContextProvider
+      configIn={{
+        ...rS,
+        ...mockedMiniMemosPdfAndWeb,
+      }}
+    >
+      <PdfLinksNav
+        {...rest}
+        translate={i18n.messages[userLang === 'en' ? 0 : 1].messages}
+        latestAnalysisFileName={'analysis-EI1220HT2017_1-newCourseAnalysisFile.pdf'} // new file was uploaded
+        staticAnalysisInfo={mockCourseAnalysis(semester, koppsRoundId)}
+        langIndex={userLang === 'en' ? 0 : 1}
+      />
+    </WebContextProvider>
   )
 }
 
@@ -145,7 +143,7 @@ describe('User language: English. Component <PdfLinksNav>: two ladok round ids, 
     )
 
     expect(twoDocLinks[1]).toHaveTextContent('Course memo EI1220 Autumn 2019-3')
-    expect(twoDocLinks[1].href).toStrictEqual('http://localhost/kurs-pm/EI1220/memoEI1220201923')
+    expect(twoDocLinks[1].href).toStrictEqual('https://localhost:3000/kurs-pm/EI1220/memoEI1220201923')
 
     expect(twoDocLinks[2]).toHaveTextContent('Course analysis: 05/09/2019')
     expect(twoDocLinks[2].href).toStrictEqual(
@@ -163,7 +161,7 @@ describe('User language: English. Component <PdfLinksNav>: two ladok round ids, 
     const twoDocLinks = getAllByRole('link')
     expect(twoDocLinks.length).toBe(2)
     expect(twoDocLinks[0]).toHaveTextContent('Course memo EI1220 Autumn 2019-3')
-    expect(twoDocLinks[0].href).toStrictEqual('http://localhost/kurs-pm/EI1220/memoEI1220201923')
+    expect(twoDocLinks[0].href).toStrictEqual('https://localhost:3000/kurs-pm/EI1220/memoEI1220201923')
 
     expect(twoDocLinks[1]).toHaveTextContent('Course analysis: 05/09/2019')
     expect()
@@ -173,7 +171,7 @@ describe('User language: English. Component <PdfLinksNav>: two ladok round ids, 
   })
 
   test('renders disabled link for non-existing course memo for round 9', () => {
-    const disabledLink = getByText('No course memo added')
+    const disabledLink = getByText('Missing a published course memo')
     expect(disabledLink).toBeInTheDocument()
   })
 })
@@ -187,7 +185,7 @@ describe('User language: Swedish. Component <PdfLinksNav>: two ladok round ids, 
     const twoDocLinks = getAllByRole('link')
     expect(twoDocLinks.length).toBe(2)
     expect(twoDocLinks[0]).toHaveTextContent('Kurs-PM EI1220 Autumn 2019-3')
-    expect(twoDocLinks[0].href).toStrictEqual('http://localhost/kurs-pm/EI1220/memoEI1220201923')
+    expect(twoDocLinks[0].href).toStrictEqual('https://localhost:3000/kurs-pm/EI1220/memoEI1220201923')
 
     expect(twoDocLinks[1]).toHaveTextContent('Kursanalys: 2019-09-05')
     expect()
@@ -197,7 +195,7 @@ describe('User language: Swedish. Component <PdfLinksNav>: two ladok round ids, 
   })
 
   test('renders disabled link for non-existing course memo for round 9', () => {
-    const disabledLink = getByText('Inget kurs-PM tillagt')
+    const disabledLink = getByText('Saknas ett publicerat kurs-PM')
     expect(disabledLink).toBeInTheDocument()
   })
 })

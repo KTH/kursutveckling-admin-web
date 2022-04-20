@@ -1,7 +1,5 @@
 'use strict'
 
-const axios = require('axios')
-const { getEnv, devDefaults } = require('kth-node-configuration')
 const api = require('../api')
 
 module.exports = {
@@ -13,39 +11,38 @@ module.exports = {
 }
 
 async function _getAnalysisData(id) {
-  const paths = api.kursutvecklingApi.paths
-  const client = api.kursutvecklingApi.client
-  const uri = client.resolve(paths.getCourseRoundAnalysisDataById.uri, { id: id })
-  return client.getAsync({ uri: uri })
+  const { client, paths } = api.kursutvecklingApi
+  const uri = client.resolve(paths.getCourseRoundAnalysisDataById.uri, { id })
+  return client.getAsync({ uri })
 }
 
 async function _setAnalysisData(id, sendObject) {
-  const paths = api.kursutvecklingApi.paths
-  const client = api.kursutvecklingApi.client
-  const uri = client.resolve(paths.postCourseRoundAnalysisDataById.uri, { id: id })
-  return client.postAsync({ uri: uri, body: sendObject })
+  const { client, paths } = api.kursutvecklingApi
+
+  const uri = client.resolve(paths.postCourseRoundAnalysisDataById.uri, { id })
+  return client.postAsync({ uri, body: sendObject })
 }
 
 async function _putAnalysisData(id, sendObject) {
-  const paths = api.kursutvecklingApi.paths
-  const client = api.kursutvecklingApi.client
-  const uri = client.resolve(paths.putCourseRoundAnalysisDataById.uri, { id: id })
-  return client.putAsync({ uri: uri, body: sendObject })
+  const { client, paths } = api.kursutvecklingApi
+
+  const uri = client.resolve(paths.putCourseRoundAnalysisDataById.uri, { id })
+  return client.putAsync({ uri, body: sendObject })
 }
 
 async function _deleteAnalysisData(id) {
-  const paths = api.kursutvecklingApi.paths
-  const client = api.kursutvecklingApi.client
-  const uri = client.resolve(paths.deleteCourseRoundAnalysisDataById.uri, { id: id })
-  return client.delAsync({ uri: uri })
+  const { client, paths } = api.kursutvecklingApi
+
+  const uri = client.resolve(paths.deleteCourseRoundAnalysisDataById.uri, { id })
+  return client.delAsync({ uri })
 }
 
 async function _getUsedRounds(courseCode, semester) {
   try {
-    const paths = api.kursutvecklingApi.paths
-    const client = api.kursutvecklingApi.client
-    const uri = client.resolve(paths.getUsedRounds.uri, { courseCode: courseCode, semester: semester })
-    return await client.getAsync({ uri: uri })
+    const { client, paths } = api.kursutvecklingApi
+
+    const uri = client.resolve(paths.getUsedRounds.uri, { courseCode, semester })
+    return await client.getAsync({ uri })
   } catch (error) {
     return error
   }

@@ -1,8 +1,7 @@
 'use strict'
 
-const log = require('kth-node-log')
+const log = require('@kth/log')
 
-const i18n = require('../../i18n')
 const api = require('../api')
 
 async function getSortedAndPrioritizedMiniMemosWebOrPdf(courseCode) {
@@ -12,6 +11,9 @@ async function getSortedAndPrioritizedMiniMemosWebOrPdf(courseCode) {
 
   try {
     const { body } = await client.getAsync({ uri })
+    if (body) {
+      log.debug('Success data from kurs-pm-data-api', { body })
+    }
 
     return body || []
   } catch (err) {

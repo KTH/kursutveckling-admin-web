@@ -19,7 +19,7 @@ module.exports = {
      */
     service_name: 'kurs ',
     title: 'Course analysis administration',
-
+    skip_to_main_content: 'Skip to main content',
     lang_block_id: '1.272446',
     locale_text: 'Course information in English',
     site_name: 'Course information',
@@ -63,6 +63,11 @@ module.exports = {
         intro: '',
       },
     ],
+    //* **** Spinner  */
+
+    spinner_loading_button: '  ',
+    spinner_loading_file: 'Loading file...',
+    spinner_loading_ladok: '',
 
     //* **** INTRO SELECT NEW, DRAFT, PUBLISHED */
     intro_new:

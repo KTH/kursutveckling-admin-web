@@ -1,12 +1,13 @@
-import RouterStore from '../../public/js/app/stores/RouterStore'
+import { addClientFunctionsToWebContext } from '../../public/js/app/client-context/addClientFunctionsToWebContext'
 // import transformedAnalysisData from '../mocks/transformedAnalysisData'
 // import transformedKoppsData from '../mocks/transformedKoppsData'
 
-const realRouterStore = new RouterStore()
+const storeFunctions = addClientFunctionsToWebContext()
 
-const mockRouterStore = (userLang = 'en') => {
+const mockWebContext = (userLang = 'en') => {
   const routerWithData = {
-    ...realRouterStore,
+    ...storeFunctions,
+    language: 1,
     courseData: { courseCode: 'EF1111', gradeScale: { PF: 'P, F' }, semesterObjectList: {} },
     courseTitle: { name: 'Project in Plasma Physics', credits: '9.0' },
     // courseKoppsData: transformedKoppsData(userLang),
@@ -17,6 +18,7 @@ const mockRouterStore = (userLang = 'en') => {
       port: 3000,
       proxyPrefixPath: { uri: '/kursinfoadmin/kursutveckling' },
       storageUri: 'https://kursinfostoragestage/kursutveckling-blob-container/',
+      memoStorageUri: 'https://kursinfostoragestage.blob.core.windows.net/memo-blob-container/',
       useSsl: false,
     },
     usedRounds: {
@@ -148,4 +150,4 @@ const mockRouterStore = (userLang = 'en') => {
   return routerWithData
 }
 
-export default mockRouterStore
+export default mockWebContext

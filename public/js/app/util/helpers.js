@@ -1,5 +1,7 @@
 'use strict'
-import { SUPERUSER_PART } from './constants'
+
+//import { SUPERUSER_PART } from './constants'
+const SUPERUSER_PART = require('./constants')
 
 const getDateFormat = (date, language) => {
   if (language === 'Svenska' || language === 'Engelska' || language === 'sv' || language === 1 || language === 'sv') {
@@ -92,6 +94,10 @@ const getAccess = (memberOf, round, courseCode, semester) => {
   if (
     memberOf.toString().indexOf(`${courseCode.toUpperCase()}.${semester}.${round.ladokRoundId}.courseresponsible`) > -1
   ) {
+    return true
+  }
+
+  if (memberOf.toString().indexOf(`${courseCode.toUpperCase()}.${semester}.${round.ladokRoundId}.teachers`) > -1) {
     return true
   }
 
