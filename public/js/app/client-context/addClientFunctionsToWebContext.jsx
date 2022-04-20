@@ -53,9 +53,9 @@ function updateFileInStorage(fileName, metadata) {
 /*                                               ANALYSIS ACTIONS (kursutveckling - API)                                                      */
 /** ***************************************************************************************************************************************** */
 
-function getRoundAnalysis(id, lang = 'sv') {
+function getRoundAnalysis(id) {
   return axios
-    .get(this.buildApiUrl(this.paths.api.kursutvecklingGetById.uri, { id: id }), {
+    .get(this.buildApiUrl(this.paths.api.kursutvecklingGetById.uri, { id }), {
       validateStatus: status => status < 500,
     })
     .then(result => {
@@ -66,7 +66,9 @@ function getRoundAnalysis(id, lang = 'sv') {
       this.status = result.data.isPublished ? 'published' : 'draft'
       this.courseCode = result.data.courseCode
       this.analysisId = result.data._id
-      return (this.analysisData = result.data)
+      this.analysisData = result.data
+
+      return this.analysisData
     })
     .catch(err => {
       if (err.response) {
