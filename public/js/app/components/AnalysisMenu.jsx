@@ -378,31 +378,29 @@ function AnalysisMenu(props) {
                   {/*                              DRAFT ANALYSIS                                          */}
                   {/** *********************************************************************************** */}
                   {draftAnalysis.length > 0 && (
-                    <FormGroup id="drafts">
+                    <>
                       <p>{translate.intro_draft}</p>
-                      <ul className="no-padding-left">
-                        {draftAnalysis.map(analysis => (
-                          <li className="select-list" key={analysis.analysisId}>
-                            <Label key={'Label' + analysis.analysisId} for={analysis.analysisId}>
-                              <Input
-                                type="radio"
-                                id={`${!analysis.hasAccess ? analysis.analysisId + '_preview' : analysis.analysisId}`}
-                                key={analysis.analysisId}
-                                value={analysis.analysisId}
-                                onChange={handleSelectedDraft}
-                                checked={selectedRadio.draft === analysis.analysisId}
-                              />
-                              {analysis.analysisName}{' '}
-                              <span className="no-access">
-                                {' '}
-                                {analysis.hasAccess ? '' : translate.not_authorized_course_offering}
-                              </span>
-                            </Label>
-                            <br />
-                          </li>
-                        ))}
-                      </ul>
-                    </FormGroup>
+                      {draftAnalysis.map(analysis => (
+                        <FormGroup className="form-check" id="drafts">
+                          <Label key={'Label' + analysis.analysisId} for={analysis.analysisId}>
+                            <Input
+                              type="radio"
+                              id={`${!analysis.hasAccess ? analysis.analysisId + '_preview' : analysis.analysisId}`}
+                              key={analysis.analysisId}
+                              value={analysis.analysisId}
+                              onChange={handleSelectedDraft}
+                              checked={selectedRadio.draft === analysis.analysisId}
+                            />
+                            {analysis.analysisName}{' '}
+                            <span className="no-access">
+                              {' '}
+                              {analysis.hasAccess ? '' : translate.not_authorized_course_offering}
+                            </span>
+                          </Label>
+                          <br />
+                        </FormGroup>
+                      ))}
+                    </>
                   )}
 
                   {/** *********************************************************************************** */}
@@ -447,40 +445,35 @@ function AnalysisMenu(props) {
                 </div>
               ) : (
                 <div className="selectBlock">
-                  <FormGroup>
-                    {/** *********************************************************************************** */}
-                    {/*                               PUBLISHED ANALYSIS                                    */}
-                    {/** *********************************************************************************** */}
-                    {publishedAnalysis.length > 0 ? (
-                      <div>
-                        <p>{translate.intro_published}</p>
-                        <ul className="no-padding-left">
-                          {publishedAnalysis.map(analysis => (
-                            <li className="select-list" key={analysis.analysisId}>
-                              <Label key={'Label' + analysis.analysisId} for={analysis.analysisId}>
-                                <Input
-                                  type="radio"
-                                  id={`${!analysis.hasAccess ? analysis.analysisId + '_preview' : analysis.analysisId}`}
-                                  key={analysis.analysisId}
-                                  value={analysis.analysisId}
-                                  onChange={handleSelectedPublished}
-                                  checked={selectedRadio.published === analysis.analysisId}
-                                />
-                                {analysis.analysisName}{' '}
-                                <span className="no-access">
-                                  {' '}
-                                  {analysis.hasAccess ? '' : translate.not_authorized_course_offering}
-                                </span>
-                              </Label>
-                              <br />
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ) : (
-                      <p>{translate.published_empty}</p>
-                    )}
-                  </FormGroup>
+                  {/** *********************************************************************************** */}
+                  {/*                               PUBLISHED ANALYSIS                                    */}
+                  {/** *********************************************************************************** */}
+                  {publishedAnalysis.length > 0 ? (
+                    <div>
+                      <p>{translate.intro_published}</p>
+                      {publishedAnalysis.map(analysis => (
+                        <FormGroup className="form-check" key={analysis.analysisId}>
+                          <Input
+                            type="radio"
+                            id={`${!analysis.hasAccess ? analysis.analysisId + '_preview' : analysis.analysisId}`}
+                            key={analysis.analysisId}
+                            value={analysis.analysisId}
+                            onChange={handleSelectedPublished}
+                            checked={selectedRadio.published === analysis.analysisId}
+                          />
+                          <Label key={'Label' + analysis.analysisId} for={analysis.analysisId}>
+                            {analysis.analysisName}{' '}
+                            <span className="no-access">
+                              {' '}
+                              {analysis.hasAccess ? '' : translate.not_authorized_course_offering}
+                            </span>
+                          </Label>
+                        </FormGroup>
+                      ))}
+                    </div>
+                  ) : (
+                    <p>{translate.published_empty}</p>
+                  )}
                 </div>
               )}
             </Form>
@@ -511,7 +504,7 @@ function AnalysisMenu(props) {
           </Button>
         </Col>
         <Col sm="12" lg="4">
-          {!firstVisit && showEditButton() && !canOnlyPreview ? (
+          {!firstVisit && showEditButton() && !canOnlyPreview && (
             <div>
               <Button
                 className="loading-button next"
@@ -521,26 +514,15 @@ function AnalysisMenu(props) {
                 onClick={goToEditMode}
                 disabled={firstVisit}
               >
-                <Spinner
-                  size="sm"
-                  className={
-                    ladokLoading && statisticsParams.ladokId.length
-                      ? 'loading-button-spinner-loading'
-                      : 'loading-button-spinner'
-                  }
-                />
+                {ladokLoading && statisticsParams.ladokId.length && <Spinner color="light" size="sm" />}
                 <div>{translate.btn_add_analysis}</div>
               </Button>
             </div>
-          ) : (
-            ''
           )}
-          {canOnlyPreview ? (
+          {canOnlyPreview && (
             <Button className="next" color="success" id="new" key="new" onClick={handlePreview}>
               {translate.btn_preview}
             </Button>
-          ) : (
-            ''
           )}
         </Col>
       </Row>
