@@ -2,7 +2,7 @@ import React from 'react'
 import { Input, InputGroup, Button } from 'reactstrap'
 import i18n from '../../../../i18n/index'
 
-function CopyText({ header, webContext, textToCopy = '' }) {
+function CopyText({ header, webContext = {}, textToCopy = '' }) {
   const { analysisId, browserConfig, courseTitle } = webContext
   const textToCopyInput =
     textToCopy ||
