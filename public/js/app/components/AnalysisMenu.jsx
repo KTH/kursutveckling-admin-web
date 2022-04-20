@@ -22,14 +22,22 @@ import InfoButton from './InfoButton'
 import i18n from '../../../../i18n/index'
 import { SERVICE_URL } from '../util/constants'
 import { getDateFormat, getValueFromObjectList } from '../util/helpers'
-import { useWebContext } from '../context/WebContext'
 
 const paramsReducer = (state, action) => ({ ...state, ...action })
 
 function AnalysisMenu(props) {
-  const [webContext] = useWebContext()
-  const { activeSemester, firstVisit: extFirstVisit, progress, saved, semesterList, tempData } = props
-  const context = React.useMemo(() => webContext, [webContext])
+  const {
+    context: rawContext,
+    activeSemester,
+    firstVisit: extFirstVisit,
+    progress,
+    saved,
+    semesterList,
+    tempData,
+    status,
+    roundList,
+  } = props
+  const context = React.useMemo(() => rawContext, [rawContext])
   const [state, setState] = useReducer(paramsReducer, {
     alert: '',
     firstVisit: extFirstVisit,
@@ -61,13 +69,35 @@ function AnalysisMenu(props) {
     ladokLoading: false,
   })
 
+  const translate = i18n.messages[context.language].messages
+  const showAllEmptyNew =
+    status !== 'published' &&
+    state.draftAnalysis.length === 0 &&
+    roundList[state.semester].length === state.usedRounds.length
+  const showAllEmptyPublished = status === 'published' && state.publishedAnalysis.length === 0
+  const {
+    alert,
+    firstVisit,
+    dropdownOpen,
+    collapseOpen,
+    modalOpen,
+    semester,
+    rounds,
+    usedRounds,
+    draftAnalysis,
+    publishedAnalysis,
+    selectedRadio,
+    canOnlyPreview,
+    statisticsParams,
+    ladokLoading,
+  } = state
+
   //* ****************************** SEMESTER DROPDOWN ******************************* */
   //* ********************************************************************************* */
   function toggleDropdown(event) {
     event.preventDefault()
-    console.log('dropddown')
     setState({
-      dropdownOpen: !state.dropdownOpen,
+      dropdownOpen: !dropdownOpen,
     })
   }
 
@@ -75,9 +105,9 @@ function AnalysisMenu(props) {
   //* ********************************************************************************* */
   function handleRoundCheckbox(event) {
     event.persist()
-    let endDate = event.target.getAttribute('data-enddate')
-    let ladokId = event.target.getAttribute('data-uid')
-    let prevState = { ...state }
+    const endDate = event.target.getAttribute('data-enddate')
+    const ladokId = event.target.getAttribute('data-uid')
+    const prevState = { ...state }
     prevState.canOnlyPreview = false
 
     if (state.alert.length > 0) prevState.alert = ''
@@ -91,9 +121,8 @@ function AnalysisMenu(props) {
         prevState.lastSelected = 'new'
         prevState.temporaryData = undefined
         prevState.statisticsParams.endDate = endDate
-        prevState.statisticsParams.ladokId.indexOf(ladokId) === -1 && ladokId.length > 0
-          ? prevState.statisticsParams.ladokId.push(ladokId)
-          : ''
+        if (prevState.statisticsParams.ladokId.indexOf(ladokId) === -1 && ladokId.length > 0)
+          prevState.statisticsParams.ladokId.push(ladokId)
         setState(prevState)
       }
     } else {
@@ -108,7 +137,8 @@ function AnalysisMenu(props) {
   }
 
   function handleSelectedDraft(event) {
-    let prevState = state
+    const prevState = { ...state }
+
     prevState.rounds = []
     prevState.statisticsParams.endDate = ''
     prevState.statisticsParams.ladokId = []
@@ -127,7 +157,8 @@ function AnalysisMenu(props) {
   }
 
   function handleSelectedPublished(event) {
-    let prevState = state
+    const prevState = { ...state }
+
     if (event.target.id.indexOf('_preview') > 0) {
       prevState.selectedRadio.published = event.target.id.split('_preview')[0]
       prevState.canOnlyPreview = true
@@ -146,7 +177,7 @@ function AnalysisMenu(props) {
 
   function goToEditMode(event) {
     event.preventDefault()
-    const { rounds, selectedRadio, semester, lastSelected, temporaryData, statisticsParams, ladokLoading } = state
+    const { lastSelected, temporaryData } = state
 
     if (rounds.length > 0 || selectedRadio.published.length > 0 || selectedRadio.draft.length > 0) {
       setState({ ladokLoading: true })
@@ -167,10 +198,37 @@ function AnalysisMenu(props) {
     window.location = `${SERVICE_URL.admin}${context.courseCode}?serv=kutv&event=cancel`
   }
 
+  //* ******************************************************************* */
+  //* ***************************** OTHER ******************************* */
+
+  function getUsedRounds(sem) {
+    const { analysisId } = props
+    const prevState = state
+    return context.getUsedRounds(context.courseData.courseCode, sem).then(result => {
+      if (analysisId && analysisId.length > 0) {
+        if (context.status === 'draft') {
+          prevState.selectedRadio.draft = analysisId
+          prevState.lastSelected = 'draft'
+        } else {
+          prevState.selectedRadio.published = analysisId
+          prevState.lastSelected = 'published'
+        }
+      }
+      setState({
+        semester: sem,
+        usedRounds: context.usedRounds.usedRounds,
+        draftAnalysis: context.usedRounds.draftAnalysis,
+        publishedAnalysis: context.usedRounds.publishedAnalysis,
+        selectedRadio: prevState.selectedRadio,
+        lastSelected: prevState.lastSelected,
+        alert: '',
+      })
+    })
+  }
+
   async function handleDelete(id, fromModal = false) {
     if (!fromModal) {
       if (state.selectedRadio.draft.length > 0) {
-        let modalOpen = state.modalOpen
         modalOpen.delete = !modalOpen.delete === true
         setState({
           modalOpen,
@@ -191,7 +249,6 @@ function AnalysisMenu(props) {
         window.location = `${SERVICE_URL.admin}${context.courseCode}?serv=kutv&event=delete&id=${state.selectedRadio.draft}&term=${state.semester}&name=${analysisName}`
         getUsedRounds(state.semester)
 
-        let { modalOpen, selectedRadio } = state
         selectedRadio.draft = ''
         modalOpen.delete = !modalOpen.delete === true
         setState({
@@ -222,37 +279,9 @@ function AnalysisMenu(props) {
   }
 
   function toggleModal(event) {
-    let modalOpen = state.modalOpen
     modalOpen[event.target.id] = !modalOpen[event.target.id]
     setState({
       modalOpen,
-    })
-  }
-  //* ******************************************************************* */
-  //* ***************************** OTHER ******************************* */
-
-  function getUsedRounds(semester) {
-    const { analysisId } = props
-    const prevState = state
-    return context.getUsedRounds(context.courseData.courseCode, semester).then(result => {
-      if (analysisId && analysisId.length > 0) {
-        if (context.status === 'draft') {
-          prevState.selectedRadio.draft = analysisId
-          prevState.lastSelected = 'draft'
-        } else {
-          prevState.selectedRadio.published = analysisId
-          prevState.lastSelected = 'published'
-        }
-      }
-      setState({
-        semester,
-        usedRounds: context.usedRounds.usedRounds,
-        draftAnalysis: context.usedRounds.draftAnalysis,
-        publishedAnalysis: context.usedRounds.publishedAnalysis,
-        selectedRadio: prevState.selectedRadio,
-        lastSelected: prevState.lastSelected,
-        alert: '',
-      })
     })
   }
 
@@ -278,32 +307,8 @@ function AnalysisMenu(props) {
   function showEditButton() {
     return context.status === 'published'
       ? state.publishedAnalysis.length > 0
-      : state.draftAnalysis.length > 0 || props.roundList[state.semester].length > state.usedRounds.length
+      : state.draftAnalysis.length > 0 || roundList[state.semester].length > state.usedRounds.length
   }
-
-  const { status, roundList } = props
-  const translate = i18n.messages[context.language].messages
-  const showAllEmptyNew =
-    status !== 'published' &&
-    state.draftAnalysis.length === 0 &&
-    roundList[state.semester].length === state.usedRounds.length
-  const showAllEmptyPublished = status === 'published' && state.publishedAnalysis.length === 0
-  const {
-    alert,
-    firstVisit,
-    dropdownOpen,
-    collapseOpen,
-    modalOpen,
-    semester,
-    rounds,
-    usedRounds,
-    draftAnalysis,
-    publishedAnalysis,
-    selectedRadio,
-    canOnlyPreview,
-    statisticsParams,
-    ladokLoading,
-  } = state
 
   return (
     <div id="YearAndRounds">
@@ -325,28 +330,26 @@ function AnalysisMenu(props) {
                                     ${semester.toString().match(/.{1,4}/g)[0]}`
               : translate.select_semester}
           </span>
-          <span className="caretholder" id={'_spanCaret'}></span>
+          <span className="caretholder" id="_spanCaret" />
         </DropdownToggle>
         <DropdownMenu>
           {semesterList &&
-            semesterList.map(semesterItem => (
-              <DropdownItem id={semester} key={semesterItem} onClick={handleSelectedSemester}>
+            semesterList.map(sem => (
+              <DropdownItem id={sem} key={sem} onClick={handleSelectedSemester}>
                 {`
-                                    ${translate.course_short_semester[semesterItem.toString().match(/.{1,4}/g)[1]]} 
-                                    ${semesterItem.toString().match(/.{1,4}/g)[0]}
-                                `}
+                  ${translate.course_short_semester[sem.toString().match(/.{1,4}/g)[1]]} 
+                  ${sem.toString().match(/.{1,4}/g)[0]}
+                `}
               </DropdownItem>
             ))}
         </DropdownMenu>
       </Dropdown>
 
-      {alert.length > 0 ? (
+      {alert.length > 0 && (
         <Alert color="danger" className="alert-margin">
           {' '}
           {alert}
         </Alert>
-      ) : (
-        ''
       )}
 
       {/** *********************************************************************************** */}
@@ -562,7 +565,7 @@ function AnalysisMenu(props) {
         type="copy"
         toggle={toggleModal}
         isOpen={modalOpen.copy}
-        id={'copy'}
+        id="copy"
         url={`${context.browserConfig.hostUrl}${context.browserConfig.proxyPrefixPath.uri}/preview/${
           selectedRadio.draft
         }?title=${encodeURI(context.courseTitle.name + '_' + context.courseTitle.credits)}`}
