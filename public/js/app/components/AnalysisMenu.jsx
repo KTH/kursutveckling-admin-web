@@ -408,25 +408,25 @@ function AnalysisMenu(props) {
                   {/** *********************************************************************************** */}
                   {/*                               NEW ANALYSIS                                          */}
                   {/** *********************************************************************************** */}
-                  {roundList[semester].length > usedRounds.length ? (
-                    <FormGroup id="rounds">
+                  {roundList[semester].length > usedRounds.length && (
+                    <>
                       <p>{translate.intro_new}</p>
-                      <ul className="no-padding-left">
-                        {roundList[semester].map(round =>
-                          usedRounds.indexOf(round.roundId) < 0 ? (
-                            <li className="select-list" key={round.roundId}>
+                      {roundList[semester].map(
+                        round =>
+                          usedRounds.indexOf(round.roundId) < 0 && (
+                            <FormGroup className="form-check" id="rounds">
+                              <Input
+                                type="checkbox"
+                                id={round.roundId}
+                                key={'checkbox' + round.roundId}
+                                onChange={handleRoundCheckbox}
+                                checked={rounds.indexOf(round.roundId) > -1}
+                                name={round.roundId}
+                                disabled={!round.hasAccess}
+                                data-uid={round.ladokUID}
+                                data-enddate={round.endDate}
+                              />
                               <Label key={'Label' + round.roundId} for={round.roundId}>
-                                <Input
-                                  type="checkbox"
-                                  id={round.roundId}
-                                  key={'checkbox' + round.roundId}
-                                  onChange={handleRoundCheckbox}
-                                  checked={rounds.indexOf(round.roundId) > -1}
-                                  name={round.roundId}
-                                  disabled={!round.hasAccess}
-                                  data-uid={round.ladokUID}
-                                  data-enddate={round.endDate}
-                                />
                                 {round.shortName
                                   ? round.shortName + ' '
                                   : `${translate.course_short_semester[semester.toString().match(/.{1,4}/g)[1]]} ${
@@ -439,16 +439,10 @@ function AnalysisMenu(props) {
                                   {round.hasAccess ? '' : translate.not_authorized_publish_new}
                                 </span>
                               </Label>
-                              <br />
-                            </li>
-                          ) : (
-                            ''
+                            </FormGroup>
                           )
-                        )}
-                      </ul>
-                    </FormGroup>
-                  ) : (
-                    ''
+                      )}
+                    </>
                   )}
                 </div>
               ) : (

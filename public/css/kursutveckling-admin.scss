@@ -45,6 +45,9 @@ $kth-blue: #007fae;
   & > .collapse {
     padding-left: 15px;
   }
+  form input ~ label {
+    font-weight: normal;
+  }
 }
 
 .select-semester {
