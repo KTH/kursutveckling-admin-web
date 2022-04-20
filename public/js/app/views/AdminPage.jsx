@@ -601,6 +601,7 @@ function AdminPage() {
                 tempData={/*state.saved ? {} : */ getTempData()}
                 saved={state.values && state.values.changedDate.length > 0}
                 analysisId={state.saved && state.values ? state.values._id : ''}
+                context={webContext}
               />
             )}
           </div>
@@ -612,350 +613,333 @@ function AdminPage() {
         )}
       </div>
     )
-  } else {
-    return (
-      <div key="kursutveckling-form-container" className="container" id="kursutveckling-form-container">
-        {/************************************************************************************* */}
-        {/*                     PAGE 2: EDIT  AND  PAGE 3: PREVIEW                              */}
-        {/************************************************************************************* */}
-        {webContext.errorMessage.length > 0 ? (
-          <Alert color="info" className="alert-margin">
-            {webContext.errorMessage}
-          </Alert>
-        ) : (
-          <div>
-            <Title
-              title={webContext.courseTitle}
-              language={webContext.language}
-              courseCode={webContext.courseCode}
-              header={translate.header_main[webContext.status]}
-            />
-            {webContext.status !== 'preview' && (
-              <ProgressBar active={progress === 'edit' ? 2 : 3} pages={translate.pagesProgressBar} />
-            )}
-
-            {/************************************************************************************* */}
-            {/*                                   PREVIEW                                           */}
-            {/************************************************************************************* */}
-            {state.values && state.isPreviewMode ? (
-              <Preview values={state.values} analysisFile={state.analysisFile} />
-            ) : (
-              ''
-            )}
-            <Row key="form" id="form-container">
-              <Col sm="12" lg="12">
-                {/************************************************************************************* */}
-                {/*                                 EDIT FORM                                           */}
-                {/************************************************************************************* */}
-
-                {state.values && !state.isPreviewMode ? (
-                  <Form className="admin-form">
-                    {/* ----- Intro text for Edit ------- */}
-                    <div>
-                      <p>{translate.intro_edit}</p>
-                    </div>
-
-                    {/* ---- Semester and name of analysis ---- */}
-                    <h2>{translate.header_edit_content}</h2>
-                    <p>
-                      {' '}
-                      <b>{translate.header_semester} </b>
-                      {`${translate.course_short_semester[state.values.semester.toString().match(/.{1,4}/g)[1]]} 
-                  ${state.values.semester.toString().match(/.{1,4}/g)[0]}`}
-                      <b> {translate.header_course_offering}</b> {state.values.analysisName}
-                    </p>
-
-                    <p>{translate.header_mandatory_fields}</p>
-
-                    {/* ----- ALERTS ----- */}
-                    {state.alert.length > 0 && (
-                      <Row>
-                        <Alert color="info" className="alert-margin">
-                          {state.alert}{' '}
-                        </Alert>
-                      </Row>
-                    )}
-                    {state.multiLineAlert.length > 0 && (
-                      <Row>
-                        <Alert color="info" className="alert-margin">
-                          {state.multiLineAlert.map((text, index) => (
-                            <p key={'alert-p-' + index}>{text}</p>
-                          ))}
-                        </Alert>
-                      </Row>
-                    )}
-                    {state.alertSuccess.length > 0 && (
-                      <Row>
-                        <Alert color="success">{state.alertSuccess} </Alert>
-                      </Row>
-                    )}
-                    <AlertError notValid={state.notValid} translations={i18n.messages[webContext.language]} />
-                    {/* FORM - FIRST COLUMN */}
-                    <Row className="form-group">
-                      <Col sm="4" className="col-form">
-                        <h4>{translate.header_upload}</h4>
-
-                        {/** ------ ANALYSIS-FILE UPLOAD ------- **/}
-                        <FormLabel
-                          translate={translate}
-                          header={'header_upload_file'}
-                          id={'info_upload_course_analysis'}
-                        />
-                        <UpLoad
-                          id="analysis"
-                          key="analysis"
-                          handleUpload={handleUploadFile}
-                          progress={fileProgress.analysis}
-                          path={webContext.browserConfig.proxyPrefixPath.uri}
-                          file={state.analysisFile}
-                          notValid={state.notValid}
-                          handleRemoveFile={handleRemoveFile}
-                          type="analysisFile"
-                        />
-                        {state.analysisFile.length > 0 && (
-                          <span>
-                            <FormLabel
-                              translate={translate}
-                              header={'header_upload_file_date'}
-                              id={'info_upload_course_analysis_date'}
-                            />
-                            <Input
-                              id="pdfAnalysisDate"
-                              key="pdfAnalysisDate"
-                              type="date"
-                              value={state.values.pdfAnalysisDate}
-                              onChange={handleInputChange}
-                              className={state.notValid.mandatoryFields.includes('pdfAnalysisDate') ? 'not-valid ' : ''}
-                              style={{ maxWidth: '180px' }}
-                            />
-                          </span>
-                        )}
-
-                        <br />
-                      </Col>
-
-                      {/* ------ FORM - SECOND COLUMN ------ */}
-                      <Col sm="4" className="col-form">
-                        <h4>{translate.header_summarize}</h4>
-
-                        <FormLabel
-                          translate={translate}
-                          header={'header_course_changes_comment'}
-                          id={'info_course_changes_comment'}
-                          badgeText={state.values.alterationText.length || '0'}
-                          mode={state.values.alterationText.length > ALTERATION_TEXT_MAX ? 'danger' : 'warning'}
-                        />
-                        <Input
-                          style={{ height: 300 }}
-                          id="alterationText"
-                          key="alterationText"
-                          type="textarea"
-                          value={state.values.alterationText}
-                          onChange={handleInputChange}
-                          className={state.notValid.overMaxFields.includes('alterationText') ? 'not-valid' : ''}
-                        />
-                      </Col>
-
-                      {/* ------ FORM - THIRD COLUMN -------- */}
-                      <Col sm="4" className="col-form">
-                        <h4>{translate.header_check_data}</h4>
-
-                        <FormLabel translate={translate} header={'header_examiners'} id={'info_examiners'} />
-                        <Input
-                          id="examiners"
-                          key="examiners"
-                          type="text"
-                          value={state.values.examiners}
-                          onChange={handleInputChange}
-                          className={state.notValid.mandatoryFields.includes('examiners') ? 'not-valid' : ''}
-                        />
-
-                        <FormLabel translate={translate} header={'header_responsibles'} id={'info_responsibles'} />
-                        <Input
-                          id="responsibles"
-                          key="responsibles"
-                          type="text"
-                          value={state.values.responsibles}
-                          onChange={handleInputChange}
-                          className={state.notValid.mandatoryFields.includes('responsibles') ? 'not-valid' : ''}
-                        />
-
-                        <FormLabel translate={translate} header={'header_registrated'} id={'info_registrated'} />
-                        <Input
-                          id="registeredStudents"
-                          key="registeredStudents"
-                          type="number"
-                          placeholder="0"
-                          value={state.values.registeredStudents}
-                          onChange={handleInputChange}
-                          className={state.notValid.mandatoryFields.includes('registeredStudents') ? 'not-valid' : ''}
-                        />
-
-                        <FormLabel
-                          translate={translate}
-                          header={'header_examination_grade'}
-                          id={'info_examination_grade'}
-                        />
-                        <div className="calculate-examination-grade">
-                          <div>
-                            <h5>{translate.header_end_date}</h5>
-                            <Input
-                              id="endDate"
-                              key="endDate"
-                              type="date"
-                              value={state.values.endDate}
-                              onChange={handleInputChange}
-                              className={state.notValid.mandatoryFields.includes('endDate') ? 'not-valid' : ''}
-                              disabled={state.endDateInputEnabled ? '' : 'disabled'}
-                              max="2099-12-31"
-                            />
-                          </div>
-                          <div>
-                            <h5>{translate.header_result}</h5>
-                            <span>
-                              {state.ladokLoading === true ? (
-                                <span className="ladok-loading-progress-inline">
-                                  <Spinner size="sm" color="primary" />
-                                </span>
-                              ) : (
-                                ''
-                              )}
-                              <Input
-                                id="examinationGrade"
-                                key="examinationGrade"
-                                type="number"
-                                placeholder="0"
-                                value={state.values.examinationGrade}
-                                onChange={handleInputChange}
-                                className={
-                                  state.notValid.mandatoryFields.includes('examinationGrade') ? 'not-valid' : ''
-                                }
-                                disabled={state.examinationGradeInputEnabled ? '' : 'disabled'}
-                              />
-                            </span>
-                          </div>
-                        </div>
-
-                        {isPublished ? (
-                          <span>
-                            <div className="inline-flex">
-                              <h4>{translate.header_analysis_edit_comment}</h4>
-                              <InfoButton
-                                addClass="padding-top-30"
-                                id="info_edit_comments"
-                                textObj={translate.info_edit_comments}
-                              />
-                            </div>
-                            <Input
-                              id="commentChange"
-                              key="commentChange"
-                              type="textarea"
-                              value={state.values.commentChange}
-                              onChange={handleInputChange}
-                              className={
-                                state.notValid.mandatoryFields.indexOf('commentChange') > -1 ? 'not-valid' : ''
-                              }
-                            />
-                          </span>
-                        ) : (
-                          ''
-                        )}
-                      </Col>
-                    </Row>
-                  </Form>
-                ) : (
-                  ''
-                )}
-                {/************************************************************************************* */}
-                {/*                                BUTTONS FOR PAG 2 AND 3                              */}
-                {/************************************************************************************* */}
-                {state.isPreviewMode &&
-                state.values.changedDate.length > 0 &&
-                webContext.status !== 'preview' &&
-                webContext.analysisId ? (
-                  <CopyText
-                    textToCopy={
-                      webContext.browserConfig.hostUrl +
-                      webContext.browserConfig.proxyPrefixPath.uri +
-                      '/preview/' +
-                      webContext.analysisId +
-                      '?title=' +
-                      encodeURI(webContext.courseTitle.name + '_' + webContext.courseTitle.credits)
-                    }
-                    header={translate.header_copy_link}
-                  />
-                ) : (
-                  ''
-                )}
-
-                <Row className="button-container text-center">
-                  <Col sm="4" className="align-left-sm-center">
-                    {webContext.status === 'preview' ? (
-                      ''
-                    ) : (
-                      <Button className="back" color="secondary" id="back" key="back" onClick={handleBack}>
-                        {state.isPreviewMode ? translate.btn_back_edit : translate.btn_back}
-                      </Button>
-                    )}
-                  </Col>
-                  <Col sm="3" className="align-right-sm-center">
-                    {webContext.status !== 'preview' && (
-                      <Button color="secondary" id="cancel" key="cancel" onClick={toggleModal}>
-                        {translate.btn_cancel}
-                      </Button>
-                    )}
-                  </Col>
-                  <Col sm="3">
-                    {state.isPublished || webContext.status === 'preview' ? (
-                      ''
-                    ) : (
-                      <Button color="secondary" id="save" key="save" onClick={handleSave}>
-                        {state.isPreviewMode ? translate.btn_save_and_cancel : translate.btn_save}
-                      </Button>
-                    )}
-                  </Col>
-                  <Col sm="2">
-                    {webContext.status !== 'preview' && (
-                      <span>
-                        {state.isPreviewMode ? (
-                          <Button color="success" id="publish" key="publish" onClick={toggleModal}>
-                            {translate.btn_publish}
-                          </Button>
-                        ) : (
-                          <Button className="next" color="success" id="preview" key="preview" onClick={handlePreview}>
-                            {translate.btn_preview}
-                          </Button>
-                        )}
-                      </span>
-                    )}
-                  </Col>
-                </Row>
-              </Col>
-            </Row>
-            {/************************************************************************************* */}
-            {/*                               MODALS FOR PUBLISH AND CANCEL                         */}
-            {/************************************************************************************* */}
-            <InfoModal
-              type="publish"
-              toggle={toggleModal}
-              isOpen={state.modalOpen.publish}
-              id={webContext.analysisId}
-              handleConfirm={handlePublish}
-              infoText={translate.info_publish}
-            />
-            <InfoModal
-              type="cancel"
-              toggle={toggleModal}
-              isOpen={state.modalOpen.cancel}
-              id={webContext.analysisId}
-              handleConfirm={handleCancel}
-              infoText={translate.info_cancel}
-            />
-          </div>
-        )}
-      </div>
-    )
   }
+  return (
+    <div key="kursutveckling-form-container" className="container" id="kursutveckling-form-container">
+      {/* ************************************************************************************ */}
+      {/*                     PAGE 2: EDIT  AND  PAGE 3: PREVIEW                              */}
+      {/* ************************************************************************************ */}
+      {webContext.errorMessage.length > 0 ? (
+        <Alert color="info" className="alert-margin">
+          {webContext.errorMessage}
+        </Alert>
+      ) : (
+        <div>
+          <Title
+            title={webContext.courseTitle}
+            language={webContext.language}
+            courseCode={webContext.courseCode}
+            header={translate.header_main[webContext.status]}
+          />
+          {webContext.status !== 'preview' && (
+            <ProgressBar active={progress === 'edit' ? 2 : 3} pages={translate.pagesProgressBar} />
+          )}
+
+          {/* ************************************************************************************ */}
+          {/*                                   PREVIEW                                           */}
+          {/* ************************************************************************************ */}
+          {state.values && state.isPreviewMode && <Preview values={state.values} analysisFile={state.analysisFile} />}
+          <Row key="form" id="form-container">
+            <Col sm="12" lg="12">
+              {/* ************************************************************************************ */}
+              {/*                                 EDIT FORM                                           */}
+              {/* ************************************************************************************ */}
+
+              {state.values && !state.isPreviewMode ? (
+                <Form className="admin-form">
+                  {/* ----- Intro text for Edit ------- */}
+                  <div>
+                    <p>{translate.intro_edit}</p>
+                  </div>
+
+                  {/* ---- Semester and name of analysis ---- */}
+                  <h2>{translate.header_edit_content}</h2>
+                  <p>
+                    {' '}
+                    <b>{translate.header_semester} </b>
+                    {`${translate.course_short_semester[state.values.semester.toString().match(/.{1,4}/g)[1]]} 
+                  ${state.values.semester.toString().match(/.{1,4}/g)[0]}`}
+                    <b> {translate.header_course_offering}</b> {state.values.analysisName}
+                  </p>
+
+                  <p>{translate.header_mandatory_fields}</p>
+
+                  {/* ----- ALERTS ----- */}
+                  {state.alert.length > 0 && (
+                    <Row>
+                      <Alert color="info" className="alert-margin">
+                        {state.alert}{' '}
+                      </Alert>
+                    </Row>
+                  )}
+                  {state.multiLineAlert.length > 0 && (
+                    <Row>
+                      <Alert color="info" className="alert-margin">
+                        {state.multiLineAlert.map((text, index) => (
+                          <p key={'alert-p-' + index}>{text}</p>
+                        ))}
+                      </Alert>
+                    </Row>
+                  )}
+                  {state.alertSuccess.length > 0 && (
+                    <Row>
+                      <Alert color="success">{state.alertSuccess} </Alert>
+                    </Row>
+                  )}
+                  <AlertError notValid={state.notValid} translations={i18n.messages[webContext.language]} />
+                  {/* FORM - FIRST COLUMN */}
+                  <Row className="form-group">
+                    <Col sm="4" className="col-form">
+                      <h4>{translate.header_upload}</h4>
+
+                      {/** ------ ANALYSIS-FILE UPLOAD ------- **/}
+                      <FormLabel translate={translate} header="header_upload_file" id="info_upload_course_analysis" />
+                      <UpLoad
+                        id="analysis"
+                        key="analysis"
+                        handleUpload={handleUploadFile}
+                        progress={fileProgress.analysis}
+                        path={webContext.browserConfig.proxyPrefixPath.uri}
+                        file={state.analysisFile}
+                        notValid={state.notValid}
+                        handleRemoveFile={handleRemoveFile}
+                        type="analysisFile"
+                      />
+                      {state.analysisFile.length > 0 && (
+                        <span>
+                          <FormLabel
+                            translate={translate}
+                            header="header_upload_file_date"
+                            id="info_upload_course_analysis_date"
+                          />
+                          <Input
+                            id="pdfAnalysisDate"
+                            key="pdfAnalysisDate"
+                            type="date"
+                            value={state.values.pdfAnalysisDate}
+                            onChange={handleInputChange}
+                            className={state.notValid.mandatoryFields.includes('pdfAnalysisDate') ? 'not-valid ' : ''}
+                            style={{ maxWidth: '180px' }}
+                          />
+                        </span>
+                      )}
+
+                      <br />
+                    </Col>
+
+                    {/* ------ FORM - SECOND COLUMN ------ */}
+                    <Col sm="4" className="col-form">
+                      <h4>{translate.header_summarize}</h4>
+
+                      <FormLabel
+                        translate={translate}
+                        header="header_course_changes_comment"
+                        id="info_course_changes_comment"
+                        badgeText={state.values.alterationText.length || '0'}
+                        mode={state.values.alterationText.length > ALTERATION_TEXT_MAX ? 'danger' : 'warning'}
+                      />
+                      <Input
+                        style={{ height: 300 }}
+                        id="alterationText"
+                        key="alterationText"
+                        type="textarea"
+                        value={state.values.alterationText}
+                        onChange={handleInputChange}
+                        className={state.notValid.overMaxFields.includes('alterationText') ? 'not-valid' : ''}
+                      />
+                    </Col>
+
+                    {/* ------ FORM - THIRD COLUMN -------- */}
+                    <Col sm="4" className="col-form">
+                      <h4>{translate.header_check_data}</h4>
+
+                      <FormLabel translate={translate} header="header_examiners" id="info_examiners" />
+                      <Input
+                        id="examiners"
+                        key="examiners"
+                        type="text"
+                        value={state.values.examiners}
+                        onChange={handleInputChange}
+                        className={state.notValid.mandatoryFields.includes('examiners') ? 'not-valid' : ''}
+                      />
+
+                      <FormLabel translate={translate} header="header_responsibles" id="info_responsibles" />
+                      <Input
+                        id="responsibles"
+                        key="responsibles"
+                        type="text"
+                        value={state.values.responsibles}
+                        onChange={handleInputChange}
+                        className={state.notValid.mandatoryFields.includes('responsibles') ? 'not-valid' : ''}
+                      />
+
+                      <FormLabel translate={translate} header="header_registrated" id="info_registrated" />
+                      <Input
+                        id="registeredStudents"
+                        key="registeredStudents"
+                        type="number"
+                        placeholder="0"
+                        value={state.values.registeredStudents}
+                        onChange={handleInputChange}
+                        className={state.notValid.mandatoryFields.includes('registeredStudents') ? 'not-valid' : ''}
+                      />
+
+                      <FormLabel translate={translate} header="header_examination_grade" id="info_examination_grade" />
+                      <div className="calculate-examination-grade">
+                        <div>
+                          <h5>{translate.header_end_date}</h5>
+                          <Input
+                            id="endDate"
+                            key="endDate"
+                            type="date"
+                            value={state.values.endDate}
+                            onChange={handleInputChange}
+                            className={state.notValid.mandatoryFields.includes('endDate') ? 'not-valid' : ''}
+                            disabled={state.endDateInputEnabled ? '' : 'disabled'}
+                            max="2099-12-31"
+                          />
+                        </div>
+                        <div>
+                          <h5>{translate.header_result}</h5>
+                          <span>
+                            {state.ladokLoading === true ? (
+                              <span className="ladok-loading-progress-inline">
+                                <Spinner size="sm" color="primary" />
+                              </span>
+                            ) : (
+                              ''
+                            )}
+                            <Input
+                              id="examinationGrade"
+                              key="examinationGrade"
+                              type="number"
+                              placeholder="0"
+                              value={state.values.examinationGrade}
+                              onChange={handleInputChange}
+                              className={state.notValid.mandatoryFields.includes('examinationGrade') ? 'not-valid' : ''}
+                              disabled={state.examinationGradeInputEnabled ? '' : 'disabled'}
+                            />
+                          </span>
+                        </div>
+                      </div>
+
+                      {isPublished ? (
+                        <span>
+                          <div className="inline-flex">
+                            <h4>{translate.header_analysis_edit_comment}</h4>
+                            <InfoButton
+                              addClass="padding-top-30"
+                              id="info_edit_comments"
+                              textObj={translate.info_edit_comments}
+                            />
+                          </div>
+                          <Input
+                            id="commentChange"
+                            key="commentChange"
+                            type="textarea"
+                            value={state.values.commentChange}
+                            onChange={handleInputChange}
+                            className={state.notValid.mandatoryFields.indexOf('commentChange') > -1 ? 'not-valid' : ''}
+                          />
+                        </span>
+                      ) : (
+                        ''
+                      )}
+                    </Col>
+                  </Row>
+                </Form>
+              ) : (
+                ''
+              )}
+              {/* ************************************************************************************ */}
+              {/*                                BUTTONS FOR PAG 2 AND 3                              */}
+              {/* ************************************************************************************ */}
+              {state.isPreviewMode &&
+              state.values.changedDate.length > 0 &&
+              webContext.status !== 'preview' &&
+              webContext.analysisId ? (
+                <CopyText
+                  textToCopy={
+                    webContext.browserConfig.hostUrl +
+                    webContext.browserConfig.proxyPrefixPath.uri +
+                    '/preview/' +
+                    webContext.analysisId +
+                    '?title=' +
+                    encodeURI(webContext.courseTitle.name + '_' + webContext.courseTitle.credits)
+                  }
+                  header={translate.header_copy_link}
+                />
+              ) : (
+                ''
+              )}
+
+              <Row className="button-container text-center">
+                <Col sm="4" className="align-left-sm-center">
+                  {webContext.status === 'preview' ? (
+                    ''
+                  ) : (
+                    <Button className="back" color="secondary" id="back" key="back" onClick={handleBack}>
+                      {state.isPreviewMode ? translate.btn_back_edit : translate.btn_back}
+                    </Button>
+                  )}
+                </Col>
+                <Col sm="3" className="align-right-sm-center">
+                  {webContext.status !== 'preview' && (
+                    <Button color="secondary" id="cancel" key="cancel" onClick={toggleModal}>
+                      {translate.btn_cancel}
+                    </Button>
+                  )}
+                </Col>
+                <Col sm="3">
+                  {state.isPublished || webContext.status === 'preview' ? (
+                    ''
+                  ) : (
+                    <Button color="secondary" id="save" key="save" onClick={handleSave}>
+                      {state.isPreviewMode ? translate.btn_save_and_cancel : translate.btn_save}
+                    </Button>
+                  )}
+                </Col>
+                <Col sm="2">
+                  {webContext.status !== 'preview' && (
+                    <span>
+                      {state.isPreviewMode ? (
+                        <Button color="success" id="publish" key="publish" onClick={toggleModal}>
+                          {translate.btn_publish}
+                        </Button>
+                      ) : (
+                        <Button className="next" color="success" id="preview" key="preview" onClick={handlePreview}>
+                          {translate.btn_preview}
+                        </Button>
+                      )}
+                    </span>
+                  )}
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+          {/* ************************************************************************************ */}
+          {/*                               MODALS FOR PUBLISH AND CANCEL                         */}
+          {/* ************************************************************************************ */}
+          <InfoModal
+            type="publish"
+            toggle={toggleModal}
+            isOpen={state.modalOpen.publish}
+            id={webContext.analysisId}
+            handleConfirm={handlePublish}
+            infoText={translate.info_publish}
+          />
+          <InfoModal
+            type="cancel"
+            toggle={toggleModal}
+            isOpen={state.modalOpen.cancel}
+            id={webContext.analysisId}
+            handleConfirm={handleCancel}
+            infoText={translate.info_cancel}
+          />
+        </div>
+      )}
+    </div>
+  )
 }
 
 const FormLabel = ({ translate, header, id, badgeText, mode = 'warning' }) => (

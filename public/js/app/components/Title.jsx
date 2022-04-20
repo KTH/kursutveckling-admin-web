@@ -1,5 +1,4 @@
 import React from 'react'
-import i18n from '../../../../i18n/index'
 import PropTypes from 'prop-types'
 import { PageHeading } from '@kth/kth-reactstrap/dist/components/studinfo'
 
