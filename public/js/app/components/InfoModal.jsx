@@ -1,15 +1,13 @@
 import React, { useReducer } from 'react'
-import { Modal, ModalBody, ModalHeader, ModalFooter, Button, Input } from 'reactstrap'
-import i18n from '../../../../i18n/index'
+import { Modal, ModalBody, ModalHeader, ModalFooter, Button } from 'reactstrap'
 
-//Custom components
+// Custom components
 import CopyText from './CopyText'
 
 const paramsReducer = (state, action) => ({ ...state, ...action })
 
 function InfoModal(props) {
-  
-  const [state, setState] = useReducer(paramsReducer, { modal: props.isOpen,  newEndDate: '' })
+  const { fade, isOpen, toggle, className, type, infoText, id, url, copyHeader } = props
 
   function handleConfirm(event) {
     event.preventDefault()
@@ -21,7 +19,6 @@ function InfoModal(props) {
     props.handleDateChange(event.target.value)
   }
 
-  const { fade, isOpen, toggle, className, type, infoText, id, url, copyHeader } = props
   const fadeModal = props.hasOwnProperty('fade') ? fade : true
 
   return (

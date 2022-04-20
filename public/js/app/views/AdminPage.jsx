@@ -271,16 +271,13 @@ function AdminPage() {
 
   function handleSave(event) {
     event.preventDefault()
-    const { postObject } = { ...state.values }
+    const postObject = { ...state.values }
 
     if (state.analysisFile !== postObject.analysisFileName) {
-      console.log('nope')
       postObject.analysisFileName = state.analysisFile
     }
 
     if (!state.saved && state.analysisFile.length > 0) {
-      console.log('sssssss')
-
       webContext.updateFileInStorage(state.analysisFile, getMetadata('draft'))
     }
 
