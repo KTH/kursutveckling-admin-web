@@ -363,8 +363,10 @@ function AdminPage() {
     if (newEndDate.length > 0) {
       return webContext
         .postLadokRoundIdListAndDateToGetStatistics(statisticsParams.ladokId, newEndDate)
-        .then(ladokResponse => {
-          values.examinationGrade = Math.round(Number(webContext.statistics.examinationGrade) * 10) / 10
+        .then(statisticsResponse => {
+          console.log('statisticsResponse', statisticsResponse)
+
+          values.examinationGrade = Math.round(Number(statisticsResponse.examinationGrade) * 10) / 10
           values.examinationGradeFromLadok =
             values['endDate'] === values['endDateLadok'] &&
             Number(values['examinationGrade']) === values['examinationGradeLadok']
@@ -376,14 +378,12 @@ function AdminPage() {
             endDateLadok: values.endDateLadok,
             examinationGradeLadok: values.examinationGradeLadok,
           })
-          setState(state => {
-            return {
-              values,
-              examinationGradeInputEnabled: true,
-              ladokLoading: false,
-              alert: values.examinationGradeFromLadok ? '' : state.alert,
-              multiLineAlert,
-            }
+          setState({
+            values,
+            examinationGradeInputEnabled: true,
+            ladokLoading: false,
+            alert: values.examinationGradeFromLadok ? '' : state.alert,
+            multiLineAlert,
           })
         })
     } else {
@@ -593,7 +593,7 @@ function AdminPage() {
                 activeSemester={state.activeSemester}
                 firstVisit={analysisData === undefined}
                 status={webContext.status}
-                tempData={/*state.saved ? {} : */ getTempData()}
+                tempData={getTempData()}
                 saved={state.values && state.values.changedDate.length > 0}
                 analysisId={state.saved && state.values ? state.values._id : ''}
                 context={webContext}
@@ -687,7 +687,7 @@ function AdminPage() {
                     <Col sm="4" className="col-form">
                       <h4>{translate.header_upload}</h4>
 
-                      {/** ------ ANALYSIS-FILE UPLOAD ------- **/}
+                      {/* * ------ ANALYSIS-FILE UPLOAD ------- * */}
                       <FormLabel translate={translate} header="header_upload_file" id="info_upload_course_analysis" />
                       <UpLoad
                         id="analysis"
@@ -699,6 +699,7 @@ function AdminPage() {
                         notValid={state.notValid}
                         handleRemoveFile={handleRemoveFile}
                         type="analysisFile"
+                        translate={translate}
                       />
                       {state.analysisFile.length > 0 && (
                         <span>
@@ -797,12 +798,12 @@ function AdminPage() {
                         <div>
                           <h5>{translate.header_result}</h5>
                           <span>
-                            {state.ladokLoading === true ? (
+                            {state.ladokLoading === true && (
                               <span className="ladok-loading-progress-inline">
-                                <Spinner size="sm" color="primary" />
+                                <Spinner size="sm" color="primary">
+                                  {translate.spinner_loading_ladok}
+                                </Spinner>
                               </span>
-                            ) : (
-                              ''
                             )}
                             <Input
                               id="examinationGrade"
@@ -818,7 +819,7 @@ function AdminPage() {
                         </div>
                       </div>
 
-                      {isPublished ? (
+                      {isPublished && (
                         <span>
                           <div className="inline-flex">
                             <h4>{translate.header_analysis_edit_comment}</h4>
@@ -837,8 +838,6 @@ function AdminPage() {
                             className={state.notValid.mandatoryFields.indexOf('commentChange') > -1 ? 'not-valid' : ''}
                           />
                         </span>
-                      ) : (
-                        ''
                       )}
                     </Col>
                   </Row>

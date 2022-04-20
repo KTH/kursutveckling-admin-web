@@ -226,7 +226,7 @@ function postLadokRoundIdListAndDateToGetStatistics(ladokRoundIdList, endDate) {
       this.statistics.examinationGrade =
         this.statistics.examinationGrade > 0 ? Math.round(Number(this.statistics.examinationGrade) * 10) / 10 : 0
       this.statistics.endDate = endDate
-      return apiResponse.body
+      return this.statistics
     })
     .catch(err => {
       if (err.response) {
