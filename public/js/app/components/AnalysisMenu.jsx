@@ -381,23 +381,22 @@ function AnalysisMenu(props) {
                     <>
                       <p>{translate.intro_draft}</p>
                       {draftAnalysis.map(analysis => (
-                        <FormGroup className="form-check" id="drafts">
+                        <FormGroup className="form-check" id="drafts" key={analysis.analysisId}>
+                          <Input
+                            type="radio"
+                            id={`${!analysis.hasAccess ? analysis.analysisId + '_preview' : analysis.analysisId}`}
+                            key={analysis.analysisId}
+                            value={analysis.analysisId}
+                            onChange={handleSelectedDraft}
+                            checked={selectedRadio.draft === analysis.analysisId}
+                          />
                           <Label key={'Label' + analysis.analysisId} for={analysis.analysisId}>
-                            <Input
-                              type="radio"
-                              id={`${!analysis.hasAccess ? analysis.analysisId + '_preview' : analysis.analysisId}`}
-                              key={analysis.analysisId}
-                              value={analysis.analysisId}
-                              onChange={handleSelectedDraft}
-                              checked={selectedRadio.draft === analysis.analysisId}
-                            />
                             {analysis.analysisName}{' '}
                             <span className="no-access">
                               {' '}
                               {analysis.hasAccess ? '' : translate.not_authorized_course_offering}
                             </span>
                           </Label>
-                          <br />
                         </FormGroup>
                       ))}
                     </>
@@ -412,7 +411,7 @@ function AnalysisMenu(props) {
                       {roundList[semester].map(
                         round =>
                           usedRounds.indexOf(round.roundId) < 0 && (
-                            <FormGroup className="form-check" id="rounds" key={'group' + round.roundId}>
+                            <FormGroup className="form-check" id="rounds" key={round.roundId}>
                               <Input
                                 type="checkbox"
                                 id={round.roundId}
@@ -514,7 +513,11 @@ function AnalysisMenu(props) {
                 onClick={goToEditMode}
                 disabled={firstVisit}
               >
-                {ladokLoading && statisticsParams.ladokId.length && <Spinner color="light" size="sm" />}
+                {ladokLoading && statisticsParams.ladokId.length && (
+                  <Spinner color="light" size="sm">
+                    {translate.spinner_loading_button}
+                  </Spinner>
+                )}
                 <div>{translate.btn_add_analysis}</div>
               </Button>
             </div>

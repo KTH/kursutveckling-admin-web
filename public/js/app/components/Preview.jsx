@@ -5,6 +5,7 @@ import { Alert, Table } from 'reactstrap'
 import TableWithCourseData from './preview/TableWithCourseData'
 import Details from './preview/Details'
 import PdfLinksNav from './preview/PdfLinksNav'
+import { useWebContext } from '../context/WebContext'
 
 //Helpers
 import i18n from '../../../../i18n/index'
@@ -13,11 +14,10 @@ import { useHistory } from 'react-router'
 const paramsReducer = (state, action) => ({ ...state, ...action })
 
 function Preview(props) {
+  const [webContext] = useWebContext()
+  const context = React.useMemo(() => webContext, [webContext])
 
-  const { context: rawContext } = props
-  const context = React.useMemo(() => rawContext, [rawContext])
-
-  const [state, setState ] = useReducer(paramsReducer, {
+  const [state, setState] = useReducer(paramsReducer, {
     isPublished: context.roundAnalysis === 'published',
     isNew: context.roundAnalysis === 'new',
     values: props.values,
@@ -31,7 +31,7 @@ function Preview(props) {
   const headerId = 'header-year'
 
   if (context.analysisData === undefined) return <div>A message here of some kind...</div>
-  
+
   return (
     <div key="kursutveckling-andmin-preview" className="list-section-per-year col" id="preview-container">
       <h2>{translate.header_preview_content}</h2>

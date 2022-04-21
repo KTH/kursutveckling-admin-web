@@ -2,12 +2,12 @@ import React, { useState } from 'react'
 import { Collapse } from 'reactstrap'
 import { SYLLABUS_URL } from '../../util/constants'
 import i18n from '../../../../../i18n'
+import { useWebContext } from '../../context/WebContext'
 
 function LinkToValidSyllabusPdf(props) {
-  const { context: rawContext } = props
-  const context = React.useMemo(() => rawContext, [rawContext])
-
-  const [state, setState] = useState({lang: props.lang})
+  const [webContext] = useWebContext()
+  const context = React.useMemo(() => webContext, [webContext])
+  const [state, setState] = useState({ lang: props.lang })
 
   const { lang, startDate } = state
   const { courseCode, language } = context

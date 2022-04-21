@@ -25,7 +25,7 @@ async function _postRoundAnalysis(req, res, next) {
   log.debug('_postRoundAnalysis id:' + req.params.id)
   try {
     let apiResponse = {}
-    if (isNewAnalysis === 'new') {
+    if (isNewAnalysis === 'true') {
       apiResponse = await kursutvecklingAPI.setRoundAnalysisData(roundAnalysisId, sendObject, lang)
     } else {
       apiResponse = await kursutvecklingAPI.updateRoundAnalysisData(roundAnalysisId, sendObject, lang)

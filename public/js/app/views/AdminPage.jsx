@@ -210,7 +210,7 @@ function AdminPage() {
 
     if (
       invalidData.mandatoryFields.length > 0 ||
-      invalidData.overMaxFields.length > 0 ||
+      invalidData.overMaxFields?.length > 0 ||
       invalidData.wrongFileTypeFields.length > 0
     ) {
       setState({
@@ -271,7 +271,7 @@ function AdminPage() {
 
   function handleSave(event) {
     event.preventDefault()
-    const { postObject } = { ...state.values }
+    const postObject = { ...state.values }
 
     if (state.analysisFile !== postObject.analysisFileName) {
       postObject.analysisFileName = state.analysisFile
@@ -363,8 +363,10 @@ function AdminPage() {
     if (newEndDate.length > 0) {
       return webContext
         .postLadokRoundIdListAndDateToGetStatistics(statisticsParams.ladokId, newEndDate)
-        .then(ladokResponse => {
-          values.examinationGrade = Math.round(Number(webContext.statistics.examinationGrade) * 10) / 10
+        .then(statisticsResponse => {
+          console.log('statisticsResponse', statisticsResponse)
+
+          values.examinationGrade = Math.round(Number(statisticsResponse.examinationGrade) * 10) / 10
           values.examinationGradeFromLadok =
             values['endDate'] === values['endDateLadok'] &&
             Number(values['examinationGrade']) === values['examinationGradeLadok']
@@ -376,14 +378,12 @@ function AdminPage() {
             endDateLadok: values.endDateLadok,
             examinationGradeLadok: values.examinationGradeLadok,
           })
-          setState(state => {
-            return {
-              values,
-              examinationGradeInputEnabled: true,
-              ladokLoading: false,
-              alert: values.examinationGradeFromLadok ? '' : state.alert,
-              multiLineAlert,
-            }
+          setState({
+            values,
+            examinationGradeInputEnabled: true,
+            ladokLoading: false,
+            alert: values.examinationGradeFromLadok ? '' : state.alert,
+            multiLineAlert,
           })
         })
     } else {
@@ -593,7 +593,7 @@ function AdminPage() {
                 activeSemester={state.activeSemester}
                 firstVisit={analysisData === undefined}
                 status={webContext.status}
-                tempData={/*state.saved ? {} : */ getTempData()}
+                tempData={getTempData()}
                 saved={state.values && state.values.changedDate.length > 0}
                 analysisId={state.saved && state.values ? state.values._id : ''}
                 context={webContext}
@@ -687,7 +687,7 @@ function AdminPage() {
                     <Col sm="4" className="col-form">
                       <h4>{translate.header_upload}</h4>
 
-                      {/** ------ ANALYSIS-FILE UPLOAD ------- **/}
+                      {/* * ------ ANALYSIS-FILE UPLOAD ------- * */}
                       <FormLabel translate={translate} header="header_upload_file" id="info_upload_course_analysis" />
                       <UpLoad
                         id="analysis"
@@ -699,6 +699,7 @@ function AdminPage() {
                         notValid={state.notValid}
                         handleRemoveFile={handleRemoveFile}
                         type="analysisFile"
+                        translate={translate}
                       />
                       {state.analysisFile.length > 0 && (
                         <span>
@@ -740,7 +741,7 @@ function AdminPage() {
                         type="textarea"
                         value={state.values.alterationText}
                         onChange={handleInputChange}
-                        className={state.notValid.overMaxFields.includes('alterationText') ? 'not-valid' : ''}
+                        className={state.notValid.overMaxFields?.includes('alterationText') ? 'not-valid' : ''}
                       />
                     </Col>
 
@@ -797,12 +798,12 @@ function AdminPage() {
                         <div>
                           <h5>{translate.header_result}</h5>
                           <span>
-                            {state.ladokLoading === true ? (
+                            {state.ladokLoading === true && (
                               <span className="ladok-loading-progress-inline">
-                                <Spinner size="sm" color="primary" />
+                                <Spinner size="sm" color="primary">
+                                  {translate.spinner_loading_ladok}
+                                </Spinner>
                               </span>
-                            ) : (
-                              ''
                             )}
                             <Input
                               id="examinationGrade"
@@ -818,7 +819,7 @@ function AdminPage() {
                         </div>
                       </div>
 
-                      {isPublished ? (
+                      {isPublished && (
                         <span>
                           <div className="inline-flex">
                             <h4>{translate.header_analysis_edit_comment}</h4>
@@ -837,8 +838,6 @@ function AdminPage() {
                             className={state.notValid.mandatoryFields.indexOf('commentChange') > -1 ? 'not-valid' : ''}
                           />
                         </span>
-                      ) : (
-                        ''
                       )}
                     </Col>
                   </Row>
@@ -850,23 +849,9 @@ function AdminPage() {
               {/*                                BUTTONS FOR PAG 2 AND 3                              */}
               {/* ************************************************************************************ */}
               {state.isPreviewMode &&
-              state.values.changedDate.length > 0 &&
-              webContext.status !== 'preview' &&
-              webContext.analysisId ? (
-                <CopyText
-                  textToCopy={
-                    webContext.browserConfig.hostUrl +
-                    webContext.browserConfig.proxyPrefixPath.uri +
-                    '/preview/' +
-                    webContext.analysisId +
-                    '?title=' +
-                    encodeURI(webContext.courseTitle.name + '_' + webContext.courseTitle.credits)
-                  }
-                  header={translate.header_copy_link}
-                />
-              ) : (
-                ''
-              )}
+                state.values.changedDate.length > 0 &&
+                webContext.status !== 'preview' &&
+                webContext.analysisId && <CopyText webContext={webContext} header={translate.header_copy_link} />}
 
               <Row className="button-container text-center">
                 <Col sm="4" className="align-left-sm-center">
@@ -949,7 +934,7 @@ const FormLabel = ({ translate, header, id, badgeText, mode = 'warning' }) => (
 const AlertError = ({ notValid, translations }) => {
   const { mandatoryFields, overMaxFields, wrongFileTypeFields } = notValid
   const noOfErrorCategories =
-    (mandatoryFields.length ? 1 : 0) + (overMaxFields.length ? 1 : 0) + (wrongFileTypeFields.length ? 1 : 0)
+    (mandatoryFields.length ? 1 : 0) + (overMaxFields?.length ? 1 : 0) + (wrongFileTypeFields.length ? 1 : 0)
   if (!noOfErrorCategories) {
     return null
   }
@@ -958,7 +943,7 @@ const AlertError = ({ notValid, translations }) => {
     noOfErrorCategories === 1 ? (
       <>
         {!!mandatoryFields.length && <>{translations.messages.alert_empty_fields}</>}
-        {!!overMaxFields.length && (
+        {!!overMaxFields?.length && (
           <>
             {overMaxFields[0] === 'alterationText'
               ? translations.messages.alert_over_max_fields.alterationText
@@ -970,7 +955,7 @@ const AlertError = ({ notValid, translations }) => {
     ) : (
       <>
         {!!mandatoryFields.length && <li>{translations.messages.alert_empty_fields}</li>}
-        {!!overMaxFields.length && (
+        {!!overMaxFields?.length && (
           <li>
             {overMaxFields[0] === 'alterationText'
               ? translations.messages.alert_over_max_fields.alterationText

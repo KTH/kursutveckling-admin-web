@@ -63,6 +63,11 @@ module.exports = {
         intro: '',
       },
     ],
+    //* **** Spinner  */
+
+    spinner_loading_button: '  ',
+    spinner_loading_file: 'Loading file...',
+    spinner_loading_ladok: '',
 
     //* **** INTRO SELECT NEW, DRAFT, PUBLISHED */
     intro_new:

@@ -1,15 +1,7 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Spinner } from 'reactstrap'
 
-const styles = {
-  fontFamily: 'sans-serif',
-  textAlign: 'center',
-  display: 'flex',
-}
-
 function UpLoad(props) {
-  const [ files, setFiles ] = useState([])
-
   function onChange(event) {
     props.handleUpload(event.target.id, event.target.files, event)
   }
@@ -18,7 +10,7 @@ function UpLoad(props) {
     props.handleRemoveFile(event)
   }
 
-  const { id, path, progress, file, notValid, type } = props
+  const { id, progress, file, notValid, type, translate } = props
   const { mandatoryFields, wrongFileTypeFields } = notValid
 
   return (
@@ -28,7 +20,7 @@ function UpLoad(props) {
           <br />
           <div className="inline-flex">
             <p className="upload-text"> {file} </p>
-            <div className="iconContainer icon-trash-can" id={'remove_' + id} onClick={removeFile}></div>
+            <div className="iconContainer icon-trash-can" id={'remove_' + id} onClick={removeFile} />
           </div>
         </span>
       ) : (
@@ -36,7 +28,9 @@ function UpLoad(props) {
           <input type="file" id={id} onChange={onChange} />
           {progress > 0 && (
             <>
-              <Spinner size="sm" color="primary" />
+              <Spinner color="primary" size="sm">
+                {translate.spinner_loading_file}
+              </Spinner>{' '}
               <div className="file-progress-bar">
                 <div className="file-progress" style={{ width: progress + '%' }}></div>
               </div>

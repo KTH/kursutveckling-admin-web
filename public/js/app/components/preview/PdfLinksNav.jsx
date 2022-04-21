@@ -1,8 +1,7 @@
-import React, { useEffect, useReducer } from 'react'
+import React, { useEffect } from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
-import { Alert } from '@kth/kth-reactstrap/dist/components/studinfo'
-import { SYLLABUS_URL } from '../../util/constants'
+import { Alert } from 'reactstrap'
 import { getDateFormat } from '../../util/helpers'
 import LinkToValidSyllabusPdf from './LinkToValidSyllabus'
 import i18n from '../../../../../i18n'
@@ -139,7 +138,7 @@ function renderAlertToTop(langIndex, roundsWithoutMemo) {
     i18n.messages[langIndex].messages
   if (alertContainer) {
     ReactDOM.render(
-      <Alert type="info" className="alert-margin">
+      <Alert color="info" className="alert-margin">
         <h5>{alertTitle}</h5>
         <p>{`${
           langIndex === 0
@@ -174,7 +173,7 @@ function sortMemosByTypes(analysisSemester, context, roundIdList) {
 }
 
 function PdfLinksNav(props) {
-  const [webContext] = useWebContext()
+  const [webContext, setWebContext] = useWebContext()
   const context = React.useMemo(() => webContext, [webContext])
   const { translate, latestAnalysisFileName, staticAnalysisInfo, langIndex } = props
   const {
@@ -198,7 +197,7 @@ function PdfLinksNav(props) {
 
   useEffect(() => {
     // push it to context for alert about missing memo after save/publish on admin start page
-    webContext.roundNamesWithMissingMemos = roundsNamesMissingMemos
+    setWebContext({ ...webContext, roundNamesWithMissingMemos: roundsNamesMissingMemos })
 
     if (unfilteredRoundsMissingMemos.length > 0) {
       renderAlertToTop(langIndex, roundsNamesMissingMemos)
