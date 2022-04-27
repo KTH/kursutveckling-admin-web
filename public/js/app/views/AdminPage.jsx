@@ -132,10 +132,19 @@ function AdminPage() {
   // ********************************************************************************** */
 
   async function handleUploadFile(id, file, e) {
-    if (e.target.files[0].type === 'application/pdf') {
+   
+   if (e.target.files[0].type === 'application/pdf') {
+     try {
       const response = await sendRequest(id, file, e)
+     } catch (error) {
+      if (error.response) {
+        throw new Error(error.message)
+      }
+      throw error
+     }
+      
     } else {
-      setState({ notValid: { wrongFileTypeFields: ['analysisFile'] } })
+      setState({ notValid: { mandatoryFields: [], overMaxFields: [], wrongFileTypeFields: ['analysisFile'] } })
     }
   }
 
@@ -562,7 +571,7 @@ function AdminPage() {
 
   const { isPublished } = state
   const translate = i18n.messages[webContext.language].messages
-
+  
   if (analysisData === undefined || progress === 'back_new') {
     return (
       <div>
