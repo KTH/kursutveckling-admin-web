@@ -176,7 +176,7 @@ const oidc = new OpenIDConnect(server, passport, {
     // eslint-disable-next-line no-param-reassign
     user.isSuperUser = hasGroup(config.auth.superuserGroup, user)
     // eslint-disable-next-line no-param-reassign
-    user.memberOf = memberOf
+    user.memberOf = [...memberOf]
   },
 })
 
@@ -244,14 +244,14 @@ appRoute.get(
   'system.gateway',
   _addProxy('/silent'),
   oidc.silentLogin,
-  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser'),
+  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isSchoolAdmin'),
   Admin.getIndex
 )
 appRoute.get(
   'app.index',
   _addProxy('/:id'),
   oidc.login,
-  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser'),
+  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isSchoolAdmin'),
   Admin.getIndex
 )
 
@@ -259,7 +259,7 @@ appRoute.get(
   'app.preview',
   _addProxy('/:preview/:id'),
   oidc.login,
-  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isCourseTeacher'),
+  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isCourseTeacher', 'isSchoolAdmin'),
   Admin.getIndex
 )
 appRoute.get('api.kursutvecklingGetById', _addProxy('/apicall/getRoundAnalysisById/:id'), Admin.getRoundAnalysis)
