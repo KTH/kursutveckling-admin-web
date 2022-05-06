@@ -3,8 +3,8 @@ const server = require('@kth/server')
 // Now read the server config etc.
 const config = require('./configuration').server
 require('./api')
-const AppRouter = require('kth-node-express-routing').PageRouter
-const getPaths = require('kth-node-express-routing').getPaths
+const { PageRouter: AppRouter } = require('kth-node-express-routing')
+const { getPaths } = require('kth-node-express-routing')
 
 if (config.appInsights && config.appInsights.instrumentationKey) {
   let appInsights = require('applicationinsights')
@@ -160,7 +160,7 @@ passport.deserializeUser((user, done) => {
   }
 })
 
-const { OpenIDConnect, hasGroup } = require('@kth/kth-node-passport-oidc')
+const { OpenIDConnect } = require('@kth/kth-node-passport-oidc')
 
 const oidc = new OpenIDConnect(server, passport, {
   ...config.oidc,
@@ -174,7 +174,9 @@ const oidc = new OpenIDConnect(server, passport, {
     const { memberOf } = claims
 
     // eslint-disable-next-line no-param-reassign
-    user.isSuperUser = hasGroup(config.auth.superuserGroup, user)
+    user.isSuperUser = memberOf.includes(config.auth.superuserGroup)
+    user.isKursinfoAdmin = memberOf.includes(config.auth.kursinfoAdmins)
+
     // eslint-disable-next-line no-param-reassign
     user.memberOf = [...memberOf]
   },
@@ -244,14 +246,14 @@ appRoute.get(
   'system.gateway',
   _addProxy('/silent'),
   oidc.silentLogin,
-  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isSchoolAdmin'),
+  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isKursinfoAdmin', 'isSchoolAdmin'),
   Admin.getIndex
 )
 appRoute.get(
   'app.index',
   _addProxy('/:id'),
   oidc.login,
-  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isSchoolAdmin'),
+  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isKursinfoAdmin', 'isSchoolAdmin'),
   Admin.getIndex
 )
 
@@ -259,7 +261,14 @@ appRoute.get(
   'app.preview',
   _addProxy('/:preview/:id'),
   oidc.login,
-  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isCourseTeacher', 'isSchoolAdmin'),
+  requireRole(
+    'isCourseResponsible',
+    'isExaminator',
+    'isSuperUser',
+    'isKursinfoAdmin',
+    'isCourseTeacher',
+    'isSchoolAdmin'
+  ),
   Admin.getIndex
 )
 appRoute.get('api.kursutvecklingGetById', _addProxy('/apicall/getRoundAnalysisById/:id'), Admin.getRoundAnalysis)

@@ -81,10 +81,11 @@ module.exports.requireRole = (...roles) =>
     const courseInitials = id.slice(0, 2).toUpperCase()
 
     const basicUserCourseRoles = {
-      isExaminator: hasGroup(`edu.courses.${courseInitials}.${courseCode}.examiner`, user),
       isCourseResponsible: _hasThisTypeGroup(courseCode, courseInitials, user, 'courseresponsible'),
-      isSuperUser: user.isSuperUser,
       isCourseTeacher: _hasThisTypeGroup(courseCode, courseInitials, user, 'teachers'),
+      isExaminator: hasGroup(`edu.courses.${courseInitials}.${courseCode}.examiner`, user),
+      isKursinfoAdmin: user.isKursinfoAdmin,
+      isSuperUser: user.isSuperUser,
     }
 
     // If we don't have one of these then access is forbidden
