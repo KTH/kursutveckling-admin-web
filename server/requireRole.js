@@ -2,10 +2,10 @@
 
 const language = require('@kth/kth-node-web-common/lib/language')
 const { hasGroup } = require('@kth/kth-node-passport-oidc')
-const koppsCourseData = require('./apiCalls/koppsCourseData')
 const log = require('@kth/log')
 
 const i18n = require('../i18n')
+const koppsCourseData = require('./apiCalls/koppsCourseData')
 
 function _hasThisTypeGroup(courseCode, courseInitials, user, employeeType) {
   // 'edu.courses.SF.SF1624.20192.1.courseresponsible'
@@ -26,13 +26,13 @@ function _hasThisTypeGroup(courseCode, courseInitials, user, employeeType) {
 
 const schools = () => ['abe', 'eecs', 'itm', 'cbh', 'sci']
 
-async function _isAdminOfCourseSchool(courseCode, user, roles) {
-  // app.kursinfo.skoladmin.***
+async function _isAdminOfCourseSchool(courseCode, user) {
+  // app.kursinfo.***
   const userGroups = user.memberOf
 
   if (!userGroups || userGroups?.length === 0) return false
 
-  const userSchools = schools().filter(schoolCode => userGroups.includes(`app.kursinfo.skoladmin.${schoolCode}`))
+  const userSchools = schools().filter(schoolCode => userGroups.includes(`app.kursinfo.${schoolCode}`))
 
   if (userSchools.length === 0) return false
   const courseSchoolCode = await koppsCourseData.getCourseSchool(courseCode)
@@ -60,8 +60,8 @@ function _parseCourseCode(courseCodeOrAnalysisId) {
 
   // SK2560VT2016_1
   const [courseCodeAndSemester] = courseCodeOrAnalysisId.split('_')
-  const semesterStrLength = 6
-  const courseCode = courseCodeAndSemester.slice(0, -6)
+  const semesterStrLength = -6
+  const courseCode = courseCodeAndSemester.slice(0, semesterStrLength)
   return courseCode
 }
 const messageHaveNotRights = lang => ({
@@ -96,6 +96,6 @@ module.exports.requireRole = (...roles) =>
 
     _isAdminOfCourseSchool(courseCode, user).then(isAdminOfCourseSchool => {
       if (isAdminOfCourseSchool) return next()
-      else next(messageHaveNotRights(lang))
+      else return next(messageHaveNotRights(lang))
     })
   }
