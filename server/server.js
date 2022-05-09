@@ -177,8 +177,7 @@ const oidc = new OpenIDConnect(server, passport, {
     user.isSuperUser = memberOf.includes(config.auth.superuserGroup)
     user.isKursinfoAdmin = memberOf.includes(config.auth.kursinfoAdmins)
 
-    // eslint-disable-next-line no-param-reassign
-    user.memberOf = [...memberOf]
+    user.memberOf = typeof memberOf === 'string' ? [memberOf] : memberOf
   },
 })
 
