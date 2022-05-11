@@ -1,8 +1,5 @@
 'use strict'
 
-//import { SUPERUSER_PART } from './constants'
-const SUPERUSER_PART = require('./constants')
-
 const getDateFormat = (date, language) => {
   if (language === 'Svenska' || language === 'Engelska' || language === 'sv' || language === 1 || language === 'sv') {
     return date
@@ -40,11 +37,6 @@ const getLanguageToUse = (roundList, roundIdlist, defaultLanguage) => {
   return tempLang === defaultLanguage ? defaultLanguage : 'Svenska'
 }
 
-const formatDate = (date, lang) => {
-  let thisDate = getTodayDate(date)
-  return getDateFormat(thisDate, lang)
-}
-
 const formatISODate = (date, lang) => {
   if (date === '') return null
   const timestamp = Date.parse(date)
@@ -70,40 +62,6 @@ const isValidDate = date => {
   return regex.test(date)
 }
 
-const noAccessToRoundsList = (memberOf, rounds, courseCode, semester) => {
-  let roundIds = []
-  if (memberOf.toString().indexOf(courseCode + '.examiner') > 0) {
-    return roundIds
-  }
-  roundIds = rounds.filter(round => {
-    if (memberOf.toString().indexOf(`${courseCode}.${semester}.${round.roundId}.courseresponsible`) < 0) {
-      return round.roundId
-    }
-  })
-  return roundIds
-}
-
-const getAccess = (memberOf, round, courseCode, semester) => {
-  if (
-    memberOf.toString().indexOf(courseCode.toUpperCase() + '.examiner') > -1 ||
-    memberOf.toString().indexOf(SUPERUSER_PART) > -1
-  ) {
-    return true
-  }
-
-  if (
-    memberOf.toString().indexOf(`${courseCode.toUpperCase()}.${semester}.${round.ladokRoundId}.courseresponsible`) > -1
-  ) {
-    return true
-  }
-
-  if (memberOf.toString().indexOf(`${courseCode.toUpperCase()}.${semester}.${round.ladokRoundId}.teachers`) > -1) {
-    return true
-  }
-
-  return false
-}
-
 const getValueFromObjectList = (objectList, value, key, returnKey) => {
   let object
   for (let index = 0; index < objectList.length; index++) {
@@ -115,14 +73,4 @@ const getValueFromObjectList = (objectList, value, key, returnKey) => {
   return null
 }
 
-export {
-  getAccess,
-  noAccessToRoundsList,
-  formatDate,
-  formatISODate,
-  getLanguageToUse,
-  getTodayDate,
-  getDateFormat,
-  getValueFromObjectList,
-  isValidDate,
-}
+export { formatISODate, getLanguageToUse, getTodayDate, getDateFormat, getValueFromObjectList, isValidDate }
