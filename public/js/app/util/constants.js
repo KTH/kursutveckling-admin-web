@@ -1,4 +1,3 @@
-const SUPERUSER_PART = 'kursinfo-admins'
 const SEMESTER = [
   {
     1: 'Spring ',
@@ -28,7 +27,6 @@ const LANGUAGE = {
 const ADMIN_KURSUTVECKLING = '/kursinfoadmin/kursutveckling/'
 
 export {
-  SUPERUSER_PART,
   SEMESTER,
   EMPTY,
   ADMIN_URL,

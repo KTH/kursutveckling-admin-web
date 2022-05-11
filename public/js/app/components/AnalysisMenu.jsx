@@ -384,7 +384,9 @@ function AnalysisMenu(props) {
                         <FormGroup className="form-check" id="drafts" key={analysis.analysisId}>
                           <Input
                             type="radio"
-                            id={`${!analysis.hasAccess ? analysis.analysisId + '_preview' : analysis.analysisId}`}
+                            id={`${
+                              !analysis.canBeAccessedByUser ? analysis.analysisId + '_preview' : analysis.analysisId
+                            }`}
                             key={analysis.analysisId}
                             value={analysis.analysisId}
                             onChange={handleSelectedDraft}
@@ -394,7 +396,7 @@ function AnalysisMenu(props) {
                             {analysis.analysisName}{' '}
                             <span className="no-access">
                               {' '}
-                              {analysis.hasAccess ? '' : translate.not_authorized_course_offering}
+                              {analysis.canBeAccessedByUser ? '' : translate.not_authorized_course_offering}
                             </span>
                           </Label>
                         </FormGroup>
@@ -419,7 +421,7 @@ function AnalysisMenu(props) {
                                 onChange={handleRoundCheckbox}
                                 checked={rounds.indexOf(round.roundId) > -1}
                                 name={round.roundId}
-                                disabled={!round.hasAccess}
+                                disabled={!round.canBeAccessedByUser}
                                 data-uid={round.ladokUID}
                                 data-enddate={round.endDate}
                               />
@@ -433,7 +435,7 @@ function AnalysisMenu(props) {
                                 {round.language} )
                                 <span className="no-access">
                                   {' '}
-                                  {round.hasAccess ? '' : translate.not_authorized_publish_new}
+                                  {round.canBeAccessedByUser ? '' : translate.not_authorized_publish_new}
                                 </span>
                               </Label>
                             </FormGroup>
@@ -454,7 +456,9 @@ function AnalysisMenu(props) {
                         <FormGroup className="form-check" key={analysis.analysisId}>
                           <Input
                             type="radio"
-                            id={`${!analysis.hasAccess ? analysis.analysisId + '_preview' : analysis.analysisId}`}
+                            id={`${
+                              !analysis.canBeAccessedByUser ? analysis.analysisId + '_preview' : analysis.analysisId
+                            }`}
                             key={analysis.analysisId}
                             value={analysis.analysisId}
                             onChange={handleSelectedPublished}
@@ -464,7 +468,7 @@ function AnalysisMenu(props) {
                             {analysis.analysisName}{' '}
                             <span className="no-access">
                               {' '}
-                              {analysis.hasAccess ? '' : translate.not_authorized_course_offering}
+                              {analysis.canBeAccessedByUser ? '' : translate.not_authorized_course_offering}
                             </span>
                           </Label>
                         </FormGroup>

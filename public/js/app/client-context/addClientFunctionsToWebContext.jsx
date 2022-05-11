@@ -1,33 +1,8 @@
 'use strict'
 import axios from 'axios'
-import { EMPTY, SEMESTER, SUPERUSER_PART } from '../util/constants'
-import { getDateFormat, getLanguageToUse, getAccess } from '../util/helpers'
-
-const paramRegex = /\/(:[^\/\s]*)/g
-
-function _paramReplace(path, params) {
-  let tmpPath = path
-  const tmpArray = tmpPath.match(paramRegex)
-  tmpArray &&
-    tmpArray.forEach(element => {
-      tmpPath = tmpPath.replace(element, '/' + params[element.slice(2)])
-    })
-  return tmpPath
-}
-
-function buildApiUrl(path, params) {
-  let host
-  if (typeof window !== 'undefined') {
-    host = this.apiHost
-  } else {
-    host = 'http://localhost:' + this.browserConfig.port
-  }
-  if (host[host.length - 1] === '/') {
-    host = host.slice(0, host.length - 1)
-  }
-  const newPath = params ? _paramReplace(path, params) : path
-  return [host, newPath].join('')
-}
+import { EMPTY, SEMESTER } from '../util/constants'
+import { getDateFormat, getLanguageToUse } from '../util/helpers'
+import { createCommonContextFunctions } from '../../../../common/createCommonContextFunctions'
 
 /** ***************************************************************************************************************************************** */
 /*                                                       FILE STORAGE ACTIONS                                                      */
@@ -240,93 +215,40 @@ function postLadokRoundIdListAndDateToGetStatistics(ladokRoundIdList, endDate) {
 /*                                                     HANDLE DATA FROM API                                                                  */
 /** ***************************************************************************************************************************************** */
 
-//--- Loops through published and draft analyises for access check ---//
+// --- Loops through published and draft analyises for access check ---//
 function _analysisAccess(analysis) {
-  const memberString = this.member.toString()
+  const { memberOfCourseRelatedGroups, otherRoles } = this.member
+  const { isKursinfoAdmin, isSchoolAdmin, isSuperUser } = otherRoles
+
+  const memberString = memberOfCourseRelatedGroups.toString()
   for (let draft = 0; draft < analysis.draftAnalysis.length; draft++) {
     for (let key = 0; key < analysis.draftAnalysis[draft].ugKeys.length; key++) {
-      analysis.draftAnalysis[draft].hasAccess =
+      analysis.draftAnalysis[draft].canBeAccessedByUser =
         memberString.indexOf(analysis.draftAnalysis[draft].ugKeys[key]) >= 0 ||
-        memberString.indexOf(SUPERUSER_PART) > -1
-      if (analysis.draftAnalysis[draft].hasAccess === true) break
+        isKursinfoAdmin ||
+        isSchoolAdmin ||
+        isSuperUser
+      if (analysis.draftAnalysis[draft].canBeAccessedByUser === true) break
     }
   }
 
   for (let publ = 0; publ < analysis.publishedAnalysis.length; publ++) {
     for (let key = 0; key < analysis.publishedAnalysis[publ].ugKeys.length; key++) {
-      analysis.publishedAnalysis[publ].hasAccess =
+      analysis.publishedAnalysis[publ].canBeAccessedByUser =
         memberString.indexOf(analysis.publishedAnalysis[publ].ugKeys[key]) >= 0 ||
-        memberString.indexOf(SUPERUSER_PART) > -1
-      if (analysis.publishedAnalysis[publ].hasAccess === true) break
+        isKursinfoAdmin ||
+        isSchoolAdmin ||
+        isSuperUser
+      if (analysis.publishedAnalysis[publ].canBeAccessedByUser === true) break
     }
   }
   return analysis
 }
 
-//--- Building up courseTitle, courseData, semesters and roundData and check access for rounds ---//
-// duplicate in ssr-context
-function handleCourseData(courseObject, courseCode, userName, language) {
-  if (courseObject === undefined) {
-    this.errorMessage = 'Whoopsi daisy... kan just nu inte hämta data från kopps'
-    return undefined
-  }
-  try {
-    this.courseData = {
-      courseCode,
-      gradeScale: courseObject.formattedGradeScales,
-      semesterObjectList: {},
-    }
-
-    this.courseTitle = {
-      name: courseObject.course.title[this.language === 0 ? 'en' : 'sv'],
-      credits:
-        courseObject.course.credits.toString().indexOf('.') < 0
-          ? courseObject.course.credits + '.0'
-          : courseObject.course.credits,
-    }
-
-    for (let semester = 0; semester < courseObject.termsWithCourseRounds.length; semester++) {
-      this.courseData.semesterObjectList[courseObject.termsWithCourseRounds[semester].term] = {
-        courseSyllabus: courseObject.termsWithCourseRounds[semester].courseSyllabus,
-        examinationRounds: courseObject.termsWithCourseRounds[semester].examinationRounds,
-        rounds: courseObject.termsWithCourseRounds[semester].rounds,
-      }
-    }
-
-    const thisStore = this
-    courseObject.termsWithCourseRounds.map((semester, index) => {
-      if (thisStore.semesters.indexOf(semester.term) < 0) thisStore.semesters.push(semester.term)
-
-      if (!thisStore.roundData.hasOwnProperty(semester.term)) {
-        thisStore.roundData[semester.term] = []
-        thisStore.roundAccess[semester.term] = {}
-      }
-
-      thisStore.roundData[semester.term] = semester.rounds.map((round, index) => {
-        return (round.ladokRoundId = {
-          roundId: round.ladokRoundId,
-          language: round.language[language],
-          shortName: round.shortName,
-          startDate: round.firstTuitionDate,
-          endDate: round.lastTuitionDate,
-          targetGroup: this.getTargetGroup(round),
-          ladokUID: round.ladokUID,
-          hasAccess: getAccess(this.member, round, this.courseCode, semester.term),
-        })
-      })
-    })
-  } catch (err) {
-    if (err.response) {
-      throw new Error(err.message)
-    }
-    throw err
-  }
-}
-
-//-- Creates a new analysis object with information from selected rounds --//
+// -- Creates a new analysis object with information from selected rounds -- //
 function createAnalysisData(semester, rounds) {
   this.getEmployees(this.courseData.courseCode, semester, rounds)
-  return this.getCourseEmployeesPost(this.redisKeys, 'multi', this.language).then(returnList => {
+  return this.getCourseEmployeesPost(this.redisKeys, 'multi').then(returnList => {
     const { courseSyllabus, examinationRounds } = this.courseData.semesterObjectList[semester]
     const language = getLanguageToUse(this.roundData[semester], rounds, this.language === 1 ? 'Engelska' : 'English')
     const roundLang = language === 'English' || language === 'Engelska' ? 'en' : 'sv'
@@ -346,7 +268,7 @@ function createAnalysisData(semester, rounds) {
       _id: this.analysisId,
       alterationText: '',
       analysisFileName: '',
-      changedBy: this.user,
+      changedBy: this.username,
       changedDate: '',
       commentChange: '',
       commentExam: courseSyllabus.examComments ? courseSyllabus.examComments[roundLang] : '',
@@ -490,9 +412,9 @@ function getEmployeesNames(employeeList) {
 /** ***************************************************************************************************************************************** */
 /*                                            UG REDIS - examiners, teachers and responsibles                                                */
 /** ***************************************************************************************************************************************** */
-function getCourseEmployeesPost(key, type = 'multi', lang = 'sv') {
+function getCourseEmployeesPost(key, type = 'multi') {
   return axios
-    .post(this.buildApiUrl(this.paths.redis.ugCache.uri, { key: key, type: type }), {
+    .post(this.buildApiUrl(this.paths.redis.ugCache.uri, { key, type }), {
       params: JSON.stringify(this.redisKeys),
     })
     .then(result => {
@@ -523,7 +445,6 @@ function setBrowserConfig(config, paths, apiHost) {
 
 function addClientFunctionsToWebContext() {
   const functions = {
-    buildApiUrl,
     _analysisAccess,
     _createAnalysisName,
     getAllTargetGroups,
@@ -531,7 +452,6 @@ function addClientFunctionsToWebContext() {
     getExamObject,
     getEmployees,
     getEmployeesNames,
-    handleCourseData,
     createAnalysisData,
     updateFileInStorage,
     getRoundAnalysis,
@@ -544,6 +464,7 @@ function addClientFunctionsToWebContext() {
     getCourseEmployeesPost,
     getBreadcrumbs,
     setBrowserConfig,
+    ...createCommonContextFunctions(),
   }
   return functions
 }
