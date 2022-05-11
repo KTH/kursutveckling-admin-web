@@ -6,6 +6,7 @@ const log = require('@kth/log')
 
 const i18n = require('../i18n')
 const koppsCourseData = require('./apiCalls/koppsCourseData')
+const { parseCourseCode } = require('./utils/courseCodeParser')
 
 function _hasThisTypeGroup(courseCode, courseInitials, user, employeeType) {
   // 'edu.courses.SF.SF1624.20192.1.courseresponsible'
@@ -28,7 +29,7 @@ const schools = () => ['abe', 'eecs', 'itm', 'cbh', 'sci']
 
 async function _isAdminOfCourseSchool(courseCode, user) {
   // app.kursinfo.***
-  const userGroups = user.memberOf
+  const { memberOf: userGroups } = user
 
   if (!userGroups || userGroups?.length === 0) return false
 
@@ -36,7 +37,7 @@ async function _isAdminOfCourseSchool(courseCode, user) {
 
   if (userSchools.length === 0) return false
   const courseSchoolCode = await koppsCourseData.getCourseSchool(courseCode)
-  log.info('Fetched courseSchoolCode to define user role', { courseSchoolCode, userSchools })
+  log.debug('Fetched courseSchoolCode to define user role', { courseSchoolCode, userSchools })
 
   if (courseSchoolCode === 'missing_school_code' || courseSchoolCode === 'kopps_get_fails') {
     log.info('Has problems with fetching school code to define if user is a school admin', {
@@ -53,22 +54,12 @@ async function _isAdminOfCourseSchool(courseCode, user) {
   return hasSchoolCodeInAdminGroup
 }
 
-function _parseCourseCode(courseCodeOrAnalysisId) {
-  const analysisIdStrMinLength = 7
-
-  if (courseCodeOrAnalysisId.length <= analysisIdStrMinLength) return courseCodeOrAnalysisId
-
-  // SK2560VT2016_1
-  const [courseCodeAndSemester] = courseCodeOrAnalysisId.split('_')
-  const semesterStrLength = -6
-  const courseCode = courseCodeAndSemester.slice(0, semesterStrLength)
-  return courseCode
-}
 const messageHaveNotRights = lang => ({
   status: 403,
   showMessage: true,
   message: i18n.message('message_have_not_rights', lang),
 })
+
 // eslint-disable-next-line func-names
 module.exports.requireRole = (...roles) =>
   function _hasCourseAcceptedRoles(req, res, next) {
@@ -77,7 +68,7 @@ module.exports.requireRole = (...roles) =>
     const { id } = req.params
     const { user = {} } = req.session.passport
 
-    const courseCode = _parseCourseCode(id.toUpperCase())
+    const courseCode = parseCourseCode(id.toUpperCase())
     const courseInitials = id.slice(0, 2).toUpperCase()
 
     const basicUserCourseRoles = {
@@ -86,9 +77,11 @@ module.exports.requireRole = (...roles) =>
       isExaminator: hasGroup(`edu.courses.${courseInitials}.${courseCode}.examiner`, user),
       isKursinfoAdmin: user.isKursinfoAdmin,
       isSuperUser: user.isSuperUser,
+      isSchoolAdmin: null,
     }
 
-    // If we don't have one of these then access is forbidden
+    req.session.passport.user.roles = basicUserCourseRoles
+
     const hasBasicAuthorizedRole = roles.reduce((prev, curr) => prev || basicUserCourseRoles[curr], false)
 
     if (hasBasicAuthorizedRole) return next()
@@ -96,6 +89,8 @@ module.exports.requireRole = (...roles) =>
     if (!hasBasicAuthorizedRole && !roles.includes('isSchoolAdmin')) return next(messageHaveNotRights(lang))
 
     _isAdminOfCourseSchool(courseCode, user).then(isAdminOfCourseSchool => {
+      req.session.passport.user.roles.isSchoolAdmin = isAdminOfCourseSchool
+
       if (isAdminOfCourseSchool) return next()
       else return next(messageHaveNotRights(lang))
     })

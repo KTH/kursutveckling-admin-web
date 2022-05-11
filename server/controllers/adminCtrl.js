@@ -15,6 +15,7 @@ const i18n = require('../../i18n')
 const { runBlobStorage, updateMetaData } = require('../blobStorage')
 const { getSortedAndPrioritizedMiniMemosWebOrPdf } = require('../apiCalls/kursPmDataApi')
 const { getServerSideFunctions } = require('../utils/serverSideRendering')
+const { parseCourseCode } = require('../utils/courseCodeParser')
 const { createServerSideContext } = require('../ssr-context/createServerSideContext')
 
 // ------- ANALYSES FROM KURSUTVECKLING-API: POST, GET, DELETE, GET USED ROUNDS ------- /
@@ -175,22 +176,22 @@ async function getIndex(req, res, next) {
   }
 
   const lang = language.getLanguage(res) || 'sv'
-  const { user: loggedInUser = null } = req.session?.passport
+  const { passport: userPassport } = req.session
+  const { user: loggedInUser = null } = userPassport
+
   const username = loggedInUser ? loggedInUser.username : null
-  const { memberOf } = loggedInUser
-  const { title: courseTitle = '' } = req.query
-  let { status } = req.query
+  const { title: courseTitle = '', status: statusFromQuery } = req.query
   const { id: thisId } = req.params
   const analysisId = thisId.length <= 7 ? '' : thisId.toUpperCase()
-  const courseCodeId = analysisId ? analysisId.split('_')[0].slice(0, -6).toUpperCase() : thisId.toUpperCase()
+  const courseCode = parseCourseCode(thisId.toUpperCase())
 
   try {
     const { getCompressedData, renderStaticPage } = getServerSideFunctions()
     const webContext = { lang, proxyPrefixPath: serverConfig.proxyPrefixPath, ...createServerSideContext() }
 
     /** ------- Setting status ------- */
-    status = req.params.preview && req.params.preview === 'preview' ? 'preview' : status
-    switch (status) {
+    const analysisStatus = req.params.preview && req.params.preview === 'preview' ? 'preview' : statusFromQuery
+    switch (analysisStatus) {
       case 'p':
         webContext.status = 'published'
         break
@@ -203,30 +204,30 @@ async function getIndex(req, res, next) {
     /* ------- Settings ------- */
     webContext.setBrowserConfig(browserConfig, paths, serverConfig.hostUrl)
     webContext.setLanguage(lang)
-    await webContext.getMemberOf(memberOf, req.params.id.toUpperCase(), username, serverConfig.auth.superuserGroup)
+    await webContext.setMemberInfo(loggedInUser, thisId.toUpperCase(), username)
     if (thisId.length <= 7) {
       /** ------- Got course code -> prepare for Page 1 depending on status (draft or published) ------- */
-      log.debug(' getIndex, get course data for : ' + courseCodeId)
-      const apiResponse = await koppsCourseData.getKoppsCourseData(courseCodeId, lang)
-      if (apiResponse.statusCode >= 400) {
-        webContext.errorMessage = apiResponse.statusMessage // TODO: ERROR?????
+      log.debug(' getIndex, get course data for : ' + courseCode)
+      const koppsApiResponse = await koppsCourseData.getKoppsCourseData(courseCode, lang)
+      if (koppsApiResponse.statusCode >= 400) {
+        webContext.errorMessage = koppsApiResponse.statusMessage // TODO: ERROR?????
       } else {
-        webContext.status = status === 'p' ? 'published' : 'new'
-        await webContext.handleCourseData(apiResponse.body, courseCodeId, username, lang)
+        webContext.status = analysisStatus === 'p' ? 'published' : 'new'
+        await webContext.handleCourseData(koppsApiResponse.body, courseCode, username, lang)
       }
     } else {
       /** ------- Got analysisId  -> request analysis data from api ------- */
       log.debug(' getIndex, get analysis data for : ' + analysisId)
-      const apiResponse = await kursutvecklingAPI.getRoundAnalysisData(analysisId, lang)
+      const kursutvecklingApiResponse = await kursutvecklingAPI.getRoundAnalysisData(analysisId, lang)
 
-      if (apiResponse.statusCode >= 400) {
-        webContext.errorMessage = apiResponse.statusMessage // TODO: ERROR?????
+      if (kursutvecklingApiResponse.statusCode >= 400) {
+        webContext.errorMessage = kursutvecklingApiResponse.statusMessage // TODO: ERROR?????
       } else {
         webContext.analysisId = analysisId
-        webContext.analysisData = apiResponse.body
+        webContext.analysisData = kursutvecklingApiResponse.body
 
-        const { courseCode } = apiResponse.body
-        webContext.courseCode = courseCode
+        const { courseCode: analysisCourseCode } = kursutvecklingApiResponse.body
+        webContext.courseCode = analysisCourseCode
 
         /** ------- Creating title  ------- */
         webContext.setCourseTitle(courseTitle.length > 0 ? decodeURIComponent(courseTitle) : '')
@@ -235,9 +236,9 @@ async function getIndex(req, res, next) {
     log.debug('status set to: ' + webContext.status)
 
     // /* Course memo for preview */
-    log.debug(' get data from kurs-pm-data-api, get kurs-pm data for : ' + courseCodeId)
+    log.debug(' get data from kurs-pm-data-api, get kurs-pm data for : ' + courseCode)
 
-    webContext.miniMemosPdfAndWeb = await getSortedAndPrioritizedMiniMemosWebOrPdf(courseCodeId)
+    webContext.miniMemosPdfAndWeb = await getSortedAndPrioritizedMiniMemosWebOrPdf(courseCode)
     log.debug('data from kurs-pm-data-api, fetched successfully : ', {
       miniMemosPdfAndWeb: webContext.miniMemosPdfAndWeb,
     })

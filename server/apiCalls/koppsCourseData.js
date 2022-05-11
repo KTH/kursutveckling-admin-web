@@ -1,7 +1,7 @@
 'use strict'
 
-const config = require('../configuration').server
-const BasicAPI = require('@kth/api-call').BasicAPI
+const { BasicAPI } = require('@kth/api-call')
+const { server: config } = require('../configuration')
 
 const koppsApi = new BasicAPI({
   hostname: config.koppsApi.host,
@@ -12,11 +12,6 @@ const koppsApi = new BasicAPI({
   defaultTimeout: 10000, // config.koppsApi.defaultTimeout
 })
 
-module.exports = {
-  getCourseSchool,
-  getKoppsCourseData,
-}
-
 async function getKoppsCourseData(courseCode, lang = 'sv') {
   try {
     return await koppsApi.getAsync(`course/${encodeURIComponent(courseCode)}/courseroundterms`)
@@ -25,7 +20,7 @@ async function getKoppsCourseData(courseCode, lang = 'sv') {
   }
 }
 
-async function getCourseSchool(courseCode, lang = 'sv') {
+async function getCourseSchool(courseCode) {
   try {
     const { body: course, statusCode } = await koppsApi.getAsync(`course/${encodeURIComponent(courseCode)}`)
     if (!course || statusCode !== 200) return 'kopps_get_fails'
@@ -38,4 +33,9 @@ async function getCourseSchool(courseCode, lang = 'sv') {
   } catch (err) {
     return err
   }
+}
+
+module.exports = {
+  getCourseSchool,
+  getKoppsCourseData,
 }
