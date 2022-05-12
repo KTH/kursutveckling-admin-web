@@ -7,7 +7,9 @@ ENV NODE_PATH /application
 ENV TZ Europe/Stockholm
 # Copy files.
 COPY ["config", "config"]
+COPY ["common", "common"]
 COPY ["public", "public"]
+
 COPY ["i18n", "i18n"]
 COPY [".babelrc", ".babelrc"]
 COPY [".eslintrc", ".eslintrc"]
