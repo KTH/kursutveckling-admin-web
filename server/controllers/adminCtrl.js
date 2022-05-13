@@ -204,18 +204,8 @@ async function getIndex(req, res, next) {
     /* ------- Settings ------- */
     webContext.setBrowserConfig(browserConfig, paths, serverConfig.hostUrl)
     webContext.setLanguage(lang)
-    await webContext.setMemberInfo(loggedInUser, thisId.toUpperCase(), username)
-    if (thisId.length <= 7) {
-      /** ------- Got course code -> prepare for Page 1 depending on status (draft or published) ------- */
-      log.debug(' getIndex, get course data for : ' + courseCode)
-      const koppsApiResponse = await koppsCourseData.getKoppsCourseData(courseCode, lang)
-      if (koppsApiResponse.statusCode >= 400) {
-        webContext.errorMessage = koppsApiResponse.statusMessage // TODO: ERROR?????
-      } else {
-        webContext.status = analysisStatus === 'p' ? 'published' : 'new'
-        await webContext.handleCourseData(koppsApiResponse.body, courseCode, username, lang)
-      }
-    } else {
+    await webContext.setMemberInfo(loggedInUser, courseCode, username)
+    if (analysisId) {
       /** ------- Got analysisId  -> request analysis data from api ------- */
       log.debug(' getIndex, get analysis data for : ' + analysisId)
       const kursutvecklingApiResponse = await kursutvecklingAPI.getRoundAnalysisData(analysisId, lang)
@@ -231,6 +221,16 @@ async function getIndex(req, res, next) {
 
         /** ------- Creating title  ------- */
         webContext.setCourseTitle(courseTitle.length > 0 ? decodeURIComponent(courseTitle) : '')
+      }
+    } else {
+      /** ------- Got course code -> prepare for Page 1 depending on status (draft or published) ------- */
+      log.debug(' getIndex, get course data for : ' + courseCode)
+      const koppsApiResponse = await koppsCourseData.getKoppsCourseData(courseCode, lang)
+      if (koppsApiResponse.statusCode >= 400) {
+        webContext.errorMessage = koppsApiResponse.statusMessage // TODO: ERROR?????
+      } else {
+        webContext.status = analysisStatus === 'p' ? 'published' : 'new'
+        await webContext.handleCourseData(koppsApiResponse.body, courseCode, username, lang)
       }
     }
     log.debug('status set to: ' + webContext.status)

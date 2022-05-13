@@ -17,11 +17,12 @@ import {
   Spinner,
 } from 'reactstrap'
 
-import InfoModal from './InfoModal'
-import InfoButton from './InfoButton'
 import i18n from '../../../../i18n/index'
 import { SERVICE_URL } from '../util/constants'
 import { getDateFormat, getValueFromObjectList } from '../util/helpers'
+
+import InfoModal from './InfoModal'
+import InfoButton from './InfoButton'
 
 const paramsReducer = (state, action) => ({ ...state, ...action })
 
