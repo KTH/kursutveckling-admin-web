@@ -1,34 +1,31 @@
 import React, { useReducer } from 'react'
-import { Alert, Table } from 'reactstrap'
-
+import { Alert } from 'reactstrap'
+// Helpers
+import i18n from '../../../../i18n/index'
 // Custom components
+import { useWebContext } from '../context/WebContext'
+
 import TableWithCourseData from './preview/TableWithCourseData'
 import Details from './preview/Details'
 import PdfLinksNav from './preview/PdfLinksNav'
-import { useWebContext } from '../context/WebContext'
-
-//Helpers
-import i18n from '../../../../i18n/index'
-import { useHistory } from 'react-router'
 
 const paramsReducer = (state, action) => ({ ...state, ...action })
 
 function Preview(props) {
   const [webContext] = useWebContext()
   const context = React.useMemo(() => webContext, [webContext])
+  const { analysisFile: latestAnalysisFileName, values } = props
 
-  const [state, setState] = useReducer(paramsReducer, {
+  const [state] = useReducer(paramsReducer, {
     isPublished: context.roundAnalysis === 'published',
     isNew: context.roundAnalysis === 'new',
-    values: props.values,
+    values,
   })
 
-  const { analysisFile: latestAnalysisFileName } = props
   const { language: langIndex } = context
   const translate = i18n.messages[langIndex].messages
   const courseRoundObj = state.values
   const { analysisName, _id: courseAnalysDataId } = courseRoundObj
-  const headerId = 'header-year'
 
   if (context.analysisData === undefined) return <div>A message here of some kind...</div>
 
