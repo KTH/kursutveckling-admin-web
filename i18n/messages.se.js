@@ -14,11 +14,20 @@ module.exports = {
 
     error_not_found: 'Tyvärr kunde vi inte hitta sidan du efterfrågade',
     error_generic: 'Något gick fel på servern, var god försök igen senare',
+    /**
+     * Authentication message
+     */
+
     contact_support: 'Kontakta',
-    for_questions: 'vid frågor',
+    for_questions: 'vid frågor.',
     friendly_message_have_not_rights: 'Du saknar behörighet att använda Om kursens administrationsverktyg',
-    look_at_list_of_kopps_admin: 'Vill du veta vem som är Kopps-administratör på din skola, se förteckning här:',
-    message_have_not_rights: `Du saknar behörighet att använda Om kursens administrationsverktyg. Behörighet ges per automatik till de som är inlagda i KOPPS som examinator, kursansvarig eller lärare för kursen. `,
+    message_have_not_rights: `Du saknar behörighet att använda Om kursens administrationsverktyg. Behörighet ges per automatik till de som är inlagda som examinator, kursansvarig eller lärare för kursen i Kopps.`,
+    message_have_not_rights_link_pre_text: 'Det är möjligt att',
+    message_have_not_rights_link_href:
+      'https://intra.kth.se/utbildning/systemstod/om-kursen/behorighet-for-om-kursen-1.1051642',
+    message_have_not_rights_link_text: 'beställa administratörsbehörighet till Om kursens administrationsverktyg',
+    message_have_not_rights_link_after_text:
+      'Beställningen behöver göras av skolans UA, eller av närmsta chef i samråd med skolans UA.',
 
     /**
      * Message keys

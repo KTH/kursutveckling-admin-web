@@ -7,12 +7,20 @@ module.exports = {
 
     error_not_found: "Sorry, we can't find your requested page",
     error_generic: 'Something went wrong on the server, please try again later.',
+
+    /**
+     * Authentication message
+     */
     contact_support: 'Contact',
-    for_questions: 'for questions',
-    friendly_message_have_not_rights: 'Missing permission to use About the course administration tool.',
-    look_at_list_of_kopps_admin:
-      'If you want to know who is the Kopps administrator at your school, look at the list here:',
-    message_have_not_rights: `Missing permission to use About the course administration tool. Permission is automatically granted to those who are registered in KOPPS as an examiner, course coordinator or teacher for the course.`,
+    for_questions: 'if you have any questions.',
+    friendly_message_have_not_rights: "You don't have permission to use About course's administration tool",
+    message_have_not_rights: `You don't have permission to use About the course's administration tool. Permission is automatically given to those who are added as an examiner, course coordinator or teacher for the course in Kopps.`,
+    message_have_not_rights_link_pre_text: 'It is possible',
+    message_have_not_rights_link_href:
+      'https://intra.kth.se/en/utbildning/systemstod/om-kursen/behorighet-for-om-kursen-1.1051642',
+    message_have_not_rights_link_text: 'to apply for administrator access to the About course administration tool',
+    message_have_not_rights_link_after_text:
+      "The application must be made by the school's UA, or by the immediate manager in consultation with UA.",
 
     /**
      * Message keys

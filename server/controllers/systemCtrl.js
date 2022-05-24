@@ -4,30 +4,16 @@
  * System controller for functions such as /about and /monitor
  */
 const log = require('@kth/log')
+const { getPaths } = require('kth-node-express-routing')
+const monitorSystems = require('@kth/monitor')
+const redis = require('kth-node-redis')
+const language = require('@kth/kth-node-web-common/lib/language')
+
 const version = require('../../config/version')
 const config = require('../configuration').server
 const packageFile = require('../../package.json')
-const getPaths = require('kth-node-express-routing').getPaths
-const language = require('@kth/kth-node-web-common/lib/language')
 const i18n = require('../../i18n')
 const api = require('../api')
-const monitorSystems = require('@kth/monitor')
-const redis = require('kth-node-redis')
-
-/*
- * ----------------------------------------------------------------
- * Publicly exported functions.
- * ----------------------------------------------------------------
- */
-
-module.exports = {
-  monitor: _monitor,
-  about: _about,
-  robotsTxt: _robotsTxt,
-  paths: _paths,
-  notFound: _notFound,
-  final: _final,
-}
 
 /**
  * Get request on not found (404)
@@ -41,7 +27,19 @@ function _notFound(req, res, next) {
   // }
 }
 
+function _getFriendlyErrorMessage(lang, statusCode) {
+  switch (statusCode) {
+    case 404:
+      return i18n.message('error_not_found', lang)
+    case 403:
+      return i18n.message('friendly_message_have_not_rights', lang)
+    default:
+      return i18n.message('error_generic', lang)
+  }
+}
+
 // this function must keep this signature for it to work properly
+// eslint-disable-next-line no-unused-vars
 function _final(err, req, res, next) {
   const statusCode = err.status || err.statusCode || 500
   const isProd = /prod/gi.test(process.env.NODE_ENV)
@@ -65,8 +63,6 @@ function _final(err, req, res, next) {
         lang,
         layout: 'errorLayout',
         message: err.message,
-        showMessage: err.showMessage || false,
-        showKoppsLink: statusCode === 403,
         friendly: _getFriendlyErrorMessage(lang, statusCode),
         error: isProd ? {} : err,
         status: statusCode,
@@ -89,17 +85,6 @@ function _final(err, req, res, next) {
         .send(isProd ? err.message : err.stack)
     },
   })
-}
-
-function _getFriendlyErrorMessage(lang, statusCode) {
-  switch (statusCode) {
-    case 404:
-      return i18n.message('error_not_found', lang)
-    case 403:
-      return i18n.message('friendly_message_have_not_rights', lang)
-    default:
-      return i18n.message('error_generic', lang)
-  }
 }
 
 /* GET /_about
@@ -174,4 +159,19 @@ function _robotsTxt(req, res) {
  */
 function _paths(req, res) {
   res.json(getPaths())
+}
+
+/*
+ * ----------------------------------------------------------------
+ * Publicly exported functions.
+ * ----------------------------------------------------------------
+ */
+
+module.exports = {
+  monitor: _monitor,
+  about: _about,
+  robotsTxt: _robotsTxt,
+  paths: _paths,
+  notFound: _notFound,
+  final: _final,
 }

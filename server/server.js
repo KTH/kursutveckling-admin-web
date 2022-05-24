@@ -59,6 +59,8 @@ server.engine(
     defaultLayout: 'publicLayout',
     layoutsDir: server.settings.layouts,
     partialsDir: server.settings.partials,
+    // !!!! Extended so differ from node-web
+    helpers: { isUnauthorized: statusCode => statusCode === 403 || statusCode === '403' },
   })
 )
 server.set('view engine', 'handlebars')
@@ -83,7 +85,7 @@ const express = require('express')
 // Removes the "X-Powered-By: Express header" that shows the underlying Express framework
 server.disable('x-powered-by')
 // helper
-/// Files/statics routes--
+// / Files/statics routes--
 
 const staticOption = { maxAge: 365 * 24 * 3600 * 1000 } // 365 days in ms is maximum
 
