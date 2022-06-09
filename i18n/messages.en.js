@@ -26,11 +26,11 @@ module.exports = {
      * Message keys
      */
     service_name: 'kurs ',
-    title: 'Course analysis administration',
+    title: 'Administer About course',
     skip_to_main_content: 'Skip to main content',
     lang_block_id: '1.272446',
     locale_text: 'Course information in English',
-    site_name: 'Course information',
+    site_name: 'Administer About course',
     host_name: 'KTH',
     page_student: 'STUDENT PÅ KTH',
     page_course_programme: 'KURS- OCH PROGRAMKATALOGEN',

@@ -33,12 +33,12 @@ module.exports = {
      * Message keys
      */
     service_name: 'kurs ',
-    title: 'Administrera kursutveckling',
+    title: 'Administrera Om kursen',
 
     lang_block_id: '1.272446',
     locale_text: 'Administrera kursutveckling på svenska',
 
-    site_name: 'Kursutveckling Admin',
+    site_name: 'Administrera Om kursen',
     host_name: 'KTH',
     page_student: 'STUDENT PÅ KTH',
     page_course_programme: 'KURS- OCH PROGRAMKATALOGEN',
