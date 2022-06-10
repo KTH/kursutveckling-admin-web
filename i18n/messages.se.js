@@ -36,7 +36,7 @@ module.exports = {
     title: 'Administrera Om kursen',
 
     lang_block_id: '1.272446',
-    locale_text: 'Administrera kursutveckling på svenska',
+    locale_text: 'Denna sida på svenska',
 
     site_name: 'Administrera Om kursen',
     host_name: 'KTH',
