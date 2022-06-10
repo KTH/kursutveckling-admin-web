@@ -156,7 +156,7 @@ module.exports = {
       Administrera Om kursen. Då kommer kurs-PM att visas på sidorna: Kursens utveckling och Kurs-PM.`,
     alert_no_rounds_selected:
       'Du måste välja en kursomgång/ kurstillfälle nedan, innan du klickar på knapp "Redigera, ladda upp".',
-    alert_no_rounds: 'Den här kursen har inga opublicerade kursomgångar denna termin',
+    alert_no_rounds: 'Det finns redan publicerade kursanalyser för alla kursomgångar denna termin.',
     alert_no_published: 'Det finns ingen publicerad kursanalys och kursdata denna termin',
     alert_different_end_dates:
       'Valda kurstillfällen har olika slutdatum. Kursanalys ska publiceras för kurstillfällen i samma kursomgång.' /* GRÄDDEN PÅ SEMLAN */,
