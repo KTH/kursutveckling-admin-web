@@ -1,20 +1,15 @@
-
-{{prefixScript '/static/app.js' 'scripts'}}
+{{!-- {{prefixScript '/static/app.js' 'scripts'}} --}}
 
 {{#if error}}
-  <p>Error: {{error}}</p>
+<p>Error: {{error}}</p>
 {{else}}
-  <div id="api-data">{{data}}</div>
-{{/if}}
-
-
-
 <div id="kth-kursinfo-no-course" style="margin-left:50px;">
-  <br/>
-  <br/>
-  <br/>
+  <br />
+  <br />
+  <br />
   {{{html}}}
-  <br/>
-  <br/>
-  <br/>
-  </div>
+  <br />
+  <br />
+  <br />
+</div>
+{{/if}}

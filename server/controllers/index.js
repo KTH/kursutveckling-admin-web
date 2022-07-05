@@ -5,6 +5,7 @@
  * with some sweet names.
  */
 module.exports = {
+  NoCourseCodeCtrl: require('./noCourseCodeCtrl'),
   System: require('./systemCtrl'),
   Admin: require('./adminCtrl'),
 }
