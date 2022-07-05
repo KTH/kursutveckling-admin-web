@@ -15,6 +15,7 @@ import UpLoad from '../components/UpLoad'
 // Helpers
 import { SERVICE_URL } from '../util/constants'
 import { getTodayDate, isValidDate } from '../util/helpers'
+import { replaceSiteUrl } from '../util/links'
 import i18n from '../../../../i18n/index'
 
 const ALTERATION_TEXT_MAX = 2000
@@ -73,7 +74,7 @@ const paramsReducer = (state, action) => ({ ...state, ...action })
 
 function AdminPage() {
   const [webContext] = useWebContext()
-  const { analysisData } = webContext
+  const { analysisData, courseCode, language } = webContext
 
   const [state, setState] = useReducer(paramsReducer, {
     saved: analysisData !== undefined && analysisData.changedDate.length > 2,
@@ -105,7 +106,7 @@ function AdminPage() {
     ladokLoading: false,
     multiLineAlert: handleMultiLineAlert({
       init: !analysisData,
-      messages: i18n.messages[webContext.language].messages,
+      messages: i18n.messages[language].messages,
       ladokId: analysisData && analysisData.ladokUIDs ? analysisData.ladokUIDs : [],
       endDate: analysisData && analysisData.endDate ? analysisData.endDate : '',
       examinationGrade: analysisData && analysisData.examinationGrade ? analysisData.examinationGrade : -1,
@@ -120,10 +121,13 @@ function AdminPage() {
 
   useEffect(() => {
     let isMounted = true
-    if (isMounted && alertSuccess.length > 0) {
-      setTimeout(() => {
-        setState({ alertSuccess: '' })
-      }, 5000)
+    if (isMounted) {
+      if (alertSuccess.length > 0) {
+        setTimeout(() => {
+          setState({ alertSuccess: '' })
+        }, 5000)
+      }
+      replaceSiteUrl(courseCode, language)
     }
     return () => (isMounted = false)
   }, [alertSuccess])
@@ -132,17 +136,15 @@ function AdminPage() {
   // ********************************************************************************** */
 
   async function handleUploadFile(id, file, e) {
-   
-   if (e.target.files[0].type === 'application/pdf') {
-     try {
-      const response = await sendRequest(id, file, e)
-     } catch (error) {
-      if (error.response) {
-        throw new Error(error.message)
+    if (e.target.files[0].type === 'application/pdf') {
+      try {
+        const response = await sendRequest(id, file, e)
+      } catch (error) {
+        if (error.response) {
+          throw new Error(error.message)
+        }
+        throw error
       }
-      throw error
-     }
-      
     } else {
       setState({ notValid: { mandatoryFields: [], overMaxFields: [], wrongFileTypeFields: ['analysisFile'] } })
     }
@@ -174,7 +176,7 @@ function AdminPage() {
           }
           setState({
             analysisFile: this.responseText,
-            alertSuccess: i18n.messages[webContext.language].messages.alert_uploaded_file,
+            alertSuccess: i18n.messages[language].messages.alert_uploaded_file,
             values,
             hasNewUploadedFileAnalysis: true,
             notValid: { mandatoryFields, wrongFileTypeFields },
@@ -224,7 +226,7 @@ function AdminPage() {
     ) {
       setState({
         notValid: invalidData,
-        // alertError: i18n.messages[webContext.language].messages.alert_empty_fields,
+        // alertError: i18n.messages[language].messages.alert_empty_fields,
       })
     } else {
       setState({
@@ -239,18 +241,16 @@ function AdminPage() {
     event.preventDefault()
     if (progress === 'edit') {
       if (webContext.semesters.length === 0) {
-        return webContext
-          .getCourseInformation(webContext.courseCode, webContext.user, webContext.language)
-          .then(courseData => {
-            setState({
-              isPreviewMode: false,
-              progress: 'back_new',
-              activeSemester: analysisData.semester,
-              analysisFile: '',
-              alert: '',
-              multiLineAlert: [],
-            })
+        return webContext.getCourseInformation(courseCode, webContext.user, language).then(courseData => {
+          setState({
+            isPreviewMode: false,
+            progress: 'back_new',
+            activeSemester: analysisData.semester,
+            analysisFile: '',
+            alert: '',
+            multiLineAlert: [],
           })
+        })
       }
       setState({
         isPreviewMode: false,
@@ -310,7 +310,7 @@ function AdminPage() {
         setState({
           saved: true,
           progress: 'edit',
-          alertSuccess: i18n.messages[webContext.language].messages.alert_saved_draft,
+          alertSuccess: i18n.messages[language].messages.alert_saved_draft,
           hasNewUploadedFileAnalysis: false,
           values: data,
         })
@@ -373,14 +373,13 @@ function AdminPage() {
       return webContext
         .postLadokRoundIdListAndDateToGetStatistics(statisticsParams.ladokId, newEndDate)
         .then(statisticsResponse => {
-          console.log('statisticsResponse', statisticsResponse)
 
           values.examinationGrade = Math.round(Number(statisticsResponse.examinationGrade) * 10) / 10
           values.examinationGradeFromLadok =
             values['endDate'] === values['endDateLadok'] &&
             Number(values['examinationGrade']) === values['examinationGradeLadok']
           const multiLineAlert = handleMultiLineAlert({
-            messages: i18n.messages[webContext.language].messages,
+            messages: i18n.messages[language].messages,
             ladokId: statisticsParams.ladokId,
             endDate: values.endDate,
             examinationGrade: values.examinationGrade,
@@ -434,7 +433,7 @@ function AdminPage() {
           webContext.createAnalysisData(semester, rounds).then(createdAnalysis => {
             const valuesObject = handleTemporaryData(createdAnalysis, tempData)
             const multiLineAlert = handleMultiLineAlert({
-              messages: i18n.messages[webContext.language].messages,
+              messages: i18n.messages[language].messages,
               ladokId: statisticsParams.ladokId,
               endDate: valuesObject.values.endDate,
               examinationGrade: valuesObject.values.examinationGrade,
@@ -464,7 +463,7 @@ function AdminPage() {
       _statisticsParams.endDate = valuesObject.values.endDate
       _statisticsParams.ladokId = valuesObject.values.ladokUIDs ? valuesObject.values.ladokUIDs : []
       const multiLineAlert = handleMultiLineAlert({
-        messages: i18n.messages[webContext.language].messages,
+        messages: i18n.messages[language].messages,
         ladokId: valuesObject.values.ladokUIDs,
         endDate: valuesObject.values.endDate,
         examinationGrade: valuesObject.values.examinationGrade,
@@ -524,7 +523,7 @@ function AdminPage() {
     }
 
     const multiLineAlert = handleMultiLineAlert({
-      messages: i18n.messages[webContext.language].messages,
+      messages: i18n.messages[language].messages,
       ladokId: state.statisticsParams.ladokId,
       endDate: values.endDate,
       examinationGrade: values.examinationGrade,
@@ -570,8 +569,8 @@ function AdminPage() {
   }
 
   const { isPublished } = state
-  const translate = i18n.messages[webContext.language].messages
-  
+  const translate = i18n.messages[language].messages
+
   if (analysisData === undefined || progress === 'back_new') {
     return (
       <div>
@@ -579,8 +578,8 @@ function AdminPage() {
           <div>
             <Title
               title={webContext.courseTitle}
-              language={webContext.language}
-              courseCode={webContext.courseCode}
+              language={language}
+              courseCode={courseCode}
               header={translate.header_main[webContext.status]}
             />
             <ProgressBar active={1} pages={translate.pagesProgressBar} />
@@ -631,8 +630,8 @@ function AdminPage() {
         <div>
           <Title
             title={webContext.courseTitle}
-            language={webContext.language}
-            courseCode={webContext.courseCode}
+            language={language}
+            courseCode={courseCode}
             header={translate.header_main[webContext.status]}
           />
           {webContext.status !== 'preview' && (
@@ -690,7 +689,7 @@ function AdminPage() {
                       <Alert color="success">{state.alertSuccess} </Alert>
                     </Row>
                   )}
-                  <AlertError notValid={state.notValid} translations={i18n.messages[webContext.language]} />
+                  <AlertError notValid={state.notValid} translations={i18n.messages[language]} />
                   {/* FORM - FIRST COLUMN */}
                   <Row className="form-group">
                     <Col sm="4" className="col-form">

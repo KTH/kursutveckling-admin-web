@@ -20,6 +20,7 @@ import {
 import i18n from '../../../../i18n/index'
 import { SERVICE_URL } from '../util/constants'
 import { getDateFormat, getValueFromObjectList } from '../util/helpers'
+import { goToStartPage } from '../util/links'
 
 import InfoModal from './InfoModal'
 import InfoButton from './InfoButton'
@@ -196,7 +197,7 @@ function AnalysisMenu(props) {
 
   function handleCancel(event) {
     event.preventDefault()
-    window.location = `${SERVICE_URL.admin}${context.courseCode}?serv=kutv&event=cancel`
+    goToStartPage(`${SERVICE_URL.admin}${context.courseCode}?serv=kutv&event=cancel`)
   }
 
   //* ******************************************************************* */
@@ -247,7 +248,9 @@ function AnalysisMenu(props) {
         }
 
         const analysisName = getValueFromObjectList(state.draftAnalysis, id, 'analysisId', 'analysisName')
-        window.location = `${SERVICE_URL.admin}${context.courseCode}?serv=kutv&event=delete&id=${state.selectedRadio.draft}&term=${state.semester}&name=${analysisName}`
+        goToStartPage(
+          `${SERVICE_URL.admin}${context.courseCode}?serv=kutv&event=delete&id=${state.selectedRadio.draft}&term=${state.semester}&name=${analysisName}`
+        )
         getUsedRounds(state.semester)
 
         selectedRadio.draft = ''
