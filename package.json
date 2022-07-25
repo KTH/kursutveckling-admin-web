@@ -53,7 +53,7 @@
     "jquery-hoverintent": "^1.10.2",
     "kth-node-access-log": "^0.2.8",
     "kth-node-configuration": "^2.0.12",
-    "kth-node-express-routing": "^2.0.14",
+    "kth-node-express-routing": "^2.0.15",
     "kth-node-i18n": "^1.0.14",
     "kth-node-redis": "^3.1.42",
     "kth-style": "7.0.29",
