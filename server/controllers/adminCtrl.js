@@ -182,7 +182,8 @@ async function getIndex(req, res, next) {
   const username = loggedInUser ? loggedInUser.username : null
   const { title: courseTitle = '', status: statusFromQuery } = req.query
   const { id: thisId } = req.params
-  const analysisId = thisId.length <= 7 ? '' : thisId.toUpperCase()
+  const courseCodeMaxLength = 7
+  const analysisId = thisId.length <= courseCodeMaxLength ? '' : thisId.toUpperCase()
   const courseCode = parseCourseCode(thisId.toUpperCase())
 
   try {
