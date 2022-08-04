@@ -33,7 +33,6 @@ function Preview(props) {
     <div key="kursutveckling-andmin-preview" className="list-section-per-year col" id="preview-container">
       <h2>{translate.header_preview_content}</h2>
       <p>{context.status === 'preview' ? '' : translate.intro_preview}</p>
-      <p>{translate.info_manually_edited}</p>
       {/* If memo is missing a memo place an alert */}
       <div id="alert-placeholder" />
       {context.analysisData.examinationRounds && context.analysisData.examinationRounds.length === 0 ? (
@@ -60,7 +59,9 @@ function Preview(props) {
             thisAnalysisObj={courseRoundObj}
             language={langIndex}
           />
-
+          <div>
+            <p className="float-right">{translate.info_manually_edited}</p>
+          </div>
           <Details label={'moreData' + courseRoundObj._id} thisAnalysisObj={courseRoundObj} translate={translate} />
         </section>
       )}
