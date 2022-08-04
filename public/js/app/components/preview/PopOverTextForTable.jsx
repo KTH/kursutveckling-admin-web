@@ -11,7 +11,7 @@ const OnlyMobileVisiblePopup = ({ ariaLabel, ariaPressed, popUpHeader, id, onCli
       role="info icon button"
       aria-labelledby={mobilePopoverId}
     >
-      <label id={mobilePopoverId} className="d-none d-sm-block d-md-nonee">
+      <label id={mobilePopoverId} className="d-sm-block d-md-none">
         {popUpHeader}
       </label>{' '}
       <Button

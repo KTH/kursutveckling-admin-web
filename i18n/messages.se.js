@@ -272,7 +272,7 @@ module.exports = {
 
     // PREVIEW PAGE
     info_manually_edited: '* Kursdata har registrerats manuellt',
-    header_more_info: 'Mer information',
+    header_more_info: 'Ytterligare data om kursanalysen',
     header_course_round: 'Kursomgång',
     table_headers_with_popup: {
       examiners: {
@@ -308,7 +308,7 @@ module.exports = {
       },
       programmeCodes: { header: 'Obligatorisk inom program', popoverText: '' },
       analysisName: {
-        header: 'Kurstillfällen som ingår i kursomgång',
+        header: 'Kursanalysen gäller för följande kursomgångar',
         popoverText:
           'Alla kurstillfällen som ingick i kursomgången. Studenter är antagna till ett kurstillfälle. Programstudenter, betalande studenter och fristående studenter antas till olika kurstillfällen men kan utbildas i samma kursomgång. Kurstillfällen ska alltså grupperas ihop till en kursomgång. Kursomgången är ett praktiskt genomförande av en kurs. Kursomgången har en gemensam starttidpunkt, gemensam kurstakt och normalt gemensam undervisning för en studentgrupp. Schemat läggs per kursomgång, kurs-PM utformas per kurstillfälle och kursanalys genomförs per kursomgång.',
       },

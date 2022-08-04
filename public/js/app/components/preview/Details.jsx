@@ -3,7 +3,7 @@ import { Collapse } from 'reactstrap'
 import { formatISODate } from '../../util/helpers'
 
 const ExtraKoppsInfo = ({ translate, thisAnalysisObj }) => {
-  const orderedTitles = ['commentExam', 'programmeCodes', 'analysisName']
+  const orderedTitles = ['analysisName', 'programmeCodes']
   return (
     <span className="extra-kopps-info-from-kutv-api">
       {orderedTitles.map((infoTitle, index) => (
