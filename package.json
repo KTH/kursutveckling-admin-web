@@ -65,7 +65,7 @@
     "react-icons": "^4.4.0",
     "react-router": "^6.2.2",
     "react-router-dom": "^6.2.2",
-    "reactstrap": "^9.1.2",
+    "reactstrap": "^9.1.3",
     "safe-utils": "^1.0.1"
   },
   "devDependencies": {
@@ -91,7 +91,7 @@
     "husky": "^8.0.1",
     "jest": "^28.1.3",
     "jest-environment-jsdom": "^28.1.3",
-    "jest-extended": "^2.0.0",
+    "jest-extended": "^3.0.2",
     "mini-css-extract-plugin": "^2.6.1",
     "nodemon": "^2.0.19",
     "null-loader": "^4.0.1",
