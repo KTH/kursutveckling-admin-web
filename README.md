@@ -127,13 +127,18 @@ OIDC_APPLICATION_ID=<FROM ADFS>
 OIDC_CLIENT_SECRET=<FROM ADFS>
 OIDC_TOKEN_SECRET=<Random string>
 REDIS_URI=[connection string to redis, for cache]
-UG_REDIS_URI=[connection string to UG redis, in key vault, for authorization, and fetching names of course staff]
 BLOB_SERVICE_SAS_URL=[f.e., https://kursinfostoragestage.blob.core.windows.net/[params]&spr=https&sig=[generated signature]]
 STORAGE_CONTAINER_NAME=kursutveckling-blob-container
 /*If you want to start your server on another port, add the following two variables, else use default ones from serversettings.js*/
 SERVER_PORT=[your port for the server]
 SERVER_HOST_URL=http://localhost:[SERVER_PORT]
 LOGGING_LEVEL=DEBUG [only for dev env]
+/* Connection Properties of UG Rest Api to fetch names of course staff */
+UG_REST_AUTH_API_TOKEN_URI=https://<LOGIN_HOST>/adfs/oauth2/token
+UG_REST_AUTH_CLIENT_ID=<FROM AZURE KEYVAULT>
+UG_REST_AUTH_CLIENT_SECRET=<FROM AZURE KEYVAULT>
+UG_REST_API_URI=https://<UG_URL>
+SUBSCRIPTION_KEY=<FROM AZURE INTEGRAL OR KEYVAULT>
 ```
 
 These settings are also available in an `env.in` file.
