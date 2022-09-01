@@ -126,6 +126,18 @@ module.exports = {
     redisOptions: unpackRedisConfig('REDIS_URI', devRedis),
   },
 
+  // UG API auth properties
+  ugAuth: {
+    authTokenURL: getEnv('UG_REST_AUTH_API_TOKEN_URI', null),
+    authClientId: getEnv('UG_REST_AUTH_CLIENT_ID', null),
+    authClientSecret: getEnv('UG_REST_AUTH_CLIENT_SECRET', null),
+  },
+  // ug redis api base url
+  ugRestApiURL: {
+    url: getEnv('UG_REST_API_URI', null),
+    key: getEnv('SUBSCRIPTION_KEY', null),
+  },
+
   koppsApi: unpackKOPPSConfig('KOPPS_URI', devKoppsApi),
 
   appInsights: {

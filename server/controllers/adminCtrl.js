@@ -4,6 +4,7 @@ const log = require('@kth/log')
 const redis = require('kth-node-redis')
 const language = require('@kth/kth-node-web-common/lib/language')
 const httpResponse = require('@kth/kth-node-response')
+const { ugRestApiHelper } = require('@kth/ug-rest-api-helper')
 const paths = require('../server').getPaths()
 const browserConfig = require('../configuration').browser
 const serverConfig = require('../configuration').server
@@ -116,27 +117,65 @@ async function _updateFileInStorage(req, res, next) {
   }
 }
 
-// ------- EXAMINATOR AND RESPONSIBLES FROM UG-REDIS: ------- /
-async function _getCourseEmployees(req, res, next) {
-  let key = req.params.key
-  key = key.replace(/_/g, '.')
+const _getCourseEmployeeDataForExaminerAndResponsibles = (groupData, groups) => {
+  let examinerMembers = []
+  let responsibleMembers = []
+  if (groupData && groupData.length > 0) {
+    groupData.forEach(group => {
+      const examinerGroupNames = groups.examiner
+      const examinerGroup = examinerGroupNames.find(x => `edu.courses.${String(x).slice(0, 2)}.${x}` === group.name)
+      if (examinerGroup) {
+        examinerMembers = examinerMembers.concat(group.members)
+      } else {
+        const responsibleGroupNames = groups.responsibles
+        const responsibleGroup = responsibleGroupNames.find(
+          x => `edu.courses.${String(x).slice(0, 2)}.${x}` === group.name
+        )
+        if (responsibleGroup) {
+          responsibleMembers = responsibleMembers.concat(group.members)
+        }
+      }
+    })
+  }
+  const employeeData = []
+  employeeData.push(examinerMembers)
+  employeeData.push(responsibleMembers)
+  return employeeData
+}
 
+async function _getGroupsDataFromUG(groups) {
+  const { url, key } = serverConfig.ugRestApiURL
+  const { authTokenURL, authClientId, authClientSecret } = serverConfig.ugAuth
+  const ugConnectionProperties = {
+    ugTokenURL: authTokenURL,
+    clientId: authClientId,
+    clientSecret: authClientSecret,
+    ugURL: url,
+    subscriptionKey: key,
+  }
+  ugRestApiHelper.initConnectionProperties(ugConnectionProperties)
+  const filterData = []
+  for (const groupKey in groups) {
+    const data = groups[groupKey]
+    data.forEach(d => {
+      filterData.push(`edu.courses.${String(d).slice(0, 2)}.${d}`)
+    })
+  }
+  const groupData = await ugRestApiHelper.getUGGroups('name', 'in', filterData, true)
+  return groupData
+}
+
+// ------- EXAMINATOR AND RESPONSIBLES FROM UG-REST-API: ------- //
+async function _getCourseEmployees(req, res, next) {
   try {
-    const roundsKeys = JSON.parse(req.body.params)
-    log.debug('_getCourseEmployees with keys: ' + roundsKeys.examiner, roundsKeys.responsibles)
-    await redis('ugRedis', serverConfig.cache.ugRedis.redis)
-      .then(function (ugClient) {
-        return ugClient.multi().mget(roundsKeys.examiner).mget(roundsKeys.responsibles).execAsync()
-      })
-      .then(function (returnValue) {
-        log.debug('ugRedis - return:', returnValue)
-        return httpResponse.json(res, returnValue)
-      })
-      .catch(function (err) {
-        throw new Error(err)
-      })
+    const groups = JSON.parse(req.body.params)
+    const groupData = await _getGroupsDataFromUG(groups)
+    const courseEmployeeData = _getCourseEmployeeDataForExaminerAndResponsibles(groupData, groups)
+    log.debug('Examiners Fetched from UG', { Examiners: courseEmployeeData[0] })
+    log.debug('Responsibles Fetched from UG', { Responsibles: courseEmployeeData[1] })
+    return httpResponse.json(res, courseEmployeeData)
   } catch (err) {
-    log.error('Exception from ugRedis - multi', { error: err })
+    log.error('Exception from UG Rest Api - multi', { error: err })
     return next(err)
   }
 }

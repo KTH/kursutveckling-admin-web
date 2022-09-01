@@ -393,15 +393,14 @@ function getEmployees(courseCode, semester, rounds) {
 }
 
 function getEmployeesNames(employeeList) {
-  let list = []
-  let toObject
-  let fullName = ''
-  for (let index = 0; index < employeeList.length; index++) {
-    if (employeeList[index] !== null) {
-      toObject = JSON.parse(employeeList[index])
-      for (let index2 = 0; index2 < toObject.length; index2++) {
-        if (toObject[index2].givenName) {
-          fullName = `${toObject[index2].givenName} ${toObject[index2].lastName}`
+  const list = []
+  if (employeeList && employeeList.length > 0) {
+    for (let index = 0; index < employeeList.length; index++) {
+      if (employeeList[index] !== null) {
+        const toObject = employeeList[index]
+        if (toObject.givenName) {
+          const lastName = toObject.lastName ? toObject.lastName : toObject.surname
+          const fullName = `${toObject.givenName} ${lastName}`
           if (list.indexOf(fullName) < 0) list.push(fullName)
         }
       }
