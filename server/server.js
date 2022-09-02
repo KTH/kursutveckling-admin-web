@@ -290,8 +290,8 @@ appRoute.get(
   _addProxy('/api/kursutveckling-admin/getKoppsCourseDataByCourse/:courseCode/:language'),
   Admin.getKoppsCourseData
 )
-appRoute.get('redis.ugCache', _addProxy('/redis/ugChache/:key/:type'), Admin.getCourseEmployees)
-appRoute.post('redis.ugCache', _addProxy('/redis/ugChache/:key/:type'), Admin.getCourseEmployees)
+appRoute.get('ug.rest.api', _addProxy('/ug/rest/api/:key/:type'), Admin.getCourseEmployees)
+appRoute.post('ug.rest.api', _addProxy('/ug/rest/api/:key/:type'), Admin.getCourseEmployees)
 appRoute.post('storage.saveFile', _addProxy('/storage/saveFile/:analysisid/:type/:published'), Admin.saveFileToStorage)
 appRoute.post('storage.updateFile', _addProxy('/storage/updateFile/:fileName/'), Admin.updateFileInStorage)
 
