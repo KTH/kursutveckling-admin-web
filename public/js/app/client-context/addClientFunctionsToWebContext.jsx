@@ -413,7 +413,7 @@ function getEmployeesNames(employeeList) {
 /** ***************************************************************************************************************************************** */
 function getCourseEmployeesPost(key, type = 'multi') {
   return axios
-    .post(this.buildApiUrl(this.paths.redis.ugCache.uri, { key, type }), {
+    .post(this.buildApiUrl(this.paths.ug.rest.api.uri, { key, type }), {
       params: JSON.stringify(this.redisKeys),
     })
     .then(result => {
