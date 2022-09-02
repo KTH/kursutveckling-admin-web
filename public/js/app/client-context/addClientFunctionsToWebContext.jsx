@@ -248,7 +248,7 @@ function _analysisAccess(analysis) {
 // -- Creates a new analysis object with information from selected rounds -- //
 function createAnalysisData(semester, rounds) {
   this.getEmployees(this.courseData.courseCode, semester, rounds)
-  return this.getCourseEmployeesPost(this.redisKeys, 'multi').then(returnList => {
+  return this.getCourseEmployeesPost(this.ugRestKeys, 'multi').then(returnList => {
     const { courseSyllabus, examinationRounds } = this.courseData.semesterObjectList[semester]
     const language = getLanguageToUse(this.roundData[semester], rounds, this.language === 1 ? 'Engelska' : 'English')
     const roundLang = language === 'English' || language === 'Engelska' ? 'en' : 'sv'
@@ -292,7 +292,7 @@ function createAnalysisData(semester, rounds) {
       analysisName: newName,
       semester,
       roundIdList: rounds.toString(),
-      ugKeys: [...this.redisKeys.examiner, ...this.redisKeys.responsibles],
+      ugKeys: [...this.ugRestKeys.examiner, ...this.ugRestKeys.responsibles],
       ladokUID: '',
       syllabusStartTerm: courseSyllabus.validFromTerm,
       changedAfterPublishedDate: '',
@@ -384,12 +384,12 @@ function getExamObject(examObject, grades, roundLang) {
 }
 
 function getEmployees(courseCode, semester, rounds) {
-  this.redisKeys.examiner = []
-  this.redisKeys.responsibles = []
+  this.ugRestKeys.examiner = []
+  this.ugRestKeys.responsibles = []
   for (let index = 0; index < rounds.length; index++) {
-    this.redisKeys.responsibles.push(`${courseCode}.${semester}.${Number(rounds[index])}.courseresponsible`)
+    this.ugRestKeys.responsibles.push(`${courseCode}.${semester}.${Number(rounds[index])}.courseresponsible`)
   }
-  this.redisKeys.examiner.push(`${courseCode}.examiner`)
+  this.ugRestKeys.examiner.push(`${courseCode}.examiner`)
 }
 
 function getEmployeesNames(employeeList) {
@@ -409,12 +409,12 @@ function getEmployeesNames(employeeList) {
   return list
 }
 /** ***************************************************************************************************************************************** */
-/*                                            UG REDIS - examiners, teachers and responsibles                                                */
+/*                                            UG Rest - examiners, teachers and responsibles                                                */
 /** ***************************************************************************************************************************************** */
 function getCourseEmployeesPost(key, type = 'multi') {
   return axios
     .post(this.buildApiUrl(this.paths.ug.rest.api.uri, { key, type }), {
-      params: JSON.stringify(this.redisKeys),
+      params: JSON.stringify(this.ugRestKeys),
     })
     .then(result => {
       return result.data
