@@ -1,7 +1,6 @@
 'use strict'
 
 const log = require('@kth/log')
-const redis = require('kth-node-redis')
 const language = require('@kth/kth-node-web-common/lib/language')
 const httpResponse = require('@kth/kth-node-response')
 const { ugRestApiHelper } = require('@kth/ug-rest-api-helper')
@@ -202,14 +201,6 @@ async function getIndex(req, res, next) {
   if (api.kursutvecklingApi.connected === false) {
     log.error('No connection to kursutveckling-api', api.kursutvecklingApi)
     const error = new Error('API - ERR_CONNECTION_REFUSED')
-    error.status = 500
-    return next(error)
-  }
-  try {
-    await redis('ugRedis', serverConfig.cache.ugRedis.redis)
-  } catch (err) {
-    log.error('No connection to ugRedis')
-    const error = new Error('No access to  ugRedis - ' + err)
     error.status = 500
     return next(error)
   }
