@@ -116,29 +116,35 @@ async function _updateFileInStorage(req, res, next) {
   }
 }
 
+const _removeDuplicates = personListWithDublicates =>
+  personListWithDublicates
+    .map(person => JSON.stringify(person))
+    .filter((person, index, self) => self.indexOf(person) === index)
+    .map(personStr => JSON.parse(personStr))
+
 const _getCourseEmployeeDataForExaminerAndResponsibles = (groupData, groups) => {
-  let examinerMembers = []
-  let responsibleMembers = []
+  let examiners = []
+  let responsibles = []
   if (groupData && groupData.length > 0) {
     groupData.forEach(group => {
       const examinerGroupNames = groups.examiner
       const examinerGroup = examinerGroupNames.find(x => `edu.courses.${String(x).slice(0, 2)}.${x}` === group.name)
       if (examinerGroup) {
-        examinerMembers = examinerMembers.concat(group.members)
+        examiners = examiners.concat(group.members)
       } else {
         const responsibleGroupNames = groups.responsibles
         const responsibleGroup = responsibleGroupNames.find(
           x => `edu.courses.${String(x).slice(0, 2)}.${x}` === group.name
         )
         if (responsibleGroup) {
-          responsibleMembers = responsibleMembers.concat(group.members)
+          responsibles = responsibles.concat(group.members)
         }
       }
     })
   }
   const employeeData = []
-  employeeData.push(examinerMembers)
-  employeeData.push(responsibleMembers)
+  employeeData.push(_removeDuplicates(examiners))
+  employeeData.push(_removeDuplicates(responsibles))
   return employeeData
 }
 
