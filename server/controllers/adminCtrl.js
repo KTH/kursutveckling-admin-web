@@ -189,7 +189,7 @@ async function _getStatisicsForRound(req, res, next) {
   log.debug('_getStatisicsForRound : ', req.body.params, req.params.roundEndDate)
   // Solution for rounds that missing ladokUID in kopps
   if (req.body.params.length === 0) {
-    let reponseObject = { registeredStudents: -1, examinationGrade: -1 }
+    const reponseObject = { registeredStudents: -1, examinationGrade: -1 }
     return httpResponse.json(res, reponseObject, 200)
   }
   try {
