@@ -28,9 +28,6 @@ const devKoppsApi = devDefaults('https://api-r.referens.sys.kth.se/api/kopps/v2/
 const devSessionKey = devDefaults('node-web.sid') // TODO ??
 const devSessionUseRedis = devDefaults(true)
 const devRedis = devDefaults('redis://localhost:6379/')
-const devRedisUG = devDefaults(
-  'team-studam-ref-redis-193.redis.cache.windows.net:6380,password=12121212ksldjai,ssl=True,abortConnect=False'
-)
 const devStorageContainerName = devDefaults('kursutveckling-blob-container')
 // END DEFAULT SETTINGS
 
