@@ -134,7 +134,7 @@ SERVER_PORT=[your port for the server]
 SERVER_HOST_URL=http://localhost:[SERVER_PORT]
 LOGGING_LEVEL=DEBUG [only for dev env]
 /* Connection Properties of UG Rest Api to fetch names of course staff */
-UG_REST_AUTH_API_TOKEN_URI=https://<LOGIN_HOST>/adfs/oauth2/token
+UG_REST_AUTH_API_TOKEN_URI=https://<LOGIN_HOST>/adfs/
 UG_REST_AUTH_CLIENT_ID=<FROM AZURE KEYVAULT>
 UG_REST_AUTH_CLIENT_SECRET=<FROM AZURE KEYVAULT>
 UG_REST_API_URI=https://<UG_URL>
