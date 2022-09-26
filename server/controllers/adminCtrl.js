@@ -152,7 +152,7 @@ async function _getGroupsDataFromUG(groups) {
   const { url, key } = serverConfig.ugRestApiURL
   const { authTokenURL, authClientId, authClientSecret } = serverConfig.ugAuth
   const ugConnectionProperties = {
-    ugTokenURL: authTokenURL,
+    authorityURL: authTokenURL,
     clientId: authClientId,
     clientSecret: authClientSecret,
     ugURL: url,
