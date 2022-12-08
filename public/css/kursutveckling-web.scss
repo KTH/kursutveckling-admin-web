@@ -11,15 +11,13 @@ $dark-grey: #65656c;
   padding-bottom: 1em;
 }
 
-%grey-icon-for-table-header {
+%icon-for-table-header {
+  background-image: url("data:image/svg+xml,%3c%3fxml version='1.0' encoding='UTF-8'%3f%3e%3csvg id='a' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath d='M10%2c0C4.48%2c0%2c0%2c4.48%2c0%2c10s4.48%2c10%2c10%2c10%2c10-4.48%2c10-10S15.52%2c0%2c10%2c0Z' style='fill:white%3b'/%3e%3crect x='9' y='9' width='2' height='6' style='fill:%2365656c%3b'/%3e%3crect x='9.03' y='5.03' width='2' height='2' style='fill:%2365656c%3b'/%3e%3c/svg%3e"); 
   height: 1.2em;
   width: 1.2em;
-  border: 0.8px solid #fff;
-  -webkit-filter: grayscale(1) brightness(88%) contrast(2);
-  filter: grayscale(1) brightness(88%) contrast(2);
   margin-left: 0;
   vertical-align: middle;
-  visibility: visible;
+  visibility: visible;  
 }
 
 #kth-kursinfo {
@@ -229,7 +227,7 @@ div.popover.show {
 
 button.desktop.btn-info-modal,
 button.mobile.btn-info-modal {
-  @extend %grey-icon-for-table-header;
+  @extend %icon-for-table-header;
   min-height: 0.75rem;
 }
 
