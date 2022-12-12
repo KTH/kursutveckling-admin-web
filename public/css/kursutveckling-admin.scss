@@ -76,7 +76,6 @@ $kth-blue: #007fae;
       border: 1px solid $kth-blue;
       width: 42px;
       height: 42px;
-      margin: -1px 0;
       position: relative;
 
       &:after {
@@ -254,6 +253,7 @@ span.right-links {
 .btn-info-modal {
   min-height: 0.75rem;
   vertical-align: middle !important;
+  margin-left: 10px;
 }
 .padding-top-30 {
   padding-top: 30px;
