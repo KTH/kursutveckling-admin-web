@@ -127,8 +127,10 @@ ul.no-padding-left {
 }
 
 // ----- PAGE 2: FORM ------- //
-.form-control {
-  margin-bottom: 1em;
+
+.nopadding {
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 .admin-form {

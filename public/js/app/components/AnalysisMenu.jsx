@@ -94,17 +94,9 @@ function AnalysisMenu(props) {
     ladokLoading,
   } = state
 
-  //* ****************************** SEMESTER DROPDOWN ******************************* */
-  //* ********************************************************************************* */
-  function toggleDropdown(event) {
-    event.preventDefault()
-    setState({
-      dropdownOpen: !dropdownOpen,
-    })
-  }
-
   //* * ********************** CHECKBOXES AND RADIO BUTTONS **************************** */
   //* ********************************************************************************* */
+
   function handleRoundCheckbox(event) {
     event.persist()
     const endDate = event.target.getAttribute('data-enddate')
@@ -296,9 +288,9 @@ function AnalysisMenu(props) {
     radios.draft = ''
     state.statisticsParams.endDate = ''
     state.statisticsParams.ladokId = []
-    getUsedRounds(event.target.id)
+    getUsedRounds(event.target.value)
     setState({
-      semester: event.target.id,
+      semester: event.target.value,
       collapseOpen: true,
       firstVisit: false,
       rounds: [],
@@ -321,34 +313,43 @@ function AnalysisMenu(props) {
       {/* ************************************************************************************ */}
       {/*                               SEMESTER DROPDOWN                          */}
       {/* ************************************************************************************ */}
-      <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className="select-semester">
-        <div className="inline-flex padding-top-30">
+
+      <div className="col-4 nopadding">
+      <div className="inline-flex padding-top-30">
           <h3> {translate.select_semester} </h3>
           <InfoButton addClass="padding-top-30" id="info_select_semester" textObj={translate.info_select_semester} />
+      </div>
+      <form>
+        <div className="form-group">
+          <div className="form-select">
+            <div className="select-wrapper">
+              <select 
+              className="form-control"
+              id="semesterDropdownControl" 
+              aria-label={translate.select_semester} 
+              onChange={handleSelectedSemester}>
+                <option>
+                  {semester && semester > 0 && !firstVisit
+                  ? `${translate.course_short_semester[semester.toString().match(/.{1,4}/g)[1]]} 
+                  ${semester.toString().match(/.{1,4}/g)[0]}`
+                  : translate.select_semester}
+                </option>
+
+                {semesterList &&
+                semesterList.map(sem => (
+                  <option id={sem} key={sem} value={sem}>
+                  {`
+                    ${translate.course_short_semester[sem.toString().match(/.{1,4}/g)[1]]} 
+                    ${sem.toString().match(/.{1,4}/g)[0]}
+                  `}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
-
-        <DropdownToggle>
-          <span>
-            {semester && semester > 0 && !firstVisit
-              ? `${translate.course_short_semester[semester.toString().match(/.{1,4}/g)[1]]} 
-                                    ${semester.toString().match(/.{1,4}/g)[0]}`
-              : translate.select_semester}
-          </span>
-          <span className="caretholder" id="_spanCaret" />
-        </DropdownToggle>
-        <DropdownMenu>
-          {semesterList &&
-            semesterList.map(sem => (
-              <DropdownItem id={sem} key={sem} onClick={handleSelectedSemester}>
-                {`
-                  ${translate.course_short_semester[sem.toString().match(/.{1,4}/g)[1]]} 
-                  ${sem.toString().match(/.{1,4}/g)[0]}
-                `}
-              </DropdownItem>
-            ))}
-        </DropdownMenu>
-      </Dropdown>
-
+      </form>
+      </div>
       {alert.length > 0 && (
         <Alert color="danger" className="alert-margin">
           {' '}
@@ -564,3 +565,4 @@ function AnalysisMenu(props) {
 }
 
 export default AnalysisMenu
+
