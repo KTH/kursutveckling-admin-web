@@ -3,14 +3,10 @@ import React, { useReducer } from 'react'
 import {
   Alert,
   Form,
-  Dropdown,
   FormGroup,
   Label,
   Input,
   Collapse,
-  DropdownToggle,
-  DropdownItem,
-  DropdownMenu,
   Button,
   Row,
   Col,
@@ -44,7 +40,6 @@ function AnalysisMenu(props) {
     alert: '',
     firstVisit: extFirstVisit,
     showEditBtn: false,
-    dropdownOpen: false,
     collapseOpen: progress === 'back_new',
     modalOpen: {
       delete: false,
@@ -80,7 +75,6 @@ function AnalysisMenu(props) {
   const {
     alert,
     firstVisit,
-    dropdownOpen,
     collapseOpen,
     modalOpen,
     semester,
@@ -327,12 +321,11 @@ function AnalysisMenu(props) {
               className="form-control"
               id="semesterDropdownControl" 
               aria-label={translate.select_semester} 
-              onChange={handleSelectedSemester}>
-                <option>
-                  {semester && semester > 0 && !firstVisit
-                  ? `${translate.course_short_semester[semester.toString().match(/.{1,4}/g)[1]]} 
-                  ${semester.toString().match(/.{1,4}/g)[0]}`
-                  : translate.select_semester}
+              onChange={handleSelectedSemester}
+              defaultValue={semester && semester > 0 && !firstVisit ? semester : translate.select_semester}
+              key="no-chosen">
+                <option value={translate.select_semester}>
+                  {translate.select_semester}
                 </option>
 
                 {semesterList &&
