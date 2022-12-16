@@ -323,8 +323,8 @@ function AnalysisMenu(props) {
               aria-label={translate.select_semester} 
               onChange={handleSelectedSemester}
               defaultValue={semester && semester > 0 && !firstVisit ? semester : translate.select_semester}
-              key="no-chosen">
-                <option value={translate.select_semester}>
+              >
+                <option value={translate.select_semester} key="no-chosen">
                   {translate.select_semester}
                 </option>
 
