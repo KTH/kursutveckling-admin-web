@@ -229,6 +229,7 @@ button.desktop.btn-info-modal,
 button.mobile.btn-info-modal {
   @extend %icon-for-table-header;
   min-height: 0.75rem;
+  margin-left: 10px;
 }
 
 /*Table cells try to give it more stable width*/
