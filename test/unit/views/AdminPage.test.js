@@ -40,11 +40,10 @@ describe('User language: English. Component <RenderAnalysisMenu>', () => {
 
   test('renders buttons. English.', () => {
     const buttons = getAllByRole('button')
-    expect(buttons.length).toBe(4)
+    expect(buttons.length).toBe(3)
     expect(buttons[0]).toHaveTextContent('')
-    expect(buttons[1]).toHaveTextContent('Välj termin')
-    expect(buttons[2]).toHaveTextContent('')
-    expect(buttons[3]).toHaveTextContent('Avbryt')
+    expect(buttons[1]).toHaveTextContent('')
+    expect(buttons[2]).toHaveTextContent('Avbryt')
   })
 
   test('renders checkbox for course offering which does not have a published course data', () => {
