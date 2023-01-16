@@ -40,7 +40,7 @@ describe('User language: English. Component <PdfLinksNav>: one ladok round id, o
     done()
   })
 
-  test('renders links Course memo EI1220 Autumn 2017-1 and Course analysis: 05/09/2019', () => {
+  test('renders links Course memo EI1220 Autumn 2017-1 and Course analysis: 5 Sept 2019', () => {
     const twoDocLinks = getAllByRole('link')
     expect(twoDocLinks.length).toBe(2)
     expect(twoDocLinks[0]).toHaveTextContent('Course memo EI1220 Autumn 2017-1')
@@ -48,7 +48,7 @@ describe('User language: English. Component <PdfLinksNav>: one ladok round id, o
       'https://kursinfostoragestage.blob.core.windows.net/memo-blob-container/pm-EI1220HT2017_1.pdf'
     )
 
-    expect(twoDocLinks[1]).toHaveTextContent('Course analysis: 05/09/2019')
+    expect(twoDocLinks[1]).toHaveTextContent('Course analysis: 5 Sept 2019')
     expect(twoDocLinks[1].href).toStrictEqual(
       'https://kursinfostoragestage/kursutveckling-blob-container/analysis-EI1220HT2017_1-newCourseAnalysisFile.pdf'
     )
@@ -63,7 +63,7 @@ describe('User language: Swedish. Component <PdfLinksNav>: one ladok round id, o
     done()
   })
 
-  test('renders links Course memo EI1220 Autumn 2017-1 and Course analysis: 05/09/2019', () => {
+  test('renders links Course memo EI1220 Autumn 2017-1 and Course analysis: 5 Sept 2019', () => {
     const twoDocLinks = getAllByRole('link')
     expect(twoDocLinks.length).toBe(2)
     expect(twoDocLinks[0]).toHaveTextContent('Kurs-PM EI1220 HT 2017-1')
@@ -96,7 +96,7 @@ describe('User language: English. Component <PdfLinksNav>: two ladok round ids, 
       'https://kursinfostoragestage.blob.core.windows.net/memo-blob-container/pm-EI1220HT2019_2.pdf'
     )
 
-    expect(twoDocLinks[2]).toHaveTextContent('Course analysis: 05/09/2019')
+    expect(twoDocLinks[2]).toHaveTextContent('Course analysis: 5 Sept 2019')
     expect(twoDocLinks[2].href).toStrictEqual(
       'https://kursinfostoragestage/kursutveckling-blob-container/analysis-EI1220HT2017_1-newCourseAnalysisFile.pdf'
     )
@@ -145,7 +145,7 @@ describe('User language: English. Component <PdfLinksNav>: two ladok round ids, 
     expect(twoDocLinks[1]).toHaveTextContent('Course memo EI1220 Autumn 2019-3')
     expect(twoDocLinks[1].href).toStrictEqual('https://localhost:3000/kurs-pm/EI1220/memoEI1220201923')
 
-    expect(twoDocLinks[2]).toHaveTextContent('Course analysis: 05/09/2019')
+    expect(twoDocLinks[2]).toHaveTextContent('Course analysis: 5 Sept 2019')
     expect(twoDocLinks[2].href).toStrictEqual(
       'https://kursinfostoragestage/kursutveckling-blob-container/analysis-EI1220HT2017_1-newCourseAnalysisFile.pdf'
     )
@@ -163,7 +163,7 @@ describe('User language: English. Component <PdfLinksNav>: two ladok round ids, 
     expect(twoDocLinks[0]).toHaveTextContent('Course memo EI1220 Autumn 2019-3')
     expect(twoDocLinks[0].href).toStrictEqual('https://localhost:3000/kurs-pm/EI1220/memoEI1220201923')
 
-    expect(twoDocLinks[1]).toHaveTextContent('Course analysis: 05/09/2019')
+    expect(twoDocLinks[1]).toHaveTextContent('Course analysis: 5 Sept 2019')
     expect()
     expect(twoDocLinks[1].href).toStrictEqual(
       'https://kursinfostoragestage/kursutveckling-blob-container/analysis-EI1220HT2017_1-newCourseAnalysisFile.pdf'
