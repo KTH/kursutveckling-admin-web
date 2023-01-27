@@ -82,7 +82,6 @@ module.exports = {
 
     //* **** Spinner  */
 
-    spinner_loading_button: '  ',
     spinner_loading_file: 'Laddar upp filen...',
     spinner_loading_ladok: '',
 
