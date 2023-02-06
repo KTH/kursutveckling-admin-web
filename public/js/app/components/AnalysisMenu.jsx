@@ -10,7 +10,6 @@ import {
   Button,
   Row,
   Col,
-  Spinner,
 } from 'reactstrap'
 
 import i18n from '../../../../i18n/index'
@@ -515,11 +514,6 @@ function AnalysisMenu(props) {
                 onClick={goToEditMode}
                 disabled={firstVisit}
               >
-                {ladokLoading && statisticsParams.ladokId.length && (
-                  <Spinner color="light" size="sm">
-                    {translate.spinner_loading_button}
-                  </Spinner>
-                )}
                 <div>{translate.btn_add_analysis}</div>
               </Button>
             </div>
