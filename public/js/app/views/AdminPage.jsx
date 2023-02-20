@@ -122,7 +122,6 @@ function AdminPage() {
   Object.keys(analysisExportMap).forEach(fileName => {
     _exportToCsv(fileName, analysisExportMap[fileName])
   })
-  }
 
   const [state, setState] = useReducer(paramsReducer, {
     saved: analysisData !== undefined && analysisData.changedDate.length > 2,
