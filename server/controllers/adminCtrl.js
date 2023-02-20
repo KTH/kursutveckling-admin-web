@@ -17,6 +17,7 @@ const { getSortedAndPrioritizedMiniMemosWebOrPdf } = require('../apiCalls/kursPm
 const { getServerSideFunctions } = require('../utils/serverSideRendering')
 const { parseCourseCode } = require('../utils/courseCodeParser')
 const { createServerSideContext } = require('../ssr-context/createServerSideContext')
+const { updateAllCourseAnalysis } = require('./updateAllCourseAnalysisCtrl')
 
 // ------- ANALYSES FROM KURSUTVECKLING-API: POST, GET, DELETE, GET USED ROUNDS ------- /
 
@@ -279,6 +280,8 @@ async function getIndex(req, res, next) {
     log.debug('data from kurs-pm-data-api, fetched successfully : ', {
       miniMemosPdfAndWeb: webContext.miniMemosPdfAndWeb,
     })
+
+    const analysisExportMap = await updateAllCourseAnalysis()
 
     const compressedData = getCompressedData(webContext)
 
