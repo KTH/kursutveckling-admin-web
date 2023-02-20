@@ -281,7 +281,7 @@ async function getIndex(req, res, next) {
       miniMemosPdfAndWeb: webContext.miniMemosPdfAndWeb,
     })
 
-    const analysisExportMap = await updateAllCourseAnalysis()
+    webContext.analysisExportMap = await updateAllCourseAnalysis()
 
     const compressedData = getCompressedData(webContext)
 

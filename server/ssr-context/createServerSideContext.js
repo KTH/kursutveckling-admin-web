@@ -91,6 +91,7 @@ function createServerSideContext() {
     },
     miniMemosPdfAndWeb: { miniMemos: [] }, // kurs-pm-data-api
     roundNamesWithMissingMemos: '',
+    analysisExportMap: {},
     getTargetGroup,
     setLanguage,
     setMemberInfo,
