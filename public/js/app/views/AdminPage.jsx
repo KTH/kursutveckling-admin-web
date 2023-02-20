@@ -14,7 +14,7 @@ import UpLoad from '../components/UpLoad'
 
 // Helpers
 import { SERVICE_URL } from '../util/constants'
-import { getTodayDate, isValidDate } from '../util/helpers'
+import { getTodayDate, isValidDate, exportToCsv } from '../util/helpers'
 import { replaceSiteUrl } from '../util/links'
 import i18n from '../../../../i18n/index'
 
@@ -72,56 +72,9 @@ const handleMultiLineAlert = alertVariables => {
 
 const paramsReducer = (state, action) => ({ ...state, ...action })
 
-function _exportToCsv(fileName, rows) {
-  if (!rows || !rows.length) {
-    return
-  }
-  const separator = ','
-  const keys = Object.keys(rows[0])
-  const csvData =
-    keys.join(separator) +
-    '\n' +
-    rows
-      .map(row =>
-        keys
-          .map(k => {
-            let cell = row[k] === null || row[k] === undefined ? '' : row[k]
-            cell = cell instanceof Date ? cell.toLocaleString() : cell.toString().replace(/"/g, '""')
-            if (cell.search(/("|,|\n)/g) >= 0) {
-              cell = `"${cell}"`
-            }
-            return cell
-          })
-          .join(separator)
-      )
-      .join('\n')
-
-  const blob = new File([csvData], fileName, { type: 'text/csv;charset=utf-8;' })
-  if (navigator.msSaveBlob) {
-    // IE 10+
-    navigator.msSaveBlob(blob, fileName)
-  } else {
-    const link = document.createElement('a')
-    if (link.download !== undefined) {
-      // Browsers that support HTML5 download attribute
-      const url = URL.createObjectURL(blob)
-      link.setAttribute('href', url)
-      link.setAttribute('download', fileName)
-      link.style.visibility = 'hidden'
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-    }
-  }
-}
-
 function AdminPage() {
   const [webContext] = useWebContext()
   const { analysisData, courseCode, language, analysisExportMap } = webContext
-
-  Object.keys(analysisExportMap).forEach(fileName => {
-    _exportToCsv(fileName, analysisExportMap[fileName])
-  })
 
   const [state, setState] = useReducer(paramsReducer, {
     saved: analysisData !== undefined && analysisData.changedDate.length > 2,
@@ -161,8 +114,11 @@ function AdminPage() {
       examinationGradeLadok:
         analysisData && analysisData.examinationGradeLadok >= 0 ? analysisData.examinationGradeLadok : -1,
       alterationText: analysisData && analysisData.alterationText ? analysisData.alterationText : '',
+      analysisExportMap,
     }),
   })
+
+ 
 
   const { progress, alertSuccess, fileProgress } = state
 
@@ -178,6 +134,12 @@ function AdminPage() {
     }
     return () => (isMounted = false)
   }, [alertSuccess])
+
+  useEffect(() => {
+    Object.keys(analysisExportMap).forEach(fileName => {
+      exportToCsv(fileName, analysisExportMap[fileName])
+    })
+  }, [analysisExportMap])
 
   // *********************************  FILE UPLOAD  ********************************* */
   // ********************************************************************************** */
@@ -231,7 +193,7 @@ function AdminPage() {
         }
       }
 
-      let formData = new FormData()
+      const formData = new FormData()
       const data = getMetadata(state.isPublished ? 'published' : state.saved ? 'draft' : 'new')
       formData.append('file', e.target.files[0], e.target.files[0].name)
       formData.append('courseCode', data.courseCode)
