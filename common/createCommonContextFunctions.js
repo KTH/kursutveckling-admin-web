@@ -84,18 +84,20 @@ function handleCourseData(courseObject, courseCode, userName, language) {
         thisStore.roundAccess[semester] = {}
       }
 
-      thisStore.roundData[semester] = semesterRounds.map(round => {
-        return (round.ladokRoundId = {
-          roundId: round.ladokRoundId,
-          language: round.language[language],
-          shortName: round.shortName,
-          startDate: round.firstTuitionDate,
-          endDate: round.lastTuitionDate,
-          targetGroup: this.getTargetGroup(round),
-          ladokUID: round.ladokUID,
-          canBeAccessedByUser: resolveUserAccessRights(this.member, round, this.courseCode, semester),
-        })
-      })
+      thisStore.roundData[semester] = semesterRounds.map(
+        round =>
+          (round.applicationCode = {
+            applicationCode: round.applicationCode,
+            roundId: round.ladokRoundId,
+            language: round.language[language],
+            shortName: round.shortName,
+            startDate: round.firstTuitionDate,
+            endDate: round.lastTuitionDate,
+            targetGroup: this.getTargetGroup(round),
+            ladokUID: round.ladokUID,
+            canBeAccessedByUser: resolveUserAccessRights(this.member, round, this.courseCode, semester),
+          })
+      )
     })
   } catch (err) {
     if (err.response) {

@@ -20,6 +20,20 @@ async function getKoppsCourseData(courseCode, lang = 'sv') {
   }
 }
 
+async function getApplicationCodeFromLadokUId(ladokuid) {
+  try {
+    const res = await koppsApi.getAsync(`courses/offerings/roundnumber?ladokuid=${ladokuid}`)
+
+    if (res.body) {
+      const { application_code } = res.body
+      return application_code
+    }
+    return ''
+  } catch (err) {
+    return err
+  }
+}
+
 async function getCourseSchool(courseCode) {
   try {
     const { body: course, statusCode } = await koppsApi.getAsync(`course/${encodeURIComponent(courseCode)}`)
@@ -38,4 +52,5 @@ async function getCourseSchool(courseCode) {
 module.exports = {
   getCourseSchool,
   getKoppsCourseData,
+  getApplicationCodeFromLadokUId,
 }

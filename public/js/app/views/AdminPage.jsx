@@ -426,6 +426,7 @@ function AdminPage() {
   //* ************************************************************/
 
   function editMode(semester, rounds, analysisId, status, tempData, statisticsParams) {
+    
     if (status === 'new') {
       return webContext
         .postLadokRoundIdListAndDateToGetStatistics(statisticsParams.ladokId, statisticsParams.endDate)
@@ -554,13 +555,13 @@ function AdminPage() {
 
   function getTempData() {
     if (progress === 'back_new') {
-      const { alterationText, examinationGrade, registeredStudents, roundIdList } = state.values
+      const { alterationText, examinationGrade, registeredStudents, applicationCodes } = state.values
       const { analysisFile, statisticsParams } = state
       return {
         alterationText,
         examinationGrade,
         registeredStudents,
-        roundIdList,
+        applicationCodes,
         analysisFile,
         statisticsParams,
       }

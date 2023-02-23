@@ -291,7 +291,7 @@ function createAnalysisData(semester, rounds) {
       responsibles: '',
       analysisName: newName,
       semester,
-      roundIdList: rounds.toString(),
+      applicationCodes: rounds.toString(),
       ugKeys: [...this.redisKeys.examiner, ...this.redisKeys.responsibles],
       ladokUID: '',
       syllabusStartTerm: courseSyllabus.validFromTerm,
@@ -327,13 +327,13 @@ function _createAnalysisName(newName, roundList, selectedRounds, language) {
     tempName = ` ${
       roundList[index].shortName && roundList[index].shortName.length > 0
         ? roundList[index].shortName
-        : newName + '-' + roundList[index].roundId
+        : newName + '-' + roundList[index].applicationCode
     } ( ${language === 'en' ? 'Start date ' : 'Startdatum'} ${getDateFormat(
       roundList[index].startDate,
       language
     )}, ${thisRoundLanguage} ) ` // don't remove space after it (because it's used later in preview of kurs-pm link)
 
-    if (selectedRounds.indexOf(roundList[index].roundId) >= 0) {
+    if (selectedRounds.indexOf(roundList[index].applicationCode) >= 0) {
       addRounds.push(tempName)
     }
   }

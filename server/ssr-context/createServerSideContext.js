@@ -74,7 +74,7 @@ function createServerSideContext() {
     },
     language: 1,
     status: '', // Is set in url param to get the right flow, create new analysis or change published
-    usedRounds: [], // List of used rounds
+    usedRounds: [], // List of used application codes
     hasChangedStatus: false, // Is set to true when a analysis is saved
     courseTitle: '',
     courseCode: '',

@@ -152,9 +152,9 @@ function renderAlertToTop(langIndex, roundsWithoutMemo) {
   }
 }
 
-function getRoundsNames(analysisName, rounds, roundIdList) {
+function getRoundsNames(analysisName, rounds, applicationCodes) {
   const splittedNames = analysisName.split(') ,')
-  const splittedRoundIds = roundIdList.split(',')
+  const splittedRoundIds = applicationCodes.split(',')
   const matchingNames = []
   rounds.forEach(roundId => {
     const indexOfMatchingRound = splittedRoundIds.indexOf(roundId)
@@ -164,10 +164,10 @@ function getRoundsNames(analysisName, rounds, roundIdList) {
   return matchingNames.join(') , ')
 }
 
-function sortMemosByTypes(analysisSemester, context, roundIdList) {
+function sortMemosByTypes(analysisSemester, context, applicationCodes) {
   const { miniMemosPdfAndWeb } = context
 
-  const analysesLadokRounds = roundIdList.split(',') || []
+  const analysesLadokRounds = applicationCodes.split(',') || []
   const thisSemesterMemos = miniMemosPdfAndWeb[analysisSemester] || []
   return getMemoLinksInfo(thisSemesterMemos, analysesLadokRounds)
 }
@@ -180,13 +180,13 @@ function PdfLinksNav(props) {
     analysisName,
     courseCode,
     pdfAnalysisDate,
-    roundIdList,
+    applicationCodes,
     syllabusStartTerm,
     semester: analysisSemester,
   } = staticAnalysisInfo
 
-  const [unfilteredRoundsMissingMemos, existingMemos] = sortMemosByTypes(analysisSemester, context, roundIdList)
-  const roundsNamesMissingMemos = getRoundsNames(analysisName, unfilteredRoundsMissingMemos, roundIdList)
+  const [unfilteredRoundsMissingMemos, existingMemos] = sortMemosByTypes(analysisSemester, context, applicationCodes)
+  const roundsNamesMissingMemos = getRoundsNames(analysisName, unfilteredRoundsMissingMemos, applicationCodes)
 
   const emptyRounds = unfilteredRoundsMissingMemos || []
   const memos = existingMemos || []
@@ -254,7 +254,7 @@ PdfLinksNav.propTypes = {
     courseCode: PropTypes.string,
     pdfAnalysisDate: PropTypes.string,
     syllabusStartTerm: PropTypes.string,
-    roundIdList: PropTypes.string,
+    applicationCodes: PropTypes.string,
     semester: PropTypes.string,
   }),
 }
