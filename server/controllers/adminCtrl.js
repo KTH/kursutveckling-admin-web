@@ -263,25 +263,11 @@ async function getIndex(req, res, next) {
       /** ------- Got course code -> prepare for Page 1 depending on status (draft or published) ------- */
       log.debug(' getIndex, get course data for : ' + courseCode)
       const koppsApiResponse = await koppsCourseData.getKoppsCourseData(courseCode, lang)
-      const { termsWithCourseRounds } = koppsApiResponse.body
-
-      for await (const { rounds } of termsWithCourseRounds) {
-        for await (const round of rounds) {
-          const { ladokUID } = round
-          if (ladokUID && ladokUID !== '') {
-            const applicationCode = await koppsCourseData.getApplicationCodeFromLadokUId(ladokUID)
-            round.applicationCode = applicationCode
-          } else {
-            round.applicationCode = ''
-          }
-        }
-      }
-
-      if (koppsApiResponse.statusCode >= 400) {
+      if (koppsApiResponse.statusCode && koppsApiResponse.statusCode >= 400) {
         webContext.errorMessage = koppsApiResponse.statusMessage // TODO: ERROR?????
       } else {
         webContext.status = analysisStatus === 'p' ? 'published' : 'new'
-        await webContext.handleCourseData(koppsApiResponse.body, courseCode, username, lang)
+        await webContext.handleCourseData(koppsApiResponse, courseCode, username, lang)
       }
     }
     log.debug('status set to: ' + webContext.status)

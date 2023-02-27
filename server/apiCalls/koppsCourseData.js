@@ -12,15 +12,7 @@ const koppsApi = new BasicAPI({
   defaultTimeout: 10000, // config.koppsApi.defaultTimeout
 })
 
-async function getKoppsCourseData(courseCode, lang = 'sv') {
-  try {
-    return await koppsApi.getAsync(`course/${encodeURIComponent(courseCode)}/courseroundterms`)
-  } catch (err) {
-    return err
-  }
-}
-
-async function getApplicationCodeFromLadokUId(ladokuid) {
+async function _getApplicationCodeFromLadokUId(ladokuid) {
   try {
     const res = await koppsApi.getAsync(`courses/offerings/roundnumber?ladokuid=${ladokuid}`)
 
@@ -29,6 +21,30 @@ async function getApplicationCodeFromLadokUId(ladokuid) {
       return application_code
     }
     return ''
+  } catch (err) {
+    return err
+  }
+}
+
+async function getKoppsCourseData(courseCode, lang = 'sv') {
+  try {
+    const { body } = await koppsApi.getAsync(`course/${encodeURIComponent(courseCode)}/courseroundterms`)
+    if (body) {
+      const { termsWithCourseRounds } = body
+      for await (const { rounds } of termsWithCourseRounds) {
+        for await (const round of rounds) {
+          const { ladokUID } = round
+          if (ladokUID && ladokUID !== '') {
+            const applicationCode = await _getApplicationCodeFromLadokUId(ladokUID)
+            round.applicationCode = applicationCode
+          } else {
+            round.applicationCode = ''
+          }
+        }
+      }
+      return termsWithCourseRounds
+    }
+    return []
   } catch (err) {
     return err
   }
@@ -52,5 +68,4 @@ async function getCourseSchool(courseCode) {
 module.exports = {
   getCourseSchool,
   getKoppsCourseData,
-  getApplicationCodeFromLadokUId,
 }
