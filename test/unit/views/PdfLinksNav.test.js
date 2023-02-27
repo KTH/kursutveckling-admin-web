@@ -80,19 +80,24 @@ describe('User language: Swedish. Component <PdfLinksNav>: one application code 
 
 describe('User language: English. Component <PdfLinksNav>: two ladok round ids, two pdf memos', () => {
   beforeEach(() => {
-    render(<RenderPdfLinksNav userLang="en" semester="20192" koppsRoundId="1,2" />)
+    render(<RenderPdfLinksNav userLang="en" semester="20192" applicationCodes="1,2" />)
   })
 
   test('renders 2 memo pdf links and one course analysis', () => {
     const twoDocLinks = getAllByRole('link')
-    expect(twoDocLinks.length).toBe(2)
+    expect(twoDocLinks.length).toBe(3)
     expect(twoDocLinks[0]).toHaveTextContent('Course memo EI1220 Autumn 2019-1')
     expect(twoDocLinks[0].href).toStrictEqual(
       'https://kursinfostoragestage.blob.core.windows.net/memo-blob-container/pm-EI1220HT2019_1.pdf'
     )
 
-    expect(twoDocLinks[1]).toHaveTextContent('Course analysis: 5 Sept 2019')
+    expect(twoDocLinks[1]).toHaveTextContent('Course memo EI1220 Autumn 2019-2')
     expect(twoDocLinks[1].href).toStrictEqual(
+      'https://kursinfostoragestage.blob.core.windows.net/memo-blob-container/pm-EI1220HT2019_2.pdf'
+    )
+
+    expect(twoDocLinks[2]).toHaveTextContent('Course analysis: 5 Sept 2019')
+    expect(twoDocLinks[2].href).toStrictEqual(
       'https://kursinfostoragestage/kursutveckling-blob-container/analysis-EI1220HT2017_1-newCourseAnalysisFile.pdf'
     )
   })
