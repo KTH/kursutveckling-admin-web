@@ -30,16 +30,16 @@ const getTodayDate = (date = '') => {
 const getLanguageToUse = (roundList, roundIdlist, defaultLanguage) => {
   if (roundIdlist.length === 1) {
     for (let round = 0; round < roundList.length; round++) {
-      if (roundList[round].roundId === roundIdlist.toString()) {
+      if (roundList[round].applicationCode === roundIdlist.toString()) {
         return roundList[round].language
       }
     }
   }
 
-  let tempLang = roundList[0].language
+  const tempLang = roundList[0].language
   for (let id = 0; id < roundIdlist.length; id++) {
     for (let round = 0; round < roundList.length; round++) {
-      if (roundList[round].roundId === roundIdlist[id] && tempLang !== roundList[round].language) {
+      if (roundList[round].applicationCode === roundIdlist[id] && tempLang !== roundList[round].language) {
         return defaultLanguage
       }
     }
