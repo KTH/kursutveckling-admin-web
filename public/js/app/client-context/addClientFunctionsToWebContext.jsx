@@ -247,7 +247,16 @@ function _analysisAccess(analysis) {
 
 // -- Creates a new analysis object with information from selected rounds -- //
 function createAnalysisData(semester, rounds) {
-  this.getEmployees(this.courseData.courseCode, semester, rounds)
+  // Right now ug rest api is not using application code in the group names, so need to use round Id for now. In future it will get removed
+  const roundIds = []
+  const semesterRoundData = this.roundData[semester]
+  rounds.forEach(round => {
+    const index = semesterRoundData.findIndex(x => x.applicationCode.toString() === round.toString())
+    if (index >= 0) {
+      roundIds.push(semesterRoundData[index].roundId)
+    }
+  })
+  this.getEmployees(this.courseData.courseCode, semester, roundIds)
   return this.getCourseEmployeesPost(this.redisKeys, 'multi').then(returnList => {
     const { courseSyllabus, examinationRounds } = this.courseData.semesterObjectList[semester]
     const language = getLanguageToUse(this.roundData[semester], rounds, this.language === 1 ? 'Engelska' : 'English')
@@ -291,6 +300,7 @@ function createAnalysisData(semester, rounds) {
       responsibles: '',
       analysisName: newName,
       semester,
+      roundIdList: roundIds.toString(),
       applicationCodes: rounds.toString(),
       ugKeys: [...this.redisKeys.examiner, ...this.redisKeys.responsibles],
       ladokUID: '',
