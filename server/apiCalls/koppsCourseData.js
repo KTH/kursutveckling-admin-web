@@ -14,10 +14,10 @@ const koppsApi = new BasicAPI({
 
 async function _getApplicationCodeFromLadokUId(ladokuid) {
   try {
-    const res = await koppsApi.getAsync(`courses/offerings/roundnumber?ladokuid=${ladokuid}`)
+    const { body } = await koppsApi.getAsync(`courses/offerings/roundnumber?ladokuid=${ladokuid}`)
 
-    if (res.body) {
-      const { application_code } = res.body
+    if (body) {
+      const { application_code } = body
       return application_code
     }
     return ''
@@ -28,7 +28,9 @@ async function _getApplicationCodeFromLadokUId(ladokuid) {
 
 async function getKoppsCourseData(courseCode, lang = 'sv') {
   try {
-    const { body } = await koppsApi.getAsync(`course/${encodeURIComponent(courseCode)}/courseroundterms`)
+    const { body, statusCode, statusMessage } = await koppsApi.getAsync(
+      `course/${encodeURIComponent(courseCode)}/courseroundterms`
+    )
     if (body) {
       const { termsWithCourseRounds } = body
       for await (const { rounds } of termsWithCourseRounds) {
@@ -42,7 +44,7 @@ async function getKoppsCourseData(courseCode, lang = 'sv') {
           }
         }
       }
-      return body
+      return { body, statusCode, statusMessage }
     }
     return {}
   } catch (err) {
