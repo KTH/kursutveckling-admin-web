@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import { Alert } from 'reactstrap'
 import { getDateFormat } from '../../util/helpers'
-import LinkToValidSyllabusPdf from './LinkToValidSyllabus'
 import i18n from '../../../../../i18n'
 import { useWebContext } from '../../context/WebContext'
+import LinkToValidSyllabusPdf from './LinkToValidSyllabus'
 
 const ActiveOrDisabledPdfLink = ({ ariaLabel, href = '', className = '', linkTitle, translate, validFrom = '' }) => {
   const { no_added_doc: labelMissingDoc } = translate
