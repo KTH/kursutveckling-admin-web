@@ -42,9 +42,9 @@ async function getKoppsCourseData(courseCode, lang = 'sv') {
           }
         }
       }
-      return termsWithCourseRounds
+      return body
     }
-    return []
+    return {}
   } catch (err) {
     return err
   }
