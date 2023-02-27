@@ -300,7 +300,6 @@ function createAnalysisData(semester, rounds) {
       responsibles: '',
       analysisName: newName,
       semester,
-      roundIdList: roundIds.toString(),
       applicationCodes: rounds.toString(),
       ugKeys: [...this.redisKeys.examiner, ...this.redisKeys.responsibles],
       ladokUID: '',
