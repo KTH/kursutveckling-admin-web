@@ -19,10 +19,10 @@ const getDateFormat = (date, language) => {
 }
 
 const getTodayDate = (date = '') => {
-  let today = date.length > 0 ? new Date(date) : new Date()
-  let dd = String(today.getDate()).padStart(2, '0')
-  let mm = String(today.getMonth() + 1).padStart(2, '0') // January is 0!
-  let yyyy = today.getFullYear()
+  const today = date.length > 0 ? new Date(date) : new Date()
+  const dd = String(today.getDate()).padStart(2, '0')
+  const mm = String(today.getMonth() + 1).padStart(2, '0') // January is 0!
+  const yyyy = today.getFullYear()
 
   return yyyy + '-' + mm + '-' + dd
 }
