@@ -5,8 +5,6 @@ const mockedMiniMemosPdfAndWeb = {
         _id: 'EI1220_20182_3',
         courseCode: 'EI1220',
         changedBy: 'krisa',
-        // koppsRoundId: '3',
-        ladokRoundIds: ['3'],
         applicationCodes: ['3'],
         courseMemoFileName: 'pm-EI1220HT2018_1_2_3.pdf',
         changedAfterPublishedDate: '2021-07-07T14:35:31.507Z',
@@ -28,8 +26,6 @@ const mockedMiniMemosPdfAndWeb = {
         _id: 'EI1220_20172_1',
         courseCode: 'EI1220',
         changedBy: 'zzzz',
-        // koppsRoundId: '1',
-        ladokRoundIds: ['1'],
         applicationCodes: ['1'],
         courseMemoFileName: 'pm-EI1220HT2017_1.pdf',
         isPdf: true,
@@ -47,7 +43,6 @@ const mockedMiniMemosPdfAndWeb = {
         _id: 'EI1220_20192_1',
         courseCode: 'EI1220',
         changedBy: 'zzzz',
-        ladokRoundIds: ['1'],
         applicationCodes: ['1'],
         courseMemoFileName: 'pm-EI1220HT2019_1.pdf',
         isPdf: true,
@@ -63,7 +58,6 @@ const mockedMiniMemosPdfAndWeb = {
         _id: 'EI1220_20192_2',
         courseCode: 'EI1220',
         changedBy: 'zzzz',
-        ladokRoundIds: ['2'],
         applicationCodes: ['2'],
         courseMemoFileName: 'pm-EI1220HT2019_2.pdf',
         isPdf: true,
@@ -76,11 +70,10 @@ const mockedMiniMemosPdfAndWeb = {
         lastChangeDate: '2021-07-07T14:35:31.507Z',
       },
       3: {
-        // web memo   const { courseCode, ladokRoundIds, memoCommonLangAbbr, semester, memoName: courseOffering, memoEndPoint } = courseMemo
+        // web memo   const { courseCode, applicationCodes, memoCommonLangAbbr, semester, memoName: courseOffering, memoEndPoint } = courseMemo
 
         _id: 'EI1220_20192_3',
         courseCode: 'EI1220',
-        ladokRoundIds: ['3'],
         applicationCodes: ['3'],
         semester: '20192',
         memoCommonLangAbbr: 'en',
