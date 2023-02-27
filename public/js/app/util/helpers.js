@@ -67,8 +67,8 @@ const formatISODate = (date, lang) => {
 }
 
 const isValidDate = date => {
-  let dateFormat = /^\d{4}-\d{2}-\d{2}$/
-  let regex = new RegExp(dateFormat)
+  const dateFormat = /^\d{4}-\d{2}-\d{2}$/
+  const regex = new RegExp(dateFormat)
   return regex.test(date)
 }
 
