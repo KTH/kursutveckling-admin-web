@@ -19,10 +19,10 @@ const getDateFormat = (date, language) => {
 }
 
 const getTodayDate = (date = '') => {
-  let today = date.length > 0 ? new Date(date) : new Date()
-  let dd = String(today.getDate()).padStart(2, '0')
-  let mm = String(today.getMonth() + 1).padStart(2, '0') // January is 0!
-  let yyyy = today.getFullYear()
+  const today = date.length > 0 ? new Date(date) : new Date()
+  const dd = String(today.getDate()).padStart(2, '0')
+  const mm = String(today.getMonth() + 1).padStart(2, '0') // January is 0!
+  const yyyy = today.getFullYear()
 
   return yyyy + '-' + mm + '-' + dd
 }
@@ -30,16 +30,16 @@ const getTodayDate = (date = '') => {
 const getLanguageToUse = (roundList, roundIdlist, defaultLanguage) => {
   if (roundIdlist.length === 1) {
     for (let round = 0; round < roundList.length; round++) {
-      if (roundList[round].roundId === roundIdlist.toString()) {
+      if (roundList[round].applicationCode === roundIdlist.toString()) {
         return roundList[round].language
       }
     }
   }
 
-  let tempLang = roundList[0].language
+  const tempLang = roundList[0].language
   for (let id = 0; id < roundIdlist.length; id++) {
     for (let round = 0; round < roundList.length; round++) {
-      if (roundList[round].roundId === roundIdlist[id] && tempLang !== roundList[round].language) {
+      if (roundList[round].applicationCode === roundIdlist[id] && tempLang !== roundList[round].language) {
         return defaultLanguage
       }
     }
@@ -67,8 +67,8 @@ const formatISODate = (date, lang) => {
 }
 
 const isValidDate = date => {
-  let dateFormat = /^\d{4}-\d{2}-\d{2}$/
-  let regex = new RegExp(dateFormat)
+  const dateFormat = /^\d{4}-\d{2}-\d{2}$/
+  const regex = new RegExp(dateFormat)
   return regex.test(date)
 }
 
