@@ -32,8 +32,8 @@ async function getKoppsCourseData(courseCode, lang = 'sv') {
       `course/${encodeURIComponent(courseCode)}/courseroundterms`
     )
     if (body) {
-      const { termsWithCourseRounds } = body
-      for await (const { rounds } of termsWithCourseRounds) {
+      const { termsWithCourseRounds = [] } = body
+      for await (const { rounds = [] } of termsWithCourseRounds) {
         for await (const round of rounds) {
           const { ladokUID } = round
           if (ladokUID && ladokUID !== '') {
