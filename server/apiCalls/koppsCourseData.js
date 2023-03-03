@@ -12,12 +12,12 @@ const koppsApi = new BasicAPI({
   defaultTimeout: 10000, // config.koppsApi.defaultTimeout
 })
 
-async function _getApplicationCodeFromLadokUId(ladokuid) {
+async function _getApplicationCodeFromLadokUID(ladokuid) {
   try {
     const { body } = await koppsApi.getAsync(`courses/offerings/roundnumber?ladokuid=${ladokuid}`)
 
     if (body) {
-      const { application_code } = body
+      const { application_code = '' } = body
       return application_code
     }
     return ''
@@ -36,8 +36,8 @@ async function getKoppsCourseData(courseCode, lang = 'sv') {
       for await (const { rounds = [] } of termsWithCourseRounds) {
         for await (const round of rounds) {
           const { ladokUID } = round
-          if (ladokUID && ladokUID !== '') {
-            const applicationCode = await _getApplicationCodeFromLadokUId(ladokUID)
+          if (ladokUID) {
+            const applicationCode = await _getApplicationCodeFromLadokUID(ladokUID)
             round.applicationCode = applicationCode
           } else {
             round.applicationCode = ''
