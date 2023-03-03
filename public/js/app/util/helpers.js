@@ -27,19 +27,19 @@ const getTodayDate = (date = '') => {
   return yyyy + '-' + mm + '-' + dd
 }
 
-const getLanguageToUse = (roundList, roundIdlist, defaultLanguage) => {
-  if (roundIdlist.length === 1) {
+const getLanguageToUse = (roundList, roundApplicationlist, defaultLanguage) => {
+  if (roundApplicationlist.length === 1) {
     for (let round = 0; round < roundList.length; round++) {
-      if (roundList[round].applicationCode === roundIdlist.toString()) {
+      if (roundList[round].applicationCode === roundApplicationlist.toString()) {
         return roundList[round].language
       }
     }
   }
 
   const tempLang = roundList[0].language
-  for (let id = 0; id < roundIdlist.length; id++) {
+  for (let id = 0; id < roundApplicationlist.length; id++) {
     for (let round = 0; round < roundList.length; round++) {
-      if (roundList[round].applicationCode === roundIdlist[id] && tempLang !== roundList[round].language) {
+      if (roundList[round].applicationCode === roundApplicationlist[id] && tempLang !== roundList[round].language) {
         return defaultLanguage
       }
     }

@@ -188,9 +188,9 @@ function getCourseInformation(courseCode, userName, lang = 'sv') {
 /** ***************************************************************************************************************************************** */
 /*                                             GET ROUND STATISTICS ACTION (KURSSTATISTIK - API)                                                    */
 /** ***************************************************************************************************************************************** */
-function postLadokRoundIdListAndDateToGetStatistics(ladokRoundIdList, endDate) {
+function postLadokRoundListAndDateToGetStatistics(ladokRoundList, endDate) {
   return axios
-    .post(this.buildApiUrl(this.paths.api.kursstatistik.uri, { roundEndDate: endDate }), { params: ladokRoundIdList })
+    .post(this.buildApiUrl(this.paths.api.kursstatistik.uri, { roundEndDate: endDate }), { params: ladokRoundList })
     .then(apiResponse => {
       if (apiResponse.statusCode >= 400) {
         this.errorMessage = result.statusText
@@ -367,7 +367,7 @@ function getTargetGroup(round) {
 function getAllTargetGroups(selectedRounds, roundList) {
   let allTargets = []
   for (let index = 0; index < roundList.length; index++) {
-    if (selectedRounds.indexOf(roundList[index].roundId) >= 0) {
+    if (selectedRounds.indexOf(roundList[index].applicationCode) >= 0) {
       allTargets = [...allTargets, ...roundList[index].targetGroup]
     }
   }
@@ -466,7 +466,7 @@ function addClientFunctionsToWebContext() {
     deleteRoundAnalysis,
     getUsedRounds,
     getCourseInformation,
-    postLadokRoundIdListAndDateToGetStatistics,
+    postLadokRoundListAndDateToGetStatistics,
     getCourseEmployeesPost,
     getBreadcrumbs,
     setBrowserConfig,

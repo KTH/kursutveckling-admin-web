@@ -152,13 +152,13 @@ function renderAlertToTop(langIndex, roundsWithoutMemo) {
   }
 }
 
-function getRoundsNames(analysisName, rounds, applicationCodes) {
+function getRoundsApplicationNames(analysisName, rounds, applicationCodes) {
   const splittedNames = analysisName.split(') ,')
-  const splittedRoundIds = applicationCodes.split(',')
+  const splittedApplicationCodes = applicationCodes.split(',')
   const matchingNames = []
-  rounds.forEach(roundId => {
-    const indexOfMatchingRound = splittedRoundIds.indexOf(roundId)
-    if (splittedNames[indexOfMatchingRound]) matchingNames.push(splittedNames[indexOfMatchingRound])
+  rounds.forEach(applicationCode => {
+    const indexOfMatchingApplicationCode = splittedApplicationCodes.indexOf(applicationCode)
+    if (splittedNames[indexOfMatchingApplicationCode]) matchingNames.push(splittedNames[indexOfMatchingApplicationCode])
   })
 
   return matchingNames.join(') , ')
@@ -186,7 +186,11 @@ function PdfLinksNav(props) {
   } = staticAnalysisInfo
 
   const [unfilteredRoundsMissingMemos, existingMemos] = sortMemosByTypes(analysisSemester, context, applicationCodes)
-  const roundsNamesMissingMemos = getRoundsNames(analysisName, unfilteredRoundsMissingMemos, applicationCodes)
+  const roundsNamesMissingMemos = getRoundsApplicationNames(
+    analysisName,
+    unfilteredRoundsMissingMemos,
+    applicationCodes
+  )
 
   const emptyRounds = unfilteredRoundsMissingMemos || []
   const memos = existingMemos || []
@@ -209,8 +213,8 @@ function PdfLinksNav(props) {
       <LinkToValidSyllabusPdf startDate={syllabusStartTerm} lang={langIndex} key={syllabusStartTerm} />
       {/* Kurs-PM länkar */}
       <span className="vertical-block-of-links">
-        {emptyRounds.map(ladokRoundId => {
-          const missingMemoOfferingName = parseCourseOffering([ladokRoundId], analysisSemester, langIndex)
+        {emptyRounds.map(applicationCode => {
+          const missingMemoOfferingName = parseCourseOffering([applicationCode], analysisSemester, langIndex)
           const title = `${linkMemoTexts.label_memo} ${courseCode} ${missingMemoOfferingName}`
           return <ActiveOrDisabledPdfLink ariaLabel={title} key={title} linkTitle={title} translate={linkMemoTexts} />
         })}

@@ -371,7 +371,7 @@ function AdminPage() {
     const { values, statisticsParams } = state
     if (newEndDate.length > 0) {
       return webContext
-        .postLadokRoundIdListAndDateToGetStatistics(statisticsParams.ladokId, newEndDate)
+        .postLadokRoundListAndDateToGetStatistics(statisticsParams.ladokId, newEndDate)
         .then(statisticsResponse => {
 
           values.examinationGrade = Math.round(Number(statisticsResponse.examinationGrade) * 10) / 10
@@ -426,10 +426,9 @@ function AdminPage() {
   //* ************************************************************/
 
   function editMode(semester, rounds, analysisId, status, tempData, statisticsParams) {
-    
     if (status === 'new') {
       return webContext
-        .postLadokRoundIdListAndDateToGetStatistics(statisticsParams.ladokId, statisticsParams.endDate)
+        .postLadokRoundListAndDateToGetStatistics(statisticsParams.ladokId, statisticsParams.endDate)
         .then(ladokResponse => {
           webContext.createAnalysisData(semester, rounds).then(createdAnalysis => {
             const valuesObject = handleTemporaryData(createdAnalysis, tempData)
