@@ -1,4 +1,4 @@
-const mockCourseAnalysis = (semester = '20172', roundIdList = '1') => ({
+const mockCourseAnalysis = (semester = '20172', applicationCodes = '1') => ({
   _id: 'EI1220HT2017_1',
   courseCode: 'EI1220',
   registeredStudentsFromLadok: false,
@@ -8,7 +8,7 @@ const mockCourseAnalysis = (semester = '20172', roundIdList = '1') => ({
   ugKeys: ['EI1220.examiner', 'EI1220.20172.1.courseresponsible'],
   pmFileName: 'pm-EI1220HT2017_1.pdf',
   analysisFileName: 'analysis-EI1220HT2017_1.pdf', // prev file from api
-  roundIdList,
+  applicationCodes,
   semester,
   changedBy: 'sajonsson',
   changedDate: 'Thu Sep 05 2019 10:50:02 GMT+0000 (UTC)',
@@ -30,7 +30,7 @@ const mockCourseAnalysis = (semester = '20172', roundIdList = '1') => ({
   responsibles: 'SA Jonsson',
   examiners: 'SA Jonsson',
   programmeCodes: 'CELTE',
-  analysisName: `Fake name ${semester}-${roundIdList} ( Startdatum 20xx-09-18, Svenska )`,
+  analysisName: `Fake name ${semester}-${applicationCodes} ( Startdatum 20xx-09-18, Svenska )`,
   __v: 0,
 })
 export default mockCourseAnalysis

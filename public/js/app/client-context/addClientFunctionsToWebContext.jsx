@@ -188,9 +188,9 @@ function getCourseInformation(courseCode, userName, lang = 'sv') {
 /** ***************************************************************************************************************************************** */
 /*                                             GET ROUND STATISTICS ACTION (KURSSTATISTIK - API)                                                    */
 /** ***************************************************************************************************************************************** */
-function postLadokRoundIdListAndDateToGetStatistics(ladokRoundIdList, endDate) {
+function postLadokRoundListAndDateToGetStatistics(ladokRoundList, endDate) {
   return axios
-    .post(this.buildApiUrl(this.paths.api.kursstatistik.uri, { roundEndDate: endDate }), { params: ladokRoundIdList })
+    .post(this.buildApiUrl(this.paths.api.kursstatistik.uri, { roundEndDate: endDate }), { params: ladokRoundList })
     .then(apiResponse => {
       if (apiResponse.statusCode >= 400) {
         this.errorMessage = result.statusText
@@ -247,7 +247,16 @@ function _analysisAccess(analysis) {
 
 // -- Creates a new analysis object with information from selected rounds -- //
 function createAnalysisData(semester, rounds) {
-  this.getEmployees(this.courseData.courseCode, semester, rounds)
+  // Right now ug rest api is not using application code in the group names, so need to use round Id for now. In future it will get removed
+  const roundIds = []
+  const semesterRoundData = this.roundData[semester]
+  rounds.forEach(round => {
+    const index = semesterRoundData.findIndex(x => x.applicationCode.toString() === round.toString())
+    if (index >= 0) {
+      roundIds.push(semesterRoundData[index].roundId)
+    }
+  })
+  this.getEmployees(this.courseData.courseCode, semester, roundIds)
   return this.getCourseEmployeesPost(this.redisKeys, 'multi').then(returnList => {
     const { courseSyllabus, examinationRounds } = this.courseData.semesterObjectList[semester]
     const language = getLanguageToUse(this.roundData[semester], rounds, this.language === 1 ? 'Engelska' : 'English')
@@ -291,7 +300,7 @@ function createAnalysisData(semester, rounds) {
       responsibles: '',
       analysisName: newName,
       semester,
-      roundIdList: rounds.toString(),
+      applicationCodes: rounds.toString(),
       ugKeys: [...this.redisKeys.examiner, ...this.redisKeys.responsibles],
       ladokUID: '',
       syllabusStartTerm: courseSyllabus.validFromTerm,
@@ -327,13 +336,13 @@ function _createAnalysisName(newName, roundList, selectedRounds, language) {
     tempName = ` ${
       roundList[index].shortName && roundList[index].shortName.length > 0
         ? roundList[index].shortName
-        : newName + '-' + roundList[index].roundId
+        : newName + '-' + roundList[index].applicationCode
     } ( ${language === 'en' ? 'Start date ' : 'Startdatum'} ${getDateFormat(
       roundList[index].startDate,
       language
     )}, ${thisRoundLanguage} ) ` // don't remove space after it (because it's used later in preview of kurs-pm link)
 
-    if (selectedRounds.indexOf(roundList[index].roundId) >= 0) {
+    if (selectedRounds.indexOf(roundList[index].applicationCode) >= 0) {
       addRounds.push(tempName)
     }
   }
@@ -358,7 +367,7 @@ function getTargetGroup(round) {
 function getAllTargetGroups(selectedRounds, roundList) {
   let allTargets = []
   for (let index = 0; index < roundList.length; index++) {
-    if (selectedRounds.indexOf(roundList[index].roundId) >= 0) {
+    if (selectedRounds.indexOf(roundList[index].applicationCode) >= 0) {
       allTargets = [...allTargets, ...roundList[index].targetGroup]
     }
   }
@@ -457,7 +466,7 @@ function addClientFunctionsToWebContext() {
     deleteRoundAnalysis,
     getUsedRounds,
     getCourseInformation,
-    postLadokRoundIdListAndDateToGetStatistics,
+    postLadokRoundListAndDateToGetStatistics,
     getCourseEmployeesPost,
     getBreadcrumbs,
     setBrowserConfig,

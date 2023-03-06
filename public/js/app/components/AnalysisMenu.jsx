@@ -1,16 +1,6 @@
 import React, { useReducer } from 'react'
 
-import {
-  Alert,
-  Form,
-  FormGroup,
-  Label,
-  Input,
-  Collapse,
-  Button,
-  Row,
-  Col,
-} from 'reactstrap'
+import { Alert, Form, FormGroup, Label, Input, Collapse, Button, Row, Col } from 'reactstrap'
 
 import i18n from '../../../../i18n/index'
 import { SERVICE_URL } from '../util/constants'
@@ -46,7 +36,7 @@ function AnalysisMenu(props) {
       copy: false,
     },
     semester: activeSemester && activeSemester.length > 0 ? activeSemester : semesterList[0],
-    rounds: tempData && !saved ? tempData.roundIdList.split(',') : [],
+    rounds: tempData && !saved ? tempData.applicationCodes.split(',') : [],
     usedRounds: context.usedRounds.usedRounds || [],
     draftAnalysis: context.usedRounds.draftAnalysis || [],
     publishedAnalysis: context.usedRounds.publishedAnalysis || [],
@@ -86,7 +76,6 @@ function AnalysisMenu(props) {
     statisticsParams,
     ladokLoading,
   } = state
-
   //* * ********************** CHECKBOXES AND RADIO BUTTONS **************************** */
   //* ********************************************************************************* */
 
@@ -308,39 +297,39 @@ function AnalysisMenu(props) {
       {/* ************************************************************************************ */}
 
       <div className="col-4 nopadding">
-      <div className="inline-flex padding-top-30">
+        <div className="inline-flex padding-top-30">
           <h3> {translate.select_semester} </h3>
           <InfoButton addClass="padding-top-30" id="info_select_semester" textObj={translate.info_select_semester} />
-      </div>
-      <form>
-        <div className="form-group">
-          <div className="form-select">
-            <div className="select-wrapper">
-              <select 
-              className="form-control"
-              id="semesterDropdownControl" 
-              aria-label={translate.select_semester} 
-              onChange={handleSelectedSemester}
-              defaultValue={semester && semester > 0 && !firstVisit ? semester : translate.select_semester}
-              >
-                <option value={translate.select_semester} key="no-chosen">
-                  {translate.select_semester}
-                </option>
+        </div>
+        <form>
+          <div className="form-group">
+            <div className="form-select">
+              <div className="select-wrapper">
+                <select
+                  className="form-control"
+                  id="semesterDropdownControl"
+                  aria-label={translate.select_semester}
+                  onChange={handleSelectedSemester}
+                  defaultValue={semester && semester > 0 && !firstVisit ? semester : translate.select_semester}
+                >
+                  <option value={translate.select_semester} key="no-chosen">
+                    {translate.select_semester}
+                  </option>
 
-                {semesterList &&
-                semesterList.map(sem => (
-                  <option id={sem} key={sem} value={sem}>
-                  {`
+                  {semesterList &&
+                    semesterList.map(sem => (
+                      <option id={sem} key={sem} value={sem}>
+                        {`
                     ${translate.course_short_semester[sem.toString().match(/.{1,4}/g)[1]]} 
                     ${sem.toString().match(/.{1,4}/g)[0]}
                   `}
-                  </option>
-                ))}
-              </select>
+                      </option>
+                    ))}
+                </select>
+              </div>
             </div>
           </div>
-        </div>
-      </form>
+        </form>
       </div>
       {alert.length > 0 && (
         <Alert color="danger" className="alert-margin">
@@ -409,25 +398,25 @@ function AnalysisMenu(props) {
                       <p>{translate.intro_new}</p>
                       {roundList[semester].map(
                         round =>
-                          usedRounds.indexOf(round.roundId) < 0 && (
-                            <FormGroup className="form-check" id="rounds" key={round.roundId}>
+                          usedRounds.indexOf(round.applicationCode) < 0 && (
+                            <FormGroup className="form-check" id="rounds" key={round.applicationCode}>
                               <Input
                                 type="checkbox"
-                                id={round.roundId}
-                                key={'checkbox' + round.roundId}
+                                id={round.applicationCode}
+                                key={'checkbox' + round.applicationCode}
                                 onChange={handleRoundCheckbox}
-                                checked={rounds.indexOf(round.roundId) > -1}
-                                name={round.roundId}
+                                checked={rounds.indexOf(round.applicationCode) > -1}
+                                name={round.applicationCode}
                                 disabled={!round.canBeAccessedByUser}
                                 data-uid={round.ladokUID}
                                 data-enddate={round.endDate}
                               />
-                              <Label key={'Label' + round.roundId} for={round.roundId}>
+                              <Label key={'Label' + round.applicationCode} for={round.applicationCode}>
                                 {round.shortName
                                   ? round.shortName + ' '
                                   : `${translate.course_short_semester[semester.toString().match(/.{1,4}/g)[1]]} ${
                                       semester.toString().match(/.{1,4}/g)[0]
-                                    }-${round.roundId} `}
+                                    }-${round.applicationCode} `}
                                 ( {translate.label_start_date} {getDateFormat(round.startDate, round.language)},{' '}
                                 {round.language} )
                                 <span className="no-access">
@@ -552,4 +541,3 @@ function AnalysisMenu(props) {
 }
 
 export default AnalysisMenu
-

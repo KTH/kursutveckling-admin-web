@@ -262,12 +262,12 @@ async function getIndex(req, res, next) {
     } else {
       /** ------- Got course code -> prepare for Page 1 depending on status (draft or published) ------- */
       log.debug(' getIndex, get course data for : ' + courseCode)
-      const koppsApiResponse = await koppsCourseData.getKoppsCourseData(courseCode, lang)
-      if (koppsApiResponse.statusCode >= 400) {
-        webContext.errorMessage = koppsApiResponse.statusMessage // TODO: ERROR?????
+      const { body, statusCode, statusMessage } = await koppsCourseData.getKoppsCourseData(courseCode, lang)
+      if (statusCode && statusCode >= 400) {
+        webContext.errorMessage = statusMessage // TODO: ERROR?????
       } else {
         webContext.status = analysisStatus === 'p' ? 'published' : 'new'
-        await webContext.handleCourseData(koppsApiResponse.body, courseCode, username, lang)
+        await webContext.handleCourseData(body, courseCode, username, lang)
       }
     }
     log.debug('status set to: ' + webContext.status)

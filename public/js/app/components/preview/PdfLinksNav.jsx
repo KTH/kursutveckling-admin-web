@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import { Alert } from 'reactstrap'
 import { getDateFormat } from '../../util/helpers'
-import LinkToValidSyllabusPdf from './LinkToValidSyllabus'
 import i18n from '../../../../../i18n'
 import { useWebContext } from '../../context/WebContext'
+import LinkToValidSyllabusPdf from './LinkToValidSyllabus'
 
 const ActiveOrDisabledPdfLink = ({ ariaLabel, href = '', className = '', linkTitle, translate, validFrom = '' }) => {
   const { no_added_doc: labelMissingDoc } = translate
@@ -69,17 +69,17 @@ function getMemoLinksInfo(thisSemesterMemos, analysesLadokRounds) {
     // OBS! Unique condition for ADMIN
     if (isPdf) {
       const indexInOriginal = uniqueMemos.findIndex(
-        ({ courseMemoFileName = 'noName', ladokRoundIds }) =>
-          courseMemoFileName === duplicateMemoFileName && !ladokRoundIds.includes(roundIdOfDuplicate)
+        ({ courseMemoFileName = 'noName', applicationCodes }) =>
+          courseMemoFileName === duplicateMemoFileName && !applicationCodes.includes(roundIdOfDuplicate)
       )
-      if (indexInOriginal > -1) uniqueMemos[indexInOriginal].ladokRoundIds.push(roundIdOfDuplicate)
+      if (indexInOriginal > -1) uniqueMemos[indexInOriginal].applicationCodes.push(roundIdOfDuplicate)
     }
   })
 
   return [_unfilteredRoundsMissingMemos, uniqueMemos]
 }
 
-function parseCourseOffering(ladokRoundIds, rawSemester, lang = 'sv') {
+function parseCourseOffering(applicationCodes, rawSemester, lang = 'sv') {
   const languageIndex = typeof lang === 'string' ? (lang === 'en' ? 0 : 1) : lang
 
   const { course_short_semester: shortSemLabels } = i18n.messages[languageIndex].messages
@@ -87,16 +87,16 @@ function parseCourseOffering(ladokRoundIds, rawSemester, lang = 'sv') {
   const semester = shortSemLabels[rawSemester.toString().slice(-1)]
   const year = rawSemester.toString().slice(0, 4)
 
-  const offeringIds = ladokRoundIds.reduce((label, id) => `${label}-${id}`, '')
+  const offeringIds = applicationCodes.reduce((label, id) => `${label}-${id}`, '')
 
   const courseOfferings = `${semester} ${year}${offeringIds}`
   return courseOfferings
 }
 
 function ParseUploadedMemo({ fileInfo, memoBlobUrl, userLanguageIndex, translate }) {
-  const { courseCode, courseMemoFileName, ladokRoundIds, semester: memoSemester } = fileInfo
+  const { courseCode, courseMemoFileName, applicationCodes, semester: memoSemester } = fileInfo
 
-  const courseOfferingName = parseCourseOffering(ladokRoundIds, memoSemester, userLanguageIndex)
+  const courseOfferingName = parseCourseOffering(applicationCodes, memoSemester, userLanguageIndex)
 
   const { label_memo: memoLabel } = translate
 
@@ -114,10 +114,10 @@ function ParseUploadedMemo({ fileInfo, memoBlobUrl, userLanguageIndex, translate
 }
 
 function ParseWebMemoName({ courseMemo, hostUrl, translate }) {
-  const { courseCode, ladokRoundIds, memoCommonLangAbbr, semester, memoEndPoint } = courseMemo
+  const { courseCode, applicationCodes, memoCommonLangAbbr, semester, memoEndPoint } = courseMemo
 
-  if (!ladokRoundIds) return null
-  const courseOfferingName = parseCourseOffering(ladokRoundIds, semester, memoCommonLangAbbr)
+  if (!applicationCodes) return null
+  const courseOfferingName = parseCourseOffering(applicationCodes, semester, memoCommonLangAbbr)
   const { label_memo: memoLabel } = translate
 
   const memoNameWithCourseOfferings = `${memoLabel} ${courseCode} ${courseOfferingName}`
@@ -152,22 +152,22 @@ function renderAlertToTop(langIndex, roundsWithoutMemo) {
   }
 }
 
-function getRoundsNames(analysisName, rounds, roundIdList) {
+function getRoundsApplicationNames(analysisName, rounds, applicationCodes) {
   const splittedNames = analysisName.split(') ,')
-  const splittedRoundIds = roundIdList.split(',')
+  const splittedApplicationCodes = applicationCodes.split(',')
   const matchingNames = []
-  rounds.forEach(roundId => {
-    const indexOfMatchingRound = splittedRoundIds.indexOf(roundId)
-    if (splittedNames[indexOfMatchingRound]) matchingNames.push(splittedNames[indexOfMatchingRound])
+  rounds.forEach(applicationCode => {
+    const indexOfMatchingApplicationCode = splittedApplicationCodes.indexOf(applicationCode)
+    if (splittedNames[indexOfMatchingApplicationCode]) matchingNames.push(splittedNames[indexOfMatchingApplicationCode])
   })
 
   return matchingNames.join(') , ')
 }
 
-function sortMemosByTypes(analysisSemester, context, roundIdList) {
+function sortMemosByTypes(analysisSemester, context, applicationCodes) {
   const { miniMemosPdfAndWeb } = context
 
-  const analysesLadokRounds = roundIdList.split(',') || []
+  const analysesLadokRounds = applicationCodes.split(',') || []
   const thisSemesterMemos = miniMemosPdfAndWeb[analysisSemester] || []
   return getMemoLinksInfo(thisSemesterMemos, analysesLadokRounds)
 }
@@ -180,13 +180,17 @@ function PdfLinksNav(props) {
     analysisName,
     courseCode,
     pdfAnalysisDate,
-    roundIdList,
+    applicationCodes,
     syllabusStartTerm,
     semester: analysisSemester,
   } = staticAnalysisInfo
 
-  const [unfilteredRoundsMissingMemos, existingMemos] = sortMemosByTypes(analysisSemester, context, roundIdList)
-  const roundsNamesMissingMemos = getRoundsNames(analysisName, unfilteredRoundsMissingMemos, roundIdList)
+  const [unfilteredRoundsMissingMemos, existingMemos] = sortMemosByTypes(analysisSemester, context, applicationCodes)
+  const roundsNamesMissingMemos = getRoundsApplicationNames(
+    analysisName,
+    unfilteredRoundsMissingMemos,
+    applicationCodes
+  )
 
   const emptyRounds = unfilteredRoundsMissingMemos || []
   const memos = existingMemos || []
@@ -209,8 +213,8 @@ function PdfLinksNav(props) {
       <LinkToValidSyllabusPdf startDate={syllabusStartTerm} lang={langIndex} key={syllabusStartTerm} />
       {/* Kurs-PM länkar */}
       <span className="vertical-block-of-links">
-        {emptyRounds.map(ladokRoundId => {
-          const missingMemoOfferingName = parseCourseOffering([ladokRoundId], analysisSemester, langIndex)
+        {emptyRounds.map(applicationCode => {
+          const missingMemoOfferingName = parseCourseOffering([applicationCode], analysisSemester, langIndex)
           const title = `${linkMemoTexts.label_memo} ${courseCode} ${missingMemoOfferingName}`
           return <ActiveOrDisabledPdfLink ariaLabel={title} key={title} linkTitle={title} translate={linkMemoTexts} />
         })}
@@ -254,7 +258,7 @@ PdfLinksNav.propTypes = {
     courseCode: PropTypes.string,
     pdfAnalysisDate: PropTypes.string,
     syllabusStartTerm: PropTypes.string,
-    roundIdList: PropTypes.string,
+    applicationCodes: PropTypes.string,
     semester: PropTypes.string,
   }),
 }
@@ -263,7 +267,7 @@ ParseUploadedMemo.propTypes = {
   fileInfo: PropTypes.shape({
     courseCode: PropTypes.string,
     courseMemoFileName: PropTypes.string,
-    ladokRoundIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+    applicationCodes: PropTypes.arrayOf(PropTypes.string).isRequired,
     semester: PropTypes.string,
   }),
   memoBlobUrl: PropTypes.string,
@@ -276,7 +280,7 @@ ParseUploadedMemo.propTypes = {
 ParseWebMemoName.propTypes = {
   courseMemo: PropTypes.shape({
     courseCode: PropTypes.string.isRequired,
-    ladokRoundIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+    applicationCodes: PropTypes.arrayOf(PropTypes.string).isRequired,
     memoCommonLangAbbr: PropTypes.oneOf(['en', 'sv']),
     semester: PropTypes.string.isRequired,
     memoName: PropTypes.string,

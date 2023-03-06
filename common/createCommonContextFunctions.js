@@ -32,12 +32,13 @@ const resolveUserAccessRights = (member, round, courseCode, semester) => {
   if (isExaminator || isKursinfoAdmin || isSchoolAdmin || isSuperUser) {
     return true
   }
+  // Temp use of ladokRoundId due to usage in UG Rest Api. Once api is updated then ladokRoundId will be removed and application code will be used only for UG Rest Api
   const roundCourseResponsiblesGroup = `${courseCode.toUpperCase()}.${semester}.${round.ladokRoundId}.courseresponsible`
 
   if (memberOfStr.includes(roundCourseResponsiblesGroup)) {
     return true
   }
-
+  // Temp use of ladokRoundId due to usage in UG Rest Api. Once api is updated then ladokRoundId will be removed and application code will be used only for UG Rest Api
   const roundCourseTeachersGroup = `${courseCode.toUpperCase()}.${semester}.${round.ladokRoundId}.teachers`
 
   if (memberOfStr.includes(roundCourseTeachersGroup)) {
@@ -84,18 +85,21 @@ function handleCourseData(courseObject, courseCode, userName, language) {
         thisStore.roundAccess[semester] = {}
       }
 
-      thisStore.roundData[semester] = semesterRounds.map(round => {
-        return (round.ladokRoundId = {
-          roundId: round.ladokRoundId,
-          language: round.language[language],
-          shortName: round.shortName,
-          startDate: round.firstTuitionDate,
-          endDate: round.lastTuitionDate,
-          targetGroup: this.getTargetGroup(round),
-          ladokUID: round.ladokUID,
-          canBeAccessedByUser: resolveUserAccessRights(this.member, round, this.courseCode, semester),
-        })
-      })
+      thisStore.roundData[semester] = semesterRounds.map(
+        round =>
+          (round.applicationCode = {
+            applicationCode: round.applicationCode,
+            // Temp use of ladokRoundId due to usage in UG Rest Api. Once api is updated then this will be removed and application code will be used only for UG Rest Api
+            roundId: round.ladokRoundId,
+            language: round.language[language],
+            shortName: round.shortName,
+            startDate: round.firstTuitionDate,
+            endDate: round.lastTuitionDate,
+            targetGroup: this.getTargetGroup(round),
+            ladokUID: round.ladokUID,
+            canBeAccessedByUser: resolveUserAccessRights(this.member, round, this.courseCode, semester),
+          })
+      )
     })
   } catch (err) {
     if (err.response) {

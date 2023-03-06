@@ -12,9 +12,41 @@ const koppsApi = new BasicAPI({
   defaultTimeout: 10000, // config.koppsApi.defaultTimeout
 })
 
+async function _getApplicationCodeFromLadokUID(ladokuid) {
+  try {
+    const { body } = await koppsApi.getAsync(`courses/offerings/roundnumber?ladokuid=${ladokuid}`)
+
+    if (body) {
+      const { application_code = '' } = body
+      return application_code
+    }
+    return ''
+  } catch (err) {
+    return err
+  }
+}
+
 async function getKoppsCourseData(courseCode, lang = 'sv') {
   try {
-    return await koppsApi.getAsync(`course/${encodeURIComponent(courseCode)}/courseroundterms`)
+    const { body, statusCode, statusMessage } = await koppsApi.getAsync(
+      `course/${encodeURIComponent(courseCode)}/courseroundterms`
+    )
+    if (body) {
+      const { termsWithCourseRounds = [] } = body
+      for await (const { rounds = [] } of termsWithCourseRounds) {
+        for await (const round of rounds) {
+          const { ladokUID } = round
+          if (ladokUID) {
+            const applicationCode = await _getApplicationCodeFromLadokUID(ladokUID)
+            round.applicationCode = applicationCode
+          } else {
+            round.applicationCode = ''
+          }
+        }
+      }
+      return { body, statusCode, statusMessage }
+    }
+    return {}
   } catch (err) {
     return err
   }
