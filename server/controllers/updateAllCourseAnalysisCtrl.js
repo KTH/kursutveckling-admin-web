@@ -2,7 +2,7 @@
 
 const log = require('@kth/log')
 const { getAllCourseAnalysis, updateRoundAnalysisData } = require('../apiCalls/kursutvecklingAPI')
-const { getKoppsCourseData, getApplicationFromLadokUID } = require('../apiCalls/koppsCourseData')
+const { getKoppsCourseData } = require('../apiCalls/koppsCourseData')
 
 function _getAllUniqueCourseCodesFromData(data) {
   const courseCodes = []
@@ -53,37 +53,25 @@ async function _updateAllCourseAnalysis() {
               for await (const ladokRoundId of roundIdList.split(',')) {
                 const round = rounds.find(x => x.ladokRoundId.toString() === ladokRoundId.toString())
                 if (round) {
-                  const { ladokUID } = round
-                  if (ladokUID && ladokUID !== '') {
-                    try {
-                      log.info('Trying to fetch courses application by', { ladokuid: ladokUID })
-                      const { application_code, round_number } = await getApplicationFromLadokUID(ladokUID)
-                      if (round_number.toString() === ladokRoundId.toString()) {
-                        if (analysis.applicationCodes && analysis.applicationCodes !== '') {
-                          const applicationCodeList = analysis.applicationCodes.split(',')
-                          const applicationCode = applicationCodeList.find(
-                            x => x.toString() === application_code.toString()
-                          )
-                          if (!applicationCode) {
-                            log.info('Applition code pushed to analysis: ', { application_code }, analysis)
-                            analysis.applicationCodes += ',' + application_code
-                          } else {
-                            log.debug('Application Code already exist in analysis', { applicationCode })
-                          }
-                        } else {
-                          log.info('Application code set to analysis: ', { application_code }, analysis)
-                          analysis.applicationCodes = application_code
-                        }
+                  const { applicationCode: application_code } = round
+                  if (application_code && application_code !== '') {
+                    if (analysis.applicationCodes && analysis.applicationCodes !== '') {
+                      const applicationCodeList = analysis.applicationCodes.split(',')
+                      const applicationCode = applicationCodeList.find(
+                        x => x.toString() === application_code.toString()
+                      )
+                      if (!applicationCode) {
+                        log.info('Applition code pushed to analysis: ', { application_code }, analysis)
+                        analysis.applicationCodes += ',' + application_code
                       } else {
-                        log.debug('Application code not matched for ', analysis, { application_code })
-                        analysisWithOutApplicationCodes.push(analysis)
+                        log.debug('Application Code already exist in analysis', { applicationCode })
                       }
-                    } catch (error) {
-                      log.error('Error in getting application code of analysis: ', analysis)
-                      analysisWithOutApplicationCodes.push(analysis)
+                    } else {
+                      log.info('Application code set to analysis: ', { application_code }, analysis)
+                      analysis.applicationCodes = application_code
                     }
                   } else {
-                    log.debug('LadokUID not found from round:', { round }, { analysis })
+                    log.debug('Application code is empty from Kopps for ', analysis, { application_code })
                     analysisWithOutApplicationCodes.push(analysis)
                   }
                 } else {
