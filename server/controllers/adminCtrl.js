@@ -83,8 +83,8 @@ async function _getKoppsCourseData(req, res, next) {
   const { courseCode, lang = 'sv' } = req.params
   log.debug('_getKoppsCourseData with code:', { courseCode })
   try {
-    const apiResponse = await koppsCourseData.getKoppsCourseData(courseCode, lang)
-    return httpResponse.json(res, apiResponse.body, apiResponse.statusCode)
+    const { body, statusCode } = await koppsCourseData.getKoppsCourseData(courseCode, lang)
+    return httpResponse.json(res, body, statusCode)
   } catch (err) {
     log.error('Exception from koppsAPI ', { error: err })
     next(err)
