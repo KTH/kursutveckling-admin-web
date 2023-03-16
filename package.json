@@ -104,7 +104,7 @@
     "sass-loader": "^13.0.2",
     "set-value": "^4.1.0",
     "terser-webpack-plugin": "^5.3.6",
-    "webpack": "^5.75.0",
+    "webpack": "^5.76.2",
     "webpack-cli": "^4.10.0"
   },
   "engines": {
