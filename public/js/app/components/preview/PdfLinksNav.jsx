@@ -132,26 +132,6 @@ function ParseWebMemoName({ courseMemo, hostUrl, translate }) {
   )
 }
 
-function renderAlertToTop(langIndex, roundsWithoutMemo) {
-  const alertContainer = document.getElementById('alert-placeholder')
-  const { alert_no_course_memo_header: alertTitle, alert_no_course_memo_info: description } =
-    i18n.messages[langIndex].messages
-  if (alertContainer) {
-    ReactDOM.render(
-      <Alert color="info" className="alert-margin">
-        <h5>{alertTitle}</h5>
-        <p>{`${
-          langIndex === 0
-            ? 'The following course offerings which are included in your course analysis do not have a course PM:'
-            : 'Följande kurstillfällen som du valt för din kursanalys saknar kurs-PM:'
-        } ${roundsWithoutMemo}`}</p>
-        <p>{description}</p>
-      </Alert>,
-      alertContainer
-    )
-  }
-}
-
 function getRoundsApplicationNames(analysisName, rounds, applicationCodes) {
   const splittedNames = analysisName.split(') ,')
   const splittedApplicationCodes = applicationCodes.split(',')
@@ -203,9 +183,6 @@ function PdfLinksNav(props) {
     // push it to context for alert about missing memo after save/publish on admin start page
     setWebContext({ ...webContext, roundNamesWithMissingMemos: roundsNamesMissingMemos })
 
-    if (unfilteredRoundsMissingMemos.length > 0) {
-      renderAlertToTop(langIndex, roundsNamesMissingMemos)
-    }
   }, [])
 
   return (
