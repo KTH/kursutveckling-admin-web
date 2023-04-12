@@ -24,7 +24,7 @@
     "test": "cross-env NODE_ENV=test jest test --passWithNoTests"
   },
   "dependencies": {
-    "@azure/storage-blob": "^12.11.0",
+    "@azure/storage-blob": "^12.13.0",
     "@babel/runtime": "^7.20.7",
     "@kth/api-call": "^4.0.40",
     "@kth/kth-node-passport-oidc": "^5.0.1",
