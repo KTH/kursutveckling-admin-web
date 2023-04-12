@@ -41,7 +41,7 @@
     "applicationinsights": "^2.4.0",
     "axios": "^0.27.2",
     "body-parser": "^1.20.1",
-    "bootstrap": "^4.6.2",
+    "bootstrap": "^5.2.3",
     "cacheable-lookup": "^7.0.0",
     "cheerio": "^1.0.0-rc.12",
     "cookie-parser": "^1.4.6",
