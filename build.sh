@@ -28,6 +28,10 @@ if [ "$ENV" == "prod" ]; then
   echoYellow "  2. Bundling the client app into the /dist folder\n"
   WEBPACK_ENV=prod WEBPACK_MODE=build webpack
 
+  if [ $? -ne 0 ]; then
+    exit 1
+  fi
+
   echo
   echoYellow "  Done.\n"
 fi
