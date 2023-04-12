@@ -273,29 +273,65 @@ appRoute.get(
   ),
   Admin.getIndex
 )
-appRoute.get('api.kursutvecklingGetById', _addProxy('/apicall/getRoundAnalysisById/:id'), Admin.getRoundAnalysis)
-appRoute.all('api.kursutvecklingPost', _addProxy('/apicall/postRoundAnalysisById/:id/:status'), Admin.postRoundAnalysis)
+appRoute.get(
+  'api.kursutvecklingGetById',
+  _addProxy('/apicall/getRoundAnalysisById/:id'),
+  oidc.silentLogin,
+  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isKursinfoAdmin', 'isSchoolAdmin'),
+  Admin.getRoundAnalysis
+)
+appRoute.all(
+  'api.kursutvecklingPost',
+  _addProxy('/apicall/postRoundAnalysisById/:id/:status'),
+  oidc.silentLogin,
+  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isKursinfoAdmin', 'isSchoolAdmin'),
+  Admin.postRoundAnalysis
+)
 appRoute.delete(
   'api.kursutvecklingDelete',
+  oidc.silentLogin,
+  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isKursinfoAdmin', 'isSchoolAdmin'),
   _addProxy('/apicall/deleteRoundAnalysisById/:id'),
   Admin.deleteRoundAnalysis
 )
 appRoute.get(
   'api.kursutvecklingGetUsedRounds',
+  oidc.silentLogin,
+  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isKursinfoAdmin', 'isSchoolAdmin'),
   _addProxy('/apicall/kursutvecklingGetUsedRounds/:courseCode/:semester'),
   Admin.getUsedRounds
 )
 appRoute.get(
   'api.koppsCourseData',
+  oidc.silentLogin,
+  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isKursinfoAdmin', 'isSchoolAdmin'),
   _addProxy('/api/kursutveckling-admin/getKoppsCourseDataByCourse/:courseCode/:language'),
   Admin.getKoppsCourseData
 )
 appRoute.get('ug.rest.api', _addProxy('/ug/rest/api/:key/:type'), Admin.getCourseEmployees)
 appRoute.post('ug.rest.api', _addProxy('/ug/rest/api/:key/:type'), Admin.getCourseEmployees)
-appRoute.post('storage.saveFile', _addProxy('/storage/saveFile/:analysisid/:type/:published'), Admin.saveFileToStorage)
-appRoute.post('storage.updateFile', _addProxy('/storage/updateFile/:fileName/'), Admin.updateFileInStorage)
+appRoute.post(
+  'storage.saveFile',
+  _addProxy('/storage/saveFile/:analysisid/:type/:published'),
+  oidc.silentLogin,
+  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isKursinfoAdmin', 'isSchoolAdmin'),
+  Admin.saveFileToStorage
+)
+appRoute.post(
+  'storage.updateFile',
+  _addProxy('/storage/updateFile/:fileName/'),
+  oidc.silentLogin,
+  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isKursinfoAdmin', 'isSchoolAdmin'),
+  Admin.updateFileInStorage
+)
 
-appRoute.all('api.kursstatistik', _addProxy('/apicall/getStatisicsForRound/:roundEndDate'), Admin.getStatisicsForRound)
+appRoute.all(
+  'api.kursstatistik',
+  _addProxy('/apicall/getStatisicsForRound/:roundEndDate'),
+  oidc.silentLogin,
+  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isKursinfoAdmin', 'isSchoolAdmin'),
+  Admin.getStatisicsForRound
+)
 
 server.use('/', appRoute.getRouter())
 
