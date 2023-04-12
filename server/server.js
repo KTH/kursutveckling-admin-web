@@ -289,23 +289,23 @@ appRoute.all(
 )
 appRoute.delete(
   'api.kursutvecklingDelete',
+  _addProxy('/apicall/deleteRoundAnalysisById/:id'),
   oidc.silentLogin,
   requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isKursinfoAdmin', 'isSchoolAdmin'),
-  _addProxy('/apicall/deleteRoundAnalysisById/:id'),
   Admin.deleteRoundAnalysis
 )
 appRoute.get(
   'api.kursutvecklingGetUsedRounds',
+  _addProxy('/apicall/kursutvecklingGetUsedRounds/:courseCode/:semester'),
   oidc.silentLogin,
   requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isKursinfoAdmin', 'isSchoolAdmin'),
-  _addProxy('/apicall/kursutvecklingGetUsedRounds/:courseCode/:semester'),
   Admin.getUsedRounds
 )
 appRoute.get(
   'api.koppsCourseData',
+  _addProxy('/api/kursutveckling-admin/getKoppsCourseDataByCourse/:courseCode/:language'),
   oidc.silentLogin,
   requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isKursinfoAdmin', 'isSchoolAdmin'),
-  _addProxy('/api/kursutveckling-admin/getKoppsCourseDataByCourse/:courseCode/:language'),
   Admin.getKoppsCourseData
 )
 appRoute.get('ug.rest.api', _addProxy('/ug/rest/api/:key/:type'), Admin.getCourseEmployees)
