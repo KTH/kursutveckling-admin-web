@@ -248,7 +248,7 @@ appRoute.get(
   'system.gateway',
   _addProxy('/silent'),
   oidc.silentLogin,
-  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isKursinfoAdmin', 'isSchoolAdmin'),
+  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isKursinfoAdmin'),
   Admin.getIndex
 )
 appRoute.get(
@@ -280,7 +280,7 @@ appRoute.get(
   requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isKursinfoAdmin', 'isSchoolAdmin'),
   Admin.getRoundAnalysis
 )
-appRoute.all(
+appRoute.post(
   'api.kursutvecklingPost',
   _addProxy('/apicall/postRoundAnalysisById/:id/:status'),
   oidc.silentLogin,
@@ -298,38 +298,33 @@ appRoute.get(
   'api.kursutvecklingGetUsedRounds',
   _addProxy('/apicall/kursutvecklingGetUsedRounds/:courseCode/:semester'),
   oidc.silentLogin,
-  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isKursinfoAdmin', 'isSchoolAdmin'),
   Admin.getUsedRounds
 )
 appRoute.get(
   'api.koppsCourseData',
   _addProxy('/api/kursutveckling-admin/getKoppsCourseDataByCourse/:courseCode/:language'),
   oidc.silentLogin,
-  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isKursinfoAdmin', 'isSchoolAdmin'),
   Admin.getKoppsCourseData
 )
-appRoute.get('ug.rest.api', _addProxy('/ug/rest/api/:key/:type'), Admin.getCourseEmployees)
-appRoute.post('ug.rest.api', _addProxy('/ug/rest/api/:key/:type'), Admin.getCourseEmployees)
+appRoute.get('ug.rest.api', _addProxy('/ug/rest/api/:key/:type'), oidc.silentLogin, Admin.getCourseEmployees)
+appRoute.post('ug.rest.api', _addProxy('/ug/rest/api/:key/:type'), oidc.silentLogin, Admin.getCourseEmployees)
 appRoute.post(
   'storage.saveFile',
   _addProxy('/storage/saveFile/:analysisid/:type/:published'),
   oidc.silentLogin,
-  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isKursinfoAdmin', 'isSchoolAdmin'),
   Admin.saveFileToStorage
 )
 appRoute.post(
   'storage.updateFile',
   _addProxy('/storage/updateFile/:fileName/'),
   oidc.silentLogin,
-  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isKursinfoAdmin', 'isSchoolAdmin'),
   Admin.updateFileInStorage
 )
 
-appRoute.all(
+appRoute.post(
   'api.kursstatistik',
   _addProxy('/apicall/getStatisicsForRound/:roundEndDate'),
   oidc.silentLogin,
-  requireRole('isCourseResponsible', 'isExaminator', 'isSuperUser', 'isKursinfoAdmin', 'isSchoolAdmin'),
   Admin.getStatisicsForRound
 )
 
