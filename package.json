@@ -27,7 +27,7 @@
     "@azure/storage-blob": "^12.11.0",
     "@babel/runtime": "^7.20.7",
     "@kth/api-call": "^4.0.40",
-    "@kth/kth-node-passport-oidc": "^5.0.1",
+    "@kth/kth-node-passport-oidc": "^5.0.4",
     "@kth/kth-node-response": "^1.0.7",
     "@kth/kth-node-web-common": "^7.0.14",
     "@kth/kth-reactstrap": "^0.4.64",
