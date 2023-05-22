@@ -8,7 +8,7 @@ import mockWebContext from '../../mocks/mockRouterStore'
 import mockedProps from '../../mocks/mockProps'
 const { getAllByRole, getAllByTestId, getAllByText, getByTestId, getByText } = screen
 
-const RenderAnalysisMenu = ({ userLang = 'en', ...rest }) => {
+const RenderAnalysisMenu = ({ userLang = 'en', semester, ...rest }) => {
   const rS = mockWebContext(userLang)
   return (
     <AnalysisMenu
@@ -16,7 +16,7 @@ const RenderAnalysisMenu = ({ userLang = 'en', ...rest }) => {
       {...rest}
       semesterList={rS.semesters}
       roundList={rS.roundData}
-      activeSemester="20192"
+      activeSemester={semester}
       firstVisit={true}
       status="new"
       progress="new"
@@ -26,7 +26,7 @@ const RenderAnalysisMenu = ({ userLang = 'en', ...rest }) => {
 
 describe('User language: English. Component <RenderAnalysisMenu>', () => {
   beforeEach(() => {
-    render(<RenderAnalysisMenu userLang="en" />)
+    render(<RenderAnalysisMenu userLang="en" semester="20192" />)
   })
   test('renders a course development page', done => {
     done()
@@ -69,5 +69,19 @@ describe('User language: English. Component <RenderAnalysisMenu>', () => {
   test('renders VT 2020 dropdown elements', () => {
     const label = screen.getByText('VT 2020')
     expect(label).toBeInTheDocument()
+  })
+})
+
+describe('when flag state in roundList takes different values', () => {
+  beforeEach(() => {
+    render(<RenderAnalysisMenu userLang="en" semester="20221" />)
+  })
+  test('renders a course development page', done => {
+    done()
+  })
+
+  test('renders checkbox for course offering which does not have a published course data and state = APPROVED or FULL', () => {
+    const checkboxes = getAllByRole('checkbox')
+    expect(checkboxes.length).toBe(2)
   })
 })

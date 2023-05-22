@@ -36,7 +36,7 @@ const mockWebContext = (userLang = 'en') => {
       ],
       usedRounds: ['2'],
     },
-    semesters: ['20211', '20202', '20201', '20192'],
+    semesters: ['20221', '20211', '20202', '20201', '20192'],
     roundData: {
       20192: [
         {
@@ -48,6 +48,7 @@ const mockWebContext = (userLang = 'en') => {
           startDate: '2019-08-26',
           targetGroup: [],
           applicationCode: '2',
+          state: 'APPROVED',
         },
         {
           endDate: '2020-01-14',
@@ -58,6 +59,7 @@ const mockWebContext = (userLang = 'en') => {
           startDate: '2019-10-28',
           targetGroup: [],
           applicationCode: '1',
+          state: 'APPROVED',
         },
       ],
       20201: [
@@ -70,6 +72,7 @@ const mockWebContext = (userLang = 'en') => {
           shortName: '',
           startDate: '2020-01-15',
           targetGroup: [],
+          state: 'FULL',
         },
         {
           endDate: '2020-06-01',
@@ -80,6 +83,7 @@ const mockWebContext = (userLang = 'en') => {
           shortName: '',
           startDate: '2020-03-16',
           targetGroup: [],
+          state: 'CANCELLED',
         },
       ],
       20202: [
@@ -92,6 +96,7 @@ const mockWebContext = (userLang = 'en') => {
           shortName: '',
           startDate: '2020-08-24',
           targetGroup: [],
+          state: 'APPROVED',
         },
         {
           endDate: '2021-01-15',
@@ -102,6 +107,7 @@ const mockWebContext = (userLang = 'en') => {
           shortName: '',
           startDate: '2020-10-26',
           targetGroup: [],
+          state: 'APPROVED',
         },
       ],
       20211: [
@@ -114,6 +120,7 @@ const mockWebContext = (userLang = 'en') => {
           shortName: '',
           startDate: '2021-01-18',
           targetGroup: [],
+          state: 'APPROVED',
         },
         {
           endDate: '2021-06-08',
@@ -123,6 +130,51 @@ const mockWebContext = (userLang = 'en') => {
           applicationCode: '1',
           shortName: '',
           startDate: '2021-03-22',
+          state: 'APPROVED',
+        },
+      ],
+      20221: [
+        {
+          endDate: '2022-03-19',
+          canBeAccessedByUser: true,
+          ladokUID: 'c1217dba-3612-11ea-b8cf-f5b51a134413',
+          language: 'English',
+          applicationCode: '1',
+          shortName: '',
+          startDate: '2022-01-18',
+          targetGroup: [],
+          state: 'APPROVED',
+        },
+        {
+          endDate: '2022-06-08',
+          canBeAccessedByUser: true,
+          ladokUID: 'b5ah3989f-36k13',
+          language: 'English',
+          applicationCode: '2',
+          shortName: '',
+          startDate: '2022-03-22',
+          state: 'APPROVED',
+        },
+        {
+          endDate: '2022-03-19',
+          canBeAccessedByUser: true,
+          ladokUID: 'c1217dba-3612-11ea-b8cf-f5b51a134413',
+          language: 'English',
+          applicationCode: '3',
+          shortName: '',
+          startDate: '2022-01-18',
+          targetGroup: [],
+          state: 'FULL',
+        },
+        {
+          endDate: '2022-06-08',
+          canBeAccessedByUser: true,
+          ladokUID: 'b5ah3989f-36k13',
+          language: 'English',
+          applicationCode: '4',
+          shortName: '',
+          startDate: '2022-03-22',
+          state: 'CANCELLED',
         },
       ],
     },

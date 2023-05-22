@@ -98,6 +98,7 @@ function handleCourseData(courseObject, courseCode, userName, language) {
             targetGroup: this.getTargetGroup(round),
             ladokUID: round.ladokUID,
             canBeAccessedByUser: resolveUserAccessRights(this.member, round, this.courseCode, semester),
+            state: round.state,
           })
       )
     })

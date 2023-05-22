@@ -398,7 +398,8 @@ function AnalysisMenu(props) {
                       <p>{translate.intro_new}</p>
                       {roundList[semester].map(
                         round =>
-                          usedRounds.indexOf(round.applicationCode) < 0 && (
+                          usedRounds.indexOf(round.applicationCode) < 0 &&
+                          (round.state === 'APPROVED' || round.state === 'FULL') && (
                             <FormGroup className="form-check" id="rounds" key={round.applicationCode}>
                               <Input
                                 type="checkbox"
@@ -416,7 +417,7 @@ function AnalysisMenu(props) {
                                   ? round.shortName + ' '
                                   : `${translate.course_short_semester[semester.toString().match(/.{1,4}/g)[1]]} ${
                                       semester.toString().match(/.{1,4}/g)[0]
-                                    }-${round.applicationCode} `}
+                                    }-${round.applicationCode}`}
                                 ( {translate.label_start_date} {getDateFormat(round.startDate, round.language)},{' '}
                                 {round.language} )
                                 <span className="no-access">

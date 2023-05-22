@@ -9,12 +9,32 @@ const koppsApi = new BasicAPI({
   https: config.koppsApi.https,
   json: true,
   // Kopps is a public API and needs no API-key
-  defaultTimeout: 10000, // config.koppsApi.defaultTimeout
+  defaultTimeout: 10000, // config.koppsApi.defaultTimeout detailedinformation?l=${language}
 })
+
+async function _getDetailedInformation(courseCode, language = 'sv') {
+  try {
+    return await koppsApi.getAsync(`course/${encodeURIComponent(courseCode)}/detailedinformation?l=${language}`)
+  } catch (err) {
+    return err
+  }
+}
 
 async function getKoppsCourseData(courseCode, lang = 'sv') {
   try {
     return await koppsApi.getAsync(`course/${encodeURIComponent(courseCode)}/courseroundterms`)
+  } catch (err) {
+    return err
+  }
+}
+
+async function getDetailedKoppsCourseRounds(courseCode, language = 'sv') {
+  try {
+    const detailedInformation = await _getDetailedInformation(courseCode, language)
+    const { body } = detailedInformation
+    const { roundInfos } = body
+    const courseRounds = roundInfos.map(r => r.round)
+    return courseRounds
   } catch (err) {
     return err
   }
@@ -38,4 +58,5 @@ async function getCourseSchool(courseCode) {
 module.exports = {
   getCourseSchool,
   getKoppsCourseData,
+  getDetailedKoppsCourseRounds,
 }

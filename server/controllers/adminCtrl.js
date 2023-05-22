@@ -35,7 +35,7 @@ async function _postRoundAnalysis(req, res, next) {
     return httpResponse.json(res, apiResponse.body, apiResponse.statusCode)
   } catch (err) {
     log.error('Exception from setRoundAnalysis ', { error: err })
-    next(err)
+    return next(err)
   }
 }
 
@@ -49,7 +49,7 @@ async function _getRoundAnalysis(req, res, next) {
     return httpResponse.json(res, apiResponse.body, apiResponse.statusCode)
   } catch (err) {
     log.error('Exception from getRoundAnalysis ', { error: err })
-    next(err)
+    return next(err)
   }
 }
 
@@ -61,7 +61,7 @@ async function _deleteRoundAnalysis(req, res, next) {
     return httpResponse.json(res, apiResponse, apiResponse.statusCode)
   } catch (err) {
     log.error('Exception from _deleteRoundAnalysis ', { error: err })
-    next(err)
+    return next(err)
   }
 }
 
@@ -74,7 +74,7 @@ async function _getUsedRounds(req, res, next) {
     return httpResponse.json(res, apiResponse.body, apiResponse.statusCode)
   } catch (error) {
     log.error('Exception from _getUsedRounds ', { error })
-    next(error)
+    return next(error)
   }
 }
 
@@ -87,7 +87,7 @@ async function _getKoppsCourseData(req, res, next) {
     return httpResponse.json(res, body, statusCode)
   } catch (err) {
     log.error('Exception from koppsAPI ', { error: err })
-    next(err)
+    return next(err)
   }
 }
 
@@ -101,7 +101,7 @@ async function _saveFileToStorage(req, res, next) {
     return httpResponse.json(res, fileName)
   } catch (error) {
     log.error('Exception from saveFileToStorage ', { error })
-    next(error)
+    return next(error)
   }
 }
 
@@ -112,7 +112,7 @@ async function _updateFileInStorage(req, res, next) {
     return httpResponse.json(res, response)
   } catch (error) {
     log.error('Exception from updateFileInStorage ', { error })
-    next(error)
+    return next(error)
   }
 }
 
@@ -198,8 +198,30 @@ async function _getStatisicsForRound(req, res, next) {
     return httpResponse.json(res, apiResponse.body)
   } catch (error) {
     log.error('Exception from _getUsedRounds ', { error })
-    next(error)
+    return next(error)
   }
+}
+
+const extendMiniKoppsObjWithRoundState = (courseDetailedinformationRounds, koppsCourseRoundTerms) => {
+  const { termsWithCourseRounds: lastTermsInfoArray } = koppsCourseRoundTerms
+
+  const extenedLastTermsInfoArray = lastTermsInfoArray.map(element => {
+    element.rounds.map(round => {
+      courseDetailedinformationRounds.map(r => {
+        const { applicationCode } = r.applicationCodes[0]
+        if (applicationCode === round.applicationCode) {
+          round.state = r.state
+        }
+        return r
+      })
+      return round
+    })
+    return element
+  })
+
+  const extenedMiniKoppsObj = { ...koppsCourseRoundTerms, termsWithCourseRounds: extenedLastTermsInfoArray }
+
+  return extenedMiniKoppsObj
 }
 
 async function getIndex(req, res, next) {
@@ -262,12 +284,14 @@ async function getIndex(req, res, next) {
     } else {
       /** ------- Got course code -> prepare for Page 1 depending on status (draft or published) ------- */
       log.debug(' getIndex, get course data for : ' + courseCode)
+      const courseDetailedinformationRounds = await koppsCourseData.getDetailedKoppsCourseRounds(courseCode, lang)
       const { body, statusCode, statusMessage } = await koppsCourseData.getKoppsCourseData(courseCode, lang)
+      const extenedMiniKoppsObj = extendMiniKoppsObjWithRoundState(courseDetailedinformationRounds, body)
       if (statusCode && statusCode >= 400) {
         webContext.errorMessage = statusMessage // TODO: ERROR?????
       } else {
         webContext.status = analysisStatus === 'p' ? 'published' : 'new'
-        await webContext.handleCourseData(body, courseCode, username, lang)
+        await webContext.handleCourseData(extenedMiniKoppsObj, courseCode, username, lang)
       }
     }
     log.debug('status set to: ' + webContext.status)
@@ -303,7 +327,7 @@ async function getIndex(req, res, next) {
     })
   } catch (err) {
     log.error('Error in getIndex', { error: err })
-    next(err)
+    return next(err)
   }
 }
 
