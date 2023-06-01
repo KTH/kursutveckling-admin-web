@@ -284,14 +284,12 @@ async function getIndex(req, res, next) {
     } else {
       /** ------- Got course code -> prepare for Page 1 depending on status (draft or published) ------- */
       log.debug(' getIndex, get course data for : ' + courseCode)
-      const courseDetailedinformationRounds = await koppsCourseData.getDetailedKoppsCourseRounds(courseCode, lang)
       const { body, statusCode, statusMessage } = await koppsCourseData.getKoppsCourseData(courseCode, lang)
-      const extenedMiniKoppsObj = extendMiniKoppsObjWithRoundState(courseDetailedinformationRounds, body)
       if (statusCode && statusCode >= 400) {
         webContext.errorMessage = statusMessage // TODO: ERROR?????
       } else {
         webContext.status = analysisStatus === 'p' ? 'published' : 'new'
-        await webContext.handleCourseData(extenedMiniKoppsObj, courseCode, username, lang)
+        await webContext.handleCourseData(body, courseCode, username, lang)
       }
     }
     log.debug('status set to: ' + webContext.status)
