@@ -30,7 +30,7 @@
     "@kth/kth-node-passport-oidc": "^5.0.5",
     "@kth/kth-node-response": "^1.0.7",
     "@kth/kth-node-web-common": "^8.1.1",
-    "@kth/kth-reactstrap": "^0.4.66",
+    "@kth/kth-reactstrap": "^0.4.72",
     "@kth/log": "^4.0.7",
     "@kth/monitor": "^4.1.1",
     "@kth/server": "^4.0.4",
