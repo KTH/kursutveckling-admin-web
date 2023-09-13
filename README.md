@@ -1,7 +1,7 @@
 # Welcome to kursutveckling-admin-web 👋
 
 ![Version](https://img.shields.io/badge/version-2.0.0-blue.svg?cacheSeconds=2592000)
-![Prerequisite](https://img.shields.io/badge/node-14.0.0-blue.svg)
+![Prerequisite](https://img.shields.io/badge/node-20.0.0-blue.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](#)
 
 ## Introduction
@@ -82,7 +82,7 @@ We must try to make changes that affect the template projects in the template pr
 
 ## Prerequisites
 
-- node 14.0.0
+- node 20.0.0
 
 ### Blob storage. Generate Shared access signature
 
