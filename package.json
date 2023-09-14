@@ -108,7 +108,7 @@
     "webpack-cli": "^4.10.0"
   },
   "engines": {
-    "node": "16"
+    "node": "18"
   },
   "jshintConfig": {
     "maxerr": 5
