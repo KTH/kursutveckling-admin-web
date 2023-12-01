@@ -303,10 +303,9 @@ function AnalysisMenu(props) {
         </div>
         <form>
           <div className="form-group">
-            <div className="form-select">
               <div className="select-wrapper">
                 <select
-                  className="form-control"
+                  className="form-select"
                   id="semesterDropdownControl"
                   aria-label={translate.select_semester}
                   onChange={handleSelectedSemester}
@@ -327,7 +326,6 @@ function AnalysisMenu(props) {
                     ))}
                 </select>
               </div>
-            </div>
           </div>
         </form>
       </div>
