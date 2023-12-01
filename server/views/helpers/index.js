@@ -1,5 +1,6 @@
 'use strict'
 const registerHeaderContentHelper = require('@kth/kth-node-web-common/lib/handlebars/helpers/headerContent')
+const { registerBreadcrumbHelper } = require('@kth/kth-node-web-common/lib/handlebars/helpers/breadcrumbs')
 const log = require('@kth/log')
 const config = require('../../configuration').server
 const packageFile = require('../../../package.json')
@@ -33,12 +34,7 @@ registerHeaderContentHelper({
  * packaged helpers in https://github.com/KTH/kth-node-web-common/tree/master/lib/handlebars/helpers
  * Those only need to be required. Docs embedded in source.
  */
-require('@kth/kth-node-web-common/lib/handlebars/helpers/breadcrumbs')(
-  config.hostUrl,
-  'host_name',
-  'student/',
-  'page_student'
-)
+registerBreadcrumbHelper()
 require('@kth/kth-node-web-common/lib/handlebars/helpers/contentedit')
 
 const i18n = require('../../../i18n')
