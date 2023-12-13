@@ -1,11 +1,22 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { hydrateRoot } from 'react-dom/client'
 import { WebContextProvider } from './context/WebContext'
 import { uncompressData } from './context/compress'
 import AdminPage from './views/AdminPage'
 import '../../css/kursutveckling-web.scss'
 import '../../css/kursutveckling-admin.scss'
+
+function appFactory(applicationStore, context) {
+  return (
+    <WebContextProvider configIn={context}>
+      <Routes>
+        <Route exact path="/:id" element={<AdminPage />} />
+        <Route exact path="/preview/:id" element={<AdminPage />} />
+      </Routes>
+    </WebContextProvider>
+  )
+}
 
 function _renderOnClientSide() {
   const isClientSide = typeof window !== 'undefined'
@@ -23,20 +34,9 @@ function _renderOnClientSide() {
 
   // Removed basename because it is causing empty string basename={basename}
   const domElement = document.getElementById('app')
-  ReactDOM.hydrate(app, domElement)
+  hydrateRoot(domElement, app)
 }
 
 _renderOnClientSide()
-
-function appFactory(applicationStore, context) {
-  return (
-    <WebContextProvider configIn={context}>
-      <Routes>
-        <Route exact path="/:id" element={<AdminPage />} />
-        <Route exact path="/preview/:id" element={<AdminPage />} />
-      </Routes>
-    </WebContextProvider>
-  )
-}
 
 export default appFactory

@@ -23,7 +23,7 @@ const OnlyMobileVisiblePopup = ({ ariaLabel, ariaPressed, popUpHeader, id, onCli
         aria-pressed={ariaPressed}
         style={{ minHeight: '0.75rem' }}
       >
-        <span className="sr-only">{ariaLabel}</span>
+        <span className="visually-hidden">{ariaLabel}</span>
       </Button>
     </span>
   )
@@ -31,7 +31,7 @@ const OnlyMobileVisiblePopup = ({ ariaLabel, ariaPressed, popUpHeader, id, onCli
 function ControlledPopover(props) {
   const [state, setState] = useState({ popoverOpen: false })
 
-  function  toggle() {
+  function toggle() {
     setState({ popoverOpen: !state.popoverOpen })
   }
   const { cellId, describesId, header, popoverText, popType } = props
@@ -62,7 +62,7 @@ function ControlledPopover(props) {
           aria-pressed={popoverOpen}
           style={{ minHeight: '0.75rem' }}
         >
-          <span className="sr-only">{ariaLabel}</span>
+          <span className="visually-hidden">{ariaLabel}</span>
         </Button>
       )}
       <Popover
