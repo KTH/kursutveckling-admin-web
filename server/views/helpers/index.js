@@ -1,11 +1,10 @@
 'use strict'
 const registerHeaderContentHelper = require('@kth/kth-node-web-common/lib/handlebars/helpers/headerContent')
-const { registerBreadcrumbHelper } = require('@kth/kth-node-web-common/lib/handlebars/helpers/breadcrumbs')
 const log = require('@kth/log')
 const config = require('../../configuration').server
 const packageFile = require('../../../package.json')
 
-let version = packageFile.version
+let { version } = packageFile
 
 try {
   const buildVersion = require('../../../config/version')
@@ -26,7 +25,7 @@ try {
 */
 registerHeaderContentHelper({
   proxyPrefixPath: config.proxyPrefixPath.uri,
-  version: version,
+  version,
 })
 
 /**
@@ -34,7 +33,6 @@ registerHeaderContentHelper({
  * packaged helpers in https://github.com/KTH/kth-node-web-common/tree/master/lib/handlebars/helpers
  * Those only need to be required. Docs embedded in source.
  */
-registerBreadcrumbHelper()
 require('@kth/kth-node-web-common/lib/handlebars/helpers/contentedit')
 
 const i18n = require('../../../i18n')
