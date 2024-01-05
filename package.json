@@ -30,7 +30,7 @@
     "@kth/kth-node-passport-oidc": "^5.0.5",
     "@kth/kth-node-response": "^1.0.7",
     "@kth/kth-node-web-common": "^9.0.1",
-    "@kth/kth-reactstrap": "^0.4.78",
+    "@kth/kth-reactstrap": "^0.4.66",
     "@kth/log": "^4.0.7",
     "@kth/monitor": "^4.2.1",
     "@kth/server": "^4.0.4",
@@ -66,7 +66,7 @@
     "react-icons": "^4.12.0",
     "react-router": "^6.20.0",
     "react-router-dom": "^6.20.0",
-    "reactstrap": "^9.2.1",
+    "reactstrap": "^8.10.1",
     "safe-utils": "^1.0.1"
   },
   "devDependencies": {
