@@ -1,6 +1,5 @@
 import React from 'react'
 import { Table } from 'reactstrap'
-// import { PopOverTextForTableHeaders, PopoverExamItem } from './PopOverTextForTable'
 import ControlledPopover from './PopOverTextForTable'
 
 function _getListOfExamRounds(rawExamRoundsStrArr) {
@@ -36,7 +35,6 @@ const TableWithCourseData = ({ translate, thisAnalysisObj }) => {
         <tr>
           {orderedColumns.map((colName, index) => {
             const cellId = analysisId + colName
-            const ariaDescribedBy = 'header-description' + cellId
             const { header, popoverText } = translate[colName]
             return (
               <th key={index} className={colName}>
@@ -55,7 +53,8 @@ const TableWithCourseData = ({ translate, thisAnalysisObj }) => {
             return (
               <td className={colName} id={cellId} key={index}>
                 <ControlledPopover cellId={cellId} header={header} popoverText={popoverText} popType="mobile" />
-                {(colName === 'examRounds' && listOfExamRounds.map((exam, index) => <p key={index}>{exam}</p>)) || (
+                {(colName === 'examRounds' &&
+                  listOfExamRounds.map((exam, examRoundIndex) => <p key={examRoundIndex}>{exam}</p>)) || (
                   <p>
                     {`${thisAnalysisObj[colName]}${
                       (colName === 'examinationGrade' && (!examinationGradeFromLadok ? ' % *' : ' %')) || ''

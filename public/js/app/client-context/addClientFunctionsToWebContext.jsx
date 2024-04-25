@@ -123,7 +123,7 @@ function putRoundAnalysisData(postObject, status) {
     })
 }
 
-function deleteRoundAnalysis(id, lang = 'sv') {
+function deleteRoundAnalysis(id) {
   return axios
     .delete(this.buildApiUrl(this.paths.api.kursutvecklingDelete.uri, { id }), {
       validateStatus: status => status < 500,
@@ -193,7 +193,7 @@ function postLadokRoundListAndDateToGetStatistics(ladokRoundList, endDate) {
     .post(this.buildApiUrl(this.paths.api.kursstatistik.uri, { roundEndDate: endDate }), { params: ladokRoundList })
     .then(apiResponse => {
       if (apiResponse.statusCode >= 400) {
-        this.errorMessage = result.statusText
+        this.errorMessage = apiResponse.statusText
         return 'ERROR-' + apiResponse.statusCode
       }
 
@@ -285,7 +285,8 @@ function createAnalysisData(semester, rounds) {
       examinationRounds: this.getExamObject(examinationRounds, this.courseData.gradeScale, roundLang),
       examiners: '',
       examinationGrade:
-        this.statistics.hasOwnProperty('examinationGrade') && this.statistics.examinationGrade > -1
+        Object.prototype.hasOwnProperty.call(this.statistics, 'examinationGrade') &&
+        this.statistics.examinationGrade > -1
           ? this.statistics.examinationGrade
           : '',
       endDate: this.statistics.endDate,
@@ -294,7 +295,8 @@ function createAnalysisData(semester, rounds) {
       programmeCodes: this.getAllTargetGroups(rounds, this.roundData[semester]).join(', '),
       publishedDate: '',
       registeredStudents:
-        this.statistics.hasOwnProperty('registeredStudents') && this.statistics.registeredStudents > -1
+        Object.prototype.hasOwnProperty.call(this.statistics, 'registeredStudents') &&
+        this.statistics.registeredStudents > -1
           ? this.statistics.registeredStudents
           : '',
       responsibles: '',
@@ -306,9 +308,11 @@ function createAnalysisData(semester, rounds) {
       syllabusStartTerm: courseSyllabus.validFromTerm,
       changedAfterPublishedDate: '',
       examinationGradeFromLadok:
-        this.statistics.hasOwnProperty('examinationGrade') && this.statistics.examinationGrade > -1,
+        Object.prototype.hasOwnProperty.call(this.statistics, 'examinationGrade') &&
+        this.statistics.examinationGrade > -1,
       registeredStudentsFromLadok:
-        this.statistics.hasOwnProperty('registeredStudents') && this.statistics.registeredStudents > -1,
+        Object.prototype.hasOwnProperty.call(this.statistics, 'registeredStudents') &&
+        this.statistics.registeredStudents > -1,
       examinationGradeLadok: this.statistics.examinationGrade,
       registeredStudentsLadok: this.statistics.registeredStudents,
       endDateFromLadok: true,

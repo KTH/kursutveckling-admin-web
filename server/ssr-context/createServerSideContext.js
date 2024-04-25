@@ -18,7 +18,7 @@ function setCourseTitle(title) {
 // -- Programs that is mandatory for round(s) --//
 function getTargetGroup(round) {
   if (round.connectedProgrammes.length === 0) return []
-  let usageList = []
+  const usageList = []
   for (let index = 0; index < round.connectedProgrammes.length; index++) {
     if (
       usageList.indexOf(round.connectedProgrammes[index].programmeCode) === -1 &&

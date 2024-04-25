@@ -59,8 +59,8 @@ const messageHaveNotRights = lang => ({
   message: i18n.message('message_have_not_rights', lang),
 })
 
-// eslint-disable-next-line func-names
 module.exports.requireRole = (...roles) =>
+  // eslint-disable-next-line consistent-return
   function _hasCourseAcceptedRoles(req, res, next) {
     const lang = language.getLanguage(res)
 

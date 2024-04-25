@@ -1,7 +1,7 @@
 const { BlobServiceClient } = require('@azure/storage-blob')
 
-const serverConfig = require('./configuration').server
 const log = require('@kth/log')
+const serverConfig = require('./configuration').server
 
 const ACCEPTED_FILES_EXTENSIONS = ['pdf']
 const DEFAULT_FILE_EXTENSION = 'pdf'
@@ -32,20 +32,6 @@ const BLOB_SERVICE_SAS_URL = serverConfig.fileStorage.kursutvecklingStorage.blob
 
 const blobServiceClient = new BlobServiceClient(BLOB_SERVICE_SAS_URL)
 
-async function runBlobStorage(file, id, type, saveCopyOfFile, metadata) {
-  const fileExtension = resolveFileExtension(file.name)
-  const blobName = `${type}-${id.replace('_', '-')}-${getTodayDate()}.${fileExtension}`
-  const content = file.data
-  const fileType = file.mimetype
-
-  const uploadResponse = await uploadBlob(blobName, content, fileType, metadata)
-  log.debug(' Blobstorage - uploaded file response ', uploadResponse)
-
-  return blobName
-}
-
-//* *********************************************************************** */
-
 async function uploadBlob(blobName, content, fileType, metadata = {}) {
   const containerClient = blobServiceClient.getContainerClient(STORAGE_CONTAINER_NAME)
   const blockBlobClient = containerClient.getBlockBlobClient(blobName)
@@ -59,9 +45,21 @@ async function uploadBlob(blobName, content, fileType, metadata = {}) {
     log.debug(`Blobstorage - Blob has been uploaded to kursutveckling blob storage:  ${blobName} `)
     return uploadBlobResponse
   } catch (error) {
-    log.error('Error when uploading file in blobStorage: ' + blobName, { error: error })
+    log.error('Error when uploading file in blobStorage: ' + blobName, { error })
     return error
   }
+}
+
+async function runBlobStorage(file, id, type, saveCopyOfFile, metadata) {
+  const fileExtension = resolveFileExtension(file.name)
+  const blobName = `${type}-${id.replace('_', '-')}-${getTodayDate()}.${fileExtension}`
+  const content = file.data
+  const fileType = file.mimetype
+
+  const uploadResponse = await uploadBlob(blobName, content, fileType, metadata)
+  log.debug(' Blobstorage - uploaded file response ', uploadResponse)
+
+  return blobName
 }
 
 async function updateMetaData(blobName, metadata) {
@@ -94,7 +92,7 @@ async function deleteBlob(analysisId) {
 
     return responseDelete
   } catch (error) {
-    log.error('Error in deleting blob ', { error: error })
+    log.error('Error in deleting blob ', { error })
     return error
   }
 }

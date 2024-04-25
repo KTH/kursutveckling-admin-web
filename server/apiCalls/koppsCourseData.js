@@ -20,7 +20,7 @@ async function _getDetailedInformation(courseCode, language = 'sv') {
   }
 }
 
-async function getKoppsCourseData(courseCode, lang = 'sv') {
+async function getKoppsCourseData(courseCode) {
   try {
     return await koppsApi.getAsync(`course/${encodeURIComponent(courseCode)}/courseroundterms`)
   } catch (err) {

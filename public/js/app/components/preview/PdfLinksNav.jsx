@@ -1,7 +1,5 @@
 import React, { useEffect } from 'react'
-import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
-import { Alert } from 'reactstrap'
 import { getDateFormat } from '../../util/helpers'
 import i18n from '../../../../../i18n'
 import { useWebContext } from '../../context/WebContext'
@@ -156,14 +154,7 @@ function PdfLinksNav(props) {
   const [webContext, setWebContext] = useWebContext()
   const context = React.useMemo(() => webContext, [webContext])
   const { translate, latestAnalysisFileName, staticAnalysisInfo, langIndex } = props
-  const {
-    analysisName,
-    courseCode,
-    pdfAnalysisDate,
-    applicationCodes,
-    syllabusStartTerm,
-    semester: analysisSemester,
-  } = staticAnalysisInfo
+  const { analysisName, courseCode, pdfAnalysisDate, applicationCodes, semester: analysisSemester } = staticAnalysisInfo
 
   const [unfilteredRoundsMissingMemos, existingMemos] = sortMemosByTypes(analysisSemester, context, applicationCodes)
   const roundsNamesMissingMemos = getRoundsApplicationNames(
@@ -182,12 +173,11 @@ function PdfLinksNav(props) {
   useEffect(() => {
     // push it to context for alert about missing memo after save/publish on admin start page
     setWebContext({ ...webContext, roundNamesWithMissingMemos: roundsNamesMissingMemos })
-
   }, [])
 
   return (
     <span className="right-block-of-links">
-      <LinkToValidSyllabusPdf startDate={syllabusStartTerm} lang={langIndex} key={syllabusStartTerm} />
+      <LinkToValidSyllabusPdf />
       {/* Kurs-PM länkar */}
       <span className="vertical-block-of-links">
         {emptyRounds.map(applicationCode => {

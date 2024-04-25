@@ -1,3 +1,5 @@
+/* eslint-disable consistent-return */
+/* eslint-disable no-use-before-define */
 import React, { useEffect, useReducer } from 'react'
 import { Row, Col, Button, Form, Label, Input, Alert, Spinner } from 'reactstrap'
 import { ProgressBar } from '@kth/kth-reactstrap/dist/components/utbildningsinfo'
@@ -24,7 +26,7 @@ function validateData(state, fieldId = null) {
   const { analysisFile, isPublished, values } = state
   const invalidData = { mandatoryFields: [], overMaxFields: [] }
   const toValidate = fieldId ? [fieldId] : ['registeredStudents', 'examiners', 'responsibles']
-  for (let key of toValidate) {
+  for (const key of toValidate) {
     if (values[key].length === 0) {
       invalidData.mandatoryFields.push(key)
     }
@@ -138,7 +140,7 @@ function AdminPage() {
   async function handleUploadFile(id, file, e) {
     if (e.target.files[0].type === 'application/pdf') {
       try {
-        const response = await sendRequest(id, file, e)
+        await sendRequest(id, file, e)
       } catch (error) {
         if (error.response) {
           throw new Error(error.message)
@@ -152,7 +154,7 @@ function AdminPage() {
 
   function sendRequest(id, file, e) {
     const { values } = state
-    return new Promise((resolve, reject) => {
+    return new Promise(() => {
       const req = new XMLHttpRequest()
       req.upload.addEventListener('progress', event => {
         if (event.lengthComputable) {
@@ -161,7 +163,7 @@ function AdminPage() {
         }
       })
 
-      req.onreadystatechange = function () {
+      req.onreadystatechange = function onReadyStateChange() {
         if (this.readyState == 4 && this.status == 200) {
           values.pdfAnalysisDate = getTodayDate()
           fileProgress.analysis = 0
@@ -184,7 +186,7 @@ function AdminPage() {
         }
       }
 
-      let formData = new FormData()
+      const formData = new FormData()
       const data = getMetadata(state.isPublished ? 'published' : state.saved ? 'draft' : 'new')
       formData.append('file', e.target.files[0], e.target.files[0].name)
       formData.append('courseCode', data.courseCode)
@@ -241,7 +243,7 @@ function AdminPage() {
     event.preventDefault()
     if (progress === 'edit') {
       if (webContext.semesters.length === 0) {
-        return webContext.getCourseInformation(courseCode, webContext.user, language).then(courseData => {
+        return webContext.getCourseInformation(courseCode, webContext.user, language).then(() => {
           setState({
             isPreviewMode: false,
             progress: 'back_new',
@@ -274,7 +276,7 @@ function AdminPage() {
     }
   }
 
-  function handleCancel(event) {
+  function handleCancel() {
     window.location = `${SERVICE_URL.admin}${analysisData.courseCode}?serv=kutv&event=cancel`
   }
 
@@ -373,11 +375,9 @@ function AdminPage() {
       return webContext
         .postLadokRoundListAndDateToGetStatistics(statisticsParams.ladokId, newEndDate)
         .then(statisticsResponse => {
-
           values.examinationGrade = Math.round(Number(statisticsResponse.examinationGrade) * 10) / 10
           values.examinationGradeFromLadok =
-            values['endDate'] === values['endDateLadok'] &&
-            Number(values['examinationGrade']) === values['examinationGradeLadok']
+            values.endDate === values.endDateLadok && Number(values.examinationGrade) === values.examinationGradeLadok
           const multiLineAlert = handleMultiLineAlert({
             messages: i18n.messages[language].messages,
             ladokId: statisticsParams.ladokId,
@@ -405,7 +405,7 @@ function AdminPage() {
   }
 
   function handleTemporaryData(analysisValues, tempData) {
-    let returnObject = {
+    const returnObject = {
       values: analysisValues,
       files: {
         analysisFile: '',
@@ -429,7 +429,7 @@ function AdminPage() {
     if (status === 'new') {
       return webContext
         .postLadokRoundListAndDateToGetStatistics(statisticsParams.ladokId, statisticsParams.endDate)
-        .then(ladokResponse => {
+        .then(() => {
           webContext.createAnalysisData(semester, rounds).then(createdAnalysis => {
             const valuesObject = handleTemporaryData(createdAnalysis, tempData)
             const multiLineAlert = handleMultiLineAlert({
@@ -510,15 +510,15 @@ function AdminPage() {
     }
 
     if (event.target.id === 'examinationGrade' && state.statisticsParams.ladokId.length > 0) {
-      if (Number(values['examinationGrade']) === values['examinationGradeLadok']) {
-        values['endDate'] = values['endDateLadok']
+      if (Number(values.examinationGrade) === values.examinationGradeLadok) {
+        values.endDate = values.endDateLadok
         endDateInputEnabled = true
       } else {
-        values['endDate'] = ''
+        values.endDate = ''
         endDateInputEnabled = false
       }
     } else if (event.target.id === 'endDate' && state.statisticsParams.ladokId.length > 0) {
-      handleNewExaminationGrade(values['endDate'])
+      handleNewExaminationGrade(values.endDate)
       examinationGradeInputEnabled = false
     }
 
