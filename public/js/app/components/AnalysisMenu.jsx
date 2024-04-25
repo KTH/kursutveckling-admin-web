@@ -1,3 +1,7 @@
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable no-shadow */
+/* eslint-disable consistent-return */
+/* eslint-disable prefer-destructuring */
 import React, { useReducer } from 'react'
 
 import { Alert, Form, FormGroup, Label, Input, Collapse, Button, Row, Col } from 'reactstrap'
@@ -74,7 +78,6 @@ function AnalysisMenu(props) {
     selectedRadio,
     canOnlyPreview,
     statisticsParams,
-    ladokLoading,
   } = state
   //* * ********************** CHECKBOXES AND RADIO BUTTONS **************************** */
   //* ********************************************************************************* */
@@ -180,7 +183,7 @@ function AnalysisMenu(props) {
   function getUsedRounds(sem) {
     const { analysisId } = props
     const prevState = state
-    return context.getUsedRounds(context.courseData.courseCode, sem).then(result => {
+    return context.getUsedRounds(context.courseData.courseCode, sem).then(() => {
       if (analysisId && analysisId.length > 0) {
         if (context.status === 'draft') {
           prevState.selectedRadio.draft = analysisId
@@ -303,29 +306,29 @@ function AnalysisMenu(props) {
         </div>
         <form>
           <div className="form-group">
-              <div className="select-wrapper">
-                <select
-                  className="form-select"
-                  id="semesterDropdownControl"
-                  aria-label={translate.select_semester}
-                  onChange={handleSelectedSemester}
-                  defaultValue={semester && semester > 0 && !firstVisit ? semester : translate.select_semester}
-                >
-                  <option value={translate.select_semester} key="no-chosen">
-                    {translate.select_semester}
-                  </option>
+            <div className="select-wrapper">
+              <select
+                className="form-select"
+                id="semesterDropdownControl"
+                aria-label={translate.select_semester}
+                onChange={handleSelectedSemester}
+                defaultValue={semester && semester > 0 && !firstVisit ? semester : translate.select_semester}
+              >
+                <option value={translate.select_semester} key="no-chosen">
+                  {translate.select_semester}
+                </option>
 
-                  {semesterList &&
-                    semesterList.map(sem => (
-                      <option id={sem} key={sem} value={sem}>
-                        {`
+                {semesterList &&
+                  semesterList.map(sem => (
+                    <option id={sem} key={sem} value={sem}>
+                      {`
                     ${translate.course_short_semester[sem.toString().match(/.{1,4}/g)[1]]} 
                     ${sem.toString().match(/.{1,4}/g)[0]}
                   `}
-                      </option>
-                    ))}
-                </select>
-              </div>
+                    </option>
+                  ))}
+              </select>
+            </div>
           </div>
         </form>
       </div>

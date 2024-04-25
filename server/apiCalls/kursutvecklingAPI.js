@@ -2,14 +2,6 @@
 
 const api = require('../api')
 
-module.exports = {
-  getRoundAnalysisData: _getAnalysisData,
-  setRoundAnalysisData: _setAnalysisData,
-  updateRoundAnalysisData: _putAnalysisData,
-  deleteRoundAnalysisData: _deleteAnalysisData,
-  getUsedRounds: _getUsedRounds,
-}
-
 async function _getAnalysisData(id) {
   const { client, paths } = api.kursutvecklingApi
   const uri = client.resolve(paths.getCourseRoundAnalysisDataById.uri, { id })
@@ -46,4 +38,12 @@ async function _getUsedRounds(courseCode, semester) {
   } catch (error) {
     return error
   }
+}
+
+module.exports = {
+  getRoundAnalysisData: _getAnalysisData,
+  setRoundAnalysisData: _setAnalysisData,
+  updateRoundAnalysisData: _putAnalysisData,
+  deleteRoundAnalysisData: _deleteAnalysisData,
+  getUsedRounds: _getUsedRounds,
 }

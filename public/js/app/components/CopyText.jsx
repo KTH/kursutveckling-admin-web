@@ -13,8 +13,8 @@ function CopyText({ header, webContext = {}, textToCopy = '' }) {
       '?title=' +
       encodeURI(courseTitle.name + '_' + courseTitle.credits)
 
-  function handleCopy(event) {
-    var textField = document.createElement('textarea')
+  function handleCopy() {
+    const textField = document.createElement('textarea')
     textField.innerText = textToCopyInput
     document.body.appendChild(textField)
     textField.select()

@@ -62,7 +62,7 @@ function Preview(props) {
           <div>
             <p className="float-right">{translate.info_manually_edited}</p>
           </div>
-          <Details label={'moreData' + courseRoundObj._id} thisAnalysisObj={courseRoundObj} translate={translate} />
+          <Details thisAnalysisObj={courseRoundObj} translate={translate} />
         </section>
       )}
     </div>

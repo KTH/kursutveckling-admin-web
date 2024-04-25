@@ -80,10 +80,10 @@ async function _getUsedRounds(req, res, next) {
 
 // ------- COURSE DATA FROM KOPPS-API   ------- /
 async function _getKoppsCourseData(req, res, next) {
-  const { courseCode, lang = 'sv' } = req.params
+  const { courseCode } = req.params
   log.debug('_getKoppsCourseData with code:', { courseCode })
   try {
-    const { body, statusCode } = await koppsCourseData.getKoppsCourseData(courseCode, lang)
+    const { body, statusCode } = await koppsCourseData.getKoppsCourseData(courseCode)
     return httpResponse.json(res, body, statusCode)
   } catch (err) {
     log.error('Exception from koppsAPI ', { error: err })
@@ -119,7 +119,7 @@ async function _updateFileInStorage(req, res, next) {
 const _removeDuplicates = personListWithDublicates =>
   personListWithDublicates
     .map(person => JSON.stringify(person))
-    .filter((person, index, self) => self.indexOf(person) === index)
+    .filter((person, index, arr) => arr.indexOf(person) === index)
     .map(personStr => JSON.parse(personStr))
 
 const _getCourseEmployeeDataForExaminerAndResponsibles = (groupData, groups) => {
@@ -200,28 +200,6 @@ async function _getStatisicsForRound(req, res, next) {
     log.error('Exception from _getUsedRounds ', { error })
     return next(error)
   }
-}
-
-const extendMiniKoppsObjWithRoundState = (courseDetailedinformationRounds, koppsCourseRoundTerms) => {
-  const { termsWithCourseRounds: lastTermsInfoArray } = koppsCourseRoundTerms
-
-  const extenedLastTermsInfoArray = lastTermsInfoArray.map(element => {
-    element.rounds.map(round => {
-      courseDetailedinformationRounds.map(r => {
-        const { applicationCode } = r.applicationCodes[0]
-        if (applicationCode === round.applicationCode) {
-          round.state = r.state
-        }
-        return r
-      })
-      return round
-    })
-    return element
-  })
-
-  const extenedMiniKoppsObj = { ...koppsCourseRoundTerms, termsWithCourseRounds: extenedLastTermsInfoArray }
-
-  return extenedMiniKoppsObj
 }
 
 async function getIndex(req, res, next) {
@@ -313,7 +291,7 @@ async function getIndex(req, res, next) {
       context: webContext,
     })
 
-    res.render('admin/index', {
+    return res.render('admin/index', {
       compressedData,
       debug: 'debug' in req.query,
       instrumentationKey: serverConfig.appInsights.instrumentationKey,

@@ -1,25 +1,29 @@
-import React, { useReducer } from 'react'
+import React from 'react'
 import { Modal, ModalBody, ModalHeader, ModalFooter, Button } from 'reactstrap'
 
 // Custom components
 import CopyText from './CopyText'
 
-const paramsReducer = (state, action) => ({ ...state, ...action })
-
 function InfoModal(props) {
-  const { fade, isOpen, toggle, className, type, infoText, id, url, copyHeader } = props
+  const {
+    fade,
+    isOpen,
+    toggle,
+    className,
+    type,
+    infoText,
+    id,
+    url,
+    copyHeader,
+    handleConfirm: handleConfirmFromProps,
+  } = props
 
   function handleConfirm(event) {
     event.preventDefault()
-    props.handleConfirm(props.id, true)
+    handleConfirmFromProps(id, true)
   }
 
-  function handleDateChange(event) {
-    event.persist()
-    props.handleDateChange(event.target.value)
-  }
-
-  const fadeModal = props.hasOwnProperty('fade') ? fade : true
+  const fadeModal = fade ?? true
 
   return (
     <div>

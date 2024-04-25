@@ -2,12 +2,13 @@ import React from 'react'
 import { Spinner } from 'reactstrap'
 
 function UpLoad(props) {
+  const { handleUpload, handleRemoveFile } = props
   function onChange(event) {
-    props.handleUpload(event.target.id, event.target.files, event)
+    handleUpload(event.target.id, event.target.files, event)
   }
 
   function removeFile(event) {
-    props.handleRemoveFile(event)
+    handleRemoveFile(event)
   }
 
   const { id, progress, file, notValid, type, translate } = props
@@ -20,6 +21,7 @@ function UpLoad(props) {
           <br />
           <div className="inline-flex">
             <p className="upload-text"> {file} </p>
+            {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
             <div className="iconContainer icon-trash-can" id={'remove_' + id} onClick={removeFile} />
           </div>
         </span>

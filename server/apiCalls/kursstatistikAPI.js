@@ -3,10 +3,6 @@
 const log = require('@kth/log')
 const api = require('../api')
 
-module.exports = {
-  getStatisicsForRound: _getStatisicsForRound,
-}
-
 async function _getStatisicsForRound(roundEndDate, body) {
   try {
     const { client, paths } = api.kursstatistikApi
@@ -16,4 +12,8 @@ async function _getStatisicsForRound(roundEndDate, body) {
     log.error('Error in _getStatisicsForRound', error, '\nroundEndDate', roundEndDate, 'body', body)
     return { body: {} }
   }
+}
+
+module.exports = {
+  getStatisicsForRound: _getStatisicsForRound,
 }

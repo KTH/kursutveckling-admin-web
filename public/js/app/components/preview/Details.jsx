@@ -1,12 +1,11 @@
-import React  from 'react'
-import { Collapse } from 'reactstrap'
+import React from 'react'
 import { formatISODate } from '../../util/helpers'
 
 const ExtraKoppsInfo = ({ translate, thisAnalysisObj }) => {
   const orderedTitles = ['analysisName', 'programmeCodes']
   return (
     <span className="extra-kopps-info-from-kutv-api">
-      {orderedTitles.map((infoTitle, index) => (
+      {orderedTitles.map(infoTitle => (
         <span key={'details-' + infoTitle} className={infoTitle}>
           <h4 key={'header-for-' + infoTitle}>{translate[infoTitle].header}</h4>
           {thisAnalysisObj[infoTitle] === '' ? (
@@ -48,7 +47,7 @@ const ExtraDatesAndComment = ({ translate, thisAnalysisObj }) => {
     </span>
   )
 }
-const Details = ({ thisAnalysisObj, label, translate }) => {
+const Details = ({ thisAnalysisObj, translate }) => {
   const { analysisName } = thisAnalysisObj
   const { header_more_info } = translate
   return (
