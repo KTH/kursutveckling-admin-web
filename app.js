@@ -2,7 +2,10 @@
 
 require('dotenv').config()
 
-const fs = require('fs')
+const { KthAppinsights } = require('@kth/appinsights')
+
+KthAppinsights.init({ name: 'kursutveckling-admin-web' })
+
 const log = require('@kth/log')
 const config = require('./server/configuration').server
 const server = require('./server/server')
