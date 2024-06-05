@@ -1,8 +1,8 @@
 import React, { useReducer } from 'react'
-import { Alert } from 'reactstrap'
 // Helpers
 import i18n from '../../../../i18n/index'
 // Custom components
+import Alert from '../components-shared/Alert'
 import { useWebContext } from '../context/WebContext'
 
 import TableWithCourseData from './preview/TableWithCourseData'
@@ -36,17 +36,14 @@ function Preview(props) {
       {/* If memo is missing a memo place an alert */}
       <div id="alert-placeholder" />
       {context.analysisData.examinationRounds && context.analysisData.examinationRounds.length === 0 ? (
-        <Alert className="alert-margin">Something got wrong</Alert>
+        <Alert type="warning">Something got wrong</Alert>
       ) : (
         <section
-          className="course-data-for-round"
+          className="course-data-for-round list-section-per-year"
           aria-describedby={'h3' + courseAnalysDataId}
           key={'section-for-analys-' + courseAnalysDataId}
         >
-          {/* {index === 0 && <h2 id={headerId}>{year}</h2>} */}
-          <div className="h3-and-link">
-            <h3 id={'h3' + courseAnalysDataId}>{analysisName}</h3>
-          </div>
+          <h3 id={'h3' + courseAnalysDataId}>{analysisName}</h3>
           <PdfLinksNav
             latestAnalysisFileName={latestAnalysisFileName}
             langIndex={langIndex}

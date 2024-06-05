@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { PageHeading } from '@kth/kth-reactstrap/dist/components/studinfo'
+import PageHeading from '../components-shared/PageHeading'
 
 function Title({ courseCode, header, title, language: langIndex }) {
   if (title && title.credits) {
@@ -11,7 +11,7 @@ function Title({ courseCode, header, title, language: langIndex }) {
         langIndex === 0 ? 'credits' : 'hp'
       }`
     : ''
-  return <PageHeading subHeading={`${courseCode} ${courseTitle}`}>{header}</PageHeading>
+  return <PageHeading heading={header} subHeading={`${courseCode} ${courseTitle}`} />
 }
 
 Title.propTypes = {

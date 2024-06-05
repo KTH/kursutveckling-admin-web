@@ -1,9 +1,12 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-use-before-define */
 import React, { useEffect, useReducer } from 'react'
-import { Row, Col, Button, Form, Label, Input, Alert, Spinner } from 'reactstrap'
-import { ProgressBar } from '@kth/kth-reactstrap/dist/components/utbildningsinfo'
+import { Row, Col, Form, Label, Input, Spinner } from 'reactstrap'
 import { useWebContext } from '../context/WebContext'
+
+import Alert from '../components-shared/Alert'
+import Button from '../components-shared/Button'
+import ProgressBar from '../components-shared/ProgressBar'
 
 // Components
 import Title from '../components/Title'
@@ -486,9 +489,10 @@ function AdminPage() {
     })
   }
 
-  function toggleModal(event) {
+  function toggleModal(ev, id) {
+    const modalid = id || ev.target.id
     const { modalOpen } = state
-    modalOpen[event.target.id] = !modalOpen[event.target.id]
+    modalOpen[modalid] = !modalOpen[modalid]
     setState({
       modalOpen,
     })
@@ -582,16 +586,13 @@ function AdminPage() {
               courseCode={courseCode}
               header={translate.header_main[webContext.status]}
             />
-            <ProgressBar active={1} pages={translate.pagesProgressBar} />
+            <ProgressBar current={0} steps={translate.pagesProgressBar} />
 
             {/* ************************************************************************************ */}
             {/*                               PAGE1: ANALYSIS MENU                                  */}
             {/* ************************************************************************************ */}
             {webContext.semesters.length === 0 ? (
-              <Alert color="info" className="alert-margin">
-                {' '}
-                {translate.alert_no_rounds}{' '}
-              </Alert>
+              <Alert type="info">{translate.alert_no_rounds} </Alert>
             ) : (
               <AnalysisMenu
                 editMode={editMode}
@@ -609,10 +610,7 @@ function AdminPage() {
             )}
           </div>
         ) : (
-          <Alert className="alert-margin" color="info">
-            {' '}
-            {webContext.errorMessage}
-          </Alert>
+          <Alert type="info">{webContext.errorMessage}</Alert>
         )}
       </div>
     )
@@ -623,9 +621,7 @@ function AdminPage() {
       {/*                     PAGE 2: EDIT  AND  PAGE 3: PREVIEW                              */}
       {/* ************************************************************************************ */}
       {webContext.errorMessage.length > 0 ? (
-        <Alert color="info" className="alert-margin">
-          {webContext.errorMessage}
-        </Alert>
+        <Alert type="info">{webContext.errorMessage}</Alert>
       ) : (
         <div>
           <Title
@@ -635,7 +631,7 @@ function AdminPage() {
             header={translate.header_main[webContext.status]}
           />
           {webContext.status !== 'preview' && (
-            <ProgressBar active={progress === 'edit' ? 2 : 3} pages={translate.pagesProgressBar} />
+            <ProgressBar current={progress === 'edit' ? 1 : 2} steps={translate.pagesProgressBar} />
           )}
 
           {/* ************************************************************************************ */}
@@ -657,42 +653,36 @@ function AdminPage() {
 
                   {/* ---- Semester and name of analysis ---- */}
                   <h2>{translate.header_edit_content}</h2>
-                  <p>
-                    {' '}
-                    <b>{translate.header_semester} </b>
-                    {`${translate.course_short_semester[state.values.semester.toString().match(/.{1,4}/g)[1]]} 
-                  ${state.values.semester.toString().match(/.{1,4}/g)[0]}`}
-                    <b> {translate.header_course_offering}</b> {state.values.analysisName}
-                  </p>
 
-                  <p>{translate.header_mandatory_fields}</p>
+                  <div className="page-header-wrapper">
+                    <div className="page-header-container">
+                      <h4>{translate.header_semester}</h4>
+                      <p>
+                        {`${translate.course_short_semester[state.values.semester.toString().match(/.{1,4}/g)[1]]} 
+                  ${state.values.semester.toString().match(/.{1,4}/g)[0]}`}
+                      </p>
+                    </div>
+                    <div className="page-header-container">
+                      <h4>{translate.header_course_offering}</h4>
+                      <p>{state.values.analysisName}</p>
+                    </div>
+                    <p>{translate.header_mandatory_fields}</p>
+                  </div>
 
                   {/* ----- ALERTS ----- */}
-                  {state.alert.length > 0 && (
-                    <Row>
-                      <Alert color="info" className="alert-margin">
-                        {state.alert}{' '}
-                      </Alert>
-                    </Row>
-                  )}
+                  {state.alert.length > 0 && <Alert type="info">{state.alert}</Alert>}
                   {state.multiLineAlert.length > 0 && (
-                    <Row>
-                      <Alert color="info" className="alert-margin">
-                        {state.multiLineAlert.map((text, index) => (
-                          <p key={'alert-p-' + index}>{text}</p>
-                        ))}
-                      </Alert>
-                    </Row>
+                    <Alert type="info">
+                      {state.multiLineAlert.map((text, index) => (
+                        <p key={'alert-p-' + index}>{text}</p>
+                      ))}
+                    </Alert>
                   )}
-                  {state.alertSuccess.length > 0 && (
-                    <Row>
-                      <Alert color="success">{state.alertSuccess} </Alert>
-                    </Row>
-                  )}
+                  {state.alertSuccess.length > 0 && <Alert type="success">{state.alertSuccess}</Alert>}
                   <AlertError notValid={state.notValid} translations={i18n.messages[language]} />
                   {/* FORM - FIRST COLUMN */}
                   <Row className="form-group">
-                    <Col sm="4" className="col-form">
+                    <Col sm="4">
                       <h4>{translate.header_upload}</h4>
 
                       {/* * ------ ANALYSIS-FILE UPLOAD ------- * */}
@@ -732,7 +722,7 @@ function AdminPage() {
                     </Col>
 
                     {/* ------ FORM - SECOND COLUMN ------ */}
-                    <Col sm="4" className="col-form">
+                    <Col sm="4">
                       <h4>{translate.header_summarize}</h4>
 
                       <FormLabel
@@ -754,7 +744,7 @@ function AdminPage() {
                     </Col>
 
                     {/* ------ FORM - THIRD COLUMN -------- */}
-                    <Col sm="4" className="col-form">
+                    <Col sm="4">
                       <h4>{translate.header_check_data}</h4>
 
                       <FormLabel translate={translate} header="header_examiners" id="info_examiners" />
@@ -791,7 +781,7 @@ function AdminPage() {
                       <FormLabel translate={translate} header="header_examination_grade" id="info_examination_grade" />
                       <div className="calculate-examination-grade">
                         <div>
-                          <h5>{translate.header_end_date}</h5>
+                          <span>{translate.header_end_date}</span>
                           <Input
                             id="endDate"
                             key="endDate"
@@ -804,7 +794,7 @@ function AdminPage() {
                           />
                         </div>
                         <div>
-                          <h5>{translate.header_result}</h5>
+                          <span>{translate.header_result}</span>
                           <span>
                             {state.ladokLoading === true && (
                               <span className="ladok-loading-progress-inline">
@@ -829,14 +819,10 @@ function AdminPage() {
 
                       {isPublished && (
                         <span>
-                          <div className="inline-flex">
-                            <h4>{translate.header_analysis_edit_comment}</h4>
-                            <InfoButton
-                              addClass="padding-top-30"
-                              id="info_edit_comments"
-                              textObj={translate.info_edit_comments}
-                            />
-                          </div>
+                          <h4>
+                            {translate.header_analysis_edit_comment}
+                            <InfoButton id="info_edit_comments" textObj={translate.info_edit_comments} />
+                          </h4>
                           <Input
                             id="commentChange"
                             key="commentChange"
@@ -861,48 +847,46 @@ function AdminPage() {
                 webContext.status !== 'preview' &&
                 webContext.analysisId && <CopyText webContext={webContext} header={translate.header_copy_link} />}
 
-              <Row className="button-container text-center">
-                <Col sm="4" className="align-left-sm-center">
+              <div className="control-buttons">
+                <div>
                   {webContext.status === 'preview' ? (
                     ''
                   ) : (
-                    <Button className="back" color="secondary" id="back" key="back" onClick={handleBack}>
+                    <Button variant="previous" id="back" key="back" onClick={handleBack}>
                       {state.isPreviewMode ? translate.btn_back_edit : translate.btn_back}
                     </Button>
                   )}
-                </Col>
-                <Col sm="3" className="align-right-sm-center">
+                </div>
+                <div>
                   {webContext.status !== 'preview' && (
-                    <Button color="secondary" id="cancel" key="cancel" onClick={toggleModal}>
+                    <Button variant="secondary" id="cancel" key="cancel" onClick={toggleModal}>
                       {translate.btn_cancel}
                     </Button>
                   )}
-                </Col>
-                <Col sm="3">
+                </div>
+                <div>
                   {state.isPublished || webContext.status === 'preview' ? (
                     ''
                   ) : (
-                    <Button color="secondary" id="save" key="save" onClick={handleSave}>
+                    <Button variant="secondary" id="save" key="save" onClick={handleSave}>
                       {state.isPreviewMode ? translate.btn_save_and_cancel : translate.btn_save}
                     </Button>
                   )}
-                </Col>
-                <Col sm="2">
                   {webContext.status !== 'preview' && (
                     <span>
                       {state.isPreviewMode ? (
-                        <Button color="success" id="publish" key="publish" onClick={toggleModal}>
+                        <Button variant="success" id="publish" key="publish" onClick={toggleModal}>
                           {translate.btn_publish}
                         </Button>
                       ) : (
-                        <Button className="next" color="success" id="preview" key="preview" onClick={handlePreview}>
+                        <Button variant="next" id="preview" key="preview" onClick={handlePreview}>
                           {translate.btn_preview}
                         </Button>
                       )}
                     </span>
                   )}
-                </Col>
-              </Row>
+                </div>
+              </div>
             </Col>
           </Row>
           {/* ************************************************************************************ */}
@@ -931,7 +915,7 @@ function AdminPage() {
 }
 
 const FormLabel = ({ translate, header, id, badgeText, mode = 'warning' }) => (
-  <span className="inline-flex">
+  <span className="form-label-with-info-button">
     <Label>
       {translate[header]} {badgeText ? <span className={`badge badge-${mode} badge-pill`}>{badgeText}</span> : null}
     </Label>
@@ -976,11 +960,7 @@ const AlertError = ({ notValid, translations }) => {
 
   const errorsBlock = noOfErrorCategories === 1 ? <>{errors}</> : <ul>{errors}</ul>
 
-  return (
-    <Row>
-      <Alert color="danger">{errorsBlock}</Alert>
-    </Row>
-  )
+  return <Alert type="warning">{errorsBlock}</Alert>
 }
 
 export default AdminPage

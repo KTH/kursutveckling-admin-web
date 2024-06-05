@@ -1,316 +1,294 @@
-$black: #000000;
-$white: #ffffff;
-$light-grey: #d4d4d4;
-$dark-grey: #65656c;
+@use '~@kth/style/scss/utils/layers.scss';
+@use '~@kth/style/scss/utils/reset.scss';
+@use '~@kth/style/scss/utils/mixins.scss';
+@use '~@kth/style/scss/utils/prose.scss';
 
-%bordered-area {
-  border: 1px solid $light-grey;
-  border-radius: 0.25rem;
-  border-top: 0;
-  padding-top: 1em;
-  padding-bottom: 1em;
-}
+@use '~@kth/style/scss/tokens/typography.scss';
+@use '~@kth/style/scss/tokens/colors.scss';
 
-%icon-for-table-header {
-  background-image: url("data:image/svg+xml,%3c%3fxml version='1.0' encoding='UTF-8'%3f%3e%3csvg id='a' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath d='M10%2c0C4.48%2c0%2c0%2c4.48%2c0%2c10s4.48%2c10%2c10%2c10%2c10-4.48%2c10-10S15.52%2c0%2c10%2c0Z' style='fill:white%3b'/%3e%3crect x='9' y='9' width='2' height='6' style='fill:%2365656c%3b'/%3e%3crect x='9.03' y='5.03' width='2' height='2' style='fill:%2365656c%3b'/%3e%3c/svg%3e"); 
-  height: 1.2em;
-  width: 1.2em;
-  margin-left: 0;
-  vertical-align: middle;
-  visibility: visible;  
-}
+@use '~@kth/style/scss/components/logotype.scss';
+@use '~@kth/style/scss/components/search.scss';
+@use '~@kth/style/scss/components/alert.scss';
+@use '~@kth/style/scss/components/footer.scss';
+@use '~@kth/style/scss/components/mega-menu.scss';
+@use '~@kth/style/scss/components/visually-hidden.scss';
+@use '~@kth/style/scss/components/button.scss';
+@use '~@kth/style/scss/components/header.scss';
+@use '~@kth/style/scss/components/mobile-menu.scss';
+@use '~@kth/style/scss/components/menu-item.scss';
+@use '~@kth/style/scss/components/menu-panel.scss';
+@use '~@kth/style/scss/components/content.scss';
+@use '~@kth/style/scss/components/local-navigation.scss';
+@use '~@kth/style/scss/components/kpm.scss';
 
-#kth-kursinfo {
-  width: 100%;
-}
-.kursinfo-main-page {
-  padding-bottom: 3em;
-  width: 100%;
-}
-nav.main {
-  margin-top: 20px;
-  a.link-back::before {
-    filter: brightness(0%);
-    margin-left: 15px;
-  }
-}
-.pageTitle {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+@use '~kth-style/public/sass/variables/_colors.scss' as old-kth-style-colors;
 
-  margin-top: 20px;
-  margin-bottom: 30px; //change later to 14px, after syllabus details moved
+// Note that the content within #preview-container are copied from kursutveckling-web repo
+// as this is supposed to be a preview for how the published version should look like.
+#preview-container {
+  //****ICONS*****//
 
-  @media (min-width: 768px) {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-end;
-
-    [role='heading'] > .t4 {
-      margin-top: 4px;
-      margin-bottom: 0 !important;
-    }
-  }
-
-  [role='heading'] {
-    display: flex;
-    flex-direction: column;
-    .t1 {
-      margin-bottom: 0;
-      margin-left: -0.095em;
-    }
-    .t4 {
-      margin-top: 4px;
-      margin-bottom: 20px;
-    }
-  }
-  .alert {
+  %icon-for-table-header {
+    background-image: url("data:image/svg+xml,%3c%3fxml version='1.0' encoding='UTF-8'%3f%3e%3csvg id='a' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath d='M10%2c0C4.48%2c0%2c0%2c4.48%2c0%2c10s4.48%2c10%2c10%2c10%2c10-4.48%2c10-10S15.52%2c0%2c10%2c0Z' style='fill:white%3b'/%3e%3crect x='9' y='9' width='2' height='6' style='fill:%2365656c%3b'/%3e%3crect x='9.03' y='5.03' width='2' height='2' style='fill:%2365656c%3b'/%3e%3c/svg%3e");
+    height: 1.2em;
+    width: 1.2em;
     margin-left: 0;
-  }
-}
-
-//INTRODUCTION TEXT UNDER KIP-MENU
-span.intro-text {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  p {
-    width: 100%;
-  }
-}
-
-//== COURSE SYLLABUSSES COLLABSIBLE AT RIGHT ==
-
-details.course-syllabuses {
-  margin-top: 0 !important;
-  margin-bottom: 1.5em;
-  @media (min-width: 768px) {
-    width: 35em;
-    float: right;
-  }
-  summary + :nth-child(2) {
-    margin-top: 0 !important;
-  }
-  div.collapse-bordered-list {
-    padding: 0.5em;
-    @extend %bordered-area;
-    p {
-      margin-bottom: 0;
-    }
-    a.pdf-link {
-      margin: 0;
-    }
-  }
-}
-
-//Links
-a.right-link {
-  float: right;
-  font-weight: normal;
-  text-align: right;
-}
-
-//== LIST OF COLLAPSIBLE TABLES ==
-.list-section-per-year {
-  margin: 3em 0;
-  h2 {
-    margin-top: 38px;
-    margin-bottom: 26px;
+    vertical-align: middle;
+    visibility: visible;
   }
 
-  .h3-and-link {
-    h3 {
-      margin-top: 0;
-    }
-    display: flex;
-    flex-direction: column;
-    a {
-      align-self: flex-start;
-      margin: 0.7em 1em;
-    }
+  .icon-asterisk-black {
+    background-image: url('https://app.kth.se/style/static/kth-style/img/kth-style/icons/asterisk-black.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 10px;
+    height: 1.5rem;
+    margin-top: 5px;
+    margin-right: 5px;
+  }
 
-    @media (min-width: 768px) {
+  //**************/
+  .inline-flex {
+    display: inline-flex;
+  }
+
+  //== LIST OF COLLAPSIBLE TABLES ==
+  .list-section-per-year {
+    @include prose.prose;
+
+    margin: 0;
+
+    .vertical-block-of-links {
       display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: baseline;
-      a {
-        margin: 0;
+      flex-direction: column;
+
+      @media (min-width: 768px) {
+        justify-content: flex-end;
+        float: left;
+        text-align: left;
       }
     }
-  }
 
-  & > section:first-of-type > h2 {
-    margin-top: 0.7em;
-  }
-  .vertical-block-of-links {
-    display: flex;
-    flex-direction: column;
-    margin: 0 0.2em 0;
-
-    @media (min-width: 768px) {
-      justify-content: flex-end;
-      float: left;
-      text-align: left;
-    }
-  }
-
-  .right-block-of-links {
-    float: left;
-    text-align: left;
-    margin: 0 0.2em 0;
-    @media (min-width: 768px) {
+    .right-block-of-links {
       display: flex;
-      align-items: flex-end;
-      justify-content: flex-end;
-      float: right;
-      text-align: right;
-      margin: 0;
-      p:last-of-type > a {
-        margin-right: 0;
+      flex-direction: column;
+
+      gap: 1rem;
+      padding-bottom: 1rem;
+
+      a,
+      .disabled-link {
+        height: 1.75rem;
       }
-    }
-    .pdf-link {
-      &:before {
-        height: 1em;
-        margin: 0 0.3em 0 0;
-        vertical-align: -9%;
+
+      @media (min-width: 768px) {
+        flex-wrap: wrap;
+        flex-direction: row;
+        justify-content: flex-end;
+        align-items: end;
       }
     }
   }
-}
 
-//Collapsible "Additional information"
-.extra-info {
-  div {
-    display: flex;
-    flex-direction: column;
-    padding-top: 0.5em;
+  //Collapsible "Additional information"
+  .extra-info {
+    div {
+      display: flex;
+      flex-direction: column;
+      padding-top: 0.5em;
+      @media (min-width: 768px) {
+        flex-direction: row;
+      }
+    }
     @media (min-width: 768px) {
-      flex-direction: row;
+      span.extra-kopps-info-from-kutv-api {
+        align-self: flex-start;
+        flex-basis: 60%;
+        span {
+          margin: 0;
+        }
+      }
+      span:last-of-type {
+        align-self: flex-start;
+        height: 100%;
+        margin-left: 3em;
+        span {
+          margin: 0;
+          padding: 0;
+        }
+      }
     }
   }
+
+  //===TABLE===
+  .table-for-each-course-offering {
+    &.table {
+      margin-bottom: 6px;
+      th {
+        text-align: center;
+      }
+      //Table elements  visibility for desktop
+      td {
+        .mobile-header-popovers {
+          display: none;
+        }
+      }
+    }
+  }
+
+  body.use-personal-menu {
+    div.popover.show {
+      top: -40px !important;
+    }
+  }
+
+  button.desktop.btn-info-modal,
+  button.mobile.btn-info-modal {
+    @extend %icon-for-table-header;
+    min-height: 0.75rem;
+  }
+
+  /*Table cells try to give it more stable width*/
+  /* ['responsibles', 'examiners', 'registeredStudents', 'examRounds', 'examinationGrade', 'alterationText']*/
   @media (min-width: 768px) {
-    span.extra-kopps-info-from-kutv-api {
-      align-self: flex-start;
-      flex-basis: 60%;
-      span {
-        margin: 0;
-      }
+    .responsibles,
+    .examiners {
+      min-width: 9em;
+      max-width: 9em;
     }
-    span:last-of-type {
-      align-self: flex-start;
-      height: 100%;
-      margin-left: 3em;
-      span {
-        margin: 0;
-        padding: 0;
-      }
+    .examRounds {
+      min-width: 9em;
+      max-width: 9em;
+    }
+    .registeredStudents {
+      min-width: 8em;
+      max-width: 8em;
+    }
+    .examinationGrade {
+      min-width: 7em;
+      max-width: 7em;
     }
   }
-}
+  .alterationText {
+    word-wrap: break-word;
+  }
 
-//===TABLE===
-.table th {
-  text-align: center;
-}
-//Table elements  visibility for desktop
-.table td {
-  .mobile-header-popovers {
-    display: none;
-  }
-}
-div.popover.show {
-  top: -40px !important;
-}
-
-button.desktop.btn-info-modal,
-button.mobile.btn-info-modal {
-  @extend %icon-for-table-header;
-  min-height: 0.75rem;
-  margin-left: 10px;
-}
-
-/*Table cells try to give it more stable width*/
-/* ['responsibles', 'examiners', 'registeredStudents', 'examRounds', 'examinationGrade', 'alterationText']*/
-@media (min-width: 768px) {
-  .responsibles,
-  .examiners {
-    min-width: 9em;
-    max-width: 9em;
-  }
-  .examRounds {
-    min-width: 9em;
-    max-width: 9em;
-  }
-  .registeredStudents {
-    min-width: 8em;
-    max-width: 8em;
-  }
-  .examinationGrade {
-    min-width: 7em;
-    max-width: 7em;
-  }
-}
-.alterationText {
-  word-wrap: break-word;
-}
-
-/*Mobile View for Tables*/
-/* 
+  /*Mobile View for Tables*/
+  /* 
 Max width before this PARTICULAR table gets nasty
 This query will take effect for any screen smaller than 760px
 and also iPads specifically.
 */
-@media only screen and (max-width: 767px) {
-  /* Force table to not be like tables anymore */
-  .table table,
-  thead,
-  tbody,
-  th,
-  td,
-  tr {
-    display: flex;
-    flex-direction: column;
+  @media only screen and (max-width: 767px) {
+    /* Force table to not be like tables anymore */
+    .table-for-each-course-offering {
+      &.table table,
+      thead,
+      tbody,
+      th,
+      td,
+      tr {
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Hide table headers (but not display: none;, for accessibility) */
+      &.table thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+      }
+
+      &.table tr {
+        border: 1px solid #fff;
+      }
+
+      &.table td {
+        /* Behave  like a "row" */
+        border: none;
+        border-bottom: 1px solid #fff;
+        position: relative;
+        span.mobile-header-popovers {
+          background: old-kth-style-colors.$grey;
+          color: #fff;
+          display: flex;
+          flex-direction: row;
+          font-size: 1rem;
+          justify-content: flex-start;
+          margin: -0.7em -0.7em 0.3em -0.7em;
+          padding: 0.5em;
+          vertical-align: bottom;
+          label {
+            font-weight: 500;
+            line-height: 1.2em;
+            margin-right: 0.5em;
+            white-space: normal;
+            width: 100%;
+          }
+          button {
+            align-self: flex-start;
+            padding-right: 1em;
+          }
+        }
+      }
+    }
   }
 
-  /* Hide table headers (but not display: none;, for accessibility) */
-  .table thead tr {
-    position: absolute;
-    top: -9999px;
-    left: -9999px;
+  .course-development-page {
+    .intro-text {
+      @include prose.prose;
+    }
   }
 
-  .table tr {
-    border: 1px solid #fff;
+  /* Archive Page */
+  .archive-page {
+    main {
+      @include prose.prose;
+    }
   }
 
-  .table td {
-    /* Behave  like a "row" */
+  .semester-column {
+    min-width: 116px;
+  }
+
+  .inline-information {
+    font-style: italic;
+  }
+
+  .pdf-memo-link-container {
+    display: block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  .disabled-link {
+    background: transparent;
     border: none;
-    border-bottom: 1px solid #fff;
-    position: relative;
-    span.mobile-header-popovers {
-      background: $dark-grey;
-      color: $white;
+    padding: 0;
+    height: 1.75rem;
+    color: colors.$color-gray-medium;
+  }
+
+  .popover {
+    --bs-popover-header-padding-y: 0;
+    --bs-popover-header-padding-x: 0.75rem;
+    --bs-popover-body-padding-y: 0.5rem;
+    --bs-popover-body-padding-x: 0.75rem;
+
+    .popover-header {
+      @include typography.font-heading-xs;
+
       display: flex;
-      flex-direction: row;
-      font-size: 1rem;
-      justify-content: flex-start;
-      margin: -0.7em -0.7em 0.3em -0.7em;
-      padding: 0.5em;
-      vertical-align: bottom;
-      label {
-        font-weight: 500;
-        line-height: 1.2em;
-        margin-right: 0.5em;
-        white-space: normal;
-        width: 100%;
+      align-items: center;
+      justify-content: space-between;
+      padding-right: 0;
+
+      span {
+        padding: 0.5rem 0;
       }
       button {
-        align-self: flex-start;
-        padding-right: 1em;
+        flex-shrink: 0;
       }
     }
   }

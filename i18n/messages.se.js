@@ -117,8 +117,8 @@ module.exports = {
     /** ************ PAGE 2 FORM ************** */
     asterix_text: 'Kommer inte att kunna ändras efter publicering',
 
-    header_semester: 'Termin:' /** Visas i steg 2, följt av kursomgångens starttermin */,
-    header_course_offering: 'Kursomgång:' /** Visas i steg 2, följt av kursomgångens namn */,
+    header_semester: 'Termin' /** Visas i steg 2, följt av kursomgångens starttermin */,
+    header_course_offering: 'Kursomgång' /** Visas i steg 2, följt av kursomgångens namn */,
 
     header_upload: 'Ladda upp kursanalys' /** Visas i steg 2, rubrik för kolumn 1 */,
     header_summarize: 'Summera förändringar' /** Visas i steg 2, rubrik för kolumn 2 */,
