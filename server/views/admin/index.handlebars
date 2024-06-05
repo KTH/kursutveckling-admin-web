@@ -1,20 +1,12 @@
 <script>{{{compressedData}}}</script>
 
-<!--{{prefixScript '/static/app.js' 'scripts'}}-->
+{{prefixScript '/static/app.js' 'scripts'}}<!---->
 
 {{#if error}}
-  <main id="mainContent">
+  <main id='mainContent'>
     <p>Error: {{error}}</p>
   </main>
 {{else}}
 
-<div class="container articleNavigation">
-  <div class="row justify-content-between">
-   <div class="col-xs-12 col-lg-12"> 
-      
-        </div>
-    </div>
-  </div>
-
-<div id="app" class="container">{{{html}}}</div>
+<div id='app'>{{{html}}}</div>
 {{/if}}

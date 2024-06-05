@@ -84,7 +84,8 @@ server.use(_addProxy('/static/browserConfig'), browserConfigHandler)
 
 // Files/statics routes
 server.use(_addProxy('/static/kth-style'), express.static('./node_modules/kth-style/dist', staticOption))
-
+server.use(_addProxy('/assets'), express.static('./node_modules/@kth/style/assets', staticOption))
+ 
 // Map static content like images, css and js.
 server.use(_addProxy('/static'), express.static('./dist', staticOption))
 
@@ -193,7 +194,7 @@ server.use(
     proxyPrefixPath: config.proxyPrefixPath.uri,
     hostUrl: config.hostUrl,
     redisConfig: config.cache.cortinaBlock.redis,
-    useStyle10: false,
+    useStyle10: true,
   })
 )
 

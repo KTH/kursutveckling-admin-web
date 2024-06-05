@@ -4,6 +4,7 @@ module.exports = {
   longNameEn: 'English',
   messages: {
     date_format_short: '%d-%b-%Y',
+    language_link_lang_sv: 'Svenska',
 
     error_not_found: "Sorry, we can't find your requested page",
     error_generic: 'Something went wrong on the server, please try again later.',

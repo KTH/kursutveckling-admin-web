@@ -1,12 +1,26 @@
-// Less code goes here...!
-// @import '../../node_modules/kth-style/public/img/kth-style/icons';
+@use '~@kth/style/scss/utils/layers.scss';
+@use '~@kth/style/scss/utils/reset.scss';
+@use '~@kth/style/scss/utils/mixins.scss';
+@use '~@kth/style/scss/utils/prose.scss';
 
-// *COLORS*
-$white: #ffffff;
-$light-grey: #d4d4d4;
-$dark-grey: #65656c;
-$black: #000;
-$kth-blue: #007fae;
+@use '~@kth/style/scss/tokens/typography.scss';
+@use '~@kth/style/scss/tokens/colors.scss';
+
+@use '~@kth/style/scss/components/logotype.scss';
+@use '~@kth/style/scss/components/search.scss';
+@use '~@kth/style/scss/components/alert.scss';
+@use '~@kth/style/scss/components/footer.scss';
+@use '~@kth/style/scss/components/mega-menu.scss';
+@use '~@kth/style/scss/components/visually-hidden.scss';
+@use '~@kth/style/scss/components/button.scss';
+@use '~@kth/style/scss/components/header.scss';
+@use '~@kth/style/scss/components/mobile-menu.scss';
+@use '~@kth/style/scss/components/menu-item.scss';
+@use '~@kth/style/scss/components/menu-panel.scss';
+@use '~@kth/style/scss/components/content.scss';
+@use '~@kth/style/scss/components/local-navigation.scss';
+@use '~@kth/style/scss/components/kpm.scss';
+
 
 // --- PAGE TOP --- //
 
@@ -56,7 +70,7 @@ $kth-blue: #007fae;
   margin-top: -30px;
   & > .btn {
     background-color: #f6f6f6;
-    border: 1px solid $light-grey;
+    border: 1px solid var(--color-border);
     display: flex;
     justify-content: space-between;
     padding: 0;
@@ -70,10 +84,10 @@ $kth-blue: #007fae;
       text-align: left;
     }
     .caretholder {
-      background-color: $kth-blue;
+      background-color: var(--color-primary);
       border-bottom-right-radius: 0.25rem;
       border-top-right-radius: 0.25rem;
-      border: 1px solid $kth-blue;
+      border: 1px solid var(--color-primary);
       width: 42px;
       height: 42px;
       position: relative;
@@ -160,16 +174,16 @@ ul.no-padding-left {
   height: 6px;
   width: 100%;
   display: block;
-  border: 1px solid $light-grey;
+  border: 1px solid var(--color-border);
   .file-progress {
     height: 5px;
     display: block;
-    background: $kth-blue;
+    background: var(--color-primary);
   }
 }
 
 .not-valid {
-  border: 2px solid red !important;
+  border: 2px solid var(--color-error) !important;
   padding-top: 10px;
   padding-left: 10px;
   padding-bottom: 10px;
@@ -210,7 +224,7 @@ ul.no-padding-left {
 }
 
 .copy-btn {
-  border-color: $light-grey;
+  border-color: var(--color-border);
   height: 38px;
 }
 //-------- PREVIEW ------- /
