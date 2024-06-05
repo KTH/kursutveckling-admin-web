@@ -108,8 +108,6 @@ module.exports = {
 
     /** ************ PAGE 2 FORM ************** */
 
-    asterix_text: 'Data cannot be changed after published',
-
     header_mandatory_fields: '* Mandatory fields',
     header_semester: 'Semester' /** Visas i steg 2, följt av kursomgångens starttermin */,
     header_course_offering: 'Course offering' /** Visas i steg 2, följt av kursomgångens namn */,
