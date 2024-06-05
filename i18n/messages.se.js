@@ -7,6 +7,7 @@ module.exports = {
      * General stuff
      */
     date_format_short: '%Y-%m-%d',
+    language_link_lang_en: 'English',
 
     /**
      * Error messages
