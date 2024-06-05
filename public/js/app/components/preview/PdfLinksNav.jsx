@@ -8,7 +8,7 @@ import LinkToValidSyllabusPdf from './LinkToValidSyllabus'
 const ActiveOrDisabledPdfLink = ({ ariaLabel, href = '', className = '', linkTitle, translate, validFrom = '' }) => {
   const { no_added_doc: labelMissingDoc } = translate
   return (
-    <p key={linkTitle}>
+    <>
       {href === '' ? (
         // eslint-disable-next-line jsx-a11y/anchor-is-valid
         <a
@@ -29,7 +29,7 @@ const ActiveOrDisabledPdfLink = ({ ariaLabel, href = '', className = '', linkTit
           {`${linkTitle}${validFrom ? ': ' + validFrom : ''}`}
         </a>
       )}
-    </p>
+    </>
   )
 }
 

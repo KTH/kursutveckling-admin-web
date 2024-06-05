@@ -4,9 +4,11 @@
 /* eslint-disable prefer-destructuring */
 import React, { useReducer } from 'react'
 
-import { Alert, Form, FormGroup, Label, Input, Collapse, Button, Row, Col } from 'reactstrap'
+import { Form, FormGroup, Label, Input, Collapse } from 'reactstrap'
 
 import i18n from '../../../../i18n/index'
+import Alert from '../components-shared/Alert'
+import Button from '../components-shared/Button'
 import { SERVICE_URL } from '../util/constants'
 import { getDateFormat, getValueFromObjectList } from '../util/helpers'
 import { goToStartPage } from '../util/links'
@@ -259,8 +261,10 @@ function AnalysisMenu(props) {
     )
   }
 
-  function toggleModal(event) {
-    modalOpen[event.target.id] = !modalOpen[event.target.id]
+  function toggleModal(ev, id) {
+    const modalid = id || ev.target.id
+    const { modalOpen } = state
+    modalOpen[modalid] = !modalOpen[modalid]
     setState({
       modalOpen,
     })
@@ -299,11 +303,11 @@ function AnalysisMenu(props) {
       {/*                               SEMESTER DROPDOWN                          */}
       {/* ************************************************************************************ */}
 
-      <div className="col-4 nopadding">
-        <div className="inline-flex padding-top-30">
-          <h3> {translate.select_semester} </h3>
-          <InfoButton addClass="padding-top-30" id="info_select_semester" textObj={translate.info_select_semester} />
-        </div>
+      <div>
+        <h3>
+          {translate.select_semester}
+          <InfoButton id="info_select_semester" textObj={translate.info_select_semester} />
+        </h3>
         <form>
           <div className="form-group">
             <div className="select-wrapper">
@@ -332,32 +336,23 @@ function AnalysisMenu(props) {
           </div>
         </form>
       </div>
-      {alert.length > 0 && (
-        <Alert color="danger" className="alert-margin">
-          {' '}
-          {alert}
-        </Alert>
-      )}
+      {alert.length > 0 && <Alert type="warning">{alert}</Alert>}
 
       {/** *********************************************************************************** */}
       {/*                        SELECT BUTTONS FOR ANALYSIS OR ROUNDS                        */}
       {/** *********************************************************************************** */}
       <Collapse isOpen={collapseOpen}>
-        <Row id="analysisMenuContainer">
+        <div id="analysisMenuContainer">
           {showAllEmptyNew || showAllEmptyPublished ? (
-            <Alert color="info" className="alert-margin">
+            <Alert type="info">
               <p>{showAllEmptyNew ? translate.alert_no_rounds : translate.alert_no_published}</p>
             </Alert>
           ) : (
             <Form>
-              <div className="inline-flex">
-                <h3>{translate.header_analysis_menu}</h3>
-                <InfoButton
-                  addClass="padding-top-30"
-                  id="info_choose_course_offering"
-                  textObj={translate.info_choose_course_offering}
-                />
-              </div>
+              <h3>
+                {translate.header_analysis_menu}
+                <InfoButton id="info_choose_course_offering" textObj={translate.info_choose_course_offering} />
+              </h3>
 
               {status === 'new' || status === 'draft' ? (
                 <div className="selectBlock">
@@ -469,53 +464,44 @@ function AnalysisMenu(props) {
               )}
             </Form>
           )}
-        </Row>
+        </div>
       </Collapse>
       {/** *********************************************************************************** */}
       {/*                             BUTTONS FOR ANALYSIS MENU                               */}
       {/** *********************************************************************************** */}
-      <Row className="button-container text-center">
-        <Col sm="12" lg="4">
+      <div className="control-buttons">
+        <div>
           {selectedRadio.draft.length > 0 && !canOnlyPreview ? (
             <span>
-              <Button color="danger" id="delete" key="delete" onClick={toggleModal} style={{ marginRight: '5px' }}>
+              <Button variant="error" id="delete" key="delete" onClick={toggleModal} style={{ marginRight: '5px' }}>
                 {translate.btn_delete}
               </Button>
-              <Button color="secondary" id="copy" key="copy" onClick={toggleModal}>
+              <Button variant="secondary" id="copy" key="copy" onClick={toggleModal}>
                 {translate.btn_copy}
               </Button>
             </span>
           ) : (
             ''
           )}
-        </Col>
-        <Col sm="12" lg="4">
-          <Button color="secondary" id="cancel" key="cancel" onClick={handleCancel}>
+        </div>
+        <div>
+          <Button variant="secondary" id="cancel" key="cancel" onClick={handleCancel}>
             {translate.btn_cancel}
           </Button>
-        </Col>
-        <Col sm="12" lg="4">
+        </div>
+        <div>
           {!firstVisit && showEditButton() && !canOnlyPreview && (
-            <div>
-              <Button
-                className="loading-button next"
-                color="success"
-                id="new"
-                key="new"
-                onClick={goToEditMode}
-                disabled={firstVisit}
-              >
-                <div>{translate.btn_add_analysis}</div>
-              </Button>
-            </div>
+            <Button className="next" variant="success" id="new" key="new" onClick={goToEditMode} disabled={firstVisit}>
+              {translate.btn_add_analysis}
+            </Button>
           )}
           {canOnlyPreview && (
-            <Button className="next" color="success" id="new" key="new" onClick={handlePreview}>
+            <Button variant="next" id="new" key="new" onClick={handlePreview}>
               {translate.btn_preview}
             </Button>
           )}
-        </Col>
-      </Row>
+        </div>
+      </div>
       {/** *********************************************************************************** */}
       {/*                               MODALS FOR DELETE AND COPY                            */}
       {/** *********************************************************************************** */}

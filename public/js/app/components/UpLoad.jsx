@@ -17,14 +17,10 @@ function UpLoad(props) {
   return (
     <div className={mandatoryFields.includes(type) || wrongFileTypeFields.includes(type) ? 'not-valid' : ''}>
       {file && file.length > 0 ? (
-        <span>
-          <br />
-          <div className="inline-flex">
-            <p className="upload-text"> {file} </p>
-            {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-            <div className="iconContainer icon-trash-can" id={'remove_' + id} onClick={removeFile} />
-          </div>
-        </span>
+        <div className="upload-text-wrapper">
+          <p className="upload-text"> {file} </p>
+          <button className="kth-icon-button icon-trash-can" type="button" id={`remove_${id}`} onClick={removeFile} />
+        </div>
       ) : (
         <label className="custom-file-upload">
           <input type="file" id={id} onChange={onChange} />
