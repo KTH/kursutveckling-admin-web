@@ -99,6 +99,18 @@
 .popover {
   .popover-header {
     @include typography.font-heading-xs;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0 0 12px;
+
+    span {
+      padding: 0.5rem 0;
+    }
+    button {
+      flex-shrink: 0;
+    }
   }
 }
 
