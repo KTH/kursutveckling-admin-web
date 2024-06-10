@@ -300,6 +300,7 @@ async function getIndex(req, res, next) {
       theme: 'student-web',
       proxyPrefix,
       description: i18n.messages[lang === 'en' ? 0 : 1].messages.title,
+      query: req.query,
     })
   } catch (err) {
     log.error('Error in getIndex', { error: err })
