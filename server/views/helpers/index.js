@@ -1,4 +1,5 @@
 'use strict'
+const handlebars = require('handlebars')
 const registerHeaderContentHelper = require('@kth/kth-node-web-common/lib/handlebars/helpers/headerContent')
 const log = require('@kth/log')
 const Handlebars = require('handlebars')
@@ -56,3 +57,5 @@ Handlebars.registerHelper('languageLinkWithQuery', (lang, query) => {
 
 require('@kth/kth-node-web-common/lib/handlebars/helpers/createI18nHelper')(i18n)
 require('@kth/kth-node-web-common/lib/handlebars/helpers/safe')
+
+handlebars.registerHelper('eq', (var1, var2) => var1.toString() === var2.toString())
