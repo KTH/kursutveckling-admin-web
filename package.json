@@ -34,7 +34,7 @@
     "@kth/monitor": "^4.2.1",
     "@kth/server": "^4.1.0",
     "@kth/session": "^3.0.9",
-    "@kth/style": "^1.4.1",
+    "@kth/style": "^1.4.2",
     "@kth/ug-rest-api-helper": "^1.0.25",
     "@opentelemetry/api": "^1.8.0",
     "@opentelemetry/sdk-trace-base": "^1.22.0",
