@@ -6,6 +6,7 @@ const config = require('./configuration').server
 require('./api')
 const { PageRouter: AppRouter } = require('kth-node-express-routing')
 const { getPaths } = require('kth-node-express-routing')
+const { cortinaMiddleware } = require('@kth/cortina-block')
 
 // Expose the server and paths
 server.locals.secret = new Map()
@@ -187,14 +188,13 @@ server.get(_addProxy('/logout'), oidc.logout)
  * ******* CORTINA BLOCKS *******
  * ******************************
  */
+
 server.use(
   config.proxyPrefixPath.uri,
-  require('@kth/kth-node-web-common/lib/web/cortina')({
-    blockUrl: config.blockApi.blockUrl,
-    proxyPrefixPath: config.proxyPrefixPath.uri,
-    hostUrl: config.hostUrl,
+  cortinaMiddleware({
+    blockApiUrl: config.blockApi.blockUrl,
     redisConfig: config.cache.cortinaBlock.redis,
-    useStyle10: true,
+    blocksConfig: config.blockApi.addBlocks,
   })
 )
 
