@@ -22,7 +22,7 @@ Firstly, the app has two functions:
 
 - to upload a course analysis and historic course memo pdf files to a blob storage and send course data about it to `kursutveckling-api`.
 - to change a published course data analysis
-- automatic fill in data about course development fetching from kopps-api, ug redis cache and kursstatistik api (reading from ladok db)
+- automatic fill in data about course development fetching from kopps-api and kursstatistik api (reading from ladok db)
 
 Later this files and course development data can be found on public pages 'Course development' served by `kursutveckling-web`.
 
@@ -61,13 +61,11 @@ Application is fetching data from KURSSTATISTIK-API for:
 
 - [https://github.com/KTH/kursstatistik-api](https://github.com/KTH/kursstatistik-api)
 
-Application is fetching data from UG-REDIS cache:
+Application is fetching data from ug-rest-api:
 
 - Fetch data about course staff (because some information missing in Kopps, f.e., examinators)
 
 - Base authorization who can see which pages
-
-- [https://gita.sys.kth.se/Infosys/ugcache](https://gita.sys.kth.se/Infosys/ugcache)
 
 ### Related projects
 
