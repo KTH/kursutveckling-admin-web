@@ -15,7 +15,7 @@ module.exports = {
     contact_support: 'Contact',
     for_questions: 'if you have any questions.',
     friendly_message_have_not_rights: "You don't have permission to use About course's administration tool",
-    message_have_not_rights: `You don't have permission to use About course's administration tool. Permission is automatically given to those who are added as an examiner, course coordinator or teacher for the course in Kopps.`,
+    message_have_not_rights: `You don't have permission to use About course's administration tool. Permission is automatically given to those who are added as an examiner, course coordinator or teacher for the course in Ladok.`,
     message_have_not_rights_link_pre_text: 'It is possible',
     message_have_not_rights_link_href:
       'https://intra.kth.se/en/utbildning/systemstod/om-kursen/behorighet-for-om-kursen-1.1051642',
@@ -222,13 +222,13 @@ module.exports = {
 
     info_examiners: {
       header: 'Examiners',
-      body: 'The examiners of the course at the time of the course offering. Examiners are administrated in Kopps.',
+      body: 'The examiners of the course at the time of the course offering. Examiners are administrated in Ladok.',
       btnCancel: 'Close',
     },
 
     info_responsibles: {
       header: 'Course coordinators',
-      body: 'All the course coordinators for all the administrative course instances that are included in the course offering. Course coordinators are administrated in Kopps.',
+      body: 'All the course coordinators for all the administrative course instances that are included in the course offering. Course coordinators are administrated in Ladok.',
       btn_close: 'Close',
     },
 
@@ -278,7 +278,7 @@ module.exports = {
       examiners: {
         header: 'Examiners',
         popoverText:
-          'The examiners of the course at the time for the course offering. Examiners are administrated in Kopps.',
+          'The examiners of the course at the time for the course offering. Examiners are administrated in Ladok.',
       },
       examRounds: { header: 'Examination', popoverText: 'Form of examinataion for the course offering.' },
       alterationText: {
@@ -293,7 +293,7 @@ module.exports = {
       responsibles: {
         header: 'Coordinator',
         popoverText:
-          'All the course coordinators for the all the administrative course instances that are included in the course offering. Course coordinators are administrated in Kopps.',
+          'All the course coordinators for the all the administrative course instances that are included in the course offering. Course coordinators are administrated in Ladok.',
       },
       registeredStudents: {
         header: 'Students',

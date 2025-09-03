@@ -22,7 +22,7 @@ module.exports = {
     contact_support: 'Kontakta',
     for_questions: 'vid frågor.',
     friendly_message_have_not_rights: 'Du saknar behörighet att använda Om kursens administrationsverktyg',
-    message_have_not_rights: `Du saknar behörighet att använda Om kursens administrationsverktyg. Behörighet ges per automatik till de som är inlagda som examinator, kursansvarig eller lärare för kursen i Kopps.`,
+    message_have_not_rights: `Du saknar behörighet att använda Om kursens administrationsverktyg. Behörighet ges per automatik till de som är inlagda som examinator, kursansvarig eller lärare för kursen i Ladok.`,
     message_have_not_rights_link_pre_text: 'Det är möjligt att',
     message_have_not_rights_link_href:
       'https://intra.kth.se/utbildning/systemstod/om-kursen/behorighet-for-om-kursen-1.1051642',
@@ -68,7 +68,7 @@ module.exports = {
       {
         title: 'Välj kursomgång',
         intro:
-          'Börja med att välja termin och kursomgång för den kursanalys som ska publiceras (steg 1 av 3). I nästa steg (2 av 3) kommer kursdata för kursen att hämtas automatiskt från Ladok och Kopps för den termin och kursomgång som valts. Det finns sedan möjlighet att redigera viss kursdata samt ladda upp kursanalysen. I sista steget (3 av 3) ges möjlighet att först granska och sedan publicera tabellen med kursanalys och all kursdata på sidan Kursens utveckling.',
+          'Börja med att välja termin och kursomgång för den kursanalys som ska publiceras (steg 1 av 3). I nästa steg (2 av 3) kommer kursdata för kursen att hämtas automatiskt från Ladok för den termin och kursomgång som valts. Det finns sedan möjlighet att redigera viss kursdata samt ladda upp kursanalysen. I sista steget (3 av 3) ges möjlighet att först granska och sedan publicera tabellen med kursanalys och all kursdata på sidan Kursens utveckling.',
       },
       {
         title: 'Redigera kursdata och ladda upp kursanalys',
@@ -231,13 +231,13 @@ module.exports = {
 
     info_examiners: {
       header: 'Examinator',
-      body: 'Examinator för kurs vid gällande kursomgång. Examinatorer administreras i Kopps.',
+      body: 'Examinator för kurs vid gällande kursomgång. Examinatorer administreras i Ladok.',
       btnCancel: 'Close',
     },
 
     info_responsibles: {
       header: 'Kursansvarig',
-      body: 'Samtliga kursansvariga för de kurstillfällen som ingår i kursomgången. Kursansvariga administreras i Kopps.',
+      body: 'Samtliga kursansvariga för de kurstillfällen som ingår i kursomgången. Kursansvariga administreras i Ladok.',
       btn_close: 'Close',
     },
 
@@ -275,7 +275,7 @@ module.exports = {
     table_headers_with_popup: {
       examiners: {
         header: 'Examinator',
-        popoverText: 'Examinator för kurs vid gällande kursomgång. Examinatorer administreras i Kopps.',
+        popoverText: 'Examinator för kurs vid gällande kursomgång. Examinatorer administreras i Ladok.',
       },
       examRounds: { header: 'Examination', popoverText: 'Form av examination vid gällande kursomgång.' },
       alterationText: {
@@ -290,7 +290,7 @@ module.exports = {
       responsibles: {
         header: 'Kursansvarig',
         popoverText:
-          'Samtliga kursansvariga för de kurstillfällen som ingår i kursomgången. Kursansvariga administreras i Kopps.',
+          'Samtliga kursansvariga för de kurstillfällen som ingår i kursomgången. Kursansvariga administreras i Ladok.',
       },
       registeredStudents: {
         header: 'Studenter',
