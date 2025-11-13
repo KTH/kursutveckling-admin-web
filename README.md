@@ -72,7 +72,6 @@ Application is fetching data from ug-rest-api:
 - [https://github.com/KTH/kursutveckling-web](https://github.com/KTH/kursutveckling-web)
 - [https://github.com/KTH/kursutveckling-api](https://github.com/KTH/kursutveckling-api)
 - [https://github.com/KTH/kursstatistik-api](https://github.com/KTH/kursstatistik-api)
-- [https://gita.sys.kth.se/Infosys/ugcache](https://gita.sys.kth.se/Infosys/ugcache)
 
 We must try to make changes that affect the template projects in the template projects themselves.
 
